@@ -6,6 +6,7 @@ import {
   MantineProvider,
   mantineHtmlProps,
 } from "@mantine/core";
+import theme from "@theme/theme.config";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,7 +25,9 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <ColorSchemeScript />
       </head>
-      <MantineProvider>{children}</MantineProvider>
+      <body suppressHydrationWarning>
+        <MantineProvider theme={theme}>{children}</MantineProvider>
+      </body>
     </html>
   );
 }

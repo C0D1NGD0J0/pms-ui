@@ -30,6 +30,7 @@
       "@store/*": ["store/*"],
       "@validations/*": ["validations/*"],
       "@app/*": ["src/app/*"],
+      "@theme/*": ["src/theme/*"],
       "@/*": ["./*"]
     }
   },
