@@ -71,6 +71,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    border-right: 0.1rem solid hslaGen($grey-color);
     background-image: url("/assets/imgs/villa-1.jpeg");
 
     .copy-text {
@@ -143,35 +144,89 @@
   width: 100%;
 }
 
-.curve,
-.curve-alt {
+.curve-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: -20;
+  overflow: hidden;
+}
+
+.curve {
   z-index: -20;
   bottom: 0;
   width: 100%;
   height: 100%;
   position: absolute;
+
+  &::after {
+    bottom: 0;
+    content: "";
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+    position: absolute;
+    background-color: #062f4f;
+    /* border-top-left-radius: 50% 60%;
+    border-top-right-radius: 50% 60%; */
+    animation: pulseEffect 10s infinite linear;
+    box-shadow: 0 -10px 30px rgba(6, 47, 79, 0.2);
+  }
 }
 
-.curve::after {
+.curve-secondary {
+  z-index: -21;
   width: 100%;
-  content: "";
-  z-index: -10;
   height: 100%;
   position: absolute;
-  bottom: 0;
-  background-color: #062f4f;
-  border-top-left-radius: 50% 100%;
-  border-top-right-radius: 50% 100%;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vmin; /* Responsive sizing based on viewport */
+    height: 80vmin;
+    background-color: rgba(6, 47, 79, 0.7);
+    border-radius: 50%;
+    z-index: -11;
+    animation: pulsezEffect 8s infinite ease-in-out;
+  }
 }
 
-.curve-alt::after {
-  width: 100%;
-  content: "";
-  z-index: -10;
-  height: 100%;
-  position: absolute;
-  top: 0; /* Changed from bottom: 0 to top: 0 */
-  background-color: #062f4f;
-  border-bottom-left-radius: 45% 100%; /* Changed from border-top-left-radius */
-  border-bottom-right-radius: 45% 100%; /* Changed from border-top-right-radius */
+@keyframes waveEffect {
+  0% {
+    transform: translateX(-95%);
+  }
+  20% {
+    transform: translateY(40%);
+  }
+
+  40% {
+    transform: translateX(-40%);
+  }
+
+  80% {
+    transform: translateY(40%);
+  }
+
+  100% {
+    transform: translateX(-95%);
+  }
+}
+@keyframes pulseEffect {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
 }
