@@ -1,0 +1,18 @@
+@use "../abstract/index" as *;
+
+.footer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  grid-area: footer;
+  padding: 2rem 4rem;
+  align-items: center;
+  color: hslaGen($white-color, 1);
+  box-shadow: $box-shadow-alt-reverse;
+  background-color: hslaGen($blue-ink-color, 1);
+
+  p {
+    width: 100%;
+    text-align: center;
+  }
+}

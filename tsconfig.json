@@ -24,7 +24,7 @@
       "@config/*": ["config/*"],
       "@hooks/*": ["hooks/*"],
       "@interfaces/*": ["interfaces/*"],
-      "@styles/*": ["styles/*"],
+      "@styles/*": ["sass/*"],
       "@utils/*": ["utils/*"],
       "@services/*": ["services/*"],
       "@store/*": ["store/*"],

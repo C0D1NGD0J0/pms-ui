@@ -1,0 +1,159 @@
+// COLOR PALETTE
+$dark-grey-color: 0, 0%, 20%; // #333333
+$light-grey-color: 0, 0%, 80%; // #cccccc
+
+// Main colors
+$background-color: 0, 0%, 96%; //#f5f5f5;  - Light Gray
+$primary-color: 194, 66%, 24%; //#124e66;  - Dark Cyan
+$secondary-color: 39, 73%, 49%; //#ffcc00;  - Gold
+$blue-ink-color: 204, 88%, 17%; //#062f4f;  - Blue Ink
+
+// Status colors
+$success-color: 130, 100%, 37%; // #00be1c
+$danger-color: 0, 100%, 50%; // #ff0000
+$warning-color: 37, 100%, 67%; // #ffbb55
+
+// Neutral colors
+$white-color: 0, 0%, 100%; //#ffffff;  - Pure White
+$black-color: 0, 0%, 0%; //#000000;  - Pure Black
+$grey-color: 213, 14%, 56%; //#7d8da1;  - Steel Blue Gray
+$off-white-color: 204, 8%, 98%; //#f7f7f7;  - Off-White
+$alice-blue-color: 208, 100%, 97%; // #f0f8ff
+
+// SPACING
+$space-sm: 0.5rem;
+$space-md: 1rem;
+$space-lg: 1.5rem;
+$space-xl: 2rem;
+$base-gap: 1rem !default;
+$base-margin: 0.4rem !default;
+$base-padding: 0.4rem !default;
+
+// BORDERS
+$base-border-color: $black-color !default;
+$base-border-thickness: 0.2rem !default;
+$base-border-radius: 0.5rem !default;
+
+// BOX-SHADOW
+$transition: all 0.5s ease-in-out;
+$box-shadow-alt: 0px 5px 4px -5px rgba(0, 0, 0, 0.3);
+$box-shadow: 0 0.2rem 0.3rem hslaGen($base-border-color, 1);
+$box-shadow-alt-2: 0 0.2rem 0.3rem hslaGen($off-white-color, 0.2);
+
+$box-shadow-reverse: 0 -0.2rem 0.3rem hslaGen($base-border-color, 0.3); // Bottom-to-top
+$box-shadow-alt-reverse: 0px -5px 4px -5px rgba(0, 0, 0, 0.3); // Bottom-to-top
+
+$colors: (
+  "primary": $primary-color,
+  "secondary": $secondary-color,
+  "blue-ink": $blue-ink-color,
+  "danger": $danger-color,
+  "success": $success-color,
+  "warning": $warning-color,
+  "grey": $grey-color,
+  "black": $black-color,
+  "dark-grey": $dark-grey-color,
+  "light-grey": $light-grey-color,
+  "off-white": $off-white-color,
+  "alice-blue": $alice-blue-color,
+  "white": $white-color,
+);
+
+// RESPONSIVE BREAKPOINTS
+$breakpoints: (
+  "xs": 0,
+  // Extra small (default for all devices below 576px)
+  "sm": 57.6rem,
+  // 768px (Small phones and older mobile devices)
+  "md": 76.8rem,
+  // 992px (Tablets and small desktops)
+  "lg": 99.2rem,
+  // 1200px (Laptops and desktops)
+  "xlg": 120rem,
+  // 1440px (Large desktops and ultra-wide monitors)
+  "xxlg": 160rem,
+);
+
+$raw_breakpoints: (
+  "xs": 0,
+  "sm": 47,
+  "md": 69,
+  "lg": 90,
+  "xlg": 129,
+  "xxlg": 160,
+);
+
+// Gap utilities
+$grid-gaps: (
+  "0": 0,
+  "xs": 0.8rem,
+  "sm": 1.2rem,
+  "md": 1.6rem,
+  "lg": 2rem,
+  "xlg": 2.4rem,
+);
+
+@each $key, $val in $grid-gaps {
+  // Both row and column gaps
+  .gap-#{$key} {
+    gap: $val;
+  }
+
+  // Only row gaps
+  .gap-y-#{$key} {
+    row-gap: $val;
+  }
+
+  // Only column gaps
+  .gap-x-#{$key} {
+    column-gap: $val;
+  }
+
+  // Responsive gaps
+  @each $breakpoint, $bp-value in $breakpoints {
+    @media (min-width: $bp-value) {
+      .gap-#{$breakpoint}-#{$key} {
+        gap: $val;
+      }
+      .gap-#{$breakpoint}-y-#{$key} {
+        row-gap: $val;
+      }
+      .gap-#{$breakpoint}-x-#{$key} {
+        column-gap: $val;
+      }
+    }
+  }
+}
+
+/*=============
+GRID VARIABLES
+=============*/
+$max-grid-cols: 12;
+$base-grid-width: 144rem; // 1440px
+$base-grid-v-gutter: 0.8rem;
+$base-grid-h-gutter: 0.8rem;
+
+/*===========
+TYPOGRAPHY
+===========*/
+$fs-xsm: 1rem;
+$fs-sm: 1.2rem;
+$fs-md: 1.6rem;
+$fs-lg: 1.8rem;
+$fs-xlg: 2.4rem;
+$fs-base: 1.4rem;
+
+$fw-thin: 100;
+$fw-light: 200;
+$fw-normal: 400;
+$fw-bold: 700;
+
+$base-font-weight: 400 !default;
+$base-line-height: 1.7 !default;
+$base-font-size: 1.4rem !default;
+$base-letter-spacing: 0.1rem !default;
+
+$font-primary: "Roboto", sans-serif;
+$font-secondary: "Lato", sans-serif;
+
+$form-input-bg: #fff;

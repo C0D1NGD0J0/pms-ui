@@ -1,0 +1,106 @@
+@use "../../abstract/index" as *;
+
+.pricing-plans {
+  margin: 0;
+  width: 100%;
+  overflow: auto;
+  padding-top: 1rem;
+}
+
+.pricing-plan {
+  width: 100%;
+  height: auto;
+  cursor: pointer;
+  overflow: hidden;
+  font-size: $fs-md;
+  border-radius: 10px;
+  margin-bottom: 1.2rem;
+  border: 1px solid #ccc;
+  color: hslaGen($grey-color);
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0.5px rgba(0, 0, 0, 0.2);
+
+  &:hover,
+  &:focus {
+    cursor: pointer;
+    border: 1px solid #555;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  }
+
+  &_header {
+    padding: 10px;
+    color: white;
+    text-align: center;
+    position: relative;
+    background-color: #062f4f;
+
+    i {
+      top: 1rem;
+      right: 1.5rem;
+      font-size: $fs-lg;
+      position: absolute;
+      color: hslaGen($success-color);
+    }
+    h1 {
+      font-size: $fs-lg;
+      font-weight: 400;
+    }
+
+    h2 {
+      font-size: $fs-md;
+      font-weight: 300;
+    }
+  }
+
+  &_description {
+    display: flex;
+    padding: 1.2rem;
+    align-items: center;
+    justify-content: space-between;
+    .features {
+      &-list_item {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: $fs-sm;
+        padding: 0 10px 0 25px;
+        position: relative;
+      }
+    }
+
+    .price-wrapper {
+      .price {
+        font-size: $fs-lg;
+        color: hslaGen($primary-color);
+      }
+
+      .frequency {
+        font-size: $fs-sm;
+      }
+    }
+  }
+
+  @media screen and (max-width: 769px) {
+    width: calc(100% - 15px);
+  }
+}
+
+.features-list_item {
+  margin: 0;
+  font-size: 1rem;
+  list-style: none;
+  padding-left: 25px;
+  position: relative;
+
+  &:not(:last-child) {
+    margin-bottom: 5px;
+  }
+
+  &::before {
+    left: 0;
+    color: #062f4f;
+    content: "\2714";
+    position: absolute;
+  }
+}

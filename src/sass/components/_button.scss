@@ -1,0 +1,232 @@
+@use "../abstract/index" as *;
+
+// Base Button
+.btn {
+  border: none;
+  gap: 0.2rem;
+  flex: 1 1 auto;
+  cursor: pointer;
+  font-size: $fs-sm;
+  font-weight: bold;
+  text-align: center;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  transition: $transition;
+  text-transform: uppercase;
+  color: hslaGen($white-color);
+
+  &:active,
+  &:focus-visible {
+    outline: none;
+    transition: $transition;
+    box-shadow: 0 10px 20px hslaGen($black-color);
+  }
+
+  i {
+    font-size: $fs-lg;
+    margin-right: 0.5rem;
+  }
+
+  // Color Variants
+  &-primary {
+    background-color: hslaGen($primary-color);
+    color: hslaGen($white-color);
+
+    &:hover {
+      background-color: hslaGen($primary-color);
+    }
+  }
+
+  &-secondary {
+    background-color: hslaGen($secondary-color);
+    color: $white-color;
+
+    &:hover {
+      background-color: hslaGen($secondary-color);
+    }
+  }
+
+  &-success {
+    background-color: hslaGen($success-color);
+    color: $white-color;
+
+    &:hover {
+      background-color: hslaGen($success-color);
+    }
+  }
+
+  &-danger {
+    background-color: hslaGen($danger-color);
+    color: $white-color;
+
+    &:hover {
+      background-color: hslaGen($danger-color);
+    }
+  }
+
+  &-default {
+    background-color: transparent;
+    border: 1px solid currentColor;
+    color: hslaGen($grey-color);
+  }
+
+  &-warning {
+    background-color: hslaGen($warning-color, 0.9);
+    border: 1px solid currentColor;
+    color: hslaGen($off-white-color);
+
+    &:hover {
+      background-color: hslaGen($warning-color);
+    }
+  }
+
+  &-outline {
+    background-color: white;
+    border: 1px solid currentColor;
+    color: hslaGen($primary-color);
+
+    &:hover {
+      color: hslaGen($blue-ink-color);
+    }
+  }
+
+  &-outline-ghost {
+    background-color: transparent;
+    color: hslaGen($blue-ink-color);
+    border: 1px solid hslaGen($blue-ink-color);
+  }
+
+  &-outline-warning {
+    background-color: hslaGen($warning-color);
+    color: hslaGen($blue-ink-color);
+  }
+
+  // Size Variants
+  &-sm {
+    padding: 0.5rem 1rem;
+    font-size: $fs-xsm;
+  }
+
+  &-md {
+    padding: 0.8rem 2.8rem;
+    font-size: $fs-sm;
+  }
+
+  &-lg {
+    padding: 1.5rem 2rem;
+    font-size: $fs-lg;
+  }
+
+  &-full,
+  &-block {
+    width: 10;
+    font-size: $fs-base;
+  }
+
+  // Shape Variants
+  &-rounded {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1.5rem;
+    justify-content: center;
+    border-radius: 3rem !important;
+  }
+
+  &-circle {
+    border-radius: 5 !important;
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Text Button
+  &-text {
+    border: none;
+    padding: 5px;
+    font-size: $fs-sm;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition: $transition;
+    align-self: center;
+    color: hslaGen($primary-color);
+
+    &:hover {
+      color: hslaGen($blue-ink-color);
+      transform: translateY(-0.3rem);
+      transition: $transition;
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: $box-shadow;
+    }
+
+    &:link,
+    &:visited {
+      color: hslaGen($primary-color);
+    }
+  }
+
+  // Icon Button
+  &-icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hslaGen($light-grey-color, 0.3);
+    border: none;
+    color: hslaGen($dark-grey-color);
+    font-size: $fs-base;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+
+    i {
+      margin: 0;
+    }
+
+    &:hover {
+      background: hslaGen($light-grey-color, 0.6);
+    }
+
+    &.reminder-active {
+      color: hslaGen($primary-color);
+      background: hslaGen($primary-color, 0.1);
+    }
+  }
+
+  // Disabled state
+  &:disabled,
+  &.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+// Button group
+.btn-group {
+  display: flex;
+  gap: $space-sm;
+
+  &.btn-group-vertical {
+    flex-direction: column;
+  }
+}
+
+// Plain button without styling
+.plain-btn {
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  background: transparent;
+}

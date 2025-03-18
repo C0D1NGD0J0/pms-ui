@@ -1,0 +1,138 @@
+@use "../abstract/index" as *;
+@use "../base/typography" as *;
+
+/*===========
+BASE STYLES
+===========*/
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+/* removes animation for ppl who turned them off in the browser */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: smooth !important;
+    animation-duration: 0.01m !important;
+    transition-duration: 0.1m !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+html {
+  height: 100%;
+  font-size: 62.5%; /* 1rem = 10px */
+  scroll-behavior: smooth;
+}
+
+body {
+  font-weight: $base-font-weight;
+  line-height: $base-line-height;
+  font-size: $fs-base;
+  letter-spacing: 0.1rem;
+  font-family: $font-primary;
+  color: hslaGen($primary-color);
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+}
+
+/*===========
+LINKS
+===========*/
+a,
+a:active {
+  outline: none;
+  font-weight: 300;
+  color: hslaGen($primary-color);
+  text-decoration: none;
+  transition: $transition;
+  -webkit-transition: $transition;
+  -moz-transition: $transition;
+  -ms-transition: $transition;
+  -o-transition: $transition;
+
+  strong {
+    color: currentColor;
+    font-weight: 700;
+  }
+}
+
+a:hover,
+a:focus,
+a:active,
+a:visited {
+  outline: 0;
+  text-decoration: none;
+  transition: $transition;
+  -webkit-transition: $transition;
+  -moz-transition: $transition;
+  -ms-transition: $transition;
+  -o-transition: $transition;
+}
+
+i {
+  &.danger {
+    color: orangered;
+  }
+  &.success {
+    color: green;
+  }
+  &.warning {
+    color: orange;
+  }
+  &.info {
+    color: dodgerblue;
+  }
+  &.default {
+    color: hslaGen($grey-color);
+  }
+  &.primary {
+    color: hslaGen($primary-color);
+  }
+}
+
+.hr {
+  width: 10%;
+  margin: 0 auto;
+  border: 2px solid hslaGen($secondary-color);
+  &-sm {
+    width: 20%;
+  }
+  &-md {
+    width: 30%;
+  }
+  &-lg {
+    width: 40%;
+  }
+}
+
+table {
+  width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
+}
+
+img,
+video,
+iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+pre,
+code {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
