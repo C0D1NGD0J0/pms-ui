@@ -18,7 +18,7 @@ interface FormTextareaProps {
   ariaDescribedBy?: string;
 }
 
-export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
+export const Textarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   (
     {
       id,
@@ -78,4 +78,4 @@ export const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   }
 );
 
-FormTextarea.displayName = "FormTextarea";
+Textarea.displayName = "FormTextarea";

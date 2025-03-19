@@ -13,7 +13,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   type?: "button" | "submit" | "reset";
 }
 
-const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<ButtonProps> = ({
   icon,
   label,
   style,
@@ -24,7 +24,7 @@ const Button: React.FC<ButtonProps> = ({
   ariaLabel,
   type = "button",
   renderChildren = false,
-  iconPosition = "left", // Default icon position is left
+  iconPosition = "left",
 }) => {
   return (
     <button
@@ -51,5 +51,3 @@ const Button: React.FC<ButtonProps> = ({
     </button>
   );
 };
-
-export default Button;

@@ -133,25 +133,25 @@
 
 @mixin custom-dropdown($bg-color: $background-color, $isTable: false) {
   width: 100%;
-  font-weight: $base-font-weight;
   position: relative;
   border-radius: 0.2rem;
   color: hslaGen($grey-color);
-  border-bottom: 0.1rem solid hslaGen($grey-color, 0.4);
+  font-weight: $base-font-weight;
   background-color: hslaGen($background-color, 0.1);
+  border-bottom: 0.1rem solid hslaGen($grey-color, 0.4);
 
   .selected-option {
     display: flex;
     cursor: pointer;
-    line-height: 1.5;
+    line-height: 1;
     position: relative;
     align-items: center;
-    padding: 0.5rem 0.6rem;
     justify-content: space-between;
+    padding: 0.5rem 0.6rem 0.5rem 0.3rem;
   }
 
   .selected-value {
-    font-size: $fs-md;
+    font-size: $fs-base;
     font-weight: $fw-light;
     color: hslaGen($primary-color);
   }

@@ -27,7 +27,7 @@ interface FormProps {
   formContext?: FormContextValue;
 }
 
-const Form: React.FC<FormProps> = ({
+export const Form: React.FC<FormProps> = ({
   children,
   onSubmit,
   id,
@@ -62,5 +62,3 @@ const Form: React.FC<FormProps> = ({
     </FormContext.Provider>
   );
 };
-
-export default Form;

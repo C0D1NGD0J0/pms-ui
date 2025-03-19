@@ -14,7 +14,7 @@ interface FormCheckboxProps {
   description?: string;
 }
 
-export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
+export const Checkbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
   (
     {
       id,
@@ -72,4 +72,4 @@ export const FormCheckbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
   }
 );
 
-FormCheckbox.displayName = "FormCheckbox";
+Checkbox.displayName = "FormCheckbox";

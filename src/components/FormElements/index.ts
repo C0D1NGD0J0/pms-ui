@@ -8,4 +8,5 @@ export * from "@components/FormElements/FormLabel";
 export * from "@components/FormElements/FormField";
 export * from "@components/FormElements/TextArea";
 export * from "@components/FormElements/FormRadio";
+export * from "@components/FormElements/CustomDropdown";
 export * from "@components/FormElements/FloatingLabelInput";

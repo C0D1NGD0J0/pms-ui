@@ -22,7 +22,7 @@ interface FormSelectProps {
   ariaDescribedBy?: string;
 }
 
-export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
+export const Select = forwardRef<HTMLSelectElement, FormSelectProps>(
   (
     {
       id,
@@ -89,4 +89,4 @@ export const FormSelect = forwardRef<HTMLSelectElement, FormSelectProps>(
   }
 );
 
-FormSelect.displayName = "FormSelect";
+Select.displayName = "FormSelect";

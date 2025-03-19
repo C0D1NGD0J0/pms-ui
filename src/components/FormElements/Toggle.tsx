@@ -7,7 +7,7 @@ type ToggleProps = {
   initialState?: boolean;
 };
 
-const Toggle: React.FC<ToggleProps> = ({
+export const Toggle: React.FC<ToggleProps> = ({
   className = "",
   onChange,
   initialState = false,
@@ -45,5 +45,3 @@ const Toggle: React.FC<ToggleProps> = ({
     </div>
   );
 };
-
-export default Toggle;
