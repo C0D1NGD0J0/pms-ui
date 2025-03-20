@@ -22,6 +22,7 @@ export const FloatingLabelInput: React.FC<{
   disabled = false,
   className = "",
 }) => {
+  const hasContent = value !== undefined && value !== "";
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -37,11 +38,11 @@ export const FloatingLabelInput: React.FC<{
         disabled={disabled}
         placeholder=" " // add space for the floating label effect
         onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
+        onBlur={() => setIsFocused(value.length > 0)}
       />
       <label
         htmlFor={id}
-        className={`form-label ${isFocused || value ? "active" : ""}`}
+        className={`form-label ${isFocused || hasContent ? "active" : ""}`}
       >
         {label}
         {required && <span className="text-danger">*</span>}

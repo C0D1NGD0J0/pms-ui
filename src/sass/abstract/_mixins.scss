@@ -151,8 +151,8 @@
   }
 
   .selected-value {
-    font-size: $fs-base;
-    font-weight: $fw-light;
+    font-size: $fs-sm;
+    font-weight: $fw-normal;
     color: hslaGen($primary-color);
   }
 
@@ -188,8 +188,7 @@
     .option-item {
       padding: 1rem;
       cursor: pointer;
-      font-size: $fs-md;
-      // text-transform: lowercase;
+      font-size: $fs-sm;
       background-color: hslaGen($background-color);
       &:hover {
         font-weight: bold;

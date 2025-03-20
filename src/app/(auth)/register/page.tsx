@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { message, Steps } from "antd";
 import {
   AuthContenFooter,
   AuthContentBody,
@@ -13,6 +14,8 @@ import {
   CustomDropdown,
   FloatingLabelInput,
 } from "@components/FormElements";
+import UserInfo from "./UserInfo";
+import CompanyInfo from "./CompanyInfo";
 
 const dropdownOptions = [
   { value: "apple", label: "Apple 🍎" },
@@ -22,11 +25,32 @@ const dropdownOptions = [
 ];
 
 export default function Register() {
-  const nextStep = () => {};
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const prevStep = () => {};
+  const nextStep = () => {
+    setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    setCurrentStep(currentStep - 1);
+  };
 
   const handleSubmit = async (_values: unknown) => {};
+
+  const renderButtons = () => {
+    if (currentStep === 0) {
+      return (
+        <Button label="Next" className="btn btn-primary" onClick={nextStep} />
+      );
+    } else if (currentStep === 1) {
+      return (
+        <>
+          <Button label="Back" className="btn btn-outline" onClick={prevStep} />
+          <Button label="Register" className="btn btn-primary" />
+        </>
+      );
+    }
+  };
 
   return (
     <>
@@ -43,102 +67,8 @@ export default function Register() {
           className="auth-form"
           autoComplete="false"
         >
-          <div className="form-fields">
-            <FloatingLabelInput
-              id="firstName"
-              name="firstName"
-              value=""
-              onChange={() => {}}
-              label="First name"
-              required
-            />
-            <FloatingLabelInput
-              id="lastName"
-              name="lastName"
-              value=""
-              onChange={() => {}}
-              label="Last name"
-              required
-            />
-          </div>
-
-          <div className="form-fields">
-            <FloatingLabelInput
-              id="email"
-              name="email"
-              value=""
-              onChange={() => {}}
-              label="Email"
-              type="email"
-              required
-            />
-          </div>
-
-          <div className="form-fields">
-            <CustomDropdown
-              id="location"
-              placeholder="Select a location"
-              value="Lagos"
-              onChange={(v) => {
-                console.log("----value: ", v);
-              }}
-              options={dropdownOptions}
-              required
-            />
-          </div>
-
-          <div className="form-fields">
-            <FloatingLabelInput
-              id="phoneNumber"
-              name="phoneNumber"
-              value=""
-              onChange={() => {}}
-              label="Phone number"
-              required
-            />
-          </div>
-
-          <div className="form-fields">
-            <FloatingLabelInput
-              id="password"
-              name="password"
-              value=""
-              onChange={() => {}}
-              label="Password"
-              type="password"
-              required
-            />
-
-            <FloatingLabelInput
-              id="cpassword"
-              name="cpassword"
-              value=""
-              onChange={() => {}}
-              label="Confirm password"
-              type="password"
-              required
-            />
-          </div>
-
-          <div className="form-fields">
-            <CustomDropdown
-              id="accountType"
-              placeholder="Acount type"
-              value=""
-              onChange={(v) => {
-                console.log("----value: ", v);
-              }}
-              options={[
-                { value: "personal", label: "Personal" },
-                { value: "corporate", label: "Business" },
-              ]}
-              required
-            />
-          </div>
-
-          <div className="action-fields">
-            <Button label="Next" className="btn btn-primary" />
-          </div>
+          {currentStep === 0 ? <UserInfo /> : <CompanyInfo />}
+          <div className="action-fields">{renderButtons()}</div>
         </Form>
       </AuthContentBody>
       <AuthContenFooter

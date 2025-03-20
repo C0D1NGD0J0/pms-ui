@@ -192,7 +192,7 @@
     display: block;
     padding: 0.8rem;
     color: #40414a;
-    font-size: $fs-md;
+    font-size: $fs-base;
     margin-bottom: 0.4rem;
     border-radius: 0.1rem;
     background: $form-input-bg;
@@ -205,8 +205,9 @@
       transition: $transition;
     }
 
-    &:valid ~ .form-label {
-      display: none;
+    &:not(:focus):placeholder-shown + .form-label {
+      top: 0.8rem;
+      font-size: $fs-sm;
     }
     /*
       I added a placeholder attribute with a space (" ") to the input element. 
@@ -239,9 +240,9 @@
     top: 0.3rem;
     display: block;
     position: absolute;
-    font-weight: $fw-light;
     pointer-events: none;
     transition: $transition;
+    font-weight: $fw-normal;
   }
 
   & .custom-dropdown {
