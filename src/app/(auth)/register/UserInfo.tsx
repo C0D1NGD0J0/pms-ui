@@ -35,7 +35,7 @@ export default function UserInfo({
           label="First name"
           onChange={onChange}
           value={formContext.values.firstName}
-          errorMsg={formContext.errors.firstName as string}
+          hasError={!!formContext.errors.firstName}
         />
         <FloatingLabelInput
           required
@@ -44,7 +44,7 @@ export default function UserInfo({
           label="Last name"
           onChange={onChange}
           value={formContext.values.lastName}
-          errorMsg={formContext.errors.lastName as string}
+          hasError={!!formContext.errors.lastName}
         />
       </div>
 
@@ -57,7 +57,7 @@ export default function UserInfo({
           label="Email"
           onChange={onChange}
           value={formContext.values.email}
-          errorMsg={formContext.errors.email as string}
+          hasError={!!formContext.errors.email}
         />
         <FloatingLabelInput
           required
@@ -66,7 +66,7 @@ export default function UserInfo({
           onChange={onChange}
           label="Display name"
           value={formContext.values.displayName}
-          errorMsg={formContext.errors.displayName as string}
+          hasError={!!formContext.errors.displayName}
         />
       </div>
 
@@ -92,7 +92,7 @@ export default function UserInfo({
           onChange={onChange}
           label="Phone number"
           value={formContext.values.phoneNumber}
-          errorMsg={formContext.errors.phoneNumber as string}
+          hasError={!!formContext.errors.phoneNumber}
         />
       </div>
 
@@ -105,7 +105,7 @@ export default function UserInfo({
           label="Password"
           onChange={onChange}
           value={formContext.values.password}
-          errorMsg={formContext.errors.password as string}
+          hasError={!!formContext.errors.password}
         />
 
         <FloatingLabelInput
@@ -116,7 +116,7 @@ export default function UserInfo({
           onChange={onChange}
           label="Confirm password"
           value={formContext.values.cpassword}
-          errorMsg={formContext.errors.cpassword as string}
+          hasError={!!formContext.errors.cpassword}
         />
       </div>
 

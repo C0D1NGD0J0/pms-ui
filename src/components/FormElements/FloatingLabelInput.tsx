@@ -7,11 +7,12 @@ export const FloatingLabelInput: React.FC<{
   type?: "text" | "email" | "password" | "number";
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  label: string;
+  label?: string;
   required?: boolean;
   disabled?: boolean;
   className?: string;
-  errorMsg?: string;
+  placeholder?: string;
+  hasError?: boolean;
 }> = ({
   id,
   name,
@@ -19,16 +20,26 @@ export const FloatingLabelInput: React.FC<{
   value,
   onChange,
   label,
+  placeholder = "",
   required = false,
   disabled = false,
   className = "",
-  errorMsg = "",
+  hasError = false,
 }) => {
   const hasContent = value !== undefined && value !== "";
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <div className="form-field">
+      <label
+        htmlFor={id}
+        className={`form-label ${label ? "" : "no-label"} ${
+          isFocused || hasContent ? "active" : ""
+        }`}
+      >
+        {label}
+        {required && <span className="text-danger">*</span>}
+      </label>
       <input
         id={id}
         name={name}
@@ -36,22 +47,14 @@ export const FloatingLabelInput: React.FC<{
         value={value}
         onChange={onChange}
         className={`form-input ${
-          isFocused && errorMsg ? "touched-invalid" : ""
+          hasError ? "touched-invalid" : ""
         } ${className} `}
         required={required}
         disabled={disabled}
-        placeholder=" " // add space for the floating label effect
+        placeholder={placeholder || " "} // add space for the floating label effect
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(value.length > 0)}
       />
-      <label
-        htmlFor={id}
-        className={`form-label ${isFocused || hasContent ? "active" : ""}`}
-      >
-        {label}
-        {required && <span className="text-danger">*</span>}
-      </label>
-      {errorMsg && <small className="text-danger error-msg">{errorMsg}</small>}
     </div>
   );
 };

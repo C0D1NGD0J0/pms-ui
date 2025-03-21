@@ -24,37 +24,43 @@ export default function CompanyInfo({
     (values: ISignupForm) => ISignupForm
   >;
 }) {
-  const nextStep = () => {};
-
-  const prevStep = () => {};
-
   return (
     <>
       <div className="form-fields">
         <FloatingLabelInput
           id="legalEntityName"
-          name="legalEntityName"
-          value=""
-          onChange={() => {}}
+          name="companyProfile.legalEntityName"
+          onChange={onChange}
+          value={formContext.values.companyProfile?.legalEntityName || ""}
+          hasError={
+            !!(formContext.errors.companyProfile as any)?.legalEntityName ||
+            false
+          }
           label="Registered name"
           required
         />
         <FloatingLabelInput
-          id="tradingName"
-          name="tradingName"
-          value=""
-          onChange={() => {}}
-          label="Trading name"
           required
+          id="tradingName"
+          name="companyProfile.tradingName"
+          onChange={onChange}
+          label="Trading name"
+          value={formContext.values.companyProfile?.tradingName || ""}
+          hasError={
+            !!(formContext.errors.companyProfile as any)?.tradingName || false
+          }
         />
       </div>
 
       <div className="form-fields">
         <FloatingLabelInput
           id="companyEmail"
-          name="companyEmail"
-          value=""
-          onChange={() => {}}
+          name="companyProfile.companyEmail"
+          onChange={onChange}
+          value={formContext.values.companyProfile?.companyEmail || ""}
+          hasError={
+            !!(formContext.errors.companyProfile as any)?.companyEmail || false
+          }
           label="Business Email"
           type="email"
           required
@@ -63,10 +69,13 @@ export default function CompanyInfo({
 
       <div className="form-fields">
         <FloatingLabelInput
-          id="contactNumber"
-          name="contactNumber"
-          value=""
-          onChange={() => {}}
+          id="companyPhone"
+          name="companyProfile.companyPhone"
+          onChange={onChange}
+          value={formContext.values.companyProfile?.companyPhone || ""}
+          hasError={
+            !!(formContext.errors.companyProfile as any)?.companyPhone || false
+          }
           label="Business phone number"
           required
         />
@@ -74,10 +83,13 @@ export default function CompanyInfo({
 
       <div className="form-fields">
         <FloatingLabelInput
-          id="companyWebsite"
-          name="companyWebsite"
-          value=""
-          onChange={() => {}}
+          id="website"
+          name="companyProfile.website"
+          onChange={onChange}
+          value={formContext.values.companyProfile?.website || ""}
+          hasError={
+            !!(formContext.errors.companyProfile as any)?.website || false
+          }
           required={false}
           label="Business website"
         />

@@ -54,6 +54,17 @@ export default function Register() {
   });
   const [currentStep, setCurrentStep] = useState(0);
 
+  // useEffect(() => {
+  //   if (form.errors) {
+  //     let errs = "";
+  //     for (const error in form.errors) {
+  //       console.log((form.errors as any)[error], "-----wew-----", error);
+  //       errs += `${(form.errors as any)[error]} \r`;
+  //     }
+  //     if (errs) openNotification("error", "Validation errors", errs);
+  //   }
+  // }, [form.errors]);
+
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
   };
@@ -72,7 +83,14 @@ export default function Register() {
       form.setFieldValue(e.target.name, e.target.value);
     }
   };
-  const handleSubmit = async (_values: unknown) => {};
+  const handleSubmit = async (e: typeof form.values) => {
+    console.log(e, "values");
+    openNotification(
+      "success",
+      "Registration successful",
+      "You have successfully"
+    );
+  };
 
   const renderButtons = (disable = false) => {
     const isBusnessAccount = form.values.accountType.isEnterpriseAccount;
@@ -114,7 +132,7 @@ export default function Register() {
       />
       <AuthContentBody>
         <Form
-          onSubmit={handleSubmit}
+          onSubmit={form.onSubmit(handleSubmit)}
           id="auth-form"
           className="auth-form"
           autoComplete="off"

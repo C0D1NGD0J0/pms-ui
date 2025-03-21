@@ -1,31 +1,51 @@
 "use client";
-import { Button, notification } from "antd";
+import { Button, notification, message } from "antd";
 import React, { createContext, useContext } from "react";
 
 type NotificationInstance = "info" | "warning" | "error" | "success" | "open";
-type NotificationContextType = {
-  openNotification: (
-    type: NotificationInstance,
-    title: string,
-    message: string,
-    opts?: NotificationContextMetaType,
-  ) => void;
-};
+type MessageInstance =
+  | "info"
+  | "warning"
+  | "error"
+  | "success"
+  | "loading"
+  | "open";
+
 type NotificationContextMetaType = {
   btnText?: string;
   onClose?: () => void;
   duration?: number | null;
 };
 
+type MessageContextMetaType = {
+  duration?: number;
+  onClose?: () => void;
+  key?: string;
+};
+
+type NotificationContextType = {
+  openNotification: (
+    type: NotificationInstance,
+    title: string,
+    message: string,
+    opts?: NotificationContextMetaType
+  ) => void;
+
+  message: Record<
+    MessageInstance,
+    (content: string, opts?: MessageContextMetaType) => void
+  >;
+};
+
 const NotificationContext = createContext<NotificationContextType | undefined>(
-  undefined,
+  undefined
 );
 
 const useNotification = () => {
   const context = useContext(NotificationContext);
   if (!context) {
     throw new Error(
-      "useNotification must be used within a NotificationProvider",
+      "useNotification must be used within a NotificationProvider"
     );
   }
   return context;
@@ -33,12 +53,13 @@ const useNotification = () => {
 
 const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, contextHolder] = notification.useNotification();
+  const [messageApi, messageContextHolder] = message.useMessage();
 
   const openNotification = (
     type: NotificationInstance,
     title: string,
     description: string,
-    opts?: NotificationContextMetaType,
+    opts?: NotificationContextMetaType
   ) => {
     if (type === "open" && opts) {
       const key = `open${Date.now()}`;
@@ -48,7 +69,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
         </Button>
       );
 
-      api[type as NotificationInstance]({
+      api[type]({
         message: title,
         placement: "topRight",
         btn,
@@ -60,7 +81,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
 
-    api[type as NotificationInstance]({
+    api[type]({
       duration: opts?.duration || 4,
       message: title,
       placement: "topRight",
@@ -68,9 +89,35 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
+  const createMessageMethod = (type: MessageInstance) => {
+    return (content: string, opts?: MessageContextMetaType) => {
+      messageApi[type]({
+        content,
+        duration: opts?.duration ?? 3,
+        key: opts?.key,
+        onClose: opts?.onClose,
+      });
+    };
+  };
+
+  const messageHandler = {
+    open: createMessageMethod("open"),
+    info: createMessageMethod("info"),
+    success: createMessageMethod("success"),
+    warning: createMessageMethod("warning"),
+    error: createMessageMethod("error"),
+    loading: createMessageMethod("loading"),
+  };
+
   return (
-    <NotificationContext.Provider value={{ openNotification }}>
+    <NotificationContext.Provider
+      value={{
+        openNotification,
+        message: messageHandler,
+      }}
+    >
       {contextHolder}
+      {messageContextHolder}
       {children}
     </NotificationContext.Provider>
   );

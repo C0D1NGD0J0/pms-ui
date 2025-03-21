@@ -16,7 +16,7 @@ interface FormProps<T> {
   children: ReactNode;
   id?: string;
   encType?: string;
-  onSubmit?: (event: FormEvent<HTMLFormElement> | unknown) => void;
+  onSubmit?: (event: FormEvent<HTMLFormElement> | any) => void;
   className?: string;
   noValidate?: boolean;
   style?: CSSProperties;
@@ -25,7 +25,7 @@ interface FormProps<T> {
   formContext?: T;
 }
 
-export const Form: React.FC<FormProps<unknown>> = ({
+export const Form: React.FC<FormProps<unknown, unknown>> = ({
   children,
   onSubmit,
   id,
