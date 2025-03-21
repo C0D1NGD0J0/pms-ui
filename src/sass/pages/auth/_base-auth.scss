@@ -130,18 +130,16 @@
     &-footer {
       padding: 1.2rem 0;
       text-align: center;
-      font-size: 0.875rem;
-
+      font-size: $fs-sm;
+      p {
+        font-size: $fs-xsm;
+      }
       .termsAgreement {
         margin-top: 0.8rem;
         font-size: $fs-sm;
       }
     }
   }
-}
-
-.auth-form {
-  width: 100%;
 }
 
 .curve-container {
@@ -153,7 +151,6 @@
   z-index: -20;
   overflow: hidden;
 }
-
 .curve {
   z-index: -20;
   bottom: 0;
@@ -175,7 +172,6 @@
     box-shadow: 0 -10px 30px rgba(6, 47, 79, 0.2);
   }
 }
-
 .curve-secondary {
   z-index: -21;
   width: 100%;

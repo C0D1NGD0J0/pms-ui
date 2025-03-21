@@ -11,6 +11,7 @@ export const FloatingLabelInput: React.FC<{
   required?: boolean;
   disabled?: boolean;
   className?: string;
+  errorMsg?: string;
 }> = ({
   id,
   name,
@@ -21,6 +22,7 @@ export const FloatingLabelInput: React.FC<{
   required = false,
   disabled = false,
   className = "",
+  errorMsg = "",
 }) => {
   const hasContent = value !== undefined && value !== "";
   const [isFocused, setIsFocused] = useState(false);
@@ -33,7 +35,9 @@ export const FloatingLabelInput: React.FC<{
         type={type}
         value={value}
         onChange={onChange}
-        className={`form-input ${className}`}
+        className={`form-input ${
+          isFocused && errorMsg ? "touched-invalid" : ""
+        } ${className} `}
         required={required}
         disabled={disabled}
         placeholder=" " // add space for the floating label effect
@@ -47,6 +51,7 @@ export const FloatingLabelInput: React.FC<{
         {label}
         {required && <span className="text-danger">*</span>}
       </label>
+      {errorMsg && <small className="text-danger error-msg">{errorMsg}</small>}
     </div>
   );
 };

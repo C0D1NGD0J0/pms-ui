@@ -57,7 +57,7 @@
   height: 3.5rem;
   border: none;
   outline: none;
-  padding: 1rem;
+  padding: 0.7rem 0 0.7rem 0;
   position: relative;
   font-size: $fs-base;
   border-radius: 0.2rem;
@@ -180,25 +180,30 @@
 
 // AUTH FORM + FORM-ELEMENTS STYLING
 .auth-form {
+  gap: 1.2rem;
   width: 100%;
   height: 100%;
+  display: flex;
   position: relative;
+  flex-direction: column;
 
+  & .form-fields {
+    margin-bottom: 0;
+  }
   & .form-input {
     width: 100%;
     height: 3rem;
     border: none;
     outline: none;
     display: block;
-    padding: 0.8rem;
     color: #40414a;
     font-size: $fs-base;
-    margin-bottom: 0.4rem;
     border-radius: 0.1rem;
     background: $form-input-bg;
     border-bottom: 1px solid rgba(115, 115, 115, 0.4);
 
     &:focus ~ .form-label,
+    &:invalid ~ .form-label,
     &:valid ~ .form-label {
       top: -1.8rem;
       opacity: 0.8;
@@ -207,7 +212,7 @@
 
     &:not(:focus):placeholder-shown + .form-label {
       top: 0.8rem;
-      font-size: $fs-sm;
+      font-size: $fs-base;
     }
     /*
       I added a placeholder attribute with a space (" ") to the input element. 
@@ -225,18 +230,24 @@
     &.untouched {
       border-bottom: 2px solid rgba(115, 115, 115, 0.2); /* or any default color */
     }
-    &.touched:valid {
+    &.touched-valid {
       transition: all 0.2s ease-in-out;
-      border-bottom: 2px solid green;
+      border-bottom: 2px solid hslaGen($success-color, 0.3);
     }
-    &.touched:invalid {
+    &.touched-invalid {
       transition: all 0.2s ease-in-out;
-      border-bottom: 2px solid red;
+      border-bottom: 2px solid hslaGen($danger-color, 0.3);
     }
+  }
+  .error-msg {
+    color: hslaGen($danger-color);
+    position: absolute;
+    top: 0;
+    line-height: 1.2rem;
+    font-size: $fs-xsm;
   }
 
   & .form-label {
-    left: 0.3rem;
     top: 0.3rem;
     display: block;
     position: absolute;

@@ -10,11 +10,9 @@ export interface FormContextValue<T = unknown> {
   [key: string]: unknown;
 }
 
-export const FormContext = React.createContext<FormContextValue | undefined>(
-  undefined
-);
+export const FormContext = React.createContext<unknown | undefined>(undefined);
 
-interface FormProps {
+interface FormProps<T> {
   children: ReactNode;
   id?: string;
   encType?: string;
@@ -24,10 +22,10 @@ interface FormProps {
   style?: CSSProperties;
   variant?: FormVariant;
   autoComplete?: string;
-  formContext?: FormContextValue;
+  formContext?: T;
 }
 
-export const Form: React.FC<FormProps> = ({
+export const Form: React.FC<FormProps<unknown>> = ({
   children,
   onSubmit,
   id,
@@ -62,3 +60,8 @@ export const Form: React.FC<FormProps> = ({
     </FormContext.Provider>
   );
 };
+
+export function useFormContext<T = unknown>(): T {
+  const context = React.useContext(FormContext);
+  return (context || {}) as T;
+}
