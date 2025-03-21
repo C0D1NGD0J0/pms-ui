@@ -1,21 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import React, { useState } from "react";
-import Link from "next/link";
-import { message, Steps } from "antd";
+import { useForm } from "@mantine/form";
+import { zodResolver } from "mantine-form-zod-resolver";
+import React, { ChangeEvent, useEffect, useState } from "react";
 import {
   AuthContenFooter,
   AuthContentBody,
   AuthContentHeader,
 } from "@components/AuthLayout";
-import {
-  Button,
-  Form,
-  CustomDropdown,
-  FloatingLabelInput,
-} from "@components/FormElements";
+import { Button, Form } from "@components/FormElements";
+import { useNotification } from "@hooks/useNotification";
+import CompanyInfo from "@app/(auth)/register/CompanyInfo";
+import { ISignupForm } from "@interfaces/index";
+
 import UserInfo from "./UserInfo";
-import CompanyInfo from "./CompanyInfo";
+import { SignupSchema } from "@validations/auth.validations";
 
 const dropdownOptions = [
   { value: "apple", label: "Apple 🍎" },
@@ -25,29 +24,82 @@ const dropdownOptions = [
 ];
 
 export default function Register() {
+  const { openNotification } = useNotification();
+  const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      cpassword: "",
+      location: "",
+      accountType: {
+        planId: "",
+        planName: "",
+        isEnterpriseAccount: false,
+      },
+      phoneNumber: "",
+      displayName: "",
+      companyProfile: {
+        tradingName: "",
+        legalEntityName: "",
+        website: "",
+        companyEmail: "",
+        companyPhone: "",
+        companyAddress: "",
+      },
+    },
+    validateInputOnChange: true,
+    validate: zodResolver(SignupSchema),
+  });
   const [currentStep, setCurrentStep] = useState(0);
 
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
   };
-
   const prevStep = () => {
     setCurrentStep(currentStep - 1);
   };
 
+  const handleOnChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    field?: keyof ISignupForm
+  ) => {
+    if (typeof e === "string" && field) {
+      form.setFieldValue(field, e);
+      return;
+    } else if (typeof e !== "string") {
+      form.setFieldValue(e.target.name, e.target.value);
+    }
+  };
   const handleSubmit = async (_values: unknown) => {};
 
-  const renderButtons = () => {
-    if (currentStep === 0) {
+  const renderButtons = (disable = false) => {
+    const isBusnessAccount = form.values.accountType.isEnterpriseAccount;
+    if (currentStep === 0 && isBusnessAccount) {
       return (
         <Button label="Next" className="btn btn-primary" onClick={nextStep} />
       );
-    } else if (currentStep === 1) {
+    } else if (currentStep === 1 && isBusnessAccount) {
       return (
         <>
           <Button label="Back" className="btn btn-outline" onClick={prevStep} />
-          <Button label="Register" className="btn btn-primary" />
+          <Button
+            label="Register"
+            className="btn btn-primary"
+            type="submit"
+            disabled={disable}
+          />
         </>
+      );
+    } else {
+      return (
+        <Button
+          label="Register"
+          className="btn btn-primary"
+          type="submit"
+          disabled={disable}
+        />
       );
     }
   };
@@ -63,18 +115,22 @@ export default function Register() {
       <AuthContentBody>
         <Form
           onSubmit={handleSubmit}
-          id="register-form"
+          id="auth-form"
           className="auth-form"
-          autoComplete="false"
+          autoComplete="off"
         >
-          {currentStep === 0 ? <UserInfo /> : <CompanyInfo />}
-          <div className="action-fields">{renderButtons()}</div>
+          {currentStep === 0 ? (
+            <UserInfo formContext={form} onChange={handleOnChange} />
+          ) : (
+            <CompanyInfo formContext={form} onChange={handleOnChange} />
+          )}
+          <div className="action-fields">{renderButtons(!form.isValid())}</div>
         </Form>
       </AuthContentBody>
       <AuthContenFooter
-        footerText="By continuing, you agree to accept our"
         footerLink="/"
         footerLinkText="Privacy & Terms of Service"
+        footerText="By continuing, you agree to accept our"
       />
     </>
   );

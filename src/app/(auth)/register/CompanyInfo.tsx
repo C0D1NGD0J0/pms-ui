@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
+import { ISignupForm } from "@interfaces/auth.interface";
 import { FloatingLabelInput } from "@components/FormElements";
 
 const dropdownOptions = [
@@ -10,7 +12,18 @@ const dropdownOptions = [
   { value: "grape", label: "Grape 🍇" },
 ];
 
-export default function CompanyInfo() {
+export default function CompanyInfo({
+  formContext,
+  onChange,
+}: {
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
+  ) => void;
+  formContext: UseFormReturnType<
+    ISignupForm,
+    (values: ISignupForm) => ISignupForm
+  >;
+}) {
   const nextStep = () => {};
 
   const prevStep = () => {};

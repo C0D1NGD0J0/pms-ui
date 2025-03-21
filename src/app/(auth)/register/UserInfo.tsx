@@ -1,18 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from "react";
-import Link from "next/link";
-import {
-  AuthContenFooter,
-  AuthContentBody,
-  AuthContentHeader,
-} from "@components/AuthLayout";
-import {
-  Button,
-  Form,
-  CustomDropdown,
-  FloatingLabelInput,
-} from "@components/FormElements";
+import { CustomDropdown, FloatingLabelInput } from "@components/FormElements";
+import { ISignupForm } from "@interfaces/auth.interface";
+import { UseFormReturnType } from "@mantine/form";
 
 const dropdownOptions = [
   { value: "apple", label: "Apple 🍎" },
@@ -21,97 +12,111 @@ const dropdownOptions = [
   { value: "grape", label: "Grape 🍇" },
 ];
 
-export default function UserInfo() {
-  const nextStep = () => {};
-
-  const prevStep = () => {};
-
-  const handleSubmit = async (_values: unknown) => {};
-
+export default function UserInfo({
+  formContext,
+  onChange,
+}: {
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
+    field?: keyof ISignupForm
+  ) => void;
+  formContext: UseFormReturnType<
+    ISignupForm,
+    (values: ISignupForm) => ISignupForm
+  >;
+}) {
   return (
     <>
       <div className="form-fields">
         <FloatingLabelInput
+          required
           id="firstName"
           name="firstName"
-          value=""
-          onChange={() => {}}
           label="First name"
-          required
+          onChange={onChange}
+          value={formContext.values.firstName}
+          errorMsg={formContext.errors.firstName as string}
         />
         <FloatingLabelInput
+          required
           id="lastName"
           name="lastName"
-          value=""
-          onChange={() => {}}
           label="Last name"
-          required
+          onChange={onChange}
+          value={formContext.values.lastName}
+          errorMsg={formContext.errors.lastName as string}
         />
       </div>
 
       <div className="form-fields">
         <FloatingLabelInput
-          id="email"
-          name="email"
-          value=""
-          onChange={() => {}}
-          label="Email"
-          type="email"
           required
+          id="email"
+          type="email"
+          name="email"
+          label="Email"
+          onChange={onChange}
+          value={formContext.values.email}
+          errorMsg={formContext.errors.email as string}
         />
         <FloatingLabelInput
+          required
           id="displayName"
           name="displayName"
-          value=""
-          onChange={() => {}}
+          onChange={onChange}
           label="Display name"
-          required
+          value={formContext.values.displayName}
+          errorMsg={formContext.errors.displayName as string}
         />
       </div>
 
       <div className="form-fields">
         <CustomDropdown
+          required
           id="location"
-          placeholder="Select a location"
-          value="Lagos"
           onChange={(v) => {
-            console.log("----value: ", v);
+            onChange(v, "location");
           }}
           options={dropdownOptions}
-          required
+          placeholder="Select a location"
+          value={formContext.values.location}
+          hasError={!!formContext.errors.location}
         />
       </div>
 
       <div className="form-fields">
         <FloatingLabelInput
+          required
           id="phoneNumber"
           name="phoneNumber"
-          value=""
-          onChange={() => {}}
+          onChange={onChange}
           label="Phone number"
-          required
+          value={formContext.values.phoneNumber}
+          errorMsg={formContext.errors.phoneNumber as string}
         />
       </div>
 
       <div className="form-fields">
         <FloatingLabelInput
+          required
           id="password"
           name="password"
-          value=""
-          onChange={() => {}}
-          label="Password"
           type="password"
-          required
+          label="Password"
+          onChange={onChange}
+          value={formContext.values.password}
+          errorMsg={formContext.errors.password as string}
         />
 
         <FloatingLabelInput
-          id="cpassword"
-          name="cpassword"
-          value=""
-          onChange={() => {}}
-          label="Confirm password"
-          type="password"
           required
+          id="cpassword"
+          type="password"
+          name="cpassword"
+          onChange={onChange}
+          label="Confirm password"
+          value={formContext.values.cpassword}
+          errorMsg={formContext.errors.cpassword as string}
         />
       </div>
 
@@ -119,15 +124,20 @@ export default function UserInfo() {
         <CustomDropdown
           id="accountType"
           placeholder="Acount type"
-          value=""
+          hasError={!!formContext.errors.accountType}
+          value={formContext.values.accountType.planName}
           onChange={(v) => {
-            console.log("----value: ", v);
+            const acctType = v === "corporate" ? "corporate" : "personal";
+            formContext.setFieldValue("accountType", {
+              planId: acctType,
+              planName: acctType,
+              isEnterpriseAccount: acctType === "corporate",
+            });
           }}
           options={[
             { value: "personal", label: "Personal" },
             { value: "corporate", label: "Business" },
           ]}
-          required
         />
       </div>
     </>
