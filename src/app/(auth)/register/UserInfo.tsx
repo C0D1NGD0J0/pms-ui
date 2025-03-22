@@ -35,7 +35,7 @@ export default function UserInfo({
           label="First name"
           onChange={onChange}
           value={formContext.values.firstName}
-          hasError={!!formContext.errors.firstName}
+          errorMsg={formContext.errors.firstName}
         />
         <FloatingLabelInput
           required
@@ -44,7 +44,7 @@ export default function UserInfo({
           label="Last name"
           onChange={onChange}
           value={formContext.values.lastName}
-          hasError={!!formContext.errors.lastName}
+          errorMsg={formContext.errors.lastName}
         />
       </div>
 
@@ -57,7 +57,7 @@ export default function UserInfo({
           label="Email"
           onChange={onChange}
           value={formContext.values.email}
-          hasError={!!formContext.errors.email}
+          errorMsg={formContext.errors.email}
         />
         <FloatingLabelInput
           required
@@ -66,7 +66,7 @@ export default function UserInfo({
           onChange={onChange}
           label="Display name"
           value={formContext.values.displayName}
-          hasError={!!formContext.errors.displayName}
+          errorMsg={formContext.errors.displayName}
         />
       </div>
 
@@ -80,7 +80,7 @@ export default function UserInfo({
           options={dropdownOptions}
           placeholder="Select a location"
           value={formContext.values.location}
-          hasError={!!formContext.errors.location}
+          errorMsg={formContext.errors.location}
         />
       </div>
 
@@ -92,7 +92,7 @@ export default function UserInfo({
           onChange={onChange}
           label="Phone number"
           value={formContext.values.phoneNumber}
-          hasError={!!formContext.errors.phoneNumber}
+          errorMsg={formContext.errors.phoneNumber}
         />
       </div>
 
@@ -105,7 +105,7 @@ export default function UserInfo({
           label="Password"
           onChange={onChange}
           value={formContext.values.password}
-          hasError={!!formContext.errors.password}
+          errorMsg={formContext.errors.password}
         />
 
         <FloatingLabelInput
@@ -116,7 +116,7 @@ export default function UserInfo({
           onChange={onChange}
           label="Confirm password"
           value={formContext.values.cpassword}
-          hasError={!!formContext.errors.cpassword}
+          errorMsg={formContext.errors.cpassword}
         />
       </div>
 
@@ -124,7 +124,7 @@ export default function UserInfo({
         <CustomDropdown
           id="accountType"
           placeholder="Acount type"
-          hasError={!!formContext.errors.accountType}
+          errorMsg={formContext.errors.accountType}
           value={formContext.values.accountType.planName}
           onChange={(v) => {
             const acctType = v === "corporate" ? "corporate" : "personal";

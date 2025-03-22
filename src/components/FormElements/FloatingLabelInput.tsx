@@ -12,7 +12,7 @@ export const FloatingLabelInput: React.FC<{
   disabled?: boolean;
   className?: string;
   placeholder?: string;
-  hasError?: boolean;
+  errorMsg?: string | React.ReactNode;
 }> = ({
   id,
   name,
@@ -24,7 +24,7 @@ export const FloatingLabelInput: React.FC<{
   required = false,
   disabled = false,
   className = "",
-  hasError = false,
+  errorMsg = "",
 }) => {
   const hasContent = value !== undefined && value !== "";
   const [isFocused, setIsFocused] = useState(false);
@@ -40,6 +40,7 @@ export const FloatingLabelInput: React.FC<{
         {label}
         {required && <span className="text-danger">*</span>}
       </label>
+
       <input
         id={id}
         name={name}
@@ -47,7 +48,7 @@ export const FloatingLabelInput: React.FC<{
         value={value}
         onChange={onChange}
         className={`form-input ${
-          hasError ? "touched-invalid" : ""
+          !!errorMsg ? "touched-invalid" : ""
         } ${className} `}
         required={required}
         disabled={disabled}
@@ -55,6 +56,7 @@ export const FloatingLabelInput: React.FC<{
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(value.length > 0)}
       />
+      {errorMsg && <small className="error-msg">{errorMsg}</small>}
     </div>
   );
 };

@@ -25,7 +25,7 @@ interface CustomDropdownProps {
   disabled?: boolean;
   className?: string;
   ariaLabel?: string;
-  hasError?: boolean;
+  errorMsg?: string | React.ReactNode;
   ariaDescribedBy?: string;
 }
 
@@ -42,7 +42,7 @@ export const CustomDropdown = forwardRef<HTMLDivElement, CustomDropdownProps>(
       disabled = false,
       className = "",
       ariaLabel,
-      hasError = false,
+      errorMsg = false,
       ariaDescribedBy,
     },
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -159,7 +159,7 @@ export const CustomDropdown = forwardRef<HTMLDivElement, CustomDropdownProps>(
         aria-describedby={ariaDescribedBy}
         aria-required={required}
         aria-disabled={disabled}
-        style={{ border: `${hasError ? "1px solid red" : ""}` }}
+        style={{ border: `${errorMsg ? "1px solid red" : ""}` }}
       >
         <div className="selected-option">
           <span className="selected-value">

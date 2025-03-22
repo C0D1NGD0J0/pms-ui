@@ -54,17 +54,6 @@ export default function Register() {
   });
   const [currentStep, setCurrentStep] = useState(0);
 
-  // useEffect(() => {
-  //   if (form.errors) {
-  //     let errs = "";
-  //     for (const error in form.errors) {
-  //       console.log((form.errors as any)[error], "-----wew-----", error);
-  //       errs += `${(form.errors as any)[error]} \r`;
-  //     }
-  //     if (errs) openNotification("error", "Validation errors", errs);
-  //   }
-  // }, [form.errors]);
-
   const nextStep = () => {
     setCurrentStep(currentStep + 1);
   };
