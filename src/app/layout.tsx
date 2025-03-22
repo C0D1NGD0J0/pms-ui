@@ -1,4 +1,5 @@
 import { ConfigProvider } from "antd";
+import { RectQueryProvider } from "@hooks/useReactQuery";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { NotificationProvider } from "@hooks/useNotification";
 import "@styles/main.scss";
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         <AntdRegistry>
           <NotificationProvider>
-            <ConfigProvider>{children}</ConfigProvider>
+            <ConfigProvider>
+              <RectQueryProvider>{children}</RectQueryProvider>
+            </ConfigProvider>
           </NotificationProvider>
         </AntdRegistry>
       </body>

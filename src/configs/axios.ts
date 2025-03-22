@@ -5,6 +5,7 @@ import axios, {
   AxiosResponse,
 } from "axios";
 import CookieManager from "@utils/cookieManager";
+import { ISuccessReturnData } from "@interfaces/utils.interface";
 
 interface IAxiosService {
   axios: AxiosInstance;
@@ -12,22 +13,22 @@ interface IAxiosService {
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<T>;
+  ): Promise<ISuccessReturnData<T>>;
   post<T = unknown>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<T>;
+  ): Promise<ISuccessReturnData<T>>;
   put<T = unknown>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<T>;
+  ): Promise<ISuccessReturnData<T>>;
   delete<T = unknown>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<T>;
+  ): Promise<ISuccessReturnData<T>>;
   getInstance(): AxiosInstance;
 }
 
@@ -141,9 +142,12 @@ class AxiosService implements IAxiosService {
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<T> {
+  ): Promise<ISuccessReturnData<T>> {
     try {
-      const response = await this.axios.get<T>(url, { ...config, params });
+      const response = await this.axios.get<ISuccessReturnData<T>>(url, {
+        ...config,
+        params,
+      });
       return response.data;
     } catch (error) {
       throw error;
@@ -154,9 +158,13 @@ class AxiosService implements IAxiosService {
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<T> {
+  ): Promise<ISuccessReturnData<T>> {
     try {
-      const response = await this.axios.post<T>(url, data, config);
+      const response = await this.axios.post<ISuccessReturnData<T>>(
+        url,
+        data,
+        config
+      );
       return response.data;
     } catch (error) {
       throw error;
@@ -167,9 +175,13 @@ class AxiosService implements IAxiosService {
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<T> {
+  ): Promise<ISuccessReturnData<T>> {
     try {
-      const response = await this.axios.put<T>(url, data, config);
+      const response = await this.axios.put<ISuccessReturnData<T>>(
+        url,
+        data,
+        config
+      );
       return response.data;
     } catch (error) {
       throw error;
@@ -180,9 +192,12 @@ class AxiosService implements IAxiosService {
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<T> {
+  ): Promise<ISuccessReturnData<T>> {
     try {
-      const response = await this.axios.delete<T>(url, { ...config, params });
+      const response = await this.axios.delete<ISuccessReturnData<T>>(url, {
+        ...config,
+        params,
+      });
       return response.data;
     } catch (error) {
       throw error;

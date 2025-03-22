@@ -20,17 +20,18 @@
       }
     ],
     "paths": {
+      "@app/*": ["src/app/*"],
       "@components/*": ["src/components/*"],
-      "@config/*": ["src/config/*"],
+      "@configs/*": ["src/configs/*"],
       "@hooks/*": ["src/hooks/*"],
       "@interfaces/*": ["src/interfaces/*"],
       "@styles/*": ["src/sass/*"],
+      "@store/*": ["src/store/*"],
+      "@tests/*": ["src/tests/*"],
+      "@theme/*": ["src/theme/*"],
       "@utils/*": ["src/utils/*"],
       "@services/*": ["src/services/*"],
-      "@store/*": ["src/store/*"],
       "@validations/*": ["src/validations/*"],
-      "@app/*": ["src/app/*"],
-      "@theme/*": ["src/theme/*"],
       "@/*": ["./*"]
     }
   },
