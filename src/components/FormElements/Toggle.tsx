@@ -1,4 +1,4 @@
-import React, { useState, KeyboardEvent } from "react";
+import React, { KeyboardEvent,useState } from "react";
 
 // Define a type for the component's props
 type ToggleProps = {

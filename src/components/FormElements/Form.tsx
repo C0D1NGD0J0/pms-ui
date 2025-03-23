@@ -1,4 +1,4 @@
-import React, { ReactNode, FormEvent, CSSProperties } from "react";
+import React, { CSSProperties,ReactNode, FormEvent } from "react";
 
 type FormVariant = "auth" | "basic" | "custom";
 

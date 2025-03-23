@@ -1,8 +1,8 @@
 "use client";
-import React, { ChangeEvent, FocusEvent, forwardRef, useState } from "react";
+import React, { ChangeEvent, forwardRef, FocusEvent, useState } from "react";
 
 interface FormInputProps {
-  id: string;
+  id?: string;
   name: string;
   type?:
     | "text"
@@ -17,7 +17,7 @@ interface FormInputProps {
   value: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
-  onkeydown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  onkeydown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
   required?: boolean;
@@ -30,8 +30,8 @@ interface FormInputProps {
   maxLength?: number;
   pattern?: string;
   ariaLabel?: string;
+  hasError: boolean;
   ariaDescribedBy?: string;
-  hasFloatingLabel?: boolean;
 }
 
 export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
@@ -56,8 +56,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       maxLength,
       pattern,
       ariaLabel,
+      hasError = false,
       ariaDescribedBy,
-      hasFloatingLabel = true,
     },
     ref
   ) => {
@@ -70,8 +70,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
 
     const inputClasses = [
       "form-input",
-      hasFloatingLabel ? "has-floating-label" : "",
-      isTouched ? "touched" : "untouched",
+      hasError && "touched-invalid",
       disabled ? "input-disabled" : "",
       className,
     ]

@@ -5,6 +5,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
   className?: string;
   ariaLabel?: string;
+  key?: string;
   disabled?: boolean;
   style?: CSSProperties;
   icon?: React.ReactNode;
@@ -22,6 +23,7 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   className,
   ariaLabel,
+  key = new Date().getTime().toString(),
   type = "button",
   renderChildren = false,
   iconPosition = "left",
@@ -30,10 +32,11 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       type={type}
       style={style}
+      key={key}
       disabled={disabled}
       onClick={onClick}
       aria-label={ariaLabel || label}
-      className={`${className ? className : ""}`}
+      className={`btn ${className ? className : ""}`}
     >
       {renderChildren ? (
         children

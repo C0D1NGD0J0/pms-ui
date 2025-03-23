@@ -4,8 +4,9 @@ import React from "react";
 
 interface FormLabelProps {
   htmlFor: string;
+  label: string;
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
   required?: boolean;
   hideLabel?: boolean; // For visually hiding but keeping accessible
 }
@@ -17,6 +18,7 @@ export const FormLabel: React.FC<FormLabelProps> = ({
   htmlFor,
   className = "",
   children,
+  label,
   required = false,
   hideLabel = false,
 }) => {
@@ -26,7 +28,7 @@ export const FormLabel: React.FC<FormLabelProps> = ({
 
   return (
     <label htmlFor={htmlFor} className={labelClasses}>
-      {children}
+      {label ? label : children}
       {required && (
         <span className="text-danger" aria-hidden="true">
           {" "}
