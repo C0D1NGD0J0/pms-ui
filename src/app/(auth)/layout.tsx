@@ -1,7 +1,7 @@
 "use client";
-import React from "react";
+import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
 import { usePathname } from "next/navigation";
-import { AuthContentBox, AuthLayoutWrapper } from "@components/AuthLayout";
+import React from "react";
 
 interface MetaInfo {
   title: string;
@@ -59,8 +59,9 @@ const routeToBoxOrder: BoxOrderMapping = {
   "/account_activation": {
     position: ["left", "right"],
     meta: {
-      title: "Account Activation",
-      description: "Activate your account",
+      title: "",
+      description:
+        "Almost there! Just like finding your keys in your pocket after searching everywhere.",
       icon: "",
     },
   },

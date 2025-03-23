@@ -1,7 +1,7 @@
-import { ConfigProvider } from "antd";
-import { RectQueryProvider } from "@hooks/useReactQuery";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { NotificationProvider } from "@hooks/useNotification";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { RectQueryProvider } from "@hooks/useReactQuery";
+import { ConfigProvider } from "antd";
 import "@styles/main.scss";
 
 export default function RootLayout({

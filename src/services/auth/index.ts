@@ -1,5 +1,5 @@
-import axios from "@configs/axios";
 import { ISignupForm } from "@interfaces/auth.interface";
+import axios from "@configs/axios";
 
 class AuthService {
   private baseUrl;
@@ -40,20 +40,18 @@ class AuthService {
   };
   accountActivation = async (cid: string, data: any) => {
     try {
-      const res = await axios.post(
-        `${this.baseUrl}/account_activation/${cid}`,
-        data
+      const res = await axios.put(
+        `${this.baseUrl}/account_activation/${cid}?t=${data.token}`
       );
       return res;
     } catch (error) {
       throw error;
     }
   };
-  resendActivationLink = async (cid: string, token: string) => {
+  resendActivationLink = async (email: string) => {
     try {
-      const res = await axios.post(`${this.baseUrl}/resend_activation_link`, {
-        token,
-        cid,
+      const res = await axios.put(`${this.baseUrl}/resend_activation_link`, {
+        email,
       });
       return res;
     } catch (error) {
@@ -62,7 +60,7 @@ class AuthService {
   };
   forgotPassword = async (email: string) => {
     try {
-      const res = await axios.post(`${this.baseUrl}/forgot_password`, {
+      const res = await axios.put(`${this.baseUrl}/forgot_password`, {
         email,
       });
       return res;

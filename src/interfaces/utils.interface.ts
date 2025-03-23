@@ -3,3 +3,9 @@ export interface ISuccessReturnData<T = unknown> {
   msg?: string;
   data: T;
 }
+
+export interface IErrorReturnData {
+  success: boolean;
+  msg: string;
+  errors?: { path: string; message: string }[];
+}

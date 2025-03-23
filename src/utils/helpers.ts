@@ -1,3 +1,6 @@
+import { IErrorReturnData } from "@interfaces/index";
+import { AxiosError } from "axios";
+
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
   const phoneRegex =
     /^(?:(?:\+|00)([1-9]\d{0,2}))?[ .-]?(?:\(([0-9]{1,4})\)|([0-9]{1,4}))[ .-]?([0-9]{1,4})(?:[ .-]?([0-9]{1,4}))*$/;
@@ -48,4 +51,33 @@ export const throttle = <T extends unknown[]>(
       setTimeout(() => (inThrottle = false), limit);
     }
   };
+};
+
+export const errorFormatter = (
+  error: IErrorReturnData | Error | AxiosError | unknown
+): string => {
+  let result = "";
+
+  // Check if it's our custom error type
+  if ("errors" in error && Array.isArray(error.errors)) {
+    error.errors.forEach((err) => {
+      result += `* ${err.message}.\n`;
+    });
+  }
+  // Check if it's an axios error with response data
+  // else if ('response' in error && error.response?.data?.error) {
+  //   const errors = error.response.data.errors;
+  //   if (Array.isArray(errors)) {
+  //     errors.forEach((err) => {
+  //       result += `* ${err.message || err}.\n`;
+  //     });
+  //   }
+  // }
+
+  // Regular Error object
+  else if (error instanceof Error) {
+    result = error.message;
+  }
+
+  return result;
 };

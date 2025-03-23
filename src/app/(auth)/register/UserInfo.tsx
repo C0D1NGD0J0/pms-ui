@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import React from "react";
 import {
-  CustomDropdown,
   FloatingLabelInput,
   TypeaheadInput,
+  CustomDropdown,
 } from "@components/FormElements";
+import { SIGNUP_ACCOUNT_TYPE_OPTIONS, ACCOUNT_TYPES } from "@utils/constants";
 import { ISignupForm } from "@interfaces/auth.interface";
 import { UseFormReturnType } from "@mantine/form";
-import { ACCOUNT_TYPES, SIGNUP_ACCOUNT_TYPE_OPTIONS } from "@utils/constants";
 import country from "country-list-js";
+import React from "react";
 
 export default function UserInfo({
   formContext,

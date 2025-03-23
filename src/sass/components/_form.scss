@@ -29,7 +29,9 @@
 
       .form-field-error {
         bottom: -1rem;
+        font-size: $fs-xsm;
         position: relative;
+        color: hslaGen($danger-color);
       }
     }
 
@@ -62,6 +64,7 @@
   position: relative;
   font-size: $fs-base;
   border-radius: 0.2rem;
+  border-bottom: 0.1rem solid hslaGen($grey-color, 0.2);
   color: hslaGen($primary-color);
   background-color: $form-input-bg;
 
@@ -255,8 +258,9 @@
   & .form-label {
     /* top: 0.3rem; */
     display: block;
-    font-weight: 300;
     position: relative;
+    font-size: $fs-sm;
+    font-weight: $fw-bold;
     pointer-events: none;
     color: hslaGen($blue-ink-color);
     transition: $transition;
@@ -339,7 +343,11 @@
     display: none;
   }
 }
-
+.form-field-error {
+  bottom: -1rem;
+  font-size: $fs-xsm;
+  color: hslaGen($danger-color);
+}
 .checkbox-wrapper {
   gap: 0.5rem;
   display: flex;

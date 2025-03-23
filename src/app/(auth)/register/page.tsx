@@ -1,20 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { ChangeEvent, useState } from "react";
 import {
+  AuthContentHeader,
   AuthContenFooter,
   AuthContentBody,
-  AuthContentHeader,
 } from "@components/AuthLayout";
-import { Button, Form } from "@components/FormElements";
+import { SignupSchema } from "@validations/auth.validations";
 import { useNotification } from "@hooks/useNotification";
-import { ISignupForm } from "@interfaces/index";
-import { useForm } from "@mantine/form";
-import { authService } from "@services/auth";
+import { Button, Form } from "@components/FormElements";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useMutation } from "@tanstack/react-query";
 import { objectToFormData } from "@utils/helpers";
-import { SignupSchema } from "@validations/auth.validations";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { ISignupForm } from "@interfaces/index";
+import { ChangeEvent, useState } from "react";
+import { authService } from "@services/auth";
+import { useForm } from "@mantine/form";
 
 import CompanyInfo from "./CompanyInfo";
 import UserInfo from "./UserInfo";

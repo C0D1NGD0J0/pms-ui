@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import React from "react";
 import { FloatingLabelInput } from "@components/FormElements";
 import { ISignupForm } from "@interfaces/auth.interface";
 import { UseFormReturnType } from "@mantine/form";
+import React from "react";
 
 const dropdownOptions = [
   { value: "apple", label: "Apple 🍎" },

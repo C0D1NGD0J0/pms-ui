@@ -1,6 +1,16 @@
 import { validatePhoneNumber } from "@utils/helpers";
 import { z } from "zod";
 
+export const AccountActivationSchema = z.object({
+  token: z
+    .string()
+    .length(64, { message: "Verification code has been modified." })
+    .regex(/^[a-zA-Z0-9_-]+$/, {
+      message: "Invalid verification code pattern detected.",
+    }),
+  cid: z.string().uuid({ message: "Invalid customer ID format" }),
+});
+
 export const SignupSchema = z
   .object({
     firstName: z.string().min(2, { message: "First name is required" }),
