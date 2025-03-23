@@ -1,12 +1,12 @@
+import axios, {
+  AxiosRequestConfig,
+  AxiosResponse,
+  AxiosInstance,
+  AxiosError,
+} from "axios";
 import { ISuccessReturnData } from "@interfaces/utils.interface";
 import CookieManager from "@utils/cookieManager";
 import APIError from "@utils/errorHandler";
-import axios, {
-  AxiosError,
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosResponse,
-} from "axios";
 
 interface IAxiosService {
   axios: AxiosInstance;

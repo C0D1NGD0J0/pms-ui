@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { throttle } from "@utils/helpers";
 
 const useIdleTimer = (idleTime: number, checkInterval: number = 10000) => {
