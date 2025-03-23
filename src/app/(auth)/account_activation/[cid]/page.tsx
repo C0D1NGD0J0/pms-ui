@@ -145,7 +145,11 @@ export default function AccountActivation() {
                 <Button
                   label="Cancel"
                   className="btn btn-outline"
-                  onClick={() => setIsPopoverOpen(false)}
+                  onClick={() => {
+                    setIsPopoverOpen(false);
+                    setEmailError("");
+                    setEmail("");
+                  }}
                   type="button"
                 />
                 <Button
