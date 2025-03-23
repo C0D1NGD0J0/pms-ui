@@ -75,6 +75,7 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
         btn,
         key,
         duration: 0,
+        style: { whiteSpace: "pre-line" },
         onClick: opts.onClose,
         description: description,
       });

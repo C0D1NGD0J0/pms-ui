@@ -1,11 +1,12 @@
+import { ISuccessReturnData } from "@interfaces/utils.interface";
+import CookieManager from "@utils/cookieManager";
+import APIError from "@utils/errorHandler";
 import axios, {
   AxiosError,
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
 } from "axios";
-import CookieManager from "@utils/cookieManager";
-import { ISuccessReturnData } from "@interfaces/utils.interface";
 
 interface IAxiosService {
   axios: AxiosInstance;
@@ -77,7 +78,7 @@ class AxiosService implements IAxiosService {
         };
 
         if (!originalRequest) {
-          // return Promise.reject(new APIError().init(error));
+          return Promise.reject(new APIError().init(error));
         }
 
         if (error.response?.status === 419 && !originalRequest._retry) {
@@ -90,10 +91,9 @@ class AxiosService implements IAxiosService {
                 .post("/api/v1/auth/refresh_token")
                 .then((response) => {
                   // Handle successful token refresh
-                  const newToken = response.data.token;
-                  if (newToken) {
-                    CookieManager.setCookie("cid", newToken);
-                  }
+                  // if (newToken) {
+                  //   CookieManager.setCookie("cid", newToken);
+                  // }
                   return response;
                 })
                 .catch((refreshError) => {
@@ -132,8 +132,7 @@ class AxiosService implements IAxiosService {
         }
 
         // Handle and standardize other errors
-        // const apiError = new APIError().init(error);
-        // return Promise.reject(apiError);
+        return Promise.reject(new APIError().init(error));
       }
     );
   }
@@ -165,7 +164,8 @@ class AxiosService implements IAxiosService {
         data,
         config
       );
-      return response.data;
+      console.log(response, "response2");
+      return response?.data;
     } catch (error) {
       throw error;
     }
