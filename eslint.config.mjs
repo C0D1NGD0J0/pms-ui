@@ -1,7 +1,7 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
-import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import perfectionist from 'eslint-plugin-perfectionist'
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,33 +19,28 @@ const eslintConfig = [
   }),
   {
     plugins: {
-      'simple-import-sort': simpleImportSort,
+      perfectionist
     },
     rules: {
-      // Define custom import sorting groups
-      'simple-import-sort/imports': [
-        'error',
+      "perfectionist/sort-imports": [
+        "error",
         {
-          groups: [
-            // 1. Side effect imports (e.g., polyfills, global styles)
-            ['^\\u0000'],
-            // 2. Packages starting with 'react' or other packages
-            ['^react$', '^@?\\w'],
-            // 3. Absolute imports and other imports such as Vue-style `@/foo`
-            ['^@', '^'],
-            // 4. Relative imports from the same folder
-            ['^\\./'],
-            // 5. Style module imports (e.g., CSS modules)
-            ['^.+\\.(module\\.css|module\\.scss)$'],
-            // 6. Media imports (e.g., images)
-            ['^.+\\.(gif|png|svg|jpg)$'],
-          ],
-        },
+          "order": "desc",
+          "ignoreCase": true,
+          "type": "line-length",
+          "newlinesBetween": "always",
+          "groups": [["builtin", "external"], ["index", "parent", "sibling"], "internal"]
+        }
       ],
-      'simple-import-sort/exports': 'error',
-      // Disable conflicting rules
-      'sort-imports': 'off',
-      'import/order': 'off',
+      "perfectionist/sort-named-imports": [
+        "error",
+        {
+          "order": "desc",
+          "ignoreCase": true,
+          "type": "line-length",
+          "partitionByNewLine": true,
+        }
+      ],
     },
   },
 ];
