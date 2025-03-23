@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from "react";
-import { CustomDropdown, FloatingLabelInput } from "@components/FormElements";
+import {
+  CustomDropdown,
+  FloatingLabelInput,
+  TypeaheadInput,
+} from "@components/FormElements";
 import { ISignupForm } from "@interfaces/auth.interface";
 import { UseFormReturnType } from "@mantine/form";
-
-const dropdownOptions = [
-  { value: "apple", label: "Apple 🍎" },
-  { value: "banana", label: "Banana 🍌" },
-  { value: "orange", label: "Orange 🍊", disabled: true }, // Disabled option
-  { value: "grape", label: "Grape 🍇" },
-];
+import { ACCOUNT_TYPES, SIGNUP_ACCOUNT_TYPE_OPTIONS } from "@utils/constants";
+import country from "country-list-js";
 
 export default function UserInfo({
   formContext,
@@ -71,14 +70,12 @@ export default function UserInfo({
       </div>
 
       <div className="form-fields">
-        <CustomDropdown
+        <FloatingLabelInput
           required
           id="location"
-          onChange={(v) => {
-            onChange(v, "location");
-          }}
-          options={dropdownOptions}
-          placeholder="Select a location"
+          name="location"
+          onChange={onChange}
+          label="Phone number"
           value={formContext.values.location}
           errorMsg={formContext.errors.location}
         />
@@ -127,17 +124,17 @@ export default function UserInfo({
           errorMsg={formContext.errors.accountType}
           value={formContext.values.accountType.planName}
           onChange={(v) => {
-            const acctType = v === "corporate" ? "corporate" : "personal";
+            const acctType =
+              v === ACCOUNT_TYPES.CORPORATE
+                ? ACCOUNT_TYPES.CORPORATE
+                : ACCOUNT_TYPES.PERSONAL;
             formContext.setFieldValue("accountType", {
               planId: acctType,
               planName: acctType,
-              isEnterpriseAccount: acctType === "corporate",
+              isCorporate: acctType === ACCOUNT_TYPES.CORPORATE,
             });
           }}
-          options={[
-            { value: "personal", label: "Personal" },
-            { value: "corporate", label: "Business" },
-          ]}
+          options={SIGNUP_ACCOUNT_TYPE_OPTIONS}
         />
       </div>
     </>

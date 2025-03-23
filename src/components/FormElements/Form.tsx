@@ -21,11 +21,12 @@ interface FormProps<T> {
   noValidate?: boolean;
   style?: CSSProperties;
   variant?: FormVariant;
+  disabled?: boolean;
   autoComplete?: string;
   formContext?: T;
 }
 
-export const Form: React.FC<FormProps<unknown, unknown>> = ({
+export const Form: React.FC<FormProps<unknown>> = ({
   children,
   onSubmit,
   id,
@@ -34,6 +35,7 @@ export const Form: React.FC<FormProps<unknown, unknown>> = ({
   style,
   variant,
   formContext,
+  disabled = false,
   noValidate = false,
   autoComplete = "false",
 }) => {
@@ -52,6 +54,7 @@ export const Form: React.FC<FormProps<unknown, unknown>> = ({
         style={style}
         onSubmit={handleSubmit}
         id={id}
+        inert={disabled}
         noValidate={noValidate}
         autoComplete={autoComplete}
       >

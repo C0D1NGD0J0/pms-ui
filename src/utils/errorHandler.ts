@@ -1,21 +1,10 @@
 import { AxiosError } from "axios";
 
-interface ApiErrorObject {
-  key: string;
-  value: string;
-}
-
-type ApiErrorData = string | ApiErrorObject[];
 export type ErrorResponse = {
   success: boolean;
   data: any;
 };
 
-type RequestErrorObj = {
-  success: boolean;
-  type: string;
-  error: { data: ApiErrorData };
-};
 export default class APIError extends Error {
   constructor() {
     super("Api Error: ");
@@ -30,13 +19,13 @@ export default class APIError extends Error {
       // Handle Axios error
       const { response } = error;
       if (response && response.data) {
-        const res = this.parseApiError(response.data);
-        return res;
+        return response.data;
       }
     } else if (error instanceof Error) {
       // Handle generic JavaScript Error
       return this.parseSystemError(error);
     }
+    console.log("No original request found3", error);
   }
 
   private parseSystemError = (e: Error): ErrorResponse => {
@@ -45,14 +34,5 @@ export default class APIError extends Error {
       success: false,
       data: e.message,
     };
-  };
-
-  private parseApiError = (errorObj: RequestErrorObj) => {
-    // Handle the error based on its type and data
-    if (errorObj.type === "validationError") {
-    }
-
-    if (["serviceError", "authError"].includes(errorObj.type)) {
-    }
   };
 }

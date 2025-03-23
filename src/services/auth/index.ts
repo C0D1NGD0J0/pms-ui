@@ -1,18 +1,15 @@
 import axios from "@configs/axios";
+import { ISignupForm } from "@interfaces/auth.interface";
 
 class AuthService {
   private baseUrl;
-  private axiosConfig = {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
+  private axiosConfig = {};
 
   constructor() {
-    this.baseUrl = `${process.env.REACT_APP_API_URL}/auth`;
+    this.baseUrl = `/api/v1/auth`;
   }
 
-  signup = async (data: FormData) => {
+  signup = async (data: ISignupForm) => {
     try {
       const res = await axios.post(
         `${this.baseUrl}/signup`,
@@ -94,5 +91,4 @@ class AuthService {
   };
 }
 
-const authService = new AuthService();
-export default authService;
+export const authService = new AuthService();

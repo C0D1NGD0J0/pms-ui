@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import { useForm } from "@mantine/form";
-import { zodResolver } from "mantine-form-zod-resolver";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import {
   AuthContenFooter,
   AuthContentBody,
@@ -10,11 +8,16 @@ import {
 } from "@components/AuthLayout";
 import { Button, Form } from "@components/FormElements";
 import { useNotification } from "@hooks/useNotification";
-import CompanyInfo from "@app/(auth)/register/CompanyInfo";
 import { ISignupForm } from "@interfaces/index";
-
-import UserInfo from "./UserInfo";
+import { useForm } from "@mantine/form";
+import { authService } from "@services/auth";
+import { useMutation } from "@tanstack/react-query";
+import { objectToFormData } from "@utils/helpers";
 import { SignupSchema } from "@validations/auth.validations";
+import { zodResolver } from "mantine-form-zod-resolver";
+
+import CompanyInfo from "./CompanyInfo";
+import UserInfo from "./UserInfo";
 
 const dropdownOptions = [
   { value: "apple", label: "Apple 🍎" },
@@ -24,22 +27,25 @@ const dropdownOptions = [
 ];
 
 export default function Register() {
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: authService.signup,
+  });
   const { openNotification } = useNotification();
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      cpassword: "",
+      firstName: "wayne",
+      lastName: "rooney",
+      email: "wayne@example.com",
+      password: "password",
+      cpassword: "password",
       location: "",
       accountType: {
-        planId: "",
-        planName: "",
-        isEnterpriseAccount: false,
+        planId: "personal",
+        planName: "personal",
+        isCorporate: false,
       },
-      phoneNumber: "",
-      displayName: "",
+      phoneNumber: "2348105308755",
+      displayName: "MasterRooney",
       companyProfile: {
         tradingName: "",
         legalEntityName: "",
@@ -72,17 +78,34 @@ export default function Register() {
       form.setFieldValue(e.target.name, e.target.value);
     }
   };
-  const handleSubmit = async (e: typeof form.values) => {
-    console.log(e, "values");
-    openNotification(
-      "success",
-      "Registration successful",
-      "You have successfully"
-    );
+  const handleSubmit = async (values: typeof form.values) => {
+    try {
+      const formData = {
+        ...values,
+      };
+      if (!values.accountType.isCorporate) {
+        formData.companyProfile = undefined;
+      }
+      const response = await mutateAsync(formData);
+      openNotification(
+        "success",
+        "Registration successful",
+        response.msg || "Registration successful"
+      );
+      form.reset();
+      setCurrentStep(0);
+    } catch (error: any) {
+      let result = "\n";
+      error.errors.forEach((err: any, idx: number) => {
+        result += `${idx + 1}:  ${err.message}. 
+        `;
+      });
+      openNotification("error", "Registration failed.", result);
+    }
   };
 
   const renderButtons = (disable = false) => {
-    const isBusnessAccount = form.values.accountType.isEnterpriseAccount;
+    const isBusnessAccount = form.values.accountType.isCorporate;
     if (currentStep === 0 && isBusnessAccount) {
       return (
         <Button label="Next" className="btn btn-primary" onClick={nextStep} />
@@ -124,6 +147,7 @@ export default function Register() {
           onSubmit={form.onSubmit(handleSubmit)}
           id="auth-form"
           className="auth-form"
+          disabled={isPending}
           autoComplete="off"
         >
           {currentStep === 0 ? (

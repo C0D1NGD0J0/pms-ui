@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, FocusEvent, useState, forwardRef } from "react";
+import React, { ChangeEvent, FocusEvent, forwardRef, useState } from "react";
 
 interface FormInputProps {
   id: string;
@@ -17,6 +17,7 @@ interface FormInputProps {
   value: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
+  onkeydown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
   required?: boolean;
@@ -42,6 +43,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       value,
       onChange,
       onBlur,
+      onkeydown,
       placeholder = " ",
       className = "",
       required = false,
@@ -90,6 +92,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         required={required}
         disabled={disabled}
         readOnly={readOnly}
+        onKeyDown={onkeydown}
         min={min}
         max={max}
         step={step}

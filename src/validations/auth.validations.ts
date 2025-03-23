@@ -10,24 +10,26 @@ export const SignupSchema = z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" }),
     cpassword: z.string(),
-    location: z.string().min(1, { message: "Location is required" }),
+    location: z.string().min(4, { message: "Location is required" }),
     accountType: z.object({
       planId: z.string().min(1, { message: "Plan is required" }).optional(),
       planName: z.string().min(1, { message: "Plan name is required" }),
-      isEnterpriseAccount: z.boolean(),
+      isCorporate: z.boolean(),
     }),
     displayName: z
       .string()
       .min(2, { message: "Display name is required" })
       .max(15, { message: "Display name must be at most 15 characters long" }),
-    companyProfile: z.object({
-      tradingName: z.string().optional(),
-      legalEntityName: z.string().optional(),
-      website: z.string().optional(),
-      companyEmail: z.string().optional(),
-      companyPhone: z.string().optional(),
-      companyAddress: z.string().optional(),
-    }),
+    companyProfile: z
+      .object({
+        tradingName: z.string().optional(),
+        legalEntityName: z.string().optional(),
+        website: z.string().optional(),
+        companyEmail: z.string().optional(),
+        companyPhone: z.string().optional(),
+        companyAddress: z.string().optional(),
+      })
+      .optional(),
     phoneNumber: z
       .string()
       .min(9, { message: "Phone number is required" })
@@ -43,7 +45,7 @@ export const SignupSchema = z
   })
   .superRefine((data, ctx) => {
     // Only validate companyProfile if accountType is corporate/enterprise
-    if (data.accountType.isEnterpriseAccount) {
+    if (data.accountType.isCorporate) {
       // Validate tradingName
       if (
         !data.companyProfile.tradingName ||
