@@ -22,13 +22,14 @@ export const SignupSchema = z
       .max(15, { message: "Display name must be at most 15 characters long" }),
     companyProfile: z
       .object({
-        tradingName: z.string().optional(),
-        legalEntityName: z.string().optional(),
-        website: z.string().optional(),
-        companyEmail: z.string().optional(),
-        companyPhone: z.string().optional(),
-        companyAddress: z.string().optional(),
+        tradingName: z.string(),
+        legalEntityName: z.string(),
+        website: z.string().url().optional().or(z.literal("")),
+        companyEmail: z.string(),
+        companyPhone: z.string(),
+        companyAddress: z.string(),
       })
+      .partial()
       .optional(),
     phoneNumber: z
       .string()
@@ -48,7 +49,7 @@ export const SignupSchema = z
     if (data.accountType.isCorporate) {
       // Validate tradingName
       if (
-        !data.companyProfile.tradingName ||
+        !data.companyProfile?.tradingName ||
         data.companyProfile.tradingName.length < 2
       ) {
         ctx.addIssue({
@@ -60,7 +61,7 @@ export const SignupSchema = z
 
       // Validate legalEntityName
       if (
-        !data.companyProfile.legalEntityName ||
+        !data.companyProfile?.legalEntityName ||
         data.companyProfile.legalEntityName.length < 2
       ) {
         ctx.addIssue({
@@ -72,21 +73,21 @@ export const SignupSchema = z
 
       // Validate website
       if (
-        data.companyProfile.website &&
+        data.companyProfile?.website &&
         !data.companyProfile.website.match(
           /^https?:\/\/[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)+(\/[a-zA-Z0-9-./?=&%]*)*$/
         )
       ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Invalid URL",
+          message: "Invalid URL provided",
           path: ["companyProfile", "website"],
         });
       }
 
       // Validate companyEmail
       if (
-        !data.companyProfile.companyEmail ||
+        !data.companyProfile?.companyEmail ||
         !data.companyProfile.companyEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
       ) {
         ctx.addIssue({
@@ -98,7 +99,7 @@ export const SignupSchema = z
 
       // Validate companyPhone
       if (
-        !data.companyProfile.companyPhone ||
+        !data.companyProfile?.companyPhone ||
         data.companyProfile.companyPhone.length < 9 ||
         data.companyProfile.companyPhone.length > 15 ||
         !validatePhoneNumber(data.companyProfile.companyPhone)
@@ -108,18 +109,6 @@ export const SignupSchema = z
           message:
             "Please specify a valid phone number (include the international prefix).",
           path: ["companyProfile", "companyPhone"],
-        });
-      }
-
-      // Validate companyAddress
-      if (
-        !data.companyProfile.companyAddress ||
-        data.companyProfile.companyAddress.length < 5
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Address is required",
-          path: ["companyProfile", "companyAddress"],
         });
       }
     }

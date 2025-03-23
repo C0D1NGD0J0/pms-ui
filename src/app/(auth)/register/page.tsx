@@ -38,21 +38,20 @@ export default function Register() {
       email: "wayne@example.com",
       password: "password",
       cpassword: "password",
-      location: "",
+      location: "lagos",
       accountType: {
-        planId: "personal",
-        planName: "personal",
-        isCorporate: false,
+        planId: "business",
+        planName: "business",
+        isCorporate: true,
       },
       phoneNumber: "2348105308755",
       displayName: "MasterRooney",
       companyProfile: {
-        tradingName: "",
-        legalEntityName: "",
+        tradingName: "wedabest",
+        legalEntityName: "wedabest-records",
         website: "",
-        companyEmail: "",
-        companyPhone: "",
-        companyAddress: "",
+        companyEmail: "wedabest@example.com",
+        companyPhone: "123456999",
       },
     },
     validateInputOnChange: true,
@@ -115,7 +114,7 @@ export default function Register() {
         <>
           <Button label="Back" className="btn btn-outline" onClick={prevStep} />
           <Button
-            label="Register"
+            label={`${isPending ? "Processing..." : "Register"}`}
             className="btn btn-primary"
             type="submit"
             disabled={disable}
@@ -125,7 +124,7 @@ export default function Register() {
     } else {
       return (
         <Button
-          label="Register"
+          label={`${isPending ? "Processing..." : "Register"}`}
           className="btn btn-primary"
           type="submit"
           disabled={disable}

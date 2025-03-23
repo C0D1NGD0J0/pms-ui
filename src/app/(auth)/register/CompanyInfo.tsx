@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 import React from "react";
-import { UseFormReturnType } from "@mantine/form";
-import { ISignupForm } from "@interfaces/auth.interface";
 import { FloatingLabelInput } from "@components/FormElements";
+import { ISignupForm } from "@interfaces/auth.interface";
+import { UseFormReturnType } from "@mantine/form";
 
 const dropdownOptions = [
   { value: "apple", label: "Apple 🍎" },
@@ -32,23 +32,18 @@ export default function CompanyInfo({
           name="companyProfile.legalEntityName"
           onChange={onChange}
           value={formContext.values.companyProfile?.legalEntityName || ""}
-          hasError={
-            !!(formContext.errors.companyProfile as any)?.legalEntityName ||
-            false
-          }
+          errorMsg={formContext.errors["companyProfile.legalEntityName"]}
           label="Registered name"
           required
         />
         <FloatingLabelInput
           required
           id="tradingName"
-          name="companyProfile.tradingName"
+          name="tradingName"
           onChange={onChange}
           label="Trading name"
           value={formContext.values.companyProfile?.tradingName || ""}
-          hasError={
-            !!(formContext.errors.companyProfile as any)?.tradingName || false
-          }
+          errorMsg={formContext.errors["companyProfile.tradingName"]}
         />
       </div>
 
@@ -58,9 +53,7 @@ export default function CompanyInfo({
           name="companyProfile.companyEmail"
           onChange={onChange}
           value={formContext.values.companyProfile?.companyEmail || ""}
-          hasError={
-            !!(formContext.errors.companyProfile as any)?.companyEmail || false
-          }
+          errorMsg={formContext.errors["companyProfile.companyEmail"]}
           label="Business Email"
           type="email"
           required
@@ -73,9 +66,7 @@ export default function CompanyInfo({
           name="companyProfile.companyPhone"
           onChange={onChange}
           value={formContext.values.companyProfile?.companyPhone || ""}
-          hasError={
-            !!(formContext.errors.companyProfile as any)?.companyPhone || false
-          }
+          errorMsg={formContext.errors["companyProfile.companyPhone"]}
           label="Business phone number"
           required
         />
@@ -87,9 +78,7 @@ export default function CompanyInfo({
           name="companyProfile.website"
           onChange={onChange}
           value={formContext.values.companyProfile?.website || ""}
-          hasError={
-            !!(formContext.errors.companyProfile as any)?.website || false
-          }
+          errorMsg={formContext.errors["companyProfile.website"]}
           required={false}
           label="Business website"
         />
