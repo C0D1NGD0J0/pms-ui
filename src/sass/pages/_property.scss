@@ -1,0 +1,322 @@
+@use "../abstract/index" as *;
+
+/* Property Gallery */
+.property-gallery {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  margin-bottom: $space-xl;
+  border-radius: $base-border-radius + 0.3rem;
+  overflow: hidden;
+
+  .gallery-main {
+    width: 100%;
+    height: 35rem;
+    overflow: hidden;
+    border-radius: $base-border-radius + 0.3rem;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: $base-border-radius + 0.3rem;
+    }
+  }
+
+  .gallery-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: $space-md;
+
+    .thumbnail {
+      height: 12rem;
+      overflow: hidden;
+      border-radius: $base-border-radius;
+      cursor: pointer;
+      transition: $transition;
+      border: 2px solid transparent;
+
+      &.active {
+        border: 2px solid hslaGen($primary-color, 1);
+      }
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+}
+
+/* Property Content Layout */
+.property-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: $space-xl;
+  align-items: start;
+
+  .property-main {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xl;
+  }
+
+  .property-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: $space-xl;
+  }
+}
+
+/* Property Features */
+.property-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: $space-lg;
+  margin-bottom: $space-xl;
+
+  .feature-item {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+
+    i {
+      font-size: $fs-xlg;
+      color: hslaGen($primary-color, 1);
+    }
+
+    h5 {
+      margin: 0;
+      font-size: $fs-base;
+      font-weight: $fw-bold;
+    }
+
+    span {
+      font-size: $fs-sm;
+      color: hslaGen($grey-color, 1);
+    }
+  }
+}
+
+.property-description {
+  font-size: $fs-base;
+  line-height: $base-line-height;
+  color: hslaGen($dark-grey-color, 1);
+}
+
+/* Amenities List */
+.amenities-list {
+  display: grid;
+  padding: 2rem 0;
+  gap: $space-md;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+
+  .amenity-item {
+    display: flex;
+    gap: $space-sm;
+    align-items: center;
+
+    i {
+      font-size: $fs-lg;
+      color: hslaGen($success-color, 1);
+    }
+
+    span {
+      font-size: $fs-base;
+    }
+  }
+}
+
+/* Location Details */
+.location-details {
+  display: grid;
+  padding: 2rem 0;
+  gap: $space-md;
+  margin-bottom: $space-xl;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+
+  .location-item {
+    display: flex;
+    flex-direction: column;
+    gap: calc($space-sm / 2);
+
+    strong {
+      font-size: $fs-base;
+      font-weight: $fw-bold;
+    }
+
+    span {
+      font-size: $fs-sm;
+      color: hslaGen($grey-color, 1);
+    }
+  }
+}
+
+.map-container {
+  width: 100%;
+  height: 25rem;
+  margin-top: $space-lg;
+  border-radius: $base-border-radius;
+  overflow: hidden;
+
+  .map-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: hslaGen($background-color, 1);
+    color: hslaGen($grey-color, 1);
+    font-size: $fs-base;
+  }
+}
+
+/* Property Price */
+.property-price {
+  background-color: white;
+  margin-bottom: $space-xl;
+  text-align: center;
+
+  h3 {
+    font-size: $fs-xlg + 0.4rem;
+    margin: 0;
+    color: hslaGen($primary-color, 1);
+
+    span {
+      font-size: $fs-base;
+      color: hslaGen($grey-color, 1);
+      font-weight: $fw-normal;
+    }
+  }
+
+  .property-type {
+    font-size: $fs-base;
+    color: hslaGen($grey-color, 1);
+  }
+}
+
+/* Booking Form */
+.booking-form {
+  display: flex;
+  gap: $space-lg;
+  background-color: hslaGen($off-white-color, 0.2);
+  flex-direction: column;
+}
+
+/* Apartment List */
+.apartment-list {
+  display: flex;
+  max-height: 30rem;
+  overflow-y: auto;
+  flex-direction: column;
+
+  .apartment-item {
+    padding: $space-md;
+    position: relative;
+    transition: $transition;
+    border-radius: $base-border-radius;
+    background-color: hslaGen($off-white-color, 1);
+    border: 1px solid hslaGen($light-grey-color, 0.5);
+
+    &::before {
+      top: 0;
+      right: 0;
+      content: "";
+      height: 100%;
+      width: 0.4rem;
+      position: absolute;
+      transition: $transition;
+      background-color: transparent;
+      border-top-right-radius: $base-border-radius;
+      border-bottom-right-radius: $base-border-radius;
+    }
+
+    &:hover::before {
+      background-color: hslaGen($primary-color, 1);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .apartment-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h5 {
+        margin: 0;
+        font-size: $fs-md;
+      }
+    }
+
+    .text-muted {
+      font-size: $fs-sm;
+      color: hslaGen($grey-color, 1);
+      display: block;
+      margin-top: $space-sm;
+    }
+  }
+}
+
+/* Responsive adjustments */
+// @media (max-width: map-get($breakpoints, "lg")) {
+//   .property-content {
+//     grid-template-columns: 1fr;
+
+//     .property-sidebar {
+//       order: -1;
+//     }
+//   }
+// }
+
+// @media (max-width: map-get($breakpoints, "md")) {
+//   .property-gallery {
+//     .gallery-main {
+//       height: 25rem;
+//     }
+
+//     .gallery-thumbnails {
+//       grid-template-columns: repeat(2, 1fr);
+
+//       .thumbnail {
+//         height: 10rem;
+//       }
+//     }
+//   }
+
+//   .property-features {
+//     grid-template-columns: repeat(2, 1fr);
+//   }
+
+//   .amenities-list {
+//     grid-template-columns: repeat(2, 1fr);
+//   }
+// }
+
+// @media (max-width: map-get($breakpoints, "xs") + 480px) {
+//   .property-gallery {
+//     .gallery-main {
+//       height: 20rem;
+//     }
+//   }
+
+//   .property-features {
+//     grid-template-columns: 1fr;
+//   }
+
+//   .amenities-list {
+//     grid-template-columns: 1fr;
+//   }
+
+//   .location-details {
+//     grid-template-columns: 1fr;
+//   }
+// }

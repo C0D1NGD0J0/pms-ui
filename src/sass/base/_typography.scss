@@ -1,0 +1,45 @@
+@use "../abstract/index" as *;
+
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,700");
+
+p {
+  font-size: $base-font-size;
+  font-family: $font-primary;
+  font-weight: $base-font-weight;
+  letter-spacing: $base-letter-spacing;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
+  font-family: $font-secondary;
+  letter-spacing: $base-letter-spacing;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: 2.25rem;
+}
+
+h2 {
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+span,
+a {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto;
+}

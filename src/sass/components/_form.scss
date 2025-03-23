@@ -1,0 +1,436 @@
+@use "../abstract/index" as *;
+.form-fields {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1rem;
+  position: relative;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  .form-field {
+    flex: 1;
+    width: 100%;
+    position: relative;
+    padding-bottom: 1rem;
+
+    &.form-field_inline {
+      width: 50%;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+
+      .form-label,
+      .form-input_select,
+      input {
+        width: 50%;
+      }
+
+      .form-field-error {
+        bottom: -1rem;
+        font-size: $fs-xsm;
+        position: relative;
+        color: hslaGen($danger-color);
+      }
+    }
+
+    &_group {
+      gap: 1rem;
+      width: 100%;
+      display: flex;
+      padding: 1rem 0;
+      position: relative;
+      align-items: center;
+    }
+
+    &-error {
+      display: flex;
+      flex-wrap: wrap;
+      font-weight: bold;
+      position: absolute;
+      color: hslaGen($danger-color);
+      font-size: clamp($fs-sm, 12px, $fs-md);
+    }
+  }
+}
+
+.form-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  /* height: 2.5rem; */
+  /* padding: 0.7rem 0 0.7rem 0; */
+  position: relative;
+  font-size: $fs-base;
+  border-radius: 0.2rem;
+  border-bottom: 0.1rem solid hslaGen($grey-color, 0.2);
+  color: hslaGen($primary-color);
+  background-color: $form-input-bg;
+
+  &_checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    width: 2rem;
+    height: 2rem;
+    border: 0.2rem solid #666;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+
+    &:checked {
+      background-color: hslaGen($primary-color);
+      border-color: hslaGen($primary-color);
+      accent-color: hslaGen($secondary-color);
+    }
+
+    &:checked::after {
+      content: "";
+      top: 0.2rem;
+      left: 0.2rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      border-radius: 50%;
+      position: absolute;
+      background-color: hslaGen($white-color);
+    }
+  }
+
+  &_select {
+    @include custom-dropdown;
+  }
+
+  &::placeholder {
+    color: hsla($grey-color...);
+    font-weight: $fw-light;
+    font-size: $fs-base;
+  }
+
+  &.input-disabled {
+    background-color: transparent !important;
+  }
+
+  &.untouched {
+    border-bottom: 2px solid initial; /* or any default color */
+  }
+  &.touched:valid {
+    transition: all 0.2s ease-in-out;
+    border-bottom: 2px solid hslaGen($success-color);
+  }
+  &:focus.touched:invalid,
+  &:focus.untouched:invalid {
+    transition: all 0.2s ease-in-out;
+    border-bottom: 2px solid hslaGen($danger-color);
+  }
+
+  &_textarea {
+    width: 100%;
+    outline: none;
+    padding: 1.2rem;
+    resize: vertical;
+    min-height: 12rem;
+    font-size: $fs-base;
+    border-radius: 0.4rem;
+    color: hslaGen($primary-color);
+    border: 1px solid hslaGen($grey-color, 0.3);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  &_file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    border: 2px dashed #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    background-color: #f9f9f9;
+
+    &:hover {
+      border-color: var(--primary-light);
+    }
+
+    i {
+      margin-right: 10px;
+      font-size: 24px;
+      color: var(--primary);
+    }
+  }
+}
+
+.branding {
+  display: flex;
+  padding: 1rem 0;
+  align-items: center;
+}
+
+.branding .branding-box {
+  width: 15rem;
+  height: 15rem;
+  display: flex;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hslaGen($success-color);
+  background: hslaGen($black-color);
+}
+
+.checkbox-fields {
+  display: flex;
+  column-gap: 1.5rem;
+}
+
+// AUTH FORM + FORM-ELEMENTS STYLING
+.auth-form {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+
+  & .form-fields {
+    margin-bottom: 0.3rem;
+  }
+  & .form-input {
+    width: 100%;
+    height: 1.5rem;
+    border: none;
+    outline: none;
+    display: block;
+    font-size: $fs-base;
+    border-radius: 0.1rem;
+    background: $form-input-bg;
+    color: hslaGen($black-color);
+    border-bottom: 1px solid rgba(115, 115, 115, 0.4);
+    /* 
+    &:focus ~ .form-label,
+    &:invalid ~ .form-label,
+    &:valid ~ .form-label {
+      top: -1.8rem;
+      opacity: 0.8;
+      transition: $transition;
+    }
+
+    &:not(:focus):placeholder-shown + .form-label {
+      top: 0.8rem;
+      font-size: $fs-base;
+    } */
+    /*
+      I added a placeholder attribute with a space (" ") to the input element. 
+      This is necessary for :placeholder-shown to work. I used the :not(:placeholder-shown) 
+      pseudo-class to keep the label at the top when the input field has content. 
+    */
+    /* &:not(:placeholder-shown) ~ .form-label {
+      opacity: 0.8;
+      transition: $transition;
+    }
+    &:invalid ~ .form-label {
+      opacity: 0.8;
+      transition: $transition;
+    } */
+    /* 
+    &.untouched {
+      border-bottom: 2px solid rgba(115, 115, 115, 0.2); /* or any default color 
+    }
+    &.touched-valid {
+      transition: all 0.2s ease-in-out;
+      border-bottom: 2px solid hslaGen($success-color, 0.3);
+    }
+    */
+    &.touched-invalid {
+      transition: all 0.2s ease-in-out;
+      border-bottom: 2px solid hslaGen($danger-color, 0.7);
+    }
+  }
+  .error-msg {
+    color: hslaGen($danger-color);
+    text-overflow: ellipsis;
+    line-height: 1.2rem;
+    position: absolute;
+    text-wrap: balance;
+    font-size: $fs-xsm;
+    bottom: 0;
+  }
+
+  & .form-label {
+    /* top: 0.3rem; */
+    display: block;
+    position: relative;
+    font-size: $fs-sm;
+    font-weight: $fw-bold;
+    pointer-events: none;
+    color: hslaGen($blue-ink-color);
+    transition: $transition;
+    &.no-label {
+      display: none;
+    }
+  }
+
+  & .custom-dropdown {
+    @include custom-dropdown;
+  }
+
+  .action-fields {
+    gap: 0.5rem;
+    width: 100%;
+    display: flex;
+    padding: 0.7rem 0;
+    margin-top: 0.7rem;
+    align-items: center;
+    justify-content: flex-end;
+  }
+}
+
+// OTHER FORM STYLING
+.form {
+  & .form-section {
+    padding: 3rem 0;
+    border-bottom: 1px solid $base-border-color;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &_header {
+      padding: 1rem 0;
+      color: hslaGen($primary-color);
+
+      h2 {
+        font-size: clamp($fs-xsm, $fs-md, $fs-base);
+      }
+    }
+  }
+
+  & .form-actions {
+    gap: 2rem;
+    display: flex;
+    padding: 1rem 0;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  & .form-fields {
+    padding: 1rem 0;
+    column-gap: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  & .form-input,
+  & .form-input_select {
+    margin-top: 0.4rem;
+    border-radius: 0.3rem;
+    color: hslaGen($primary-color);
+    border: 1px solid rgba(103, 116, 131, 0.3);
+  }
+
+  & input[type="email"] {
+    text-transform: initial;
+  }
+
+  & .form-input_file {
+    font-family: "Arial", sans-serif;
+    border: 1px solid #ccc;
+    display: inline-block;
+    cursor: pointer;
+    padding: 2rem;
+    color: #333;
+  }
+
+  & input[type="file"] {
+    display: none;
+  }
+}
+.form-field-error {
+  bottom: -1rem;
+  font-size: $fs-xsm;
+  color: hslaGen($danger-color);
+}
+.checkbox-wrapper {
+  gap: 0.5rem;
+  display: flex;
+  position: relative;
+  align-items: center;
+
+  .checkbox-label-wrapper {
+    display: flex;
+    margin-left: 0.5rem;
+    flex-direction: column;
+
+    .checkbox-label {
+      margin-bottom: 0.2rem;
+      // font-weight: bold;
+    }
+
+    small {
+      color: hslaGen($grey-color, 0.6);
+    }
+  }
+}
+
+/* Container for the toggle, providing necessary spacing */
+.toggle-container {
+  padding: 10px;
+}
+
+/* Style for the actual toggle and its variations */
+.toggle {
+  width: 5rem;
+  height: 2.5rem;
+  border-radius: 2.5rem;
+  background-color: hslaGen($grey-color);
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &.toggled {
+    background-color: hslaGen($primary-color);
+
+    .toggle-handle {
+      left: 2.75rem;
+    }
+  }
+
+  /* Style for the handle of the toggle */
+  .toggle-handle {
+    width: 20px;
+    height: 20px;
+    background-color: hslaGen($white-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 2.5px;
+    left: 2.5px;
+    transition: left 0.3s;
+  }
+}
+
+.list-container {
+  width: 100%;
+  column-gap: 2rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.left-list,
+.right-list {
+  width: 50%;
+}
+
+.single-list {
+  width: 100%;
+}
+
+.left-list,
+.right-list,
+.single-list {
+  list-style: none;
+  padding: 0;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}

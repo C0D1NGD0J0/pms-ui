@@ -1,0 +1,201 @@
+@use "../abstract/variables" as *;
+@use "../abstract/mixins" as *;
+
+@use "sass:math";
+@use "sass:map";
+
+.primary {
+  color: hslaGen($primary-color);
+}
+.success {
+  color: hslaGen($success-color);
+}
+.warning {
+  color: hslaGen($warning-color);
+}
+.danger {
+  color: hslaGen($danger-color);
+}
+.muted {
+  color: hslaGen($grey-color);
+}
+
+$utils: (
+  "padding": (
+    "prefix": "p",
+    "values": (
+      "0": 0,
+      "1": $base-padding,
+      "2": $base-padding * 2,
+      "3": $base-padding * 4,
+      "4": $base-padding * 6,
+    ),
+  ),
+
+  "padding-left": (
+    "prefix": "pl",
+    "values": (
+      "0": 0,
+      "1": $base-padding,
+      "2": $base-padding * 2,
+      "3": $base-padding * 4,
+      "4": $base-padding * 6,
+    ),
+  ),
+
+  "padding-right": (
+    "prefix": "pr",
+    "values": (
+      "0": 0,
+      "1": $base-padding,
+      "2": $base-padding * 2,
+      "3": $base-padding * 4,
+      "4": $base-padding * 6,
+    ),
+  ),
+
+  "padding-top": (
+    "prefix": "pt",
+    "values": (
+      "0": 0,
+      "1": $base-padding,
+      "2": $base-padding * 2,
+      "3": $base-padding * 4,
+      "4": $base-padding * 6,
+    ),
+  ),
+
+  "padding-bottom": (
+    "prefix": "pb",
+    "values": (
+      "0": 0,
+      "1": $base-padding,
+      "2": $base-padding * 2,
+      "3": $base-padding * 4,
+      "4": $base-padding * 6,
+    ),
+  ),
+
+  "margin": (
+    "prefix": "m",
+    "values": (
+      "0": 0,
+      "1": $base-margin,
+      "2": $base-margin * 2,
+      "3": $base-margin * 4,
+      "4": $base-margin * 6,
+    ),
+  ),
+
+  "margin-left": (
+    "prefix": "ml",
+    "values": (
+      "0": 0,
+      "1": $base-margin,
+      "2": $base-margin * 2,
+      "3": $base-margin * 4,
+      "4": $base-margin * 6,
+    ),
+  ),
+
+  "width": (
+    "prefix": "w",
+    "values": (
+      "full": 100%,
+      "half": 50%,
+      "screen": 100vw,
+      "fit": "fit-content",
+      "max": "max-content",
+      "auto": auto,
+    ),
+  ),
+
+  "margin-right": (
+    "prefix": "mr",
+    "values": (
+      "0": 0,
+      "1": $base-margin,
+      "2": $base-margin * 2,
+      "3": $base-margin * 4,
+      "4": $base-margin * 6,
+    ),
+  ),
+
+  "margin-top": (
+    "prefix": "mt",
+    "values": (
+      "0": 0,
+      "1": $base-margin,
+      "2": $base-margin * 2,
+      "3": $base-margin * 4,
+      "4": $base-margin * 6,
+    ),
+  ),
+
+  "margin-bottom": (
+    "prefix": "mb",
+    "values": (
+      "0": 0,
+      "1": $base-margin,
+      "2": $base-margin * 2,
+      "3": $base-margin * 4,
+      "4": $base-margin * 6,
+    ),
+  ),
+
+  "opacity": (
+    "prefix": "opcty",
+    "values": (
+      "10": 0.1,
+      "20": 0.2,
+      "30": 0.3,
+      "40": 0.4,
+      "50": 0.5,
+      "60": 0.6,
+      "70": 0.7,
+      "80": 0.8,
+      "90": 0.9,
+      "100": 1,
+    ),
+  ),
+
+  "border-radius": (
+    "prefix": "br",
+    "values": (
+      "default": $base-border-radius,
+      "none": 0,
+      "xs": math.div($base-border-radius, 4),
+      "sm": math.div($base-border-radius, 2),
+      "lg": $base-border-radius * 2,
+      "full": 50%,
+    ),
+  ),
+
+  "display": (
+    "prefix": "display",
+    "values": (
+      "n": "none",
+      "blk": "block",
+      "flx": "flex",
+      "inl": "inline",
+      "inl-blk": "inline-block",
+    ),
+  ),
+);
+
+@each $property, $map in $utils {
+  $prefix: map.get($map, "prefix");
+  $values: map.get($map, "values");
+
+  @each $k, $v in $values {
+    @if ($k == "default") {
+      .#{$prefix} {
+        #{$property}: $v;
+      }
+    } @else {
+      .#{$prefix}-#{$k} {
+        #{$property}: $v;
+      }
+    }
+  }
+}

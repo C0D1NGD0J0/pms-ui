@@ -1,0 +1,375 @@
+// Tab Navigation
+.settings-tabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+
+  .settings-tab {
+    padding: 1.2rem 2rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: hsl(213, 14%, 56%);
+    position: relative;
+    white-space: nowrap;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+
+    &:hover:not(.active) {
+      color: hsl(194, 66%, 24%);
+      background-color: hsla(213, 14%, 56%, 0.05);
+    }
+
+    &.active {
+      color: hsl(194, 66%, 24%);
+      font-weight: 700;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 0.3rem;
+        background-color: hsl(194, 66%, 24%);
+      }
+    }
+  }
+}
+
+// Tab Content
+.tab-content {
+  display: none;
+  padding: 2rem;
+  background-color: hsl(0, 0%, 100%);
+  border-radius: 0 0 0.5rem 0.5rem;
+
+  &.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
+
+// Form Sections
+.form-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid hsla(213, 14%, 56%, 0.2);
+
+  &:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  &_header {
+    margin-bottom: 2rem;
+
+    .form-section_title {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: hsl(194, 66%, 24%);
+    }
+
+    p {
+      color: hsl(213, 14%, 56%);
+      font-size: 1.4rem;
+    }
+  }
+}
+
+// Profile Image Upload
+.profile-image-upload {
+  gap: 3rem;
+  display: flex;
+  align-items: center;
+
+  .profile-image {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid hsla(213, 14%, 56%, 0.3);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .profile-image-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+// Status Badges
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+
+  &.success {
+    background-color: hsla(130, 100%, 37%, 0.1);
+    color: hsl(130, 100%, 37%);
+  }
+
+  &.warning {
+    background-color: hsla(37, 100%, 67%, 0.1);
+    color: hsl(37, 100%, 67%);
+  }
+
+  &.danger {
+    background-color: hsla(0, 100%, 50%, 0.1);
+    color: hsl(0, 100%, 50%);
+  }
+
+  &.pending {
+    background-color: hsla(213, 14%, 56%, 0.1);
+    color: hsl(213, 14%, 56%);
+  }
+}
+
+// Team Members Section
+.team-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+
+  .btn {
+    flex: 1;
+    max-width: 25rem;
+  }
+  h3 {
+    font-size: 1.8rem;
+    color: hsl(194, 66%, 24%);
+  }
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  .user-avatar {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+}
+
+.pending-invitations {
+  margin-top: 3rem;
+
+  h4 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+    color: hsl(194, 66%, 24%);
+  }
+}
+
+// Billing Section
+.subscription-info {
+  background-color: hsl(204, 8%, 98%);
+  border-radius: 0.8rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.subscription-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+
+  .subscription-plan {
+    h4 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+
+  .subscription-actions {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+.plan-features {
+  margin-top: 2rem;
+
+  h4 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    gap: 1rem;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.payment-methods {
+  background-color: hsl(204, 8%, 98%);
+  border-radius: 0.8rem;
+  padding: 2rem;
+}
+
+.current-payment-method {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .card-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      font-size: 3rem;
+      color: hsl(213, 14%, 56%);
+    }
+  }
+
+  .payment-actions {
+    display: flex;
+    gap: 1rem;
+  }
+}
+
+// Security Section
+.password-hints {
+  background-color: hsl(204, 8%, 98%);
+  border-radius: 0.8rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+
+  p {
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
+    gap: 0.5rem;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.toggle-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: hsl(204, 8%, 98%);
+  border-radius: 0.8rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+
+  .toggle-label {
+    h4 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      color: hsl(213, 14%, 56%);
+    }
+  }
+}
+
+.mfa-settings {
+  background-color: hsl(204, 8%, 98%);
+  border-radius: 0.8rem;
+  padding: 2rem;
+  margin-top: 2rem;
+
+  h4 {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .form-actions {
+    justify-content: flex-start;
+  }
+}
+
+.sessions-table {
+  .device-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    i {
+      font-size: 2rem;
+      color: hsl(194, 66%, 24%);
+    }
+  }
+}
+
+.text-danger {
+  color: hsl(0, 100%, 50%);
+}
+
+// Checkbox Styling
+.checkbox-wrapper {
+  .form-field_checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    width: 2rem;
+    height: 2rem;
+    border: 0.2rem solid hsl(213, 14%, 56%);
+    border-radius: 0.3rem;
+    cursor: pointer;
+    position: relative;
+
+    &:checked {
+      background-color: hsl(194, 66%, 24%);
+      border-color: hsl(194, 66%, 24%);
+
+      &::after {
+        content: "✓";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: hsl(0, 0%, 100%);
+        font-size: 1.2rem;
+      }
+    }
+  }
+}

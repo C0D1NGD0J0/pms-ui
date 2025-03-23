@@ -1,0 +1,205 @@
+@use "../abstract/variables" as *;
+@use "sass:map";
+@use "sass:list";
+
+// MEDIA QUERY MIXINS
+@mixin breakpoint($bp: 0, $direction: min) {
+  @if $direction == "min" {
+    @media (min-width: $bp) {
+      @content;
+    }
+  }
+  @if $direction == "max" {
+    @media (max-width: $bp) {
+      @content;
+    }
+  }
+}
+
+// FLEX CENTER MIXIN
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// BUTTON MIXINS
+@mixin button-style($bg-color, $text-color) {
+  background-color: $bg-color;
+  color: $text-color;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: darken($bg-color, 10%);
+  }
+}
+@mixin button-transition {
+  transition: all 0.3s ease-in;
+}
+@mixin button-transform($translate-y) {
+  transform: translateY($translate-y);
+}
+
+// COLOR FUNCTIONS
+@function hslaGen($color, $alpha: 1) {
+  @if list.length($color) != 3 {
+    @error "Invalid color format: '#{$color}'. Expected format: hue, saturation, lightness.";
+  }
+
+  $hue: list.nth($color, 1);
+  $saturation: list.nth($color, 2);
+  $lightness: list.nth($color, 3);
+
+  @return hsla($hue, $saturation, $lightness, $alpha);
+}
+
+// FLEXBOX
+@mixin flex($direction: row, $justify: flex-start, $align: center, $gap: 0) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $justify;
+  align-items: $align;
+  @if $gap != 0 {
+    gap: $gap;
+  }
+}
+
+// GRID
+@mixin grid($columns: 1fr, $rows: auto, $gap: $spacing-sm) {
+  display: grid;
+  grid-template-columns: $columns;
+  grid-template-rows: $rows;
+  gap: $gap;
+}
+
+// BORDER-RADIUS
+@mixin border-radius($radius: $border-radius-md) {
+  border-radius: $radius;
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  -ms-border-radius: $radius;
+  -o-border-radius: $radius;
+}
+
+// TRANSITIONS
+@mixin transition($property: all, $duration: 0.3s, $timing: ease-in-out) {
+  transition: $property $duration $timing;
+  -webkit-transition: $property $duration $timing;
+  -moz-transition: $property $duration $timing;
+  -ms-transition: $property $duration $timing;
+  -o-transition: $property $duration $timing;
+}
+
+// BOX_SHADOW
+@mixin box-shadow($shadow: $box-shadow) {
+  box-shadow: $shadow;
+}
+
+// CUSTOM SCROLLBAR
+@mixin custom-scrollbar(
+  $width: 6px,
+  $track-color: $white-color,
+  $thumb-color: $secondary-text-color
+) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $track-color;
+    @include border-radius($border-radius-sm);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb-color;
+    @include border-radius($border-radius-sm);
+
+    &:hover {
+      background: $grey-color;
+    }
+  }
+}
+
+// TEXT TRUNCATE
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin custom-dropdown($bg-color: $background-color, $isTable: false) {
+  width: 100%;
+  margin: 0.7rem 0;
+  position: relative;
+  border-radius: 0.2rem;
+  color: hslaGen($grey-color);
+  font-weight: $base-font-weight;
+  background-color: hslaGen($background-color, 0.1);
+  border-bottom: 0.1rem solid hslaGen($grey-color, 0.4);
+
+  .selected-option {
+    display: flex;
+    cursor: pointer;
+    line-height: 1;
+    position: relative;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.6rem 0.5rem 0.3rem;
+  }
+
+  .selected-value {
+    font-weight: 300;
+    font-size: $fs-base;
+    color: hslaGen($black-color);
+  }
+
+  .selected-chevron {
+    top: 0.25rem;
+    margin-left: auto;
+    font-size: $fs-lg;
+    position: relative;
+  }
+
+  .options-list {
+    left: 0;
+    top: 100%;
+    z-index: 2;
+    width: 100%;
+    overflow-y: auto;
+    list-style: none;
+    border-top: none;
+    max-height: 15rem;
+    position: absolute;
+    display: none;
+    border-radius: 0 0 0.4rem 0.4rem;
+    border: 1px solid hslaGen($grey-color, 0.3);
+    background-color: hslaGen($background-color);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+
+    @if $isTable {
+      // override initial values
+      width: auto;
+      left: -3.5rem;
+      padding: 0.5rem;
+    }
+    .option-item {
+      padding: 1rem;
+      cursor: pointer;
+      font-size: $fs-sm;
+      background-color: hslaGen($background-color);
+      &:hover {
+        font-weight: bold;
+        color: hslaGen($primary-color);
+        background-color: hslaGen($grey-color, 0.1);
+      }
+
+      .option-icon {
+        margin-right: 0.2rem;
+      }
+    }
+  }
+}

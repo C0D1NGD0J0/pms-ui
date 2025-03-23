@@ -1,0 +1,105 @@
+"use client";
+import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
+import { usePathname } from "next/navigation";
+import React from "react";
+
+interface MetaInfo {
+  title: string;
+  description?: string;
+  icon?: string;
+}
+
+interface BoxOrderMapping {
+  [key: string]: {
+    position: ("left" | "right")[];
+    meta: MetaInfo;
+  };
+}
+interface LeftBoxProps {
+  meta: MetaInfo;
+}
+
+interface RightBoxProps {
+  children: React.ReactNode;
+}
+
+const routeToBoxOrder: BoxOrderMapping = {
+  "/login": {
+    position: ["left", "right"],
+    meta: {
+      title: "Login",
+      description: "Login to your account",
+      icon: "",
+    },
+  },
+  "/register": {
+    position: ["left", "right"],
+    meta: {
+      title: "Manage with ease",
+      description: "Create a new account as a property owner/manager",
+      icon: "",
+    },
+  },
+  "/reset_password": {
+    position: ["right", "left"],
+    meta: {
+      title: "Reset Password",
+      description: "Reset your password.",
+      icon: "",
+    },
+  },
+  "/forgot_password": {
+    position: ["right", "left"],
+    meta: {
+      title: "Forgot Password",
+      description: "Forgot your password? No worries, we got you.",
+      icon: "",
+    },
+  },
+  "/account_activation": {
+    position: ["left", "right"],
+    meta: {
+      title: "",
+      description:
+        "Almost there! Just like finding your keys in your pocket after searching everywhere.",
+      icon: "",
+    },
+  },
+};
+
+const AuthLayout = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
+  const LeftBox: React.FC<LeftBoxProps> = ({ meta }) => (
+    <AuthContentBox className="auth-page_left-box">
+      <div className="copy-text">
+        <h1>{meta.title}</h1>
+        <p>{meta.description}</p>
+      </div>
+    </AuthContentBox>
+  );
+
+  const RightBox: React.FC<RightBoxProps> = ({ children }) => (
+    <AuthContentBox className="auth-page_right-box">{children}</AuthContentBox>
+  );
+
+  const currentConfig = routeToBoxOrder[
+    pathname.match(/^\/[^/]+/)?.[0] || ""
+  ] || {
+    position: ["left", "right"],
+  };
+  const boxOrder = currentConfig.position;
+  const boxes = {
+    left: <LeftBox meta={currentConfig.meta} />,
+    right: <RightBox>{children}</RightBox>,
+  };
+
+  return (
+    <AuthLayoutWrapper>
+      {boxOrder.map((boxKey, index) => (
+        <React.Fragment key={index}>{boxes[boxKey]}</React.Fragment>
+      ))}
+    </AuthLayoutWrapper>
+  );
+};
+
+export default AuthLayout;
