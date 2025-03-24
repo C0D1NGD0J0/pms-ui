@@ -21,7 +21,7 @@ export default function ResetPassword() {
   const params = useParams();
   const token = params.token as string;
   const { openNotification } = useNotification();
-  const { mutateAsync, isPending, isSuccess } = useMutation({
+  const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: IResetPasswordForm) =>
       authService.resetPassword(data.token, data.password),
   });
