@@ -1,4 +1,18 @@
 "use client";
+import Link from "next/link";
+import { Popover, Result } from "antd";
+import { useForm } from "@mantine/form";
+import { useRouter } from "next/navigation";
+import { authService } from "@services/auth";
+import { Loading } from "@components/UI/index";
+import { errorFormatter } from "@utils/helpers";
+import React, { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { zodResolver } from "mantine-form-zod-resolver";
+import { useNotification } from "@hooks/useNotification";
+import { useSearchParams, useParams } from "next/navigation";
+import { IAccountActivationForm } from "@interfaces/auth.interface";
+import { AccountActivationSchema } from "@validations/auth.validations";
 import {
   AuthContentHeader,
   AuthContenFooter,
@@ -11,20 +25,6 @@ import {
   Button,
   Form,
 } from "@components/FormElements/";
-import { AccountActivationSchema } from "@validations/auth.validations";
-import { IAccountActivationForm } from "@interfaces/auth.interface";
-import { useSearchParams, useParams } from "next/navigation";
-import { useNotification } from "@hooks/useNotification";
-import { zodResolver } from "mantine-form-zod-resolver";
-import { useMutation } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
-import { errorFormatter } from "@utils/helpers";
-import { Loading } from "@components/UI/index";
-import { authService } from "@services/auth";
-import { useRouter } from "next/navigation";
-import { useForm } from "@mantine/form";
-import { Popover, Result } from "antd";
-import Link from "next/link";
 
 export default function AccountActivation() {
   const params = useParams();

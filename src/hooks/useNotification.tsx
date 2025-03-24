@@ -1,6 +1,6 @@
 "use client";
+import { notification, message, Button } from "antd";
 import React, { createContext, useContext } from "react";
-import { notification, message,Button } from "antd";
 
 type NotificationInstance = "info" | "warning" | "error" | "success" | "open";
 type MessageInstance =
@@ -27,7 +27,7 @@ type NotificationContextType = {
   openNotification: (
     type: NotificationInstance,
     title: string,
-    message: string,
+    description: string,
     opts?: NotificationContextMetaType
   ) => void;
 

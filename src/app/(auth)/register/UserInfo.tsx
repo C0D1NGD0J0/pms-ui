@@ -1,15 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
-import {
-  FloatingLabelInput,
-  TypeaheadInput,
-  CustomDropdown,
-} from "@components/FormElements";
-import { SIGNUP_ACCOUNT_TYPE_OPTIONS, ACCOUNT_TYPES } from "@utils/constants";
-import { ISignupForm } from "@interfaces/auth.interface";
-import { UseFormReturnType } from "@mantine/form";
-import country from "country-list-js";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
+import { ISignupForm } from "@interfaces/auth.interface";
+import { SIGNUP_ACCOUNT_TYPE_OPTIONS, ACCOUNT_TYPES } from "@utils/constants";
+import { FloatingLabelInput, CustomDropdown } from "@components/FormElements";
 
 export default function UserInfo({
   formContext,
@@ -75,7 +70,7 @@ export default function UserInfo({
           id="location"
           name="location"
           onChange={onChange}
-          label="Phone number"
+          label="Location"
           value={formContext.values.location}
           errorMsg={formContext.errors.location}
         />

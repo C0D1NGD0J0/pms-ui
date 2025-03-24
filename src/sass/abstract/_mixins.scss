@@ -152,9 +152,9 @@
   }
 
   .selected-value {
-    font-weight: 300;
-    font-size: $fs-base;
-    color: hslaGen($black-color);
+    font-size: $fs-sm;
+    font-weight: $fw-normal;
+    color: hslaGen($primary-color);
   }
 
   .selected-chevron {

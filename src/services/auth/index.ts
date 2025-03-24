@@ -1,5 +1,5 @@
-import { ISignupForm } from "@interfaces/auth.interface";
 import axios from "@configs/axios";
+import { ISignupForm } from "@interfaces/auth.interface";
 
 class AuthService {
   private baseUrl;

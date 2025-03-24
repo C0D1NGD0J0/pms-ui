@@ -25,7 +25,7 @@ const eslintConfig = [
       "perfectionist/sort-imports": [
         "error",
         {
-          "order": "desc",
+          "order": "asc",
           "ignoreCase": true,
           "type": "line-length",
           "newlinesBetween": "always",

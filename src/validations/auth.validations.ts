@@ -1,5 +1,5 @@
-import { validatePhoneNumber } from "@utils/helpers";
 import { z } from "zod";
+import { validatePhoneNumber } from "@utils/helpers";
 
 export const AccountActivationSchema = z.object({
   token: z
@@ -122,4 +122,23 @@ export const SignupSchema = z
         });
       }
     }
+  });
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+export const ResetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" }),
+    cpassword: z.string(),
+    token: z
+      .string()
+      .length(64, { message: "Invalid reset token in the url." }),
+  })
+  .refine((data) => data.password === data.cpassword, {
+    message: "Passwords don't match",
+    path: ["cpassword"],
   });
