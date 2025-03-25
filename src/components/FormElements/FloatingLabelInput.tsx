@@ -56,7 +56,7 @@ export const FloatingLabelInput: React.FC<{
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(value.length > 0)}
       />
-      {errorMsg && <small className="error-msg">{errorMsg}</small>}
+      {errorMsg && <small className="form-field-error">{errorMsg}</small>}
     </div>
   );
 };

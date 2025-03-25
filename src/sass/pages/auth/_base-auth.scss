@@ -28,6 +28,7 @@
   // }
 
   // &::after {
+  //   left: 0;
   //   bottom: 0;
   //   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23273036' fill-opacity='1' d='M0,32L40,32C80,32,160,32,240,80C320,128,400,224,480,224C560,224,640,128,720,74.7C800,21,880,11,960,53.3C1040,96,1120,192,1200,208C1280,224,1360,160,1400,128L1440,96L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
   // }
@@ -97,17 +98,16 @@
   }
 
   &_content {
+    gap: 1rem;
     width: 100%;
     display: flex;
-    column-gap: 1.2rem;
     position: relative;
     border-radius: 0.7rem;
     flex-direction: column;
 
     &-header {
-      padding: 2rem 0 1rem 0;
+      padding: 0.8rem 0;
       text-align: center;
-      margin-bottom: 1rem;
       color: hslaGen($primary-color);
 
       .header-subtitle {
@@ -123,19 +123,18 @@
     }
 
     &-body {
-      padding: 1rem;
       height: 100%;
+      padding: 0 1rem;
     }
 
     &-footer {
-      padding: 1.2rem 0;
       text-align: center;
       font-size: $fs-sm;
       p {
         font-size: $fs-xsm;
       }
       .termsAgreement {
-        margin-top: 0.8rem;
+        margin: 0.8rem 0;
         font-size: $fs-sm;
       }
     }

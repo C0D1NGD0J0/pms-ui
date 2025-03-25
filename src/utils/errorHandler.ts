@@ -22,6 +22,7 @@ export default class APIError extends Error {
         return response.data;
       }
     } else if (error instanceof Error) {
+      console.log(error, "----ERR");
       // Handle generic JavaScript Error
       return this.parseSystemError(error);
     }

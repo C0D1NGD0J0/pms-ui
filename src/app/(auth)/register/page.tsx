@@ -1,30 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
+import { useForm } from "@mantine/form";
+import { authService } from "@services/auth";
+import { ChangeEvent, useState } from "react";
+import { ISignupForm } from "@interfaces/index";
+import { objectToFormData } from "@utils/helpers";
+import { useMutation } from "@tanstack/react-query";
+import { Button, Form } from "@components/FormElements";
+import { zodResolver } from "mantine-form-zod-resolver";
+import { useNotification } from "@hooks/useNotification";
+import { SignupSchema } from "@validations/auth.validations";
 import {
   AuthContentHeader,
   AuthContenFooter,
   AuthContentBody,
 } from "@components/AuthLayout";
-import { SignupSchema } from "@validations/auth.validations";
-import { useNotification } from "@hooks/useNotification";
-import { Button, Form } from "@components/FormElements";
-import { zodResolver } from "mantine-form-zod-resolver";
-import { useMutation } from "@tanstack/react-query";
-import { objectToFormData } from "@utils/helpers";
-import { ISignupForm } from "@interfaces/index";
-import { ChangeEvent, useState } from "react";
-import { authService } from "@services/auth";
-import { useForm } from "@mantine/form";
 
-import CompanyInfo from "./CompanyInfo";
 import UserInfo from "./UserInfo";
-
-const dropdownOptions = [
-  { value: "apple", label: "Apple 🍎" },
-  { value: "banana", label: "Banana 🍌" },
-  { value: "orange", label: "Orange 🍊", disabled: true }, // Disabled option
-  { value: "grape", label: "Grape 🍇" },
-];
+import CompanyInfo from "./CompanyInfo";
 
 export default function Register() {
   const { mutateAsync, isPending } = useMutation({
@@ -33,25 +26,25 @@ export default function Register() {
   const { openNotification } = useNotification();
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
     initialValues: {
-      firstName: "wayne",
-      lastName: "rooney",
-      email: "wayne@example.com",
-      password: "password",
-      cpassword: "password",
-      location: "lagos",
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      cpassword: "",
+      location: "",
       accountType: {
-        planId: "business",
-        planName: "business",
-        isCorporate: true,
+        planId: "",
+        planName: "",
+        isCorporate: false,
       },
-      phoneNumber: "2348105308755",
-      displayName: "MasterRooney",
+      phoneNumber: "",
+      displayName: "",
       companyProfile: {
-        tradingName: "wedabest",
-        legalEntityName: "wedabest-records",
+        tradingName: "",
+        legalEntityName: "",
         website: "",
-        companyEmail: "wedabest@example.com",
-        companyPhone: "123456999",
+        companyEmail: "",
+        companyPhone: "",
       },
     },
     validateInputOnChange: true,

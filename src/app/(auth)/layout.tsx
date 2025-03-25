@@ -1,7 +1,7 @@
 "use client";
-import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
-import { usePathname } from "next/navigation";
 import React from "react";
+import { usePathname } from "next/navigation";
+import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
 
 interface MetaInfo {
   title: string;
@@ -51,7 +51,7 @@ const routeToBoxOrder: BoxOrderMapping = {
   "/forgot_password": {
     position: ["right", "left"],
     meta: {
-      title: "Forgot Password",
+      title: "",
       description: "Forgot your password? No worries, we got you.",
       icon: "",
     },

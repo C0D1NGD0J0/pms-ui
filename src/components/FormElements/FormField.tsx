@@ -6,7 +6,6 @@ interface FormFieldProps {
   className?: string;
   fullWidth?: boolean;
   inline?: boolean;
-  hasError?: boolean;
   error?: { msg: string; touched: boolean };
 }
 
@@ -15,7 +14,6 @@ export const FormField: React.FC<FormFieldProps> = ({
   className = "",
   fullWidth = false,
   inline = false,
-  hasError = false,
   error,
 }) => {
   const baseClass = "form-field";
@@ -32,7 +30,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   return (
     <div className={fieldClasses}>
       {children}
-      {hasError && error?.touched && error?.msg ? (
+      {error?.msg ? (
         <small className="form-field-error">
           <i>{error.msg}</i>
         </small>
