@@ -144,7 +144,7 @@ export const CustomDropdown = forwardRef<HTMLDivElement, CustomDropdownProps>(
       <div
         ref={dropdownRef}
         id={id}
-        className={`custom-dropdown ${isOpen ? "active" : ""} ${
+        className={`form-input_select ${isOpen ? "active" : ""} ${
           disabled ? "disabled" : ""
         } ${className}`}
         tabIndex={disabled ? -1 : 0}

@@ -53,6 +53,9 @@ export default function UserInfo({
           value={formContext.values.email}
           errorMsg={formContext.errors.email}
         />
+      </div>
+
+      <div className="form-fields">
         <FloatingLabelInput
           required
           id="displayName"
@@ -62,9 +65,6 @@ export default function UserInfo({
           value={formContext.values.displayName}
           errorMsg={formContext.errors.displayName}
         />
-      </div>
-
-      <div className="form-fields">
         <FloatingLabelInput
           required
           id="location"

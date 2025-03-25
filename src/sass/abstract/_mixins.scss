@@ -133,7 +133,7 @@
 
 @mixin custom-dropdown($bg-color: $background-color, $isTable: false) {
   width: 100%;
-  margin: 0.7rem 0;
+  margin-bottom: 0.5rem;
   position: relative;
   border-radius: 0.2rem;
   color: hslaGen($grey-color);
