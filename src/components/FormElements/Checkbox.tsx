@@ -31,7 +31,7 @@ export const Checkbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
     ref
   ) => {
     const checkboxClasses = [
-      "form-field_checkbox",
+      "form-input_checkbox",
       disabled ? "input-disabled" : "",
       className,
     ]

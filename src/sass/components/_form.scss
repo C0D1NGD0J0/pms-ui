@@ -7,7 +7,6 @@
   flex-wrap: wrap;
   position: relative;
   align-items: center;
-  margin-bottom: 0.5rem;
 
   &[inert] {
     .form-input {
@@ -70,7 +69,7 @@
   pointer-events: none;
   font-weight: $fw-normal;
   transition: $transition;
-  color: hslaGen($blue-ink-color);
+  color: hslaGen($primary-color);
 
   &.no-label {
     display: none;
@@ -83,7 +82,7 @@
   border: none;
   outline: none;
   display: block;
-  padding: 0.3rem;
+  padding: 0.1rem;
   position: relative;
   font-size: $fs-base;
   background: $form-input-bg;
@@ -102,15 +101,14 @@
   }
 
   &_checkbox {
-    width: 2rem;
-    height: 2rem;
+    width: 1.7rem;
+    height: 1.7rem;
     cursor: pointer;
     appearance: none;
     position: relative;
-    border-radius: 50%;
     -moz-appearance: none;
     -webkit-appearance: none;
-    border: 0.2rem solid #666;
+    border: 0.1rem solid #666;
     background-color: transparent;
 
     &:checked {
@@ -120,14 +118,16 @@
     }
 
     &:checked::after {
-      content: "";
+      content: "\2714";
       top: 0.2rem;
       left: 0.2rem;
       width: 1.2rem;
       height: 1.2rem;
-      border-radius: 50%;
       position: absolute;
-      background-color: hslaGen($white-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: hslaGen($secondary-color, 0.9);
     }
   }
 
@@ -278,12 +278,11 @@
 
   .checkbox-label-wrapper {
     display: flex;
-    margin-left: 0.5rem;
     flex-direction: column;
 
     .checkbox-label {
-      margin-bottom: 0.2rem;
-      // font-weight: bold;
+      text-transform: lowercase;
+      font-weight: $fw-normal;
     }
 
     small {
