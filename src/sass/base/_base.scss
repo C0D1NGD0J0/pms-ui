@@ -76,6 +76,7 @@ a:visited {
   outline: 0;
   text-decoration: none;
   transition: $transition;
+  color: hslaGen($grey-color, 0.7);
   -webkit-transition: $transition;
   -moz-transition: $transition;
   -ms-transition: $transition;
@@ -135,4 +136,14 @@ pre,
 code {
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+.error-msg {
+  color: hslaGen($danger-color);
+  text-overflow: ellipsis;
+  line-height: 1.2rem;
+  text-wrap: balance;
+  text-align: center;
+  font-size: $fs-sm;
+  margin-bottom: 0.75rem;
 }

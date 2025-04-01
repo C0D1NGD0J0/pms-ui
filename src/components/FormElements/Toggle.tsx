@@ -1,25 +1,25 @@
-import React, { KeyboardEvent,useState } from "react";
+import React, { KeyboardEvent, useState } from "react";
 
-// Define a type for the component's props
 type ToggleProps = {
   className?: string;
-  onChange: (newState: boolean) => void;
+  onChange: (newState: boolean, name?: string) => void;
   initialState?: boolean;
+  name?: string;
 };
 
 export const Toggle: React.FC<ToggleProps> = ({
   className = "",
   onChange,
   initialState = false,
+  name,
 }) => {
-  const [isToggled, setIsToggled] = useState<boolean>(initialState);
+  const [isToggled, setIsToggled] = useState(initialState);
 
   const toggle = () => {
     const newState = !isToggled;
     setIsToggled(newState);
-    // Call the onChange handler with the new state
     if (onChange) {
-      onChange(newState);
+      onChange(newState, name);
     }
   };
 
@@ -32,16 +32,15 @@ export const Toggle: React.FC<ToggleProps> = ({
 
   return (
     <div
-      className={`toggle-container ${className}`}
-      tabIndex={0}
+      className={`toggle ${isToggled ? "toggled" : ""} ${className}`}
       onClick={toggle}
       onKeyDown={handleKeyDown}
+      tabIndex={0}
       role="switch"
       aria-checked={isToggled}
+      data-name={name}
     >
-      <div className={`toggle ${isToggled ? "toggled" : ""}`}>
-        <div className="toggle-handle"></div>
-      </div>
+      <div className="toggle-handle"></div>
     </div>
   );
 };

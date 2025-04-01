@@ -142,3 +142,15 @@ export const ResetPasswordSchema = z
     message: "Passwords don't match",
     path: ["cpassword"],
   });
+
+export const LoginSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  rememberMe: z.boolean(),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters long" }),
+  otpCode: z.union([
+    z.string().min(6, { message: "Invalid OTP provided." }),
+    z.literal(""),
+  ]),
+});

@@ -150,11 +150,7 @@ export default function Register() {
           <div className="action-fields">{renderButtons(!form.isValid())}</div>
         </Form>
       </AuthContentBody>
-      <AuthContenFooter
-        footerLink="/"
-        footerLinkText="Privacy & Terms of Service"
-        footerText="By continuing, you agree to accept our"
-      />
+      <AuthContenFooter />
     </>
   );
 }
