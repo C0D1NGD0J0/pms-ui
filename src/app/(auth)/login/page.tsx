@@ -106,7 +106,7 @@ export default function Login() {
               />
             </FormField>
           </div>
-          <div className="form-fields">
+          <div className="form-fields m-2">
             <FormField>
               <Checkbox
                 id="rememberMe"
