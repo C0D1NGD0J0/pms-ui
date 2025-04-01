@@ -89,11 +89,7 @@ export default function ForgotPassword() {
           </div>
         </Form>
       </AuthContentBody>
-      <AuthContenFooter
-        footerLink="/"
-        footerLinkText="Privacy & Terms of Service"
-        footerText="By continuing, you agree to accept our"
-      />
+      <AuthContenFooter footerLink="/login" footerLinkText="login" />
     </>
   );
 }

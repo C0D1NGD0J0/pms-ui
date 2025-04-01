@@ -21,7 +21,12 @@ class AuthService {
       throw error;
     }
   };
-  login = async (data: { email: string; password: string }) => {
+  login = async (data: {
+    email: string;
+    password: string;
+    otpCode?: string;
+    rememberMe: boolean;
+  }) => {
     try {
       const res = await axios.post(`${this.baseUrl}/login`, data);
       return res;

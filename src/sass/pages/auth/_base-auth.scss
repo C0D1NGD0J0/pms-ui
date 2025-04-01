@@ -129,13 +129,15 @@
 
     &-footer {
       text-align: center;
-      font-size: $fs-sm;
       p {
-        font-size: $fs-xsm;
+        font-size: $fs-sm;
       }
       .termsAgreement {
-        margin: 0.8rem 0;
-        font-size: $fs-sm;
+        font-size: $fs-xsm;
+        strong {
+          color: black;
+          font-weight: $fw-bold;
+        }
       }
     }
   }

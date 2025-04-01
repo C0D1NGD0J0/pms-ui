@@ -1,86 +1,92 @@
 "use client";
+import React from "react";
 import { useForm } from "@mantine/form";
-import React, { useEffect } from "react";
-import { Loading } from "@components/UI";
-import { useParams } from "next/navigation";
 import { authService } from "@services/auth";
 import { errorFormatter } from "@utils/helpers";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
+import { ILoginForm } from "@interfaces/auth.interface";
 import { useNotification } from "@hooks/useNotification";
-import { IResetPasswordForm } from "@interfaces/auth.interface";
-import { ResetPasswordSchema } from "@validations/auth.validations";
-import { FormInput, FormField, Button, Form } from "@components/FormElements/";
+import { LoginSchema } from "@validations/auth.validations";
+import {
+  FormInput,
+  FormField,
+  Checkbox,
+  Button,
+  Form,
+} from "@components/FormElements/";
 import {
   AuthContentHeader,
   AuthContenFooter,
   AuthContentBody,
 } from "@components/AuthLayout";
 
-export default function ResetPassword() {
-  const params = useParams();
-  const token = params.token as string;
+export default function Login() {
   const { openNotification } = useNotification();
   const { mutateAsync, isPending } = useMutation({
-    mutationFn: (data: IResetPasswordForm) =>
-      authService.resetPassword(data.token, data.password),
+    mutationFn: (data: ILoginForm) => authService.login(data),
   });
 
-  useEffect(() => {
-    if (token) {
-      form.setFieldValue("token", token);
-    }
-  }, [token]);
-
-  const form = useForm<IResetPasswordForm>({
+  const form = useForm<ILoginForm>({
     initialValues: {
       password: "",
-      cpassword: "",
-      token: "",
+      email: "",
+      otpCode: "",
+      rememberMe: false,
     },
     validateInputOnChange: true,
-    validate: zodResolver(ResetPasswordSchema),
+    validate: zodResolver(LoginSchema),
   });
 
-  const handleSubmit = async (values: IResetPasswordForm) => {
+  const handleSubmit = async (values: ILoginForm) => {
     try {
       const response = await mutateAsync(values);
       openNotification(
         "success",
-        "Password reset",
+        "Login",
         response.msg || "Password reset was successful."
       );
       form.reset();
     } catch (error: unknown) {
-      openNotification(
-        "error",
-        "Password reset process failed",
-        errorFormatter(error)
-      );
+      openNotification("error", "Login process failed", errorFormatter(error));
     }
   };
-
-  if (!token) {
-    return <Loading description="Broken url..." />;
-  }
 
   return (
     <>
       <AuthContentHeader
-        title="Reset your password"
-        subtitle="It happens to the best of us, enter your new password."
+        title="Login"
+        headerLink="/register"
+        headerLinkText="Register."
+        subtitle="Don't have an account?"
       />
       <AuthContentBody>
         <Form
           onSubmit={form.onSubmit(handleSubmit)}
-          id="resetPwd-form"
+          id="login-form"
           className="auth-form"
           disabled={isPending}
           autoComplete="off"
         >
-          {form.errors["token"] && (
-            <p className="error-msg pb-2">{form.errors["token"]}</p>
-          )}
+          <div className="form-fields">
+            <FormField
+              error={{
+                msg: (form.errors["email"] as string) || "",
+                touched: form.isTouched("email"),
+              }}
+            >
+              <FormInput
+                required
+                name="email"
+                type="email"
+                id="email"
+                placeholder="Enter email..."
+                value={form.values.email || ""}
+                hasError={!!form.errors["email"]}
+                onChange={(e) => form.setFieldValue("email", e.target.value)}
+              />
+            </FormField>
+          </div>
           <div className="form-fields">
             <FormField
               error={{
@@ -100,23 +106,15 @@ export default function ResetPassword() {
               />
             </FormField>
           </div>
-          <div className="form-fields">
-            <FormField
-              error={{
-                msg: (form.errors["cpassword"] as string) || "",
-                touched: form.isTouched("cpassword"),
-              }}
-            >
-              <FormInput
-                required
-                name="cpassword"
-                type="password"
-                id="cpassword"
-                placeholder="Confirm password..."
-                value={form.values.cpassword || ""}
-                hasError={!!form.errors["cpassword"]}
+          <div className="form-fields m-2">
+            <FormField>
+              <Checkbox
+                id="rememberMe"
+                name="rememberMe"
+                label="Remember me"
+                checked={form.values.rememberMe}
                 onChange={(e) =>
-                  form.setFieldValue("cpassword", e.target.value)
+                  form.setFieldValue("rememberMe", e.target.checked)
                 }
               />
             </FormField>
@@ -126,12 +124,15 @@ export default function ResetPassword() {
               type="submit"
               disabled={!form.isValid()}
               className="btn btn-primary"
-              label={`${isPending ? "Processing..." : "Reset Password"}`}
+              label={`${isPending ? "Processing..." : "Login"}`}
             />
           </div>
         </Form>
       </AuthContentBody>
-      <AuthContenFooter footerLink="/login" footerLinkText="Login" />
+      <AuthContenFooter
+        footerLink="/forgot_password"
+        footerLinkText="Forgot your password?"
+      />
     </>
   );
 }

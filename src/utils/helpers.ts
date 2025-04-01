@@ -1,5 +1,5 @@
-import { IErrorReturnData } from "@interfaces/index";
 import { AxiosError } from "axios";
+import { IErrorReturnData } from "@interfaces/index";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
   const phoneRegex =
@@ -54,7 +54,7 @@ export const throttle = <T extends unknown[]>(
 };
 
 export const errorFormatter = (
-  error: IErrorReturnData | Error | AxiosError | unknown
+  error: IErrorReturnData | Error | AxiosError
 ): string => {
   let result = "";
 
