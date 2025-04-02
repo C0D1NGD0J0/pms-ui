@@ -1,6 +1,7 @@
 @use "../abstract/variables" as *;
 @use "sass:map";
 @use "sass:list";
+@use "sass:meta";
 
 // MEDIA QUERY MIXINS
 @mixin breakpoint($bp: 0, $direction: min) {
@@ -201,5 +202,146 @@
         margin-right: 0.2rem;
       }
     }
+  }
+}
+
+@mixin generate-theme($theme-colors) {
+  // Use meta.type-of for type checking
+  @if meta.type-of($theme-colors) == map {
+    // Use map.has-key for checking map keys
+    @if map.has-key($theme-colors, "transition") {
+      transition: all map.get($theme-colors, "transition");
+    }
+
+    // Background and Text
+    @if map.has-key($theme-colors, "background") {
+      background-color: hslaGen(map.get($theme-colors, "background"));
+    }
+
+    @if map.has-key($theme-colors, "primary-text") {
+      color: hslaGen(map.get($theme-colors, "primary-text"));
+    }
+
+    // Specific Component Styling
+    .navbar {
+      @if map.has-key($theme-colors, "navbar-bg") {
+        background-color: hslaGen(map.get($theme-colors, "navbar-bg"));
+      }
+    }
+
+    .sidebar {
+      @if map.has-key($theme-colors, "sidebar-bg") {
+        background-color: hslaGen(map.get($theme-colors, "sidebar-bg"));
+      }
+    }
+
+    // Card and Panel Theming
+    .panel,
+    .insight-card,
+    .card {
+      @if map.has-key($theme-colors, "card-bg") {
+        background-color: hslaGen(map.get($theme-colors, "card-bg"));
+      }
+      @if map.has-key($theme-colors, "card-border") {
+        border-color: hslaGen(map.get($theme-colors, "card-border"), 0.3);
+      }
+    }
+
+    // Text and Typography
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      @if map.has-key($theme-colors, "primary-text") {
+        color: hslaGen(map.get($theme-colors, "primary-text"));
+      }
+    }
+
+    // Status and Utility Classes
+    .primary {
+      @if map.has-key($theme-colors, "primary-text") {
+        color: hslaGen(map.get($theme-colors, "primary-text"));
+      }
+    }
+    .success {
+      @if map.has-key($theme-colors, "success") {
+        color: hslaGen(map.get($theme-colors, "success"));
+      }
+    }
+    .warning {
+      @if map.has-key($theme-colors, "warning") {
+        color: hslaGen(map.get($theme-colors, "warning"));
+      }
+    }
+    .danger {
+      @if map.has-key($theme-colors, "danger") {
+        color: hslaGen(map.get($theme-colors, "danger"));
+      }
+    }
+    .muted {
+      @if map.has-key($theme-colors, "muted") {
+        color: hslaGen(map.get($theme-colors, "muted"));
+      }
+    }
+
+    // Form and Input Styling
+    .form-input {
+      @if map.has-key($theme-colors, "card-bg") {
+        background-color: hslaGen(map.get($theme-colors, "card-bg"));
+      }
+      @if map.has-key($theme-colors, "primary-text") {
+        color: hslaGen(map.get($theme-colors, "primary-text"));
+      }
+      @if map.has-key($theme-colors, "card-border") {
+        border-bottom-color: hslaGen(
+          map.get($theme-colors, "card-border"),
+          0.3
+        );
+      }
+
+      &::placeholder {
+        @if map.has-key($theme-colors, "secondary-text") {
+          color: hslaGen(map.get($theme-colors, "secondary-text"), 0.7);
+        }
+      }
+    }
+
+    // Button Styling
+    .btn-primary {
+      @if map.has-key($theme-colors, "primary-text") and
+        map.has-key($theme-colors, "card-bg")
+      {
+        background-color: hslaGen(map.get($theme-colors, "primary-text"));
+        color: hslaGen(map.get($theme-colors, "card-bg"));
+      }
+    }
+
+    .btn-secondary {
+      @if map.has-key($theme-colors, "accent") and
+        map.has-key($theme-colors, "card-bg")
+      {
+        background-color: hslaGen(map.get($theme-colors, "accent"));
+        color: hslaGen(map.get($theme-colors, "card-bg"));
+      }
+    }
+
+    // Icon Coloring
+    i {
+      @if map.has-key($theme-colors, "primary-text") {
+        color: hslaGen(map.get($theme-colors, "primary-text"));
+      }
+    }
+
+    // Advanced Customizations
+    .navbar-menu__item a,
+    .sidebar__navbar-item a {
+      @if map.has-key($theme-colors, "primary-text") {
+        color: hslaGen(map.get($theme-colors, "primary-text"));
+      }
+    }
+  } @else {
+    @warn "Theme configuration is not a valid map";
   }
 }

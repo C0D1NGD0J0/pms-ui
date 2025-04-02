@@ -1,8 +1,9 @@
-import { NotificationProvider } from "@hooks/useNotification";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { RectQueryProvider } from "@hooks/useReactQuery";
 import { ConfigProvider } from "antd";
+import { ThemeProvider } from "@theme/index";
+import { RectQueryProvider } from "@hooks/useReactQuery";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@styles/main.scss";
+import { NotificationProvider } from "@hooks/useNotification";
 
 export default function RootLayout({
   children,
@@ -28,13 +29,15 @@ export default function RootLayout({
         />
       </head>
       <body suppressHydrationWarning>
-        <AntdRegistry>
-          <NotificationProvider>
-            <ConfigProvider>
-              <RectQueryProvider>{children}</RectQueryProvider>
-            </ConfigProvider>
-          </NotificationProvider>
-        </AntdRegistry>
+        <ThemeProvider>
+          <AntdRegistry>
+            <NotificationProvider>
+              <ConfigProvider>
+                <RectQueryProvider>{children}</RectQueryProvider>
+              </ConfigProvider>
+            </NotificationProvider>
+          </AntdRegistry>
+        </ThemeProvider>
       </body>
     </html>
   );
