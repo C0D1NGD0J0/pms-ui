@@ -1,5 +1,6 @@
 @use "../abstract/index" as *;
 @use "../base/typography" as *;
+@use "sass:map";
 
 /*===========
 BASE STYLES
@@ -12,6 +13,11 @@ BASE STYLES
   box-sizing: border-box;
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
+}
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 /* removes animation for ppl who turned them off in the browser */
@@ -40,6 +46,14 @@ body {
   font-family: $font-primary;
   color: hslaGen($primary-color);
   text-rendering: optimizeLegibility;
+
+  &[data-theme="light"] {
+    @include generate-theme($theme-colors-light);
+  }
+
+  &[data-theme="dark"] {
+    @include generate-theme($theme-colors-dark);
+  }
 }
 
 img {

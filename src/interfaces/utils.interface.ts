@@ -9,3 +9,9 @@ export interface IErrorReturnData {
   msg: string;
   errors?: { path: string; message: string }[];
 }
+
+export type Theme = "light" | "dark";
+export interface ThemeContextType {
+  theme: Theme;
+  toggleTheme: () => void;
+}
