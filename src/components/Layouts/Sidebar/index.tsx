@@ -1,12 +1,12 @@
 "use client";
-
 import Link from "next/link";
 import { useState } from "react";
+import { useTheme } from "@theme/index";
 import { usePathname } from "next/navigation";
 
 export const Sidebar = () => {
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
 
   const menuItems = [
@@ -44,11 +44,6 @@ export const Sidebar = () => {
   const toggleUsersDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
     setIsUsersDropdownOpen(!isUsersDropdownOpen);
-  };
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // add thme change logic here
   };
 
   const isActive = (path: string) => pathname === path;
@@ -132,16 +127,20 @@ export const Sidebar = () => {
 
       <div className="theme">
         <div className="theme__icons">
-          <i className={`bx bx-moon moon ${isDarkMode ? "hidden" : ""}`}></i>
-          <i className={`bx bx-sun sun ${!isDarkMode ? "hidden" : ""}`}></i>
+          <i
+            className={`bx bx-moon moon ${theme === "dark" ? "hidden" : ""}`}
+          ></i>
+          <i
+            className={`bx bx-sun sun ${theme === "light" ? "hidden" : ""}`}
+          ></i>
         </div>
         <label className="toggle-switch">
           <input
             type="checkbox"
             id="theme-toggle"
             className="toggle-checkbox"
-            checked={isDarkMode}
-            onChange={toggleDarkMode}
+            checked={theme === "dark"}
+            onChange={toggleTheme}
           />
           <span className="switch"></span>
         </label>
