@@ -28,7 +28,12 @@ class AuthService {
     rememberMe: boolean;
   }) => {
     try {
-      const res = await axios.post(`${this.baseUrl}/login`, data);
+      const res = await axios.post<{
+        accounts: Array<{ cid: string; displayName: string }>;
+        activeAccount: { cid: string; displayName: string };
+        msg: string;
+      }>(`${this.baseUrl}/login`, data);
+
       return res;
     } catch (error) {
       throw error;

@@ -1,6 +1,5 @@
 import APIError from "@utils/errorHandler";
 import CookieManager from "@utils/cookieManager";
-import { ISuccessReturnData } from "@interfaces/utils.interface";
 import axios, {
   AxiosRequestConfig,
   AxiosResponse,
@@ -14,22 +13,22 @@ interface IAxiosService {
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
+  ): Promise<T>;
   post<T = unknown>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
+  ): Promise<T>;
   put<T = unknown>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
+  ): Promise<T>;
   delete<T = unknown>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
+  ): Promise<T>;
   getInstance(): AxiosInstance;
 }
 
@@ -51,10 +50,8 @@ class AxiosService implements IAxiosService {
   }
 
   private setupInterceptors() {
-    // Request interceptor
     this.axios.interceptors.request.use(
       (config) => {
-        // Get auth token from cookies if it exists
         const token = CookieManager.getCookie("cid");
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -66,10 +63,8 @@ class AxiosService implements IAxiosService {
       }
     );
 
-    // Response interceptor
     this.axios.interceptors.response.use(
       (response: AxiosResponse) => {
-        // You could format response data here if needed
         return response;
       },
       async (error: AxiosError) => {
@@ -141,9 +136,9 @@ class AxiosService implements IAxiosService {
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.get<ISuccessReturnData<T>>(url, {
+      const response = await this.axios.get(url, {
         ...config,
         params,
       });
@@ -157,14 +152,9 @@ class AxiosService implements IAxiosService {
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.post<ISuccessReturnData<T>>(
-        url,
-        data,
-        config
-      );
-      console.log(response, "response2");
+      const response = await this.axios.post(url, data, config);
       return response?.data;
     } catch (error) {
       throw error;
@@ -175,13 +165,9 @@ class AxiosService implements IAxiosService {
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.put<ISuccessReturnData<T>>(
-        url,
-        data,
-        config
-      );
+      const response = await this.axios.put(url, data, config);
       return response.data;
     } catch (error) {
       throw error;
@@ -192,9 +178,9 @@ class AxiosService implements IAxiosService {
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.delete<ISuccessReturnData<T>>(url, {
+      const response = await this.axios.delete(url, {
         ...config,
         params,
       });
