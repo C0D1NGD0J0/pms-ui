@@ -9,22 +9,22 @@ import axios, {
 
 interface IAxiosService {
   axios: AxiosInstance;
-  get<T = unknown>(
+  get<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
   ): Promise<T>;
-  post<T = unknown>(
+  post<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
   ): Promise<T>;
-  put<T = unknown>(
+  put<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
   ): Promise<T>;
-  delete<T = unknown>(
+  delete<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
@@ -34,7 +34,7 @@ interface IAxiosService {
 
 class AxiosService implements IAxiosService {
   public axios: AxiosInstance;
-  private refreshTokenPromise: Promise<unknown> | null = null;
+  private refreshTokenPromise: Promise<any> | null = null;
 
   constructor() {
     this.axios = axios.create({
@@ -132,7 +132,7 @@ class AxiosService implements IAxiosService {
     );
   }
 
-  async get<T = unknown>(
+  async get<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
@@ -148,7 +148,7 @@ class AxiosService implements IAxiosService {
     }
   }
 
-  async post<T = unknown>(
+  async post<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
@@ -161,7 +161,7 @@ class AxiosService implements IAxiosService {
     }
   }
 
-  async put<T = unknown>(
+  async put<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
@@ -174,7 +174,7 @@ class AxiosService implements IAxiosService {
     }
   }
 
-  async delete<T = unknown>(
+  async delete<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig

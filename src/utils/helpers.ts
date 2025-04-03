@@ -1,3 +1,4 @@
+import axios, { AxiosError } from "axios";
 import { IErrorReturnData } from "@interfaces/index";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
@@ -55,7 +56,7 @@ export const throttle = <T extends unknown[]>(
 export const errorFormatter = (error: unknown): string => {
   let result = "";
 
-  // Check if it's our custom error type
+  // if it's custom error type
   if (
     error !== null &&
     typeof error === "object" &&
@@ -67,20 +68,19 @@ export const errorFormatter = (error: unknown): string => {
       result += `* ${err.message}.\n`;
     });
   }
-  // Check if it's an axios error with response data
-  // if ('response' in (error as AxiosError) && error.response?.data?.error) {
-  //   const errors = error.response.data.errors;
-  //   if (Array.isArray(errors)) {
-  //     errors.forEach((err) => {
-  //       result += `* ${err.message || err}.\n`;
-  //     });
-  //   }
-  // }
-
-  // Regular Error object
-  else if (error instanceof Error) {
-    result = error.message;
+  // if it's axios error
+  else if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<any>;
+    const errors = axiosError.response?.data?.errors;
+    if (Array.isArray(errors)) {
+      errors.forEach((err) => {
+        result += `* ${err.message || err}.\n`;
+      });
+    }
   }
-
+  // regular error object
+  else {
+    result = (error as Error).message;
+  }
   return result;
 };
