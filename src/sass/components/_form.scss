@@ -89,7 +89,16 @@
   background: $form-input-bg;
   color: hslaGen($primary-color);
   border-bottom: 1px solid rgba(115, 115, 115, 0.4);
+  &:focus {
+    // Remove the default browser outline
+    outline: none;
 
+    // Add animation
+    animation: pulse-border 7s infinite ease-in-out;
+
+    // Set a base box-shadow for browsers that don't support animations
+    box-shadow: 0 0 0 1px hslaGen($primary-color);
+  }
   &.touched-invalid {
     transition: all 0.2s ease-in-out;
     border-bottom: 2px solid hslaGen($danger-color, 0.7);
