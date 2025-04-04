@@ -1,10 +1,14 @@
 "use client";
+import React from "react";
 import Link from "next/link";
 import { useState } from "react";
 import { useTheme } from "@theme/index";
 import { usePathname } from "next/navigation";
+import { useAuthActions, useAuth } from "@store/hooks";
 
 export const Sidebar = () => {
+  const { logout } = useAuthActions();
+  const { isLoggedIn } = useAuth();
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const pathname = usePathname();
@@ -36,7 +40,9 @@ export const Sidebar = () => {
       label: "Logout",
       onClick: (e: React.MouseEvent) => {
         e.preventDefault();
-        // add logout logic here
+        if (isLoggedIn) {
+          logout();
+        }
       },
     },
   ];

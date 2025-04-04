@@ -1,5 +1,5 @@
 import axios from "@configs/axios";
-import { ISignupForm } from "@interfaces/auth.interface";
+import { ICurrentUser, ISignupForm } from "@interfaces/auth.interface";
 
 class AuthService {
   private baseUrl;
@@ -28,7 +28,23 @@ class AuthService {
     rememberMe: boolean;
   }) => {
     try {
-      const res = await axios.post(`${this.baseUrl}/login`, data);
+      const res = await axios.post<{
+        accounts: Array<{ csub: string; displayName: string }>;
+        activeAccount: { csub: string; displayName: string };
+        msg: string;
+      }>(`${this.baseUrl}/login`, data);
+
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+  currentuser = async () => {
+    try {
+      const res = await axios.get<{ success: boolean; data: ICurrentUser }>(
+        `${this.baseUrl}/me`
+      );
+
       return res;
     } catch (error) {
       throw error;
@@ -43,7 +59,7 @@ class AuthService {
       throw error;
     }
   };
-  accountActivation = async (cid: string, data: any) => {
+  accountActivation = async (cid: string, data: { token: string }) => {
     try {
       const res = await axios.put(
         `${this.baseUrl}/account_activation/${cid}?t=${data.token}`

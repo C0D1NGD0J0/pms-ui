@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useState, useRef } from "react";
 import { throttle } from "@utils/helpers";
+import { useCallback, useEffect, useState, useRef } from "react";
 
-const useIdleTimer = (idleTime: number, checkInterval: number = 10000) => {
+export const useIdleDetector = (
+  idleTime: number,
+  checkInterval: number = 10000
+) => {
   const idleTimeInMilliseconds = idleTime * 60000;
   const [isIdle, setIdle] = useState(false);
   const lastActivityTimeRef = useRef(Date.now());
@@ -20,11 +23,6 @@ const useIdleTimer = (idleTime: number, checkInterval: number = 10000) => {
     lastActivityTimeRef.current = Date.now();
     if (isIdle) setIdle(false);
   }, [isIdle]);
-
-  const getRemainingTime = () => {
-    const timeElapsed = Date.now() - lastActivityTimeRef.current;
-    return Math.max(idleTimeInMilliseconds - timeElapsed, 0);
-  };
 
   useEffect(() => {
     const intervalId = setInterval(checkInactivity, checkInterval);
@@ -54,5 +52,3 @@ const useIdleTimer = (idleTime: number, checkInterval: number = 10000) => {
 
   return isIdle;
 };
-
-export default useIdleTimer;

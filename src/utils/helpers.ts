@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { IErrorReturnData } from "@interfaces/index";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
@@ -53,31 +53,34 @@ export const throttle = <T extends unknown[]>(
   };
 };
 
-export const errorFormatter = (
-  error: IErrorReturnData | Error | AxiosError
-): string => {
+export const errorFormatter = (error: unknown): string => {
   let result = "";
 
-  // Check if it's our custom error type
-  if ("errors" in error && Array.isArray(error.errors)) {
-    error.errors.forEach((err) => {
+  // if it's custom error type
+  if (
+    error !== null &&
+    typeof error === "object" &&
+    "errors" in error &&
+    Array.isArray((error as IErrorReturnData).errors)
+  ) {
+    const customError = error as IErrorReturnData;
+    customError.errors?.forEach((err) => {
       result += `* ${err.message}.\n`;
     });
   }
-  // Check if it's an axios error with response data
-  // else if ('response' in error && error.response?.data?.error) {
-  //   const errors = error.response.data.errors;
-  //   if (Array.isArray(errors)) {
-  //     errors.forEach((err) => {
-  //       result += `* ${err.message || err}.\n`;
-  //     });
-  //   }
-  // }
-
-  // Regular Error object
-  else if (error instanceof Error) {
-    result = error.message;
+  // if it's axios error
+  else if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<any>;
+    const errors = axiosError.response?.data?.errors;
+    if (Array.isArray(errors)) {
+      errors.forEach((err) => {
+        result += `* ${err.message || err}.\n`;
+      });
+    }
   }
-
+  // regular error object
+  else {
+    result = (error as Error).message;
+  }
   return result;
 };

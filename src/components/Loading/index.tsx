@@ -1,36 +1,66 @@
-import { Alert, Spin } from "antd";
 import React from "react";
+import Image from "next/image";
 
-import style from "./style.module.css";
-
-interface Test {
+interface LoadingProps {
   description?: string;
-  type?: string;
-  spinning?: boolean;
+  size?: "regular" | "fullscreen";
   onClose?: () => void;
   isCloseable?: boolean;
-  size?: "regular" | "fullscreen";
+  showLogo?: boolean;
+  customBtn?: React.ReactNode;
 }
-export const Loading = ({
+
+export const Loading: React.FC<LoadingProps> = ({
   size = "regular",
-  description,
+  description = "Loading",
   onClose,
-  isCloseable,
-}: Test) => {
+  isCloseable = false,
+  showLogo = false,
+  customBtn,
+}) => {
+  const containerClasses = [
+    "loading_container",
+    size === "fullscreen" ? "loading_fullscreen" : "",
+  ].join(" ");
+
   return (
-    <div
-      className={`${style.loading_regular} ${
-        size === "fullscreen" && style.loading_fullscreen
-      }`}
-    >
-      <Spin size={"small"}>
-        <Alert
-          description={description ? description : "Loading...."}
-          type="info"
-          onClose={onClose}
-          closable={isCloseable || false}
-        />
-      </Spin>
+    <div className={containerClasses}>
+      <div className={"loading_content"}>
+        {showLogo && (
+          <div className={"logo_container"}>
+            <Image
+              src="/assets/imgs/logo.png"
+              alt="Logo"
+              width={80}
+              height={80}
+              className={"logo"}
+            />
+          </div>
+        )}
+
+        <div className={"spinner"}>
+          <div className={"spinner_ring"}></div>
+          <div className={"spinner_ring"}></div>
+          <div className={"spinner_ring"}></div>
+        </div>
+
+        <div className={"message"}>
+          <h3>{description}</h3>
+          <span className={"dot_pulse"}></span>
+        </div>
+
+        {isCloseable && !customBtn && (
+          <button
+            onClick={onClose}
+            className="btn btn-outline-ghost btn-sm btn-rounded"
+            style={{ marginTop: "1rem" }}
+          >
+            Cancel
+          </button>
+        )}
+
+        {customBtn && customBtn}
+      </div>
     </div>
   );
 };

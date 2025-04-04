@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useAuthActions, useAuth } from "@store/hooks";
 
 interface MenuItem {
   icon: string;
@@ -10,6 +11,8 @@ interface MenuItem {
 }
 
 export const Navbar: React.FC = () => {
+  const { isLoggedIn } = useAuth();
+  const { logout } = useAuthActions();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
@@ -26,8 +29,8 @@ export const Navbar: React.FC = () => {
       href: "/register",
       authRequired: false,
     },
-    { icon: "bx-bell", label: "", href: "/notifications", authRequired: false },
-    { icon: "bx-envelope", label: "", href: "/messages", authRequired: false },
+    { icon: "bx-bell", label: "", href: "/notifications", authRequired: true },
+    { icon: "bx-envelope", label: "", href: "/messages", authRequired: true },
   ];
 
   const toggleMobileMenu = () => {
@@ -35,9 +38,9 @@ export const Navbar: React.FC = () => {
     setIsUserDropdownOpen(false);
   };
 
-  const toggleUserDropdown = (e: React.MouseEvent) => {
+  const toggleUserDropdown = (e: React.MouseEvent, value: boolean) => {
     e.stopPropagation();
-    setIsUserDropdownOpen(!isUserDropdownOpen);
+    setIsUserDropdownOpen(value);
   };
 
   return (
@@ -57,11 +60,15 @@ export const Navbar: React.FC = () => {
 
       <ul className={`navbar-menu ${isMobileMenuOpen ? "mobile-active" : ""}`}>
         {menuItems.map((item, index) => {
-          // Skip auth-required items if no user
-          // if (item.authRequired && !user) return null;
+          // skip auth-required items if user is not logged in
+          if (item.authRequired && !isLoggedIn) return null;
 
           // Skip non-auth items if user is logged in
-          // if (!item.authRequired && (item.label === 'Login' || item.label === 'Signup')) return null;
+          if (
+            !item.authRequired &&
+            (item.label === "Login" || item.label === "Signup")
+          )
+            return null;
 
           return (
             <li key={index} className="navbar-menu__item">
@@ -75,7 +82,7 @@ export const Navbar: React.FC = () => {
 
         <li
           className="navbar-menu__item user-avatar"
-          onClick={toggleUserDropdown}
+          onClick={(e) => toggleUserDropdown(e, !isUserDropdownOpen)}
         >
           <span>
             <i className="bx bx-user"></i>
@@ -92,7 +99,19 @@ export const Navbar: React.FC = () => {
               <Link href="/settings">Settings</Link>
             </li>
             <li>
-              <Link href="/logout">Logout</Link>
+              <button
+                type="button"
+                style={{
+                  background: "transparent",
+                  border: "transparent",
+                  fontSize: "2rem",
+                  fontWeight: "100",
+                }}
+                className="text-danger"
+                onClick={logout}
+              >
+                Logout
+              </button>
             </li>
           </ul>
         </li>

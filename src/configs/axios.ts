@@ -1,6 +1,5 @@
 import APIError from "@utils/errorHandler";
 import CookieManager from "@utils/cookieManager";
-import { ISuccessReturnData } from "@interfaces/utils.interface";
 import axios, {
   AxiosRequestConfig,
   AxiosResponse,
@@ -10,32 +9,32 @@ import axios, {
 
 interface IAxiosService {
   axios: AxiosInstance;
-  get<T = unknown>(
+  get<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
-  post<T = unknown>(
+  ): Promise<T>;
+  post<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
-  put<T = unknown>(
+  ): Promise<T>;
+  put<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
-  delete<T = unknown>(
+  ): Promise<T>;
+  delete<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>>;
+  ): Promise<T>;
   getInstance(): AxiosInstance;
 }
 
 class AxiosService implements IAxiosService {
   public axios: AxiosInstance;
-  private refreshTokenPromise: Promise<unknown> | null = null;
+  private refreshTokenPromise: Promise<any> | null = null;
 
   constructor() {
     this.axios = axios.create({
@@ -51,10 +50,8 @@ class AxiosService implements IAxiosService {
   }
 
   private setupInterceptors() {
-    // Request interceptor
     this.axios.interceptors.request.use(
       (config) => {
-        // Get auth token from cookies if it exists
         const token = CookieManager.getCookie("cid");
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -66,10 +63,8 @@ class AxiosService implements IAxiosService {
       }
     );
 
-    // Response interceptor
     this.axios.interceptors.response.use(
       (response: AxiosResponse) => {
-        // You could format response data here if needed
         return response;
       },
       async (error: AxiosError) => {
@@ -78,6 +73,7 @@ class AxiosService implements IAxiosService {
         };
 
         if (!originalRequest) {
+          console.log("Refresh token expired", error);
           return Promise.reject(new APIError().init(error));
         }
 
@@ -91,32 +87,23 @@ class AxiosService implements IAxiosService {
                 .post("/api/v1/auth/refresh_token")
                 .then((response) => {
                   // Handle successful token refresh
-                  // if (newToken) {
-                  //   CookieManager.setCookie("cid", newToken);
-                  // }
                   return response;
                 })
                 .catch((refreshError) => {
                   // If refresh fails, log user out
                   if (refreshError.response?.status === 401) {
-                    CookieManager.removeCookie("cid");
-                    // You might want to redirect to login page here
+                    // redirect to login page here
                   }
+                  console.log("Refresh token expired", error);
                   return Promise.reject(refreshError);
-                })
-                .finally(() => {
-                  this.refreshTokenPromise = null;
                 });
+              // .finally(() => {
+              //   this.refreshTokenPromise = null;
+              // });
             }
 
             try {
               await this.refreshTokenPromise;
-              // Retry the original request with the new token
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${CookieManager.getCookie(
-                  "cid"
-                )}`;
-              }
               return this.axios(originalRequest);
             } catch (error) {
               return Promise.reject(error);
@@ -127,8 +114,8 @@ class AxiosService implements IAxiosService {
           error.response?.status === 401
         ) {
           // Refresh token is invalid, log user out
-          CookieManager.removeCookie("cid");
-          // You might want to redirect to login page here
+          // redirect to login page here
+          console.log("Refresh token expired", error);
         }
 
         // Handle and standardize other errors
@@ -137,13 +124,13 @@ class AxiosService implements IAxiosService {
     );
   }
 
-  async get<T = unknown>(
+  async get<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.get<ISuccessReturnData<T>>(url, {
+      const response = await this.axios.get(url, {
         ...config,
         params,
       });
@@ -153,48 +140,39 @@ class AxiosService implements IAxiosService {
     }
   }
 
-  async post<T = unknown>(
+  async post<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.post<ISuccessReturnData<T>>(
-        url,
-        data,
-        config
-      );
-      console.log(response, "response2");
+      const response = await this.axios.post(url, data, config);
       return response?.data;
     } catch (error) {
       throw error;
     }
   }
 
-  async put<T = unknown>(
+  async put<T = any>(
     url: string,
     data?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.put<ISuccessReturnData<T>>(
-        url,
-        data,
-        config
-      );
+      const response = await this.axios.put(url, data, config);
       return response.data;
     } catch (error) {
       throw error;
     }
   }
 
-  async delete<T = unknown>(
+  async delete<T = any>(
     url: string,
     params?: object,
     config?: AxiosRequestConfig
-  ): Promise<ISuccessReturnData<T>> {
+  ): Promise<T> {
     try {
-      const response = await this.axios.delete<ISuccessReturnData<T>>(url, {
+      const response = await this.axios.delete(url, {
         ...config,
         params,
       });

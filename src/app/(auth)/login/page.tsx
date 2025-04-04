@@ -1,7 +1,10 @@
 "use client";
-import React from "react";
+import { Modal, Radio } from "antd";
+import React, { useState } from "react";
 import { useForm } from "@mantine/form";
+import { useRouter } from "next/navigation";
 import { authService } from "@services/auth";
+import { useAuthActions } from "@store/hooks";
 import { errorFormatter } from "@utils/helpers";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
@@ -22,7 +25,14 @@ import {
 } from "@components/AuthLayout";
 
 export default function Login() {
+  const router = useRouter();
+  const { setClient } = useAuthActions();
   const { openNotification } = useNotification();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState("");
+  const [userAccounts, setUserAccounts] = useState<
+    { csub: string; displayName: string }[]
+  >([]);
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: ILoginForm) => authService.login(data),
   });
@@ -44,12 +54,24 @@ export default function Login() {
       openNotification(
         "success",
         "Login",
-        response.msg || "Password reset was successful."
+        response.msg || "Login was successful."
       );
+      if (response.accounts.length) {
+        setIsModalOpen(true);
+        setUserAccounts(response.accounts);
+        return;
+      }
+
       form.reset();
+      setClient(response.activeAccount);
+      router.push("/dashboard");
     } catch (error: unknown) {
       openNotification("error", "Login process failed", errorFormatter(error));
     }
+  };
+
+  const handleSelect = (csub: string) => {
+    setSelectedClient(csub);
   };
 
   return (
@@ -101,7 +123,7 @@ export default function Login() {
                 id="password"
                 value={form.values.password || ""}
                 hasError={!!form.errors["password"]}
-                placeholder="New password..."
+                placeholder="Enter password..."
                 onChange={(e) => form.setFieldValue("password", e.target.value)}
               />
             </FormField>
@@ -133,6 +155,43 @@ export default function Login() {
         footerLink="/forgot_password"
         footerLinkText="Forgot your password?"
       />
+      {isModalOpen && userAccounts.length > 0 && (
+        <Modal
+          title="Select Client Account"
+          open={isModalOpen}
+          footer={[
+            <Button
+              key="cancel"
+              className="btn-default mr-2"
+              onClick={() => setIsModalOpen(false)}
+              label="Cancel"
+            />,
+            <Button
+              key="select"
+              className="btn-primary"
+              onClick={() => setIsModalOpen(false)}
+              label="Select Client"
+            />,
+          ]}
+        >
+          <div className="">
+            <ul className="account-list">
+              {userAccounts.map((account) => (
+                <li key={account.csub}>
+                  <Radio
+                    key={account.csub}
+                    value={account.csub}
+                    checked={selectedClient === account.csub}
+                    onChange={(e) => handleSelect(e.target.value)}
+                  >
+                    {account.displayName}
+                  </Radio>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Modal>
+      )}
     </>
   );
 }
