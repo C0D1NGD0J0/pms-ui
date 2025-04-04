@@ -2,8 +2,8 @@ import { ConfigProvider } from "antd";
 import { ThemeProvider } from "@theme/index";
 import { RectQueryProvider } from "@hooks/useReactQuery";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import "@styles/main.scss";
 import { NotificationProvider } from "@hooks/useNotification";
+import "@styles/main.scss";
 
 export default function RootLayout({
   children,
@@ -33,7 +33,9 @@ export default function RootLayout({
           <AntdRegistry>
             <NotificationProvider>
               <ConfigProvider>
-                <RectQueryProvider>{children}</RectQueryProvider>
+                <RectQueryProvider>
+                  {children}
+                </RectQueryProvider>
               </ConfigProvider>
             </NotificationProvider>
           </AntdRegistry>
