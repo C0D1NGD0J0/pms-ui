@@ -94,7 +94,7 @@ class AxiosService implements IAxiosService {
                   if (refreshError.response?.status === 401) {
                     // redirect to login page here
                   }
-                  console.log("Refresqwqwqwqh token expired", error);
+                  console.log("Refresh token expired", error);
                   return Promise.reject(refreshError);
                 });
               // .finally(() => {
