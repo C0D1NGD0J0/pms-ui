@@ -73,6 +73,7 @@ class AxiosService implements IAxiosService {
         };
 
         if (!originalRequest) {
+          console.log("Refresh tokewwwwwn expired", error);
           return Promise.reject(new APIError().init(error));
         }
 
@@ -86,32 +87,23 @@ class AxiosService implements IAxiosService {
                 .post("/api/v1/auth/refresh_token")
                 .then((response) => {
                   // Handle successful token refresh
-                  // if (newToken) {
-                  //   CookieManager.setCookie("cid", newToken);
-                  // }
                   return response;
                 })
                 .catch((refreshError) => {
                   // If refresh fails, log user out
                   if (refreshError.response?.status === 401) {
-                    CookieManager.removeCookie("cid");
-                    // You might want to redirect to login page here
+                    // redirect to login page here
                   }
+                  console.log("Refresqwqwqwqh token expired", error);
                   return Promise.reject(refreshError);
-                })
-                .finally(() => {
-                  this.refreshTokenPromise = null;
                 });
+              // .finally(() => {
+              //   this.refreshTokenPromise = null;
+              // });
             }
 
             try {
               await this.refreshTokenPromise;
-              // Retry the original request with the new token
-              if (originalRequest.headers) {
-                originalRequest.headers.Authorization = `Bearer ${CookieManager.getCookie(
-                  "cid"
-                )}`;
-              }
               return this.axios(originalRequest);
             } catch (error) {
               return Promise.reject(error);
@@ -122,8 +114,8 @@ class AxiosService implements IAxiosService {
           error.response?.status === 401
         ) {
           // Refresh token is invalid, log user out
-          CookieManager.removeCookie("cid");
-          // You might want to redirect to login page here
+          // redirect to login page here
+          console.log("Refresh token expired", error);
         }
 
         // Handle and standardize other errors

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { UserClient } from "@store/hooks";
 import { GDPRSettings } from "@store/interface";
+import { UserClient } from "@store/hooks/useAuth";
 import {
   AccountActivationSchema,
   ResetPasswordSchema,
@@ -18,7 +18,7 @@ export interface ICurrentUser {
     lang?: string;
     timezone?: string;
   };
-  csub: { id: string; displayname: string };
+  client: { csub: string; displayName: string };
   clients: UserClient[];
   fullname: string | null;
   permissions: string[];

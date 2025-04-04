@@ -1,42 +1,43 @@
 import { create } from "zustand";
+import { authService } from "@services/auth";
 import { ICurrentUser } from "@interfaces/index";
-import { mountStoreDevtool } from "simple-zustand-devtools";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-export interface UserClient {
+export type UserClient = {
   csub: string;
   displayName: string;
-}
+};
 
-interface AuthState {
-  isLoggedIn: boolean;
+type AuthState = {
   permissions: string[];
   user: ICurrentUser | null;
   client: UserClient;
   actions: {
-    logout: (sendRequest?: boolean) => void;
-    setUser: (user: ICurrentUser | null) => void;
-    setPermissions: (permissions: string[]) => void;
+    logout: () => void;
     setClient: (client: UserClient) => void;
+    setUser: (user: ICurrentUser) => void;
+    setPermissions: (permissions: string[]) => void;
   };
-}
+};
 
 const useAuthStore = create<AuthState>()(
   persist<AuthState>(
-    (set) => ({
+    (set, get) => ({
       client: { csub: "", displayName: "" },
-      isLoggedIn: false,
       permissions: [],
       user: null,
       actions: {
-        logout: (sendRequest = false) => {
-          if (sendRequest) {
-            // Perform logout request here
-          }
-          return set({ isLoggedIn: false, user: null });
+        logout: async () => {
+          const csub = get().client.csub;
+          await authService.logout(csub);
+          return set({
+            user: null,
+            permissions: [],
+            client: { csub: "", displayName: "" },
+          });
         },
-        setUser: (user: ICurrentUser | null) => {
-          return set({ user, isLoggedIn: !!user });
+        setUser: (user: ICurrentUser) => {
+          return set({ user });
         },
         setClient: (client: UserClient) => {
           return set({ client });
@@ -50,15 +51,15 @@ const useAuthStore = create<AuthState>()(
       name: "auth-storage", // unique name for the storage (local storage key)
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => {
-        // only persist isLoggedIn
-        return { isLoggedIn: state.isLoggedIn } as AuthState;
+        return { client: state.client } as unknown as AuthState;
       },
     }
   )
 );
 
 export const useAuth = () => {
-  const { client, isLoggedIn, permissions, user } = useAuthStore();
+  const { client, permissions, user } = useAuthStore();
+  const isLoggedIn = !!user?.sub && !!client.csub;
   return {
     user,
     client,
@@ -77,6 +78,6 @@ export const useAuthActions = () => {
   };
 };
 
-if (process.env.NODE_ENV === "development") {
-  mountStoreDevtool("Store", useAuthStore);
-}
+// if (process.env.NODE_ENV === "development") {
+//   mountStoreDevtool("Store", useAuthStore);
+// }
