@@ -73,7 +73,7 @@ class AxiosService implements IAxiosService {
         };
 
         if (!originalRequest) {
-          console.log("Refresh tokewwwwwn expired", error);
+          console.log("Refresh token expired", error);
           return Promise.reject(new APIError().init(error));
         }
 
