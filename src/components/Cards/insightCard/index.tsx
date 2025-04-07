@@ -9,7 +9,7 @@ interface InsightCardProps {
     direction: "up" | "down" | "none";
     period?: string;
   };
-  description?: string;
+  description?: string | React.ReactNode;
   className?: string;
 }
 
