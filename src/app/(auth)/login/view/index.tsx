@@ -112,7 +112,7 @@ export function LoginView({
           </div>
         </Form>
       </AuthContentBody>
-      <AuthContenFooter
+      <AuthContentFooter
         footerLink="/forgot_password"
         footerLinkText="Forgot your password?"
       />
