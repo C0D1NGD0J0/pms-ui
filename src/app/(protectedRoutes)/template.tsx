@@ -31,7 +31,7 @@ export default function AuthTemplate({
     };
   }, [isIdle, isLoggedIn, push]);
 
-  if (isLoggedIn && !isIdle) {
+  if (isLoggedIn && isIdle) {
     return (
       <Loading
         size="fullscreen"
