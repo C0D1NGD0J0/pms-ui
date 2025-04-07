@@ -1,11 +1,19 @@
 "use client";
 import React from "react";
+import { useAuth } from "@store/hooks";
+import { useRouter } from "next/navigation";
 
 import { useLoginLogic } from "./hook";
 import { LoginView as Component } from "./view";
 
 export default function Login() {
+  const { push } = useRouter();
   const logic = useLoginLogic();
+  const { isLoggedIn } = useAuth();
+
+  if (isLoggedIn) {
+    return push("/dashboard");
+  }
 
   return (
     <Component

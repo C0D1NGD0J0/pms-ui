@@ -1,111 +1,113 @@
 @use "../abstract/index" as *;
+#loading {
+  .loading {
+    &_container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
 
-.loading {
-  &_container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
+    &_fullscreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 9999;
+      backdrop-filter: blur(5px);
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    &_content {
+      gap: 1rem;
+      display: flex;
+      text-align: center;
+      align-items: center;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  .logo {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: pulse-subtle 2s infinite;
+
+    &_container {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .spinner {
     position: relative;
+    width: 7.5rem;
+    height: 7.5rem;
+
+    &_ring {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      border: 4px solid transparent;
+      animation: spin 1.7s linear infinite;
+      border-top-color: hslaGen($primary-color);
+
+      &:nth-child(2) {
+        width: 75%;
+        height: 75%;
+        top: 12.5%;
+        left: 12.5%;
+        animation-duration: 1.8s;
+        animation-direction: reverse;
+        border-top-color: hslaGen($secondary-color);
+      }
+
+      &:nth-child(3) {
+        top: 25%;
+        left: 25%;
+        width: 50%;
+        height: 50%;
+        animation-duration: 2s;
+        border-top-color: hslaGen($blue-ink-color);
+      }
+    }
   }
 
-  &_fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 9999;
-    backdrop-filter: blur(5px);
-    background-color: rgba(255, 255, 255, 0.95);
-  }
-
-  &_content {
-    gap: 1rem;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-  }
-}
-
-.logo {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  animation: pulse-subtle 2s infinite;
-
-  &_container {
-    margin-bottom: 1rem;
-  }
-}
-
-.spinner {
-  position: relative;
-  width: 7.5rem;
-  height: 7.5rem;
-
-  &_ring {
+  .message {
     width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    position: absolute;
-    border: 4px solid transparent;
-    animation: spin 1.7s linear infinite;
-    border-top-color: hslaGen($primary-color);
+    display: flex;
+    margin: 1rem 0;
+    font-weight: bold;
+    text-align: center;
+    align-items: center;
+    color: hslaGen($primary-color);
 
-    &:nth-child(2) {
-      width: 75%;
-      height: 75%;
-      top: 12.5%;
-      left: 12.5%;
-      animation-duration: 1.8s;
-      animation-direction: reverse;
-      border-top-color: hslaGen($secondary-color);
+    .dot_pulse {
+      display: inline-flex;
+      align-items: center;
+      position: relative;
+
+      &::after,
+      &::before {
+        content: "•";
+        display: inline-block;
+        animation: pulse 1.8s infinite;
+        margin: 0 0.2rem;
+        opacity: 0;
+      }
+
+      &::before {
+        animation-delay: 0.2s;
+      }
+
+      &::after {
+        animation-delay: 0.3s;
+      }
     }
-
-    &:nth-child(3) {
-      top: 25%;
-      left: 25%;
-      width: 50%;
-      height: 50%;
-      animation-duration: 2s;
-      border-top-color: hslaGen($blue-ink-color);
-    }
-  }
-}
-
-.message {
-  width: 100%;
-  font-size: 1.4rem;
-  font-weight: bold;
-  text-align: center;
-  line-height: 1.4;
-  margin-top: 1rem;
-  color: hslaGen($primary-color);
-}
-
-.dot_pulse {
-  display: inline-flex;
-  align-items: center;
-  position: relative;
-
-  &::after,
-  &::before {
-    content: "•";
-    display: inline-block;
-    animation: pulse 1.8s infinite;
-    margin: 0 0.2rem;
-    opacity: 0;
-  }
-
-  &::before {
-    animation-delay: 0.2s;
-  }
-
-  &::after {
-    animation-delay: 0.3s;
   }
 }
 
