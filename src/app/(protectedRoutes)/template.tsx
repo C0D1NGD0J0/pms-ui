@@ -16,22 +16,37 @@ export default function AuthTemplate({
   const { isLoggedIn, refreshUser } = useCurrentUser();
 
   useEffect(() => {
-    if (isIdle) {
-      if (isLoggedIn) {
-        showAlert("User inactivity detected.");
-        refreshUser();
-      }
+    let timeoutId: NodeJS.Timeout | null = null;
 
-      if (!isLoggedIn) {
-        showAlert("Session expired.");
-        push("/login");
-      }
+    if (isIdle && !isLoggedIn) {
+      timeoutId = setTimeout(() => {
+        return push("/login");
+      }, 3000);
     }
-  }, [isIdle, isLoggedIn]);
 
-  const showAlert = (msg: string) => {
-    return <Loading size="fullscreen" description={msg} />;
-  };
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isIdle, isLoggedIn, push]);
+
+  if (isLoggedIn && isIdle) {
+    return (
+      <Loading
+        size="fullscreen"
+        description="User inactivity detected"
+        customBtn={
+          <button
+            className="btn btn-rounded btn-sm btn-primary"
+            onClick={() => refreshUser()}
+          >
+            resume session
+          </button>
+        }
+      />
+    );
+  }
 
   if (!isLoggedIn) {
     return (

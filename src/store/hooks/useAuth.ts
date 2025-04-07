@@ -15,7 +15,7 @@ type AuthState = {
   actions: {
     logout: () => void;
     setClient: (client: UserClient) => void;
-    setUser: (user: ICurrentUser) => void;
+    setUser: (user: ICurrentUser | null) => void;
     setPermissions: (permissions: string[]) => void;
   };
 };
@@ -36,7 +36,7 @@ const useAuthStore = create<AuthState>()(
             client: { csub: "", displayName: "" },
           });
         },
-        setUser: (user: ICurrentUser) => {
+        setUser: (user: ICurrentUser | null) => {
           return set({ user });
         },
         setClient: (client: UserClient) => {

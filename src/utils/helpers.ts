@@ -43,14 +43,44 @@ export const throttle = <T extends unknown[]>(
   func: (...args: T) => void,
   limit: number
 ) => {
-  let inThrottle: boolean;
-  return function (this: ThisParameterType<typeof func>, ...args: T) {
+  let inThrottle = false;
+  let lastArgs: T | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  function throttled(this: ThisParameterType<typeof func>, ...args: T) {
+    lastArgs = args;
+
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+
+      // allow calls again after the limit
+      timeoutId = setTimeout(() => {
+        inThrottle = false;
+
+        // where there were any calls during the wait, run the function with the most recent args
+        if (lastArgs) {
+          // not really sure whats going on here, but it works
+          Function.prototype.apply.call(func, this, lastArgs);
+          lastArgs = null;
+        }
+      }, limit);
     }
+  }
+
+  type ThrottledFunction = ((...args: T) => void) & { cancel: () => void };
+
+  // cancel method
+  (throttled as ThrottledFunction).cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    inThrottle = false;
+    lastArgs = null;
   };
+
+  return throttled as ThrottledFunction;
 };
 
 export const errorFormatter = (error: unknown): string => {
