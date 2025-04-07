@@ -46,7 +46,7 @@ export const useCurrentUser = () => {
       const status = error.statusCode;
       // DO NOT retry if the error is 401 (Unauthorized) or 403 (Forbidden)
       if (status === 401 || status === 403) {
-        console.log("na 401 error oh----");
+        console.log("Retry aborted: Unauthorized (401) or Forbidden (403) error encountered while fetching current user.");
         return false;
       }
 
