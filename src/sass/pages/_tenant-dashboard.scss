@@ -1,8 +1,5 @@
 @use "../abstract/index" as *;
-// Custom SCSS for tenant dashboard components
-// Using variables from main style system
 
-/* Announcement component styles */
 .announcement {
   &-container {
     display: flex;
