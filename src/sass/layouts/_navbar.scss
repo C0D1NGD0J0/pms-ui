@@ -212,10 +212,9 @@
     border: 0.1rem solid hslaGen($white-color, 1);
   }
 
-  /* Show Dropdown on Hover */
-  &:hover .navbar__dropdown-menu {
-    display: block;
-  }
+  // &:hover .navbar__dropdown-menu {
+  //   display: block;
+  // }
 }
 
 // DASHBOARD SIDEBAR-NAV

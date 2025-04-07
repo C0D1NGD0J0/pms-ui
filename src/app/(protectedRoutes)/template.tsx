@@ -1,0 +1,66 @@
+"use client";
+import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Loading } from "@components/Loading";
+import { useIdleDetector } from "@hooks/useActive";
+import { useCurrentUser } from "@hooks/useCurrentUser";
+
+export default function AuthTemplate({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { push } = useRouter();
+  const isIdle: boolean = useIdleDetector(1);
+  const { isLoggedIn, refreshUser } = useCurrentUser();
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
+
+    if (isIdle && !isLoggedIn) {
+      timeoutId = setTimeout(() => {
+        return push("/login");
+      }, 3000);
+    }
+
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isIdle, isLoggedIn, push]);
+
+  if (isLoggedIn && isIdle) {
+    return (
+      <Loading
+        size="fullscreen"
+        description="User inactivity detected"
+        customBtn={
+          <button
+            className="btn btn-rounded btn-sm btn-primary"
+            onClick={() => refreshUser()}
+          >
+            resume session
+          </button>
+        }
+      />
+    );
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <Loading
+        size="fullscreen"
+        description="Authenticating"
+        customBtn={
+          <Link className="btn btn-text" href={"/login"}>
+            Back to login
+          </Link>
+        }
+      />
+    );
+  }
+
+  return <>{children}</>;
+}

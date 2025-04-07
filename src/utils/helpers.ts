@@ -1,4 +1,4 @@
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { IErrorReturnData } from "@interfaces/index";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
@@ -43,41 +43,74 @@ export const throttle = <T extends unknown[]>(
   func: (...args: T) => void,
   limit: number
 ) => {
-  let inThrottle: boolean;
-  return function (this: ThisParameterType<typeof func>, ...args: T) {
+  let inThrottle = false;
+  let lastArgs: T | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  function throttled(this: ThisParameterType<typeof func>, ...args: T) {
+    lastArgs = args;
+
     if (!inThrottle) {
       func.apply(this, args);
       inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+
+      // allow calls again after the limit
+      timeoutId = setTimeout(() => {
+        inThrottle = false;
+
+        // where there were any calls during the wait, run the function with the most recent args
+        if (lastArgs) {
+          // not really sure whats going on here, but it works
+          Function.prototype.apply.call(func, this, lastArgs);
+          lastArgs = null;
+        }
+      }, limit);
     }
+  }
+
+  type ThrottledFunction = ((...args: T) => void) & { cancel: () => void };
+
+  // cancel method
+  (throttled as ThrottledFunction).cancel = () => {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    inThrottle = false;
+    lastArgs = null;
   };
+
+  return throttled as ThrottledFunction;
 };
 
-export const errorFormatter = (
-  error: IErrorReturnData | Error | AxiosError
-): string => {
+export const errorFormatter = (error: unknown): string => {
   let result = "";
 
-  // Check if it's our custom error type
-  if ("errors" in error && Array.isArray(error.errors)) {
-    error.errors.forEach((err) => {
+  // if it's custom error type
+  if (
+    error !== null &&
+    typeof error === "object" &&
+    "errors" in error &&
+    Array.isArray((error as IErrorReturnData).errors)
+  ) {
+    const customError = error as IErrorReturnData;
+    customError.errors?.forEach((err) => {
       result += `* ${err.message}.\n`;
     });
   }
-  // Check if it's an axios error with response data
-  // else if ('response' in error && error.response?.data?.error) {
-  //   const errors = error.response.data.errors;
-  //   if (Array.isArray(errors)) {
-  //     errors.forEach((err) => {
-  //       result += `* ${err.message || err}.\n`;
-  //     });
-  //   }
-  // }
-
-  // Regular Error object
-  else if (error instanceof Error) {
-    result = error.message;
+  // if it's axios error
+  else if (axios.isAxiosError(error)) {
+    const axiosError = error as AxiosError<any>;
+    const errors = axiosError.response?.data?.errors;
+    if (Array.isArray(errors)) {
+      errors.forEach((err) => {
+        result += `* ${err.message || err}.\n`;
+      });
+    }
   }
-
+  // regular error object
+  else {
+    result = (error as Error).message;
+  }
   return result;
 };

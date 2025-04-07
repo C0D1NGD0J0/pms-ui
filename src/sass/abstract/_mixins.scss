@@ -345,3 +345,20 @@
     @warn "Theme configuration is not a valid map";
   }
 }
+
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0 hslaGen($primary-color, 0.4);
+    border-color: hslaGen($primary-color);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px hslaGen($primary-color, 0.4);
+    border-color: hslaGen($primary-color);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 hslaGen($primary-color, 0.4);
+    border-color: hslaGen($primary-color);
+  }
+}
