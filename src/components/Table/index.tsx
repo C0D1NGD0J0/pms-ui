@@ -144,12 +144,16 @@ export function Table<T extends object>({
       components={{
         table: (props) => <table {...props} className="custom-table"></table>,
         header: {
-          wrapper: (props) => <thead {...props} className="custom-thead"></thead>,
+          wrapper: (props) => (
+            <thead {...props} className="custom-thead"></thead>
+          ),
           row: (props) => <tr {...props} className="custom-tr"></tr>,
           cell: (props) => <th {...props} className="custom-th"></th>,
         },
         body: {
-          wrapper: (props) => <tbody {...props} className="custom-tbody"></tbody>,
+          wrapper: (props) => (
+            <tbody {...props} className="custom-tbody"></tbody>
+          ),
           row: (props) => <tr {...props} className="custom-tr"></tr>,
           cell: (props) => <td {...props} className="custom-td"></td>,
         },
@@ -160,7 +164,6 @@ export function Table<T extends object>({
   if (variant === "withHeader") {
     return (
       <Panel
-        className={`table-container ${className}`}
         header={{
           title,
         }}
@@ -179,7 +182,7 @@ export function Table<T extends object>({
   }
 
   return (
-    <div className={`table-container ${className}`}>
+    <div className={`panel ${className}`}>
       <div className="panel-content">{tableComponent}</div>
     </div>
   );

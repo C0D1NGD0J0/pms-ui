@@ -1,28 +1,5 @@
 @use "../../abstract/index" as *;
 
-/* Analytics cards */
-.analytics-cards {
-  gap: 20px;
-  display: flex;
-  flex-wrap: wrap;
-
-  .analytics-card {
-    flex: 1;
-    padding: 1.5rem;
-    min-width: 25rem;
-    background: hslaGen($off-white-color);
-    border: 1px solid hslaGen($grey-color, 0.3);
-
-    .analytics-header {
-      h4 {
-        margin-top: 0;
-        margin-bottom: 15px;
-        font-size: 16px;
-      }
-    }
-  }
-}
-
 /* Placeholder chart styles */
 .placeholder-chart {
   display: flex;

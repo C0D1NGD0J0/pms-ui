@@ -26,60 +26,44 @@ export const Panel: React.FC<PanelProps> = ({
 }) => {
   return (
     <div className={`panel ${className}`}>
-      {header && (
-        <div className="panel-header">
-          {header.title && (
-            <div className="panel-header__title">
-              {typeof header.title === "string" ? (
-                <h4>{header.title}</h4>
-              ) : (
-                header.title
-              )}
-            </div>
-          )}
-          {(searchOpts || filterOpts) && (
-            <div className="panel-header__menu">
-              {searchOpts && (
-                <div className="search-bar">
-                  <input
-                    type="text"
-                    placeholder={searchOpts.placeholder || "Search..."}
-                    className="search-input"
-                    value={searchOpts.value}
-                    onChange={searchOpts.onSearchChange}
-                  />
-                  <button className="search-btn">
-                    <i className="bx bx-search"></i>
-                  </button>
-                </div>
-              )}
-              {filterOpts && filterOpts.options.length > 0 && (
-                <div className="filter-options">
-                  <select
-                    className="filter-select"
-                    onChange={(e) => filterOpts.onFilterChange(e.target.value)}
-                  >
-                    {filterOpts.options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-          )}
+      <div className="panel-header">
+        <div className="panel-header__title">
+          <h4>{header?.title}</h4>
         </div>
-      )}
+        {(searchOpts || filterOpts) && (
+          <div className="panel-header__menu">
+            {searchOpts && (
+              <div className="search-bar">
+                <input
+                  type="text"
+                  placeholder={searchOpts.placeholder || "Search..."}
+                  className="search-input"
+                  value={searchOpts.value}
+                  onChange={searchOpts.onSearchChange}
+                />
+                <button className="search-btn">
+                  <i className="bx bx-search"></i>
+                </button>
+              </div>
+            )}
+            {filterOpts && filterOpts.options.length > 0 && (
+              <div className="filter-options">
+                <select
+                  className="filter-select"
+                  onChange={(e) => filterOpts.onFilterChange(e.target.value)}
+                >
+                  {filterOpts.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
       <div className="panel-content">{children}</div>
     </div>
   );
 };
-
-export const PanelHeaderTitle: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => (
-  <div className="panel-header__title">
-    {typeof children === "string" ? <h4>{children}</h4> : children}
-  </div>
-);
