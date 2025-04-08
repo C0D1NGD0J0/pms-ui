@@ -1,0 +1,24 @@
+@use "../abstract/index" as *;
+
+.page-header {
+  display: flex;
+  padding: 2rem 0;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid hslaGen($grey-color, 0.2);
+
+  &__title {
+    h2 {
+      font-size: 2rem;
+    }
+    small {
+      font-size: $fs-sm;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  &__actions {
+    position: relative;
+    /* padding-right: 2rem; */
+  }
+}

@@ -1,89 +1,175 @@
 "use client";
-
-import React, { useState } from "react";
-import { useAuth } from "@store/hooks/useAuth";
-import { useCurrentUser } from "@hooks/useCurrentUser";
-import { Loading } from "@components/Loading";
+import React from "react";
+import Link from "next/link";
+import { Table } from "@components/Table";
+import { Panel } from "@components/Panel";
+import { InsightCard } from "@components/Cards";
+import { AnalyticCard } from "@components/Cards";
+import { PageHeader } from "@components/PageElements";
+import { HorizontalBarChart, DonutChart } from "@components/Charts";
+import {
+  serviceRequestColumns,
+  statusFilterOptions,
+  leaseStatusColumns,
+  insightCardsData,
+  occupancyColumns,
+  serviceRequests,
+  serviceTypeData,
+  paymentColumns,
+  leaseStatuses,
+  occupancyData,
+  filterOptions,
+  priorityData,
+  payments,
+} from "@/src/test-data";
 
 export default function Dashboard() {
-  const { user, isLoggedIn } = useAuth();
-  const { refreshUser, isFetchingUser } = useCurrentUser();
-  const [showLoading, setShowLoading] = useState(false);
-  const [loadingType, setLoadingType] = useState<"regular" | "fullscreen">("regular");
-  const [showLogo, setShowLogo] = useState(false);
-
-  // Demo function to show loading for a few seconds
-  const demoLoading = (type: "regular" | "fullscreen", withLogo: boolean) => {
-    setLoadingType(type);
-    setShowLogo(withLogo);
-    setShowLoading(true);
-    setTimeout(() => setShowLoading(false), 3000);
-  };
-
-  if (isFetchingUser) {
-    return <Loading description="Loading dashboard data..." />;
-  }
-
   return (
-    <div style={{ padding: "2rem", maxWidth: "800px", margin: "0 auto" }}>
-      <h1>Dashboard</h1>
-      
-      {user && (
-        <div style={{ marginBottom: "2rem" }}>
-          <h2>Welcome, {user?.fullname || user?.displayName}</h2>
-          <p>Email: {user?.email}</p>
-        </div>
-      )}
+    <div className="page admin-dashboard">
+      <PageHeader
+        title="Dashboard"
+        subtitle={new Date().toLocaleDateString()}
+        headerBtn={
+          <Link className="btn btn-success" href={"/properties/new"}>
+            <i className="bx bx-plus-circle"></i>
+            Add new property
+          </Link>
+        }
+      />
 
-      <div style={{ marginBottom: "2rem" }}>
-        <h3>Loading Component Demo</h3>
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginTop: "1rem" }}>
-          <button 
-            onClick={() => demoLoading("regular", false)}
-            style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-          >
-            Show Regular Loading
-          </button>
-          
-          <button 
-            onClick={() => demoLoading("regular", true)}
-            style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-          >
-            Show Regular Loading with Logo
-          </button>
-          
-          <button 
-            onClick={() => demoLoading("fullscreen", false)}
-            style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-          >
-            Show Fullscreen Loading
-          </button>
-          
-          <button 
-            onClick={() => demoLoading("fullscreen", true)}
-            style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-          >
-            Show Fullscreen Loading with Logo
-          </button>
+      <div className="insights">
+        {insightCardsData.map((card) => (
+          <InsightCard
+            key={card.id}
+            title={card.title}
+            value={card.value}
+            icon={card.icon}
+            trend={card.trend}
+            description={card.description}
+          />
+        ))}
+      </div>
+
+      <div className="flex-row">
+        <div className="panels">
+          <Table
+            variant="withHeader"
+            title="Service Requests"
+            columns={serviceRequestColumns}
+            dataSource={serviceRequests}
+            searchOpts={{
+              value: "",
+              onChange: (value: string) => {
+                console.log("Search value:", value);
+              },
+            }}
+            filterOpts={{
+              value: "all",
+              options: statusFilterOptions,
+              onFilterChange: (value: string) => {
+                console.log("Filter value:", value);
+              },
+            }}
+            pagination={{ pageSize: 4 }}
+            rowKey="id"
+          />
+
+          <Table
+            variant="withHeader"
+            title="Upcoming Payments"
+            columns={paymentColumns}
+            dataSource={payments}
+            searchOpts={{
+              value: "",
+              onChange: (value: string) => {
+                console.log("Search value:", value);
+              },
+            }}
+            filterOpts={{
+              value: "all",
+              options: statusFilterOptions,
+              onFilterChange: (value: string) => {
+                console.log("Filter value:", value);
+              },
+            }}
+            pagination={{ pageSize: 4 }}
+            rowKey="id"
+          />
         </div>
       </div>
 
-      {showLoading && (
-        <Loading 
-          size={loadingType}
-          description="This is a demo loading message..."
-          showLogo={showLogo}
-          isCloseable={true}
-          onClose={() => setShowLoading(false)}
-        />
-      )}
-      
-      <button 
-        onClick={() => refreshUser()} 
-        style={{ padding: "0.5rem 1rem", cursor: "pointer" }}
-      >
-        Refresh User Data
-      </button>
+      <div className="flex-row">
+        <div className="panels">
+          <Table
+            title="Lease Status"
+            columns={leaseStatusColumns}
+            dataSource={leaseStatuses}
+            searchOpts={{
+              value: "",
+              onChange: (value: string) => {
+                console.log("Search value:", value);
+              },
+            }}
+            filterOpts={{
+              value: "all",
+              options: statusFilterOptions,
+              onFilterChange: (value: string) => {
+                console.log("Filter value:", value);
+              },
+            }}
+            pagination={{ pageSize: 4 }}
+            rowKey="id"
+            variant="withHeader"
+          />
+        </div>
+      </div>
+
+      <div className="flex-row">
+        <div className="panels">
+          <Table
+            title="Occupancy by Property"
+            columns={occupancyColumns}
+            dataSource={occupancyData}
+            searchOpts={{
+              value: "",
+              onChange: (value: string) => {
+                console.log("Search value:", value);
+              },
+            }}
+            filterOpts={{
+              value: "all",
+              options: filterOptions,
+              onFilterChange: (value: string) => {
+                console.log("Filter value:", value);
+              },
+            }}
+            pagination={{ pageSize: 5 }}
+            rowKey="id"
+            variant="withHeader"
+          />
+
+          <Panel header={{ title: "Maintenance Request Analysis" }}>
+            <div className="analytics-cards">
+              <AnalyticCard
+                title="By Priority"
+                data={priorityData}
+                nameKey={"name"}
+                valueKey={"value"}
+                showLegend
+              >
+                <DonutChart data={priorityData} className="priority-chart" />
+              </AnalyticCard>
+
+              <AnalyticCard title="Service type" data={serviceTypeData}>
+                <HorizontalBarChart
+                  data={serviceTypeData}
+                  className="horizontal-bar-chart"
+                />
+              </AnalyticCard>
+            </div>
+          </Panel>
+        </div>
+      </div>
     </div>
   );
 }
