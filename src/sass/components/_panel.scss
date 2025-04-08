@@ -1,0 +1,89 @@
+@use "../abstract/index" as *;
+
+.panels {
+  gap: 1.5rem;
+  width: 100%;
+  display: flex;
+  padding: 2rem 0;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 48%), 1fr));
+
+  .panel {
+    flex: 1;
+
+    &-header {
+      display: flex;
+      align-items: center;
+      padding: 1.2rem 1rem;
+      justify-content: space-between;
+      background: hslaGen($white-color);
+      border-bottom: 1px solid hslaGen($grey-color, 0.2);
+      &__title {
+        max-width: 25rem;
+        h4 {
+          margin: 0;
+          font-weight: 700;
+        }
+      }
+
+      &__menu {
+        gap: 1rem;
+        display: flex;
+        align-items: center;
+
+        .filter-options {
+          position: relative;
+
+          .filter-select {
+            padding: 0.3rem;
+            border-radius: 0.3rem;
+            border: 1px solid hslaGen($grey-color);
+            font-size: $fs-md;
+          }
+        }
+
+        // Search bar styles
+        .search-bar {
+          display: flex;
+          overflow: hidden;
+          position: relative;
+          align-items: center;
+
+          .search-input {
+            width: 0;
+            opacity: 0;
+            padding: 0.5rem;
+            font-size: $fs-md;
+            margin-right: 0.8rem;
+            border-radius: 0.3rem;
+            border: 1px solid hslaGen($grey-color);
+            @include transition(all, 0.5s, ease-in-out);
+          }
+
+          .search-btn {
+            font-size: 2rem;
+            background: transparent;
+            border-radius: 50%;
+            color: hslaGen($blue-ink-color);
+            cursor: pointer;
+            border: none;
+            -webkit-border-radius: 50%;
+            -moz-border-radius: 50%;
+            -ms-border-radius: 50%;
+            -o-border-radius: 50%;
+          }
+
+          &:hover {
+            .search-input {
+              width: 200px;
+              opacity: 1;
+              @include transition(all, 0.5s, ease-in-out);
+            }
+          }
+        }
+      }
+    }
+
+    &-content {
+    }
+  }
+}

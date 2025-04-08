@@ -1,9 +1,9 @@
 "use client";
 import { useForm } from "@mantine/form";
 import React, { useEffect } from "react";
-import { Loading } from "@components/UI";
 import { useParams } from "next/navigation";
 import { authService } from "@services/auth";
+import { Loading } from "@components/Loading";
 import { errorFormatter } from "@utils/helpers";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";

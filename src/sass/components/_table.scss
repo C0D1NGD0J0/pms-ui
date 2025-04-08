@@ -1,0 +1,181 @@
+@use "../abstract/index" as *;
+
+/* Global reset for Ant Design table styles */
+.ant-table-wrapper,
+.custom-table-wrapper {
+  all: unset !important;
+}
+
+.table-container {
+  width: 100% !important;
+}
+/* Override Ant Design specific table styles */
+.ant-table {
+  background: transparent !important;
+  border: none !important;
+}
+
+.ant-table-container {
+  border: none !important;
+  border-radius: 0.6rem !important;
+}
+
+.ant-table-thead > tr > th,
+.ant-table-tbody > tr > td {
+  background: transparent !important;
+  border: none !important;
+}
+
+table,
+.panel-content-table table,
+.custom-table {
+  width: 100% !important;
+  height: inherit !important;
+  text-align: left !important;
+  position: relative !important;
+  color: hslaGen($primary-color) !important;
+  table-layout: auto !important;
+  border-radius: 0.6rem !important;
+  border-collapse: collapse !important;
+  transition: all 0.4s ease-in-out !important;
+  background-color: var(--white-color) !important;
+  box-shadow: 0px 7px 29px -5px rgba(0, 0, 0, 0.3) !important;
+  -webkit-border-radius: 0.6rem !important;
+  -moz-border-radius: 0.6rem !important;
+  -ms-border-radius: 0.6rem !important;
+  -o-border-radius: 0.6rem !important;
+}
+
+table thead,
+.panel-content-table table thead,
+.custom-thead {
+  font-weight: 500 !important;
+  background-color: white !important;
+  box-shadow: 0px 5px 10px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+table th,
+.panel-content-table table th,
+.custom-th {
+  padding: 1rem !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.1rem !important;
+  text-overflow: ellipsis !important;
+  text-transform: uppercase !important;
+}
+
+table tbody tr,
+.panel-content-table table tbody tr,
+.custom-tbody .custom-tr {
+  height: 4rem !important;
+  padding: 2rem 0 !important;
+  word-wrap: break-word !important;
+  text-overflow: ellipsis !important;
+  border-bottom: 1px solid lightgray !important;
+}
+
+table tbody tr:last-child,
+.panel-content-table table tbody tr:last-child,
+.custom-tbody .custom-tr:last-child {
+  border-bottom: none !important;
+}
+
+tbody tr td,
+.panel-content-table tbody tr td,
+.custom-tbody .custom-tr .custom-td {
+  /* min-width: 60%; */
+  font-weight: 300 !important;
+  padding: 1.5rem 0.7rem !important;
+  overflow-wrap: break-word !important;
+  font-size: clamp(1.4rem, 1vw, 1.8rem) !important;
+}
+
+tbody td i,
+.panel-content-table tbody td i,
+.custom-tbody .custom-td i {
+  font-size: 2rem !important;
+}
+
+table tbody tr:hover,
+.panel-content-table table tbody tr:hover,
+.custom-tbody .custom-tr:hover {
+  background-color: #f5f5f5 !important;
+  transition: all 0.3s ease !important;
+  -webkit-transition: all 0.3s ease !important;
+  -moz-transition: all 0.3s ease !important;
+  -ms-transition: all 0.3s ease !important;
+  -o-transition: all 0.3s ease !important;
+}
+
+tfoot {
+  background-color: hslaGen($light-grey-color, 0.1);
+  .pagination-alt {
+    width: 100%;
+    padding: 0.5rem 0;
+    text-align: center;
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+    gap: 0.5rem;
+
+    a {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-width: 2.5rem;
+      height: 2.5rem;
+      color: hslaGen($primary-color);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: hslaGen($dark-grey-color);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+        z-index: -1;
+      }
+
+      &:hover:not(.active) {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        color: hslaGen($blue-ink-color);
+      }
+
+      &.active {
+        box-shadow: $box-shadow;
+        transform: translateY(-2px);
+        color: hslaGen($primary-color);
+        background-color: hslaGen($light-grey-color, 0.2);
+      }
+
+      // Navigation arrows
+      &:first-child,
+      &:last-child {
+        font-size: 1.2rem;
+        background-color: transparent;
+        box-shadow: none;
+
+        &:hover {
+          background-color: hslaGen($light-grey-color, 0.5);
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+}
