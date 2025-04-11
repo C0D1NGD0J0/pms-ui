@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { Panel } from "@components/Panel";
 import React, { ReactNode, useState } from "react";
+import { PanelHeaderProps, PanelContent, PanelHeader } from "@components/Panel";
 import {
   TableProps as AntTableProps,
   TablePaginationConfig,
   Table as AntTable,
 } from "antd";
 
-// Define column configuration
 export interface TableColumn<T> {
   title: string;
   dataIndex: keyof T | string;
@@ -18,57 +17,44 @@ export interface TableColumn<T> {
   width?: number | string;
 }
 
-// Define table props
 export interface TableProps<T> {
   columns: TableColumn<T>[];
   dataSource: T[];
-  title?: string | ReactNode;
-  searchOpts?: {
-    value: string;
-    onChange: (value: string) => void;
-  } | null;
-  filterOpts?: {
-    value: string;
-    options: { label: string; value: string }[];
-    onFilterChange: (value: string) => void;
-  } | null;
+  headerTitle?: string;
+  searchOpts?: PanelHeaderProps["searchOpts"] | null;
+  filterOpts?: PanelHeaderProps["filterOpts"] | null;
   loading?: boolean;
   rowKey?: string;
   className?: string;
   emptyText?: string;
   antTableProps?: AntTableProps<T>;
-  variant?: "withoutHeader" | "withHeader";
+  withHeader?: boolean;
   pagination?: boolean | { pageSize?: number; showSizeChanger?: boolean };
+  rowSelection?: {
+    type?: "checkbox" | "radio";
+    selectedRowKeys?: React.Key[];
+    onChange?: (selectedRowKeys: React.Key[], selectedRows: T[]) => void;
+    getCheckboxProps?: (record: T) => { disabled?: boolean; name?: string };
+  };
 }
 
 export function Table<T extends object>({
   columns,
   dataSource,
-  title,
-  searchOpts,
-  filterOpts,
   loading = false,
   rowKey = "id",
   pagination = true,
-  className = "",
+  withHeader = false,
+  headerTitle,
   emptyText = "No data found",
   antTableProps,
-  variant = "withoutHeader",
+  searchOpts,
+  filterOpts,
+  rowSelection,
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchValue(value);
-    searchOpts && searchOpts.onChange(value);
-  };
-
-  // Handle filter change
-  const handleFilterChange = (value: string) => {
-    filterOpts && filterOpts.onFilterChange(value);
-  };
-
-  // Define column configurations for Ant Table
+  // column configurations for ant table
   const tableColumns = columns.map((column) => ({
     title: column.title,
     dataIndex: column.dataIndex as string,
@@ -80,7 +66,7 @@ export function Table<T extends object>({
       (column.isStatus ? (value: any) => renderStatusBadge(value) : undefined),
   }));
 
-  // Render status badges
+  // render status badges
   const renderStatusBadge = (status: string) => {
     if (!status) return null;
 
@@ -89,6 +75,7 @@ export function Table<T extends object>({
 
     if (
       statusLower.includes("active") ||
+      statusLower.includes("available") ||
       statusLower.includes("vacant") ||
       statusLower.includes("success") ||
       statusLower.includes("resolved") ||
@@ -97,6 +84,7 @@ export function Table<T extends object>({
       statusClass = "success";
     } else if (
       statusLower.includes("pending") ||
+      statusLower.includes("maintenance") ||
       statusLower.includes("warning") ||
       statusLower.includes("low")
     ) {
@@ -138,9 +126,10 @@ export function Table<T extends object>({
       loading={loading}
       pagination={paginationConfig}
       locale={{ emptyText }}
+      rowSelection={rowSelection}
       className="panel-content-table custom-table-wrapper"
       {...antTableProps}
-      // Override the default Ant Design styles with our custom styles
+      // override default antdesign styles
       components={{
         table: (props) => <table {...props} className="custom-table"></table>,
         header: {
@@ -161,30 +150,39 @@ export function Table<T extends object>({
     />
   );
 
-  if (variant === "withHeader") {
-    return (
-      <Panel
-        header={{
-          title,
-        }}
-        searchOpts={{
-          value: searchValue,
-          onSearchChange: handleSearch,
-        }}
-        filterOpts={{
-          options: filterOpts?.options || [],
-          onFilterChange: handleFilterChange,
-        }}
-      >
-        {tableComponent}
-      </Panel>
-    );
-  }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    searchOpts && searchOpts.onChange?.(e);
+  };
+
+  const handleFilterChange = (value: string) => {
+    filterOpts && filterOpts.onFilterChange(value);
+  };
 
   return (
-    <div className={`panel ${className}`}>
-      <div className="panel-content">{tableComponent}</div>
-    </div>
+    <>
+      {withHeader && (
+        <PanelHeader
+          header={{
+            title: headerTitle || "",
+          }}
+          searchOpts={{
+            isVisible: searchOpts?.isVisible || false,
+            placeholder: searchOpts?.placeholder || "Search...",
+            value: searchValue,
+            onChange: handleSearch,
+          }}
+          filterOpts={{
+            value: filterOpts?.value || "all",
+            isVisible: filterOpts?.isVisible || false,
+            options: filterOpts?.options || [],
+            onFilterChange: handleFilterChange,
+          }}
+        />
+      )}
+      <PanelContent>{tableComponent}</PanelContent>
+    </>
   );
 }
 
