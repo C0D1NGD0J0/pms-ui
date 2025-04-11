@@ -2,10 +2,10 @@
 import React from "react";
 import Link from "next/link";
 import { Table } from "@components/Table";
-import { Panel } from "@components/Panel";
 import { InsightCard } from "@components/Cards";
 import { AnalyticCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
+import { PanelsWrapper, Panel } from "@components/Panel";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
 import {
   serviceRequestColumns,
@@ -51,102 +51,57 @@ export default function Dashboard() {
       </div>
 
       <div className="flex-row">
-        <div className="panels">
-          <Table
-            variant="withHeader"
-            title="Service Requests"
-            columns={serviceRequestColumns}
-            dataSource={serviceRequests}
-            searchOpts={{
-              value: "",
-              onChange: (value: string) => {
-                console.log("Search value:", value);
-              },
-            }}
-            filterOpts={{
-              value: "all",
-              options: statusFilterOptions,
-              onFilterChange: (value: string) => {
-                console.log("Filter value:", value);
-              },
-            }}
-            pagination={{ pageSize: 4 }}
-            rowKey="id"
-          />
-
-          <Table
-            variant="withHeader"
-            title="Upcoming Payments"
-            columns={paymentColumns}
-            dataSource={payments}
-            searchOpts={{
-              value: "",
-              onChange: (value: string) => {
-                console.log("Search value:", value);
-              },
-            }}
-            filterOpts={{
-              value: "all",
-              options: statusFilterOptions,
-              onFilterChange: (value: string) => {
-                console.log("Filter value:", value);
-              },
-            }}
-            pagination={{ pageSize: 4 }}
-            rowKey="id"
-          />
-        </div>
+        <PanelsWrapper>
+          <Panel>
+            <Table
+              withHeader
+              headerTitle="Service Requests"
+              columns={serviceRequestColumns}
+              dataSource={serviceRequests}
+              pagination={{ pageSize: 4 }}
+              rowKey="id"
+            />
+          </Panel>
+          <Panel>
+            <Table
+              withHeader
+              headerTitle="Upcoming Payments"
+              columns={paymentColumns}
+              dataSource={payments}
+              pagination={{ pageSize: 4 }}
+              rowKey="id"
+            />
+          </Panel>
+        </PanelsWrapper>
       </div>
 
       <div className="flex-row">
-        <div className="panels">
-          <Table
-            title="Lease Status"
-            columns={leaseStatusColumns}
-            dataSource={leaseStatuses}
-            searchOpts={{
-              value: "",
-              onChange: (value: string) => {
-                console.log("Search value:", value);
-              },
-            }}
-            filterOpts={{
-              value: "all",
-              options: statusFilterOptions,
-              onFilterChange: (value: string) => {
-                console.log("Filter value:", value);
-              },
-            }}
-            pagination={{ pageSize: 4 }}
-            rowKey="id"
-            variant="withHeader"
-          />
-        </div>
+        <PanelsWrapper>
+          <Panel>
+            <Table
+              headerTitle="Lease Status"
+              columns={leaseStatusColumns}
+              dataSource={leaseStatuses}
+              pagination={{ pageSize: 4 }}
+              rowKey="id"
+              withHeader
+            />
+          </Panel>
+        </PanelsWrapper>
       </div>
 
       <div className="flex-row">
-        <div className="panels">
-          <Table
-            title="Occupancy by Property"
-            columns={occupancyColumns}
-            dataSource={occupancyData}
-            searchOpts={{
-              value: "",
-              onChange: (value: string) => {
-                console.log("Search value:", value);
-              },
-            }}
-            filterOpts={{
-              value: "all",
-              options: filterOptions,
-              onFilterChange: (value: string) => {
-                console.log("Filter value:", value);
-              },
-            }}
-            pagination={{ pageSize: 5 }}
-            rowKey="id"
-            variant="withHeader"
-          />
+        <PanelsWrapper>
+          <Panel>
+            <Table
+              withHeader
+              headerTitle="Occupancy by Property"
+              columns={occupancyColumns}
+              dataSource={occupancyData}
+              pagination={{ pageSize: 5 }}
+              rowKey="id"
+            />
+          </Panel>
 
           <Panel header={{ title: "Maintenance Request Analysis" }}>
             <div className="analytics-cards">
@@ -168,7 +123,7 @@ export default function Dashboard() {
               </AnalyticCard>
             </div>
           </Panel>
-        </div>
+        </PanelsWrapper>
       </div>
     </div>
   );
