@@ -230,6 +230,37 @@
   flex-direction: column;
   justify-content: space-between;
   background: hslaGen($blue-ink-color, 1);
+  transition: width 0.3s ease;
+
+  // Sidebar toggle button
+  .sidebar-toggle {
+    right: 0rem;
+    top: 0rem;
+    z-index: 100;
+    display: flex;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    position: absolute;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    transition: $transition;
+    background: hslaGen($primary-color);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+
+    i {
+      color: hslaGen($white-color);
+      font-size: 2rem;
+    }
+
+    &:hover {
+      opacity: 1;
+      transition: $transition;
+      background: hslaGen($primary-color);
+    }
+  }
 
   .sidebar-brand {
     width: 100%;
@@ -276,8 +307,26 @@
   }
 
   &.close &__navbar-item a {
-    display: none;
+    width: fit-content;
+    padding: 0;
+    font-size: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    display: inline-block;
     transition: $transition;
+
+    // Keep the link accessible for clicking but visually hidden
+    &::before {
+      display: none;
+    }
+  }
+
+  // Keep parent element clickable
+  &.close &__navbar-item {
+    width: 4rem;
+    display: flex;
+    justify-content: center;
   }
 
   &__navbar {
@@ -445,7 +494,7 @@
     }
 
     .dropdown-icon {
-      font-size: 1.4rem;
+      font-size: 2.4rem;
       transition: transform 0.3s ease;
       margin-left: 0.5rem; // Add space between text and icon
     }
@@ -495,6 +544,14 @@
           color: hsl(39, 73%, 49%);
         }
       }
+    }
+  }
+
+  &.close .sidebar__dropdown {
+    .dropdown-icon {
+      top: 0.3rem;
+      position: relative;
+      margin-left: 2rem; // add more space between text and icon when sidebar is clsed
     }
   }
 }

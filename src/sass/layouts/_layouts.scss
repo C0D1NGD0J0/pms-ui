@@ -43,11 +43,21 @@
   position: relative;
   min-height: calc(100dvh - 6rem);
   grid-template-columns: 22rem auto;
+  transition: grid-template-columns 0.3s ease;
   grid-template-areas: "sidebar dashboard-content";
 
   &-content {
     min-width: 0;
     padding: 1rem 2rem;
     grid-area: dashboard-content;
+  }
+}
+
+// Adjust grid when sidebar is collapsed
+.main {
+  transition: grid-template-columns 0.3s ease;
+  /* apply collapsed sidebar grid directly to .main class */
+  &.sidebar-collapsed {
+    grid-template-columns: 6.5rem auto !important;
   }
 }
