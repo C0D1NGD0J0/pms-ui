@@ -1,0 +1,62 @@
+@use "../abstract/index" as *;
+
+.debounced-input-wrapper {
+  position: relative;
+  width: 100%;
+
+  .validation-indicator {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid hslaGen($grey-color, 0.3);
+      border-top: 2px solid hslaGen($primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+  }
+
+  .validation-message {
+    font-size: $fs-sm;
+    display: block;
+    margin-top: 5px;
+
+    &.info {
+      color: hslaGen($grey-color, 0.9);
+    }
+
+    &.error {
+      color: hslaGen($danger-color, 0.9);
+    }
+  }
+
+  .suggestion {
+    font-size: $fs-sm;
+    display: block;
+    margin-top: 2px;
+    color: hslaGen($success-color, 0.9);
+    font-style: italic;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  .form-input {
+    &.is-validating {
+      background-color: hslaGen($light-grey-color, 0.1);
+      border-bottom: 1px dashed hslaGen($grey-color, 0.6);
+    }
+
+    &.is-valid {
+      border-bottom: 1px solid hslaGen($success-color, 0.7);
+    }
+  }
+}
