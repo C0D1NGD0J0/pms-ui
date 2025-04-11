@@ -5,6 +5,7 @@
   width: 100%;
   display: flex;
   padding: 2rem 0;
+  flex-wrap: wrap;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 48%), 1fr));
 
   .panel {

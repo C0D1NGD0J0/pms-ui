@@ -92,6 +92,7 @@ export const Sidebar = () => {
     if (isSidebarCollapsed) {
       setIsSidebarCollapsed(false);
       localStorage.setItem("sidebarCollapsed", "false");
+      updateMainElementClass(false);
       // Set a small timeout to allow the sidebar to expand before opening dropdown
       setTimeout(() => {
         setIsUsersDropdownOpen(true);

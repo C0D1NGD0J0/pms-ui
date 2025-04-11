@@ -5,8 +5,13 @@ import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
 import { AnalyticCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
-import { PanelsWrapper, Panel } from "@components/Panel";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
+import {
+  PanelsWrapper,
+  PanelContent,
+  PanelHeader,
+  Panel,
+} from "@components/Panel";
 import {
   serviceRequestColumns,
   statusFilterOptions,
@@ -104,24 +109,27 @@ export default function Dashboard() {
           </Panel>
 
           <Panel header={{ title: "Maintenance Request Analysis" }}>
-            <div className="analytics-cards">
-              <AnalyticCard
-                title="By Priority"
-                data={priorityData}
-                nameKey={"name"}
-                valueKey={"value"}
-                showLegend
-              >
-                <DonutChart data={priorityData} className="priority-chart" />
-              </AnalyticCard>
+            <PanelHeader header={{ title: "Maintenance Request Analysis" }} />
+            <PanelContent>
+              <div className="analytics-cards">
+                <AnalyticCard
+                  title="By Priority"
+                  data={priorityData}
+                  nameKey={"name"}
+                  valueKey={"value"}
+                  showLegend
+                >
+                  <DonutChart data={priorityData} className="priority-chart" />
+                </AnalyticCard>
 
-              <AnalyticCard title="Service type" data={serviceTypeData}>
-                <HorizontalBarChart
-                  data={serviceTypeData}
-                  className="horizontal-bar-chart"
-                />
-              </AnalyticCard>
-            </div>
+                <AnalyticCard title="Service type" data={serviceTypeData}>
+                  <HorizontalBarChart
+                    data={serviceTypeData}
+                    className="horizontal-bar-chart"
+                  />
+                </AnalyticCard>
+              </div>
+            </PanelContent>
           </Panel>
         </PanelsWrapper>
       </div>

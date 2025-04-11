@@ -41,23 +41,41 @@
   display: grid;
   grid-area: main;
   position: relative;
-  min-height: calc(100dvh - 6rem);
+  min-height: calc(100dvh - 6.5rem);
   grid-template-columns: 22rem auto;
-  transition: grid-template-columns 0.3s ease;
+  transition: grid-template-columns 0.35s linear;
   grid-template-areas: "sidebar dashboard-content";
+
+  @include breakpoint("992px", max) {
+    grid-template-columns: 18rem auto;
+  }
+
+  @include breakpoint("768px", max) {
+    display: block;
+    padding-left: 0;
+  }
+
+  /* apply collapsed sidebar grid directly to .main class */
+  &.sidebar-collapsed {
+    grid-template-columns: 6.5rem auto !important;
+  }
 
   &-content {
     min-width: 0;
     padding: 1rem 2rem;
     grid-area: dashboard-content;
-  }
-}
 
-// Adjust grid when sidebar is collapsed
-.main {
-  transition: grid-template-columns 0.3s ease;
-  /* apply collapsed sidebar grid directly to .main class */
-  &.sidebar-collapsed {
-    grid-template-columns: 6.5rem auto !important;
+    @include breakpoint("992px", max) {
+      padding: 1rem 1.5rem;
+    }
+
+    @include breakpoint("768px", max) {
+      width: 100%;
+      padding: 1rem;
+    }
+
+    @include breakpoint("576px", max) {
+      padding: 0.8rem;
+    }
   }
 }
