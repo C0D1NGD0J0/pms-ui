@@ -220,65 +220,86 @@
   }
 }
 
-// OTHER FORM STYLING
-// .form {
-//   & .form-section {
-//     padding: 3rem 0;
-//     border-bottom: 1px solid $base-border-color;
+// RESOURCE FORM STYLING
+.resource-form {
+  & .form-section {
+    padding: 3rem 0;
+    margin-bottom: 3rem;
+    background-color: #fff;
+    border-bottom: 1px solid hsla(213, 14%, 56%, 0.2);
 
-//     &:last-child {
-//       border-bottom: none;
-//     }
+    &:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
 
-//     &_header {
-//       padding: 1rem 0;
-//       color: hslaGen($primary-color);
+    &_header {
+      margin-bottom: 2rem;
 
-//       h2 {
-//         font-size: clamp($fs-xsm, $fs-md, $fs-base);
-//       }
-//     }
-//   }
+      &-title {
+        font-size: 1.8rem;
+        font-weight: $fw-bold;
+        color: hslaGen($primary-color);
+      }
 
-//   & .form-actions {
-//     gap: 2rem;
-//     display: flex;
-//     padding: 1rem 0;
-//     align-items: center;
-//     justify-content: flex-end;
-//   }
+      p {
+        color: hslaGen($grey-color, 0.8);
+        font-size: $fs-base;
+      }
+    }
+  }
 
-//   & .form-fields {
-//     padding: 1rem 0;
-//     column-gap: 2rem;
-//     margin-bottom: 1rem;
-//   }
+  & .form-actions {
+    gap: 2rem;
+    display: flex;
+    padding: 1rem 0;
+    align-items: center;
+    justify-content: flex-end;
+  }
 
-//   & .form-input,
-//   & .form-input_select {
-//     margin-top: 0.4rem;
-//     border-radius: 0.3rem;
-//     color: hslaGen($primary-color);
-//     border: 1px solid rgba(103, 116, 131, 0.3);
-//   }
+  & .form-fields {
+    padding: 1rem 0;
+    column-gap: 2rem;
+    margin-bottom: 1rem;
+  }
 
-//   & input[type="email"] {
-//     text-transform: initial;
-//   }
+  & .form-input,
+  & .form-input_select {
+    margin-top: 0.4rem;
+    border-radius: 0.3rem;
+    color: hslaGen($primary-color);
+    border: 1px solid rgba(103, 116, 131, 0.3);
+  }
 
-//   & .form-input_file {
-//     font-family: "Arial", sans-serif;
-//     border: 1px solid #ccc;
-//     display: inline-block;
-//     cursor: pointer;
-//     padding: 2rem;
-//     color: #333;
-//   }
+  & .form-input {
+    width: 100%;
+    outline: none;
+    height: 3.5rem;
+    padding: 0.8rem;
+    position: relative;
+    font-size: $fs-base;
+    border-radius: 0.2rem;
+    color: hslaGen($primary-color);
+    background-color: $form-input-bg;
+  }
 
-//   & input[type="file"] {
-//     display: none;
-//   }
-// }
+  & input[type="email"] {
+    text-transform: initial;
+  }
+
+  & .form-input_file {
+    font-family: "Arial", sans-serif;
+    border: 1px solid #ccc;
+    display: inline-block;
+    cursor: pointer;
+    padding: 2rem;
+    color: #333;
+  }
+
+  & input[type="file"] {
+    display: none;
+  }
+}
 
 .checkbox-wrapper {
   gap: 0.5rem;
@@ -304,36 +325,35 @@
 /* Container for the toggle, providing necessary spacing */
 .toggle-container {
   padding: 10px;
-}
 
-/* Style for the actual toggle and its variations */
-.toggle {
-  width: 5rem;
-  height: 2.5rem;
-  border-radius: 2.5rem;
-  background-color: hslaGen($grey-color);
-  position: relative;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  .toggle {
+    width: 5rem;
+    height: 2.5rem;
+    border-radius: 2.5rem;
+    background-color: hslaGen($grey-color);
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s;
 
-  &.toggled {
-    background-color: hslaGen($primary-color);
+    &.toggled {
+      background-color: hslaGen($primary-color);
 
-    .toggle-handle {
-      left: 2.75rem;
+      .toggle-handle {
+        left: 2.75rem;
+      }
     }
-  }
 
-  /* Style for the handle of the toggle */
-  .toggle-handle {
-    width: 20px;
-    height: 20px;
-    background-color: hslaGen($white-color);
-    border-radius: 50%;
-    position: absolute;
-    top: 2.5px;
-    left: 2.5px;
-    transition: left 0.3s;
+    /* Style for the handle of the toggle */
+    .toggle-handle {
+      width: 20px;
+      height: 20px;
+      background-color: hslaGen($white-color);
+      border-radius: 50%;
+      position: absolute;
+      top: 2.5px;
+      left: 2.5px;
+      transition: left 0.3s;
+    }
   }
 }
 

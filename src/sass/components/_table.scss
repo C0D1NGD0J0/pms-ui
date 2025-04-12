@@ -84,10 +84,11 @@ table tbody tr:last-child,
 tbody tr td,
 .panel-content-table tbody tr td,
 .custom-tbody .custom-tr .custom-td {
-  /* min-width: 60%; */
+  max-width: 60% !important;
   font-weight: 300 !important;
   padding: 1.5rem 0.7rem !important;
   overflow-wrap: break-word !important;
+  text-wrap: balance !important;
   font-size: clamp(1.4rem, 1vw, 1.8rem) !important;
 }
 
@@ -106,6 +107,77 @@ table tbody tr:hover,
   -moz-transition: all 0.3s ease !important;
   -ms-transition: all 0.3s ease !important;
   -o-transition: all 0.3s ease !important;
+}
+
+/* Row Selection Styles */
+.ant-table-row-selected,
+.ant-table-tbody .ant-table-row-selected td {
+  background-color: hslaGen($primary-color, 0.1) !important;
+}
+
+/* Checkbox column */
+.ant-table-selection-column {
+  padding: 1rem !important;
+  text-align: center !important;
+  // width: 50px !important;
+}
+
+/* Checkbox styles */
+.ant-checkbox-wrapper {
+  display: inline-flex !important;
+  align-items: center !important;
+  cursor: pointer !important;
+}
+
+.ant-checkbox {
+  position: relative !important;
+  top: 0 !important;
+  margin-right: 8px !important;
+  border: 1.5px solid hslaGen($primary-color) !important;
+  border-radius: 4px !important;
+  width: 16px !important;
+  height: 16px !important;
+  background-color: white !important;
+}
+
+.ant-checkbox-checked {
+  background-color: hslaGen($primary-color) !important;
+
+  .ant-checkbox-inner {
+    border-color: hslaGen($primary-color) !important;
+    background-color: hslaGen($primary-color) !important;
+  }
+}
+
+/* Bulk actions container */
+.bulk-actions {
+  display: flex !important;
+  align-items: center !important;
+  padding: 0.8rem 1rem !important;
+  background-color: hslaGen($light-grey-color, 0.2) !important;
+  border-radius: 0.6rem !important;
+  margin-bottom: 1rem !important;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05) !important;
+
+  .btn-text {
+    color: hslaGen($primary-color) !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    font-weight: 500 !important;
+
+    &:hover {
+      text-decoration: underline !important;
+    }
+  }
+
+  .ml-2 {
+    margin-left: 0.5rem !important;
+  }
+}
+
+.mb-3 {
+  margin-bottom: 1rem !important;
 }
 
 tfoot {

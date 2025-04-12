@@ -221,15 +221,46 @@
 .sidebar {
   top: 0;
   width: 100%;
-  height: 100dvh;
+  height: 100vh; /* Fixed height */
   display: flex;
   overflow-y: auto;
   position: sticky;
   grid-area: sidebar;
   padding: 1rem 1.4rem;
   flex-direction: column;
+  transition: width 0.3s ease;
   justify-content: space-between;
   background: hslaGen($blue-ink-color, 1);
+
+  // Sidebar toggle button
+  .sidebar-toggle {
+    right: 0rem;
+    top: 0rem;
+    z-index: 100;
+    display: flex;
+    width: 3rem;
+    height: 3rem;
+    cursor: pointer;
+    position: absolute;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.3;
+    transition: $transition;
+    background: hslaGen($primary-color);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+
+    i {
+      color: hslaGen($white-color);
+      font-size: 2rem;
+    }
+
+    &:hover {
+      opacity: 1;
+      transition: $transition;
+      background: hslaGen($primary-color);
+    }
+  }
 
   .sidebar-brand {
     width: 100%;
@@ -265,7 +296,7 @@
   }
 
   &.close {
-    width: 6.5rem;
+    width: 100%;
     display: flex;
     align-items: center;
     flex-direction: column;
@@ -276,22 +307,41 @@
   }
 
   &.close &__navbar-item a {
-    display: none;
+    width: fit-content;
+    padding: 0;
+    font-size: 0;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    display: inline-block;
     transition: $transition;
+
+    // Keep the link accessible for clicking but visually hidden
+    &::before {
+      display: none;
+    }
+  }
+
+  &.close &__navbar-item {
+    width: 4rem;
+    display: flex;
+    justify-content: center;
   }
 
   &__navbar {
+    gap: 1.2rem;
     width: 100%;
+    display: flex;
     list-style: none;
-    position: relative;
+    flex-direction: column;
 
     &-item {
       height: 4rem;
       display: flex;
       margin-top: 1rem;
       position: relative;
-      max-width: fit-content;
       align-items: center;
+      max-width: fit-content;
 
       a {
         gap: 1rem;
@@ -445,7 +495,7 @@
     }
 
     .dropdown-icon {
-      font-size: 1.4rem;
+      font-size: 2.4rem;
       transition: transform 0.3s ease;
       margin-left: 0.5rem; // Add space between text and icon
     }
@@ -495,6 +545,14 @@
           color: hsl(39, 73%, 49%);
         }
       }
+    }
+  }
+
+  &.close .sidebar__dropdown {
+    .dropdown-icon {
+      top: 0.3rem;
+      position: relative;
+      margin-left: 2rem; // add more space between text and icon when sidebar is clsed
     }
   }
 }

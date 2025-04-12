@@ -5,6 +5,7 @@
   width: 100%;
   display: flex;
   padding: 2rem 0;
+  flex-wrap: wrap;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 48%), 1fr));
 
   .panel {
@@ -17,6 +18,8 @@
       justify-content: space-between;
       background: hslaGen($white-color);
       border-bottom: 1px solid hslaGen($grey-color, 0.2);
+      border-bottom-right-radius: 0.2rem;
+      border-bottom-left-radius: 0.2rem;
       &__title {
         max-width: 25rem;
         h4 {

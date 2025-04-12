@@ -10,7 +10,7 @@ import {
 } from "@components/FormElements/";
 import {
   AuthContentHeader,
-  AuthContenFooter,
+  AuthContentFooter,
   AuthContentBody,
 } from "@components/AuthLayout";
 

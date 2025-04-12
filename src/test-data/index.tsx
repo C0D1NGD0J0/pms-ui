@@ -1,5 +1,8 @@
 import { InsightCardData } from "@app/(protectedRoutes)/dashboard/interfaces";
 
+// Re-export properties data
+export * from "./properties";
+
 export interface ServiceRequest {
   id: string;
   type: string;
