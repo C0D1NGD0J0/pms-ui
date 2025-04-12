@@ -1,11 +1,11 @@
+import React from "react";
+import Link from "next/link";
 import {
   AuthLayoutWrapper,
   AuthContentHeader,
   AuthContentBody,
   AuthContentBox,
 } from "@components/AuthLayout";
-import Link from "next/link";
-import React from "react";
 
 const Custom404 = () => {
   return (

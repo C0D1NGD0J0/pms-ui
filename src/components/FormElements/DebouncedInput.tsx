@@ -88,9 +88,7 @@ export const DebouncedInput = forwardRef<HTMLInputElement, DebouncedInputProps>(
     const [validationResult, setValidationResult] =
       useState<ValidationResult | null>(null);
     const [hasError, setHasError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState<string | undefined>(
-      undefined
-    );
+    const [, setErrorMessage] = useState<string | undefined>(undefined);
 
     // Track if component is mounted to prevent state updates after unmount
     const isMountedRef = React.useRef(true);

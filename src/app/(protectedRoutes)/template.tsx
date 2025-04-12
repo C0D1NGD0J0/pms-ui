@@ -15,52 +15,52 @@ export default function AuthTemplate({
   const isIdle: boolean = useIdleDetector(10);
   const { isLoggedIn, refreshUser } = useCurrentUser();
 
-  // useEffect(() => {
-  //   let timeoutId: NodeJS.Timeout | null = null;
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout | null = null;
 
-  //   if (isIdle && !isLoggedIn) {
-  //     timeoutId = setTimeout(() => {
-  //       return push("/login");
-  //     }, 3000);
-  //   }
+    if (isIdle && !isLoggedIn) {
+      timeoutId = setTimeout(() => {
+        return push("/login");
+      }, 3000);
+    }
 
-  //   return () => {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //     }
-  //   };
-  // }, [isIdle, isLoggedIn, push]);
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isIdle, isLoggedIn, push]);
 
-  // if (isLoggedIn && isIdle) {
-  //   return (
-  //     <Loading
-  //       size="fullscreen"
-  //       description="User inactivity detected"
-  //       customBtn={
-  //         <button
-  //           className="btn btn-rounded btn-sm btn-primary"
-  //           onClick={() => refreshUser()}
-  //         >
-  //           resume session
-  //         </button>
-  //       }
-  //     />
-  //   );
-  // }
+  if (isLoggedIn && isIdle) {
+    return (
+      <Loading
+        size="fullscreen"
+        description="User inactivity detected"
+        customBtn={
+          <button
+            className="btn btn-rounded btn-sm btn-primary"
+            onClick={() => refreshUser()}
+          >
+            resume session
+          </button>
+        }
+      />
+    );
+  }
 
-  // if (!isLoggedIn) {
-  //   return (
-  //     <Loading
-  //       size="fullscreen"
-  //       description="Authenticating"
-  //       customBtn={
-  //         <Link className="btn btn-text" href={"/login"}>
-  //           Back to login
-  //         </Link>
-  //       }
-  //     />
-  //   );
-  // }
+  if (!isLoggedIn) {
+    return (
+      <Loading
+        size="fullscreen"
+        description="Authenticating"
+        customBtn={
+          <Link className="btn btn-text" href={"/login"}>
+            Back to login
+          </Link>
+        }
+      />
+    );
+  }
 
   return <>{children}</>;
 }

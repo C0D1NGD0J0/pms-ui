@@ -80,7 +80,7 @@ export default function Properties() {
               pagination={{ pageSize: 10 }}
               rowKey="id"
               withHeader
-              // rowSelection={rowSelection}
+              rowSelection={rowSelection}
             />
           </Panel>
         </PanelsWrapper>
