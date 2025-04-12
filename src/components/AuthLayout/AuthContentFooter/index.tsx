@@ -1,17 +1,17 @@
 import React from "react";
 import Link from "next/link";
 
-interface AuthContenFooterProps {
+interface AuthContentFooterProps {
   footerText?: string;
   footerLink?: string;
   footerLinkText?: string;
 }
 
-export const AuthContenFooter = ({
+export const AuthContentFooter = ({
   footerText,
   footerLink,
   footerLinkText,
-}: AuthContenFooterProps) => {
+}: AuthContentFooterProps) => {
   return (
     <div className="auth-page_content-footer mt-2">
       <p>

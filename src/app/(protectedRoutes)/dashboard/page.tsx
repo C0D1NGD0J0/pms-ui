@@ -14,7 +14,6 @@ import {
 } from "@components/Panel";
 import {
   serviceRequestColumns,
-  statusFilterOptions,
   leaseStatusColumns,
   insightCardsData,
   occupancyColumns,
@@ -23,7 +22,6 @@ import {
   paymentColumns,
   leaseStatuses,
   occupancyData,
-  filterOptions,
   priorityData,
   payments,
 } from "@/src/test-data";
