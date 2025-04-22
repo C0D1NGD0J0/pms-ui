@@ -1,141 +1,44 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { PropertyFormValues } from "@interfaces/property.interface";
 import {
   DebouncedInput,
+  DatePicker,
   FormField,
   FormLabel,
   FormInput,
   Select,
 } from "@components/FormElements";
 
-export function BasicInfoTab() {
-  const [addressValidation, setAddressValidation] = useState({
-    isValid: true,
-    message: "",
-    suggestedAddress: "",
-  });
+interface Props {
+  form: UseFormReturnType<PropertyFormValues>;
+  propertyTypeOptions: { value: string; label: string }[];
+  propertyStatusOptions: { value: string; label: string }[];
+  handleOnChange: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
+  ) => void;
+}
 
-  const [formData, setFormData] = useState({
-    propertyName: "",
-    propertyType: "",
-    propertyStatus: "",
-    propertyManager: "",
-    yearBuilt: "",
-    streetAddress: "",
-    unitApartment: "",
-    city: "",
-    stateProvince: "",
-    postalCode: "",
-    country: "us",
-    purchasePrice: "",
-    purchaseDate: "",
-    marketValue: "",
-    rentAmount: "",
-    securityDeposit: "",
-    propertyTax: "",
-  });
-  const propertyTypeOptions = [
-    { value: "apartment", label: "Apartment" },
-    { value: "house", label: "House" },
-    { value: "condo", label: "Condominium" },
-    { value: "townhouse", label: "Townhouse" },
-    { value: "commercial", label: "Commercial" },
-    { value: "industrial", label: "Industrial" },
-  ];
-  const propertyStatusOptions = [
-    { value: "available", label: "Available" },
-    { value: "occupied", label: "Occupied" },
-    { value: "maintenance", label: "Under Maintenance" },
-    { value: "construction", label: "Under Construction" },
-  ];
+export function BasicInfoTab({
+  form,
+  propertyTypeOptions,
+  propertyStatusOptions,
+  handleOnChange,
+}: Props) {
   const propertyManagerOptions = [
     { value: "1", label: "Jonathan Smith" },
     { value: "2", label: "Sarah Johnson" },
     { value: "3", label: "Michael Davis" },
   ];
+
   const countryOptions = [
     { value: "us", label: "United States" },
     { value: "ca", label: "Canada" },
     { value: "uk", label: "United Kingdom" },
     { value: "au", label: "Australia" },
   ];
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const validateAddress = async (
-    value: string | number
-  ): Promise<{ isValid: boolean; message?: string; data?: any }> => {
-    console.log("Validating address:", value);
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    const addressStr = value.toString().toLowerCase();
-
-    if (addressStr.length < 5) {
-      return {
-        isValid: false,
-        message: "Address is too short",
-      };
-    }
-
-    // Example: Address formatting/suggestion - only trigger this when the user finishes typing
-    // Only suggest when the exact word "main" is found standalone
-    const mainWordRegex = /\bmain\b/;
-    if (mainWordRegex.test(addressStr) && !addressStr.includes("street")) {
-      return {
-        isValid: true,
-        message: "Did you mean 'Main Street'?",
-        data: {
-          // This replacement preserves the original case and only replaces standalone "main"
-          suggestedAddress: addressStr.replace(mainWordRegex, "Main Street"),
-        },
-      };
-    }
-
-    return {
-      isValid: true,
-      message: "Address validated successfully",
-    };
-  };
-
-  // Handle address validation completion
-  const handleAddressValidationComplete = (result: {
-    isValid: boolean;
-    message?: string;
-    data?: any;
-  }) => {
-    setAddressValidation({
-      isValid: result.isValid,
-      message: result.message || "",
-      suggestedAddress: result.data?.suggestedAddress || "",
-    });
-  };
-
-  // Handle clicking on the suggested address
-  const handleSuggestionClick = () => {
-    if (addressValidation.suggestedAddress) {
-      // Update the form data with the suggested address
-      setFormData((prev) => ({
-        ...prev,
-        streetAddress: addressValidation.suggestedAddress,
-      }));
-
-      // Clear the suggestion
-      setAddressValidation((prev) => ({
-        ...prev,
-        suggestedAddress: "",
-        message: "Suggested address applied",
-      }));
-    }
-  };
 
   return (
     <>
@@ -144,42 +47,53 @@ export function BasicInfoTab() {
         description="Enter basic information about the property"
       >
         <div className="form-fields">
-          <FormField>
-            <FormLabel htmlFor="propertyName" label="Property Name" />
+          <FormField
+            error={{
+              msg: (form.errors["name"] as string) || "",
+              touched: form.isTouched("name"),
+            }}
+          >
+            <FormLabel htmlFor="name" label="Property Name" required />
             <FormInput
-              id="propertyName"
-              name="propertyName"
-              value={formData.propertyName}
-              onChange={handleInputChange}
+              id="name"
+              name="name"
+              value={form.values.name}
+              onChange={handleOnChange}
+              hasError={!!form.errors.name}
               placeholder="Enter property name"
-              hasError={false}
             />
           </FormField>
         </div>
 
         <div className="form-fields">
-          <FormField>
-            <FormLabel htmlFor="propertyType" label="Property Type" />
+          <FormField
+            error={{
+              msg: (form.errors["propertyType"] as string) || "",
+              touched: form.isTouched("propertyType"),
+            }}
+          >
+            <FormLabel htmlFor="propertyType" label="Property Type" required />
             <Select
               id="propertyType"
               name="propertyType"
-              value={formData.propertyType}
-              onChange={handleInputChange}
+              value={form.values.propertyType}
+              onChange={handleOnChange}
               options={propertyTypeOptions}
               placeholder="Select property type"
             />
           </FormField>
-          <FormField>
-            <FormLabel
-              htmlFor="propertyStatus"
-              label="Property Status"
-              required
-            />
+          <FormField
+            error={{
+              msg: (form.errors["status"] as string) || "",
+              touched: form.isTouched("status"),
+            }}
+          >
+            <FormLabel htmlFor="status" label="Property Status" required />
             <Select
-              id="propertyStatus"
-              name="propertyStatus"
-              value={formData.propertyStatus}
-              onChange={handleInputChange}
+              id="status"
+              name="status"
+              value={form.values.status}
+              onChange={handleOnChange}
               options={propertyStatusOptions}
               placeholder="Select status"
             />
@@ -187,26 +101,38 @@ export function BasicInfoTab() {
         </div>
 
         <div className="form-fields">
-          <FormField>
-            <FormLabel htmlFor="propertyManager" label="Property Manager" />
+          <FormField
+            error={{
+              msg: (form.errors["managedBy"] as string) || "",
+              touched: form.isTouched("managedBy"),
+            }}
+          >
+            <FormLabel htmlFor="managedBy" label="Property Manager" />
             <Select
-              id="propertyManager"
-              name="propertyManager"
-              value={formData.propertyManager}
-              onChange={handleInputChange}
+              id="managedBy"
+              name="managedBy"
+              value={form.values.managedBy || ""}
+              onChange={handleOnChange}
               options={propertyManagerOptions}
               placeholder="Assign property manager"
             />
           </FormField>
-          <FormField>
+          <FormField
+            error={{
+              msg: (form.errors["yearBuilt"] as string) || "",
+              touched: form.isTouched("yearBuilt"),
+            }}
+          >
             <FormLabel htmlFor="yearBuilt" label="Year Built" />
             <FormInput
               id="yearBuilt"
               name="yearBuilt"
               type="number"
-              value={formData.yearBuilt}
-              onChange={handleInputChange}
+              value={form.values.yearBuilt}
+              onChange={handleOnChange}
               placeholder="Enter year built"
+              min="1800"
+              max={new Date().getFullYear() + 10}
               hasError={false}
             />
           </FormField>
@@ -218,82 +144,107 @@ export function BasicInfoTab() {
         description="Enter financial details for the property"
       >
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (form.errors["financialDetails.purchasePrice"] as string) || "",
+              touched: form.isTouched("financialDetails.purchasePrice"),
+            }}
+          >
             <FormLabel htmlFor="purchasePrice" label="Purchase Price ($)" />
             <FormInput
               id="purchasePrice"
-              name="purchasePrice"
+              name="financialDetails.purchasePrice"
               type="number"
-              value={formData.purchasePrice}
-              onChange={handleInputChange}
+              value={form.values.financialDetails.purchasePrice}
+              onChange={handleOnChange}
               placeholder="Enter purchase price"
-              hasError={false}
+              min="0"
+              hasError={!!form.errors["financialDetails.purchasePrice"]}
             />
           </FormField>
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (form.errors["financialDetails.purchaseDate"] as string) || "",
+              touched: form.isTouched("financialDetails.purchaseDate"),
+            }}
+          >
             <FormLabel htmlFor="purchaseDate" label="Purchase Date" />
-            <FormInput
+            <DatePicker
               id="purchaseDate"
-              name="purchaseDate"
-              type="date"
-              value={formData.purchaseDate}
-              onChange={handleInputChange}
+              onChange={handleOnChange}
               placeholder="Select purchase date"
-              hasError={false}
+              name="financialDetails.purchaseDate"
+              value={form.values.financialDetails.purchaseDate}
+              hasError={!!form.errors["financialDetails.purchaseDate"]}
             />
           </FormField>
         </div>
 
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (form.errors["financialDetails.marketValue"] as string) || "",
+              touched: form.isTouched("financialDetails.marketValue"),
+            }}
+          >
             <FormLabel htmlFor="marketValue" label="Market Value ($)" />
             <FormInput
               id="marketValue"
-              name="marketValue"
+              name="financialDetails.marketValue"
               type="number"
-              value={formData.marketValue}
-              onChange={handleInputChange}
+              value={form.values.financialDetails.marketValue}
+              onChange={handleOnChange}
               placeholder="Enter current market value"
-              hasError={false}
+              min="0"
+              hasError={!!form.errors["financialDetails.marketValue"]}
             />
           </FormField>
-          <FormField>
-            <FormLabel htmlFor="rentAmount" label="Rent Amount ($)" />
+          <FormField
+            error={{
+              msg:
+                (form.errors["financialDetails.propertyTax"] as string) || "",
+              touched: form.isTouched("financialDetails.propertyTax"),
+            }}
+          >
+            <FormLabel htmlFor="propertyTax" label="Property Tax ($)" />
             <FormInput
-              id="rentAmount"
-              name="rentAmount"
+              id="propertyTax"
+              name="financialDetails.propertyTax"
               type="number"
-              value={formData.rentAmount}
-              onChange={handleInputChange}
-              placeholder="Enter monthly rent amount"
-              hasError={false}
+              value={form.values.financialDetails.propertyTax}
+              onChange={handleOnChange}
+              placeholder="Enter annual property tax"
+              min="0"
+              hasError={!!form.errors["financialDetails.propertyTax"]}
             />
           </FormField>
         </div>
 
         <div className="form-fields">
-          <FormField>
-            <FormLabel htmlFor="securityDeposit" label="Security Deposit ($)" />
-            <FormInput
-              id="securityDeposit"
-              name="securityDeposit"
-              type="number"
-              value={formData.securityDeposit}
-              onChange={handleInputChange}
-              placeholder="Enter security deposit amount"
-              hasError={false}
+          <FormField
+            error={{
+              msg:
+                (form.errors[
+                  "financialDetails.lastAssessmentDate"
+                ] as string) || "",
+              touched: form.isTouched("financialDetails.lastAssessmentDate"),
+            }}
+          >
+            <FormLabel
+              htmlFor="lastAssessmentDate"
+              label="Last Assessment Date"
             />
-          </FormField>
-          <FormField>
-            <FormLabel htmlFor="propertyTax" label="Property Tax ($)" />
             <FormInput
-              id="propertyTax"
-              name="propertyTax"
-              type="number"
-              value={formData.propertyTax}
-              onChange={handleInputChange}
-              placeholder="Enter annual property tax"
-              hasError={false}
+              id="lastAssessmentDate"
+              name="financialDetails.lastAssessmentDate"
+              type="date"
+              value={form.values.financialDetails.lastAssessmentDate}
+              onChange={handleOnChange}
+              placeholder="Select last assessment date"
+              hasError={!!form.errors["financialDetails.lastAssessmentDate"]}
             />
           </FormField>
         </div>
@@ -304,38 +255,34 @@ export function BasicInfoTab() {
         description="Enter the complete address of the property"
       >
         <div className="form-fields">
-          <FormField>
-            <FormLabel htmlFor="streetAddress" label="Street Address" />
+          <FormField
+            error={{
+              msg: (form.errors["address"] as string) || "",
+              touched: form.isTouched("address"),
+            }}
+          >
+            <FormLabel htmlFor="address" label="Street Address" required />
             <DebouncedInput
-              id="streetAddress"
-              name="streetAddress"
+              id="address"
+              name="address"
               type="text"
-              value={formData.streetAddress}
-              onChange={handleInputChange}
+              value={form.values.address}
+              onChange={handleOnChange}
               placeholder="Enter street address"
               debounceDelay={800}
-              validateFn={validateAddress}
-              onValidationComplete={handleAddressValidationComplete}
+              // validateFn={validateAddress}
+              // onValidationComplete={handleAddressValidationComplete}
             />
-            {/* {addressValidation.message && (
-              <small
-                className={`validation-message ${
-                  addressValidation.isValid ? "info" : "error"
-                }`}
-              >
-                {addressValidation.message}
-              </small>
-            )}
-            {addressValidation.suggestedAddress && (
-              <small className="suggestion" onClick={handleSuggestionClick}>
-                Suggested: {addressValidation.suggestedAddress} (click to apply)
-              </small>
-            )} */}
           </FormField>
         </div>
 
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg: (form.errors["unitApartment"] as string) || "",
+              touched: form.isTouched("unitApartment"),
+            }}
+          >
             <FormLabel
               htmlFor="unitApartment"
               label="Unit/Apartment (optional)"
@@ -344,25 +291,30 @@ export function BasicInfoTab() {
               id="unitApartment"
               name="unitApartment"
               type="text"
-              value={formData.unitApartment}
-              onChange={handleInputChange}
+              value={form.values.unitApartment}
+              onChange={handleOnChange}
               placeholder="Enter unit or apartment number"
-              hasError={false}
+              hasError={!!form.errors.unitApartment}
             />
           </FormField>
         </div>
 
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg: (form.errors["city"] as string) || "",
+              touched: form.isTouched("city"),
+            }}
+          >
             <FormLabel htmlFor="city" label="City" />
             <FormInput
               id="city"
               name="city"
               type="text"
-              value={formData.city}
-              onChange={handleInputChange}
+              value={form.values.city}
+              onChange={handleOnChange}
               placeholder="Enter city"
-              hasError={false}
+              hasError={!!form.errors.city}
             />
           </FormField>
           <FormField>
@@ -371,8 +323,8 @@ export function BasicInfoTab() {
               id="stateProvince"
               name="stateProvince"
               type="text"
-              value={formData.stateProvince}
-              onChange={handleInputChange}
+              value={form.values.stateProvince}
+              onChange={handleOnChange}
               placeholder="Enter state/province"
               hasError={false}
             />
@@ -386,8 +338,8 @@ export function BasicInfoTab() {
               id="postalCode"
               name="postalCode"
               type="text"
-              value={formData.postalCode}
-              onChange={handleInputChange}
+              value={form.values.postalCode}
+              onChange={handleOnChange}
               placeholder="Enter postal code"
               hasError={false}
             />
@@ -397,8 +349,8 @@ export function BasicInfoTab() {
             <Select
               id="country"
               name="country"
-              value={formData.country}
-              onChange={handleInputChange}
+              value={form.values.country}
+              onChange={handleOnChange}
               options={countryOptions}
               placeholder="Select country"
             />
