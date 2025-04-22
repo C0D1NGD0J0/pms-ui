@@ -1,10 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "@mantine/form";
 import { useRouter } from "next/navigation";
 import { authService } from "@services/auth";
-import { useAuthActions } from "@store/hooks";
 import { errorFormatter } from "@utils/helpers";
+import { useAuthActions } from "@store/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { ILoginForm } from "@interfaces/auth.interface";

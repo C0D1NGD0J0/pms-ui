@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useAuth } from "@store/hooks";
+import { useAuth } from "@store/auth.store";
 import { useRouter } from "next/navigation";
 
 import { useLoginLogic } from "./hook";
