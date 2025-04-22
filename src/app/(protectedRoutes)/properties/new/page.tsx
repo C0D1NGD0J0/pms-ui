@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
@@ -12,6 +12,7 @@ import {
 } from "@components/Panel";
 
 import { usePropertyForm } from "./hooks";
+import { CsvUploadModal } from "./components";
 import {
   PropertyInfoTab,
   BasicInfoTab,
@@ -20,6 +21,8 @@ import {
 } from "./tabs/components";
 
 export default function CreateProperty() {
+  const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
+
   const {
     form,
     activeTab,
@@ -32,6 +35,14 @@ export default function CreateProperty() {
     propertyStatusOptions,
     documentTypeOptions,
   } = usePropertyForm();
+
+  const handleOpenCSVModal = () => {
+    setIsCSVModalOpen(true);
+  };
+
+  const handleCloseCSVModal = () => {
+    setIsCSVModalOpen(false);
+  };
 
   const tabs = [
     {
@@ -100,9 +111,12 @@ export default function CreateProperty() {
             className="btn btn-secondary"
             label="Upload CSV"
             icon={<i className="bx bx-upload ghost"></i>}
+            onClick={handleOpenCSVModal}
           />
         }
       />
+
+      <CsvUploadModal isOpen={isCSVModalOpen} onClose={handleCloseCSVModal} />
 
       <div className="flex-row resource-form">
         <PanelsWrapper>
