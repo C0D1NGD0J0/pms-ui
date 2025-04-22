@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { authService } from "@services/auth";
-import { useAuthActions, useAuth } from "@store/hooks/useAuth";
+import { useAuthActions, useAuth } from "@store/auth.store";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
@@ -46,7 +46,9 @@ export const useCurrentUser = () => {
       const status = error.statusCode;
       // DO NOT retry if the error is 401 (Unauthorized) or 403 (Forbidden)
       if (status === 401 || status === 403) {
-        console.log("Retry aborted: Unauthorized (401) or Forbidden (403) error encountered while fetching current user.");
+        console.log(
+          "Retry aborted: Unauthorized (401) or Forbidden (403) error encountered while fetching current user."
+        );
         return false;
       }
 
