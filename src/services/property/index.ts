@@ -27,7 +27,7 @@ class PropertyService {
     }
   }
 
-  async validatePropertiesCSV(file: File, cid: string) {
+  async validatePropertiesCSV(cid: string, file: File) {
     const formData = new FormData();
     formData.append("csv_file", file);
     try {
@@ -47,12 +47,12 @@ class PropertyService {
     }
   }
 
-  async addMultipleProperties(file: File, cid: string) {
+  async addMultipleProperties(cid: string, file: File) {
     const formData = new FormData();
     formData.append("csv_file", file);
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cid}/add_properties_csv`,
+        `${this.baseUrl}/${cid}/import_properties_csv`,
         formData,
         {
           headers: {
@@ -115,11 +115,12 @@ class PropertyService {
 
   async updateClientProperty(
     cid: string,
+    pid: string,
     propertyData: Partial<PropertyFormValues>
   ) {
     try {
       const result = await axios.put(
-        `${this.baseUrl}/${cid}/client_property/${propertyId}`,
+        `${this.baseUrl}/${cid}/client_property/${pid}`,
         propertyData,
         this.axiosConfig
       );

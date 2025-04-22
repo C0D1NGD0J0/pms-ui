@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { propertySchema } from "@validations/index";
+import { csvUploadSchema, propertySchema } from "@validations/index";
 
 export type PropertyFormValues = z.infer<typeof propertySchema>;
+export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
 
 export const defaultPropertyValues: PropertyFormValues = {
   name: "",

@@ -11,7 +11,7 @@ const USER_QUERY_KEY = ["currentUser"];
 export const useCurrentUser = () => {
   const queryClient = useQueryClient();
   const { setUser } = useAuthActions();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, client } = useAuth();
 
   const {
     data: userData,
@@ -24,7 +24,7 @@ export const useCurrentUser = () => {
     queryKey: USER_QUERY_KEY,
     queryFn: async () => {
       try {
-        const response = await authService.currentuser();
+        const response = await authService.currentuser(client.csub);
         return response.data || null;
       } catch (err: any) {
         console.info("Current user fetch failed:", err);

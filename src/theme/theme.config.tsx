@@ -12,7 +12,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [theme, setTheme] = useState<Theme>("light");
 
-  // Effect to load theme from localStorage on initial load
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") as Theme;
     if (savedTheme) {
@@ -21,13 +20,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, []);
 
-  // Function to apply theme to document body
   const applyTheme = (selectedTheme: Theme) => {
     document.body.classList.remove("light-theme", "dark-theme");
     document.body.classList.add(`${selectedTheme}-theme`);
   };
 
-  // Toggle theme function
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);

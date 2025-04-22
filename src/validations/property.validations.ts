@@ -106,3 +106,17 @@ export const propertySchema = z.object({
 
   propertyImages: z.array(z.any()).default([]),
 });
+
+export const csvUploadSchema = z.object({
+  cid: z.string().min(1, "CID is required").default(""),
+  csvFile: z
+    .instanceof(File)
+    .refine((file) => file.name.endsWith(".csv"), {
+      message: "File must be a CSV",
+    })
+    .refine((file) => file.size <= 5 * 1024 * 1024, {
+      message: "File size must be less than 5MB",
+    })
+    .nullable()
+    .default(null),
+});
