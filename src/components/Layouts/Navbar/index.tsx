@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
-import { useAuthActions, useAuth } from "@store/hooks";
+import { useAuthActions, useAuth } from "@store/auth.store";
 
 interface MenuItem {
   icon: string;

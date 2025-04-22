@@ -14,7 +14,7 @@ interface FormInputProps {
     | "url"
     | "date"
     | "time";
-  value: string | number;
+  value?: string | number;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
   onkeydown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;

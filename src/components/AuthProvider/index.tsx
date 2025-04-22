@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import { Loading } from "@components/Loading";
-import { useAuth } from "@store/hooks/useAuth";
+import { useAuth } from "@store/auth.store";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { usePathname, useRouter } from "next/navigation";
 

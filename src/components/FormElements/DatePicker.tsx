@@ -7,7 +7,7 @@ interface CustomDatePickerProps {
   id: string;
   name: string;
   value?: string | null;
-  onChange: (value: string | null) => void;
+  onChange: (value: string) => void;
   className?: string;
   placeholder?: string;
   required?: boolean;

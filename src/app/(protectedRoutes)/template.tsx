@@ -31,36 +31,36 @@ export default function AuthTemplate({
     };
   }, [isIdle, isLoggedIn, push]);
 
-  if (isLoggedIn && isIdle) {
-    return (
-      <Loading
-        size="fullscreen"
-        description="User inactivity detected"
-        customBtn={
-          <button
-            className="btn btn-rounded btn-sm btn-primary"
-            onClick={() => refreshUser()}
-          >
-            resume session
-          </button>
-        }
-      />
-    );
-  }
+  // if (isLoggedIn && isIdle) {
+  //   return (
+  //     <Loading
+  //       size="fullscreen"
+  //       description="User inactivity detected"
+  //       customBtn={
+  //         <button
+  //           className="btn btn-rounded btn-sm btn-primary"
+  //           onClick={() => refreshUser()}
+  //         >
+  //           resume session
+  //         </button>
+  //       }
+  //     />
+  //   );
+  // }
 
-  if (!isLoggedIn) {
-    return (
-      <Loading
-        size="fullscreen"
-        description="Authenticating"
-        customBtn={
-          <Link className="btn btn-text" href={"/login"}>
-            Back to login
-          </Link>
-        }
-      />
-    );
-  }
+  // if (!isLoggedIn) {
+  //   return (
+  //     <Loading
+  //       size="fullscreen"
+  //       description="Authenticating"
+  //       customBtn={
+  //         <Link className="btn btn-text" href={"/login"}>
+  //           Back to login
+  //         </Link>
+  //       }
+  //     />
+  //   );
+  // }
 
   return <>{children}</>;
 }
