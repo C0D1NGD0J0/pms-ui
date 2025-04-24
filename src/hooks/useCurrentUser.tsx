@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect } from "react";
-import { authService } from "@services/auth";
+import { authService } from "@services/index";
 import { useAuthActions, useAuth } from "@store/auth.store";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
-const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
+const FIVE_MINUTES_IN_MS = 2 * 60 * 1000;
 const USER_QUERY_KEY = ["currentUser"];
 
 export const useCurrentUser = () => {
@@ -25,7 +25,8 @@ export const useCurrentUser = () => {
     queryFn: async () => {
       try {
         const response = await authService.currentuser(client.csub);
-        return response.data || null;
+        console.log("Current user fetched:", response);
+        return response?.data || null;
       } catch (err: any) {
         console.info("Current user fetch failed:", err);
         const status = err.statusCode;
@@ -36,8 +37,8 @@ export const useCurrentUser = () => {
         throw err;
       }
     },
-    enabled: true,
     refetchOnWindowFocus: true,
+    enabled: client.csub !== null,
     staleTime: FIVE_MINUTES_IN_MS, // data is considered fresh for 5 minutes
     retry: (
       failureCount,

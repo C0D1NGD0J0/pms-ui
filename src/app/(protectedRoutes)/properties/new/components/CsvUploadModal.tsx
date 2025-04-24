@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@components/FormElements";
 import { Modal } from "@components/FormElements/Modal";
+import { useNotification } from "@hooks/useNotification";
 
 import { FileInput } from "./FileInput";
-import { ValidationResult, useCsvUpload } from "../hooks/useCsvUpload";
+import { useCsvUpload } from "../hooks/useCsvUpload";
 
 interface CSVUploadModalProps {
   isOpen: boolean;
@@ -16,55 +17,37 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
     csvFile,
     isValidating,
     isProcessing,
-    validationResult,
-    processingResult,
     handleFileChange,
     validateCSV,
     processCSV,
     resetState,
   } = useCsvUpload();
+  const [validationResult, setValidationResult] = useState<{
+    success: boolean;
+    data: { processId: string };
+    message: string;
+  } | null>(null);
+  const { openNotification } = useNotification();
 
   const handleClose = () => {
     resetState();
     onClose();
   };
 
-  const renderValidationResults = (results: ValidationResult) => {
-    return (
-      <div className="validation-results">
-        <div className="validation-summary">
-          <h3>Validation Summary</h3>
-          <div className="summary-stats">
-            <div className="stat-item">
-              <span className="stat-label">Total Rows:</span>
-              <span className="stat-value">{results.totalRows}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Valid Rows:</span>
-              <span className="stat-value">{results.validRows}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Invalid Rows:</span>
-              <span className="stat-value">{results.invalidRows}</span>
-            </div>
-          </div>
-        </div>
-
-        {results.errors.length > 0 && (
-          <div className="validation-errors">
-            <h4>Errors Found:</h4>
-            <ul className="error-list">
-              {results.errors.map((error, index) => (
-                <li key={index} className="error-item">
-                  <span className="error-row">Row {error.row}:</span>{" "}
-                  {error.message}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
+  const handleCsvValidation = async () => {
+    try {
+      const resp = await validateCSV();
+      openNotification(
+        "success",
+        "Csv validation",
+        resp.message || "CSV validation process started."
+      );
+      setValidationResult(resp);
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "An error occurred during validation";
+      openNotification("error", "Processing Error", errorMessage);
+    }
   };
 
   const renderProcessingResults = () => {
@@ -130,18 +113,12 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
       );
     }
 
-    if (isValidating || validationResult) {
+    if (isValidating) {
       return (
-        <>
-          {isValidating ? (
-            <div className="validating-indicator">
-              <i className="bx bx-loader-alt bx-spin"></i>
-              <p>Validating CSV file...</p>
-            </div>
-          ) : (
-            validationResult && renderValidationResults(validationResult)
-          )}
-        </>
+        <div className="validating-indicator">
+          <i className="bx bx-loader-alt bx-spin"></i>
+          <p>Validating CSV file...</p>
+        </div>
       );
     }
 
@@ -174,7 +151,7 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
   };
 
   const renderFooterActions = () => {
-    if (processingResult) {
+    if (!validationResult) {
       return (
         <>
           <Button
@@ -199,7 +176,7 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
             label="Start Import"
             onClick={processCSV}
             className="btn-primary"
-            disabled={isProcessing || !validationResult.valid}
+            disabled={isProcessing || !validationResult.success}
           />
         </>
       );
@@ -210,8 +187,8 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
         <Button label="Cancel" onClick={handleClose} className="btn-default" />
         <Button
           label="Validate CSV"
-          onClick={validateCSV}
           className="btn-primary"
+          onClick={handleCsvValidation}
           disabled={isValidating || !csvFile}
         />
       </>

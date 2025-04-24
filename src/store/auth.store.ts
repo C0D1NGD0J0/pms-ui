@@ -30,6 +30,7 @@ const useAuthStore = create<AuthState>()(
         logout: async () => {
           const csub = get().client.csub;
           await authService.logout(csub);
+          sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
             permissions: [],
@@ -48,7 +49,7 @@ const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "auth-storage", // unique name for the storage (local storage key)
+      name: "auth-storage", // unique name for the storage (session storage key)
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => {
         return { client: state.client } as unknown as AuthState;
@@ -77,7 +78,3 @@ export const useAuthActions = () => {
     setPermissions: actions.setPermissions,
   };
 };
-
-// if (process.env.NODE_ENV === "development") {
-//   mountStoreDevtool("Store", useAuthStore);
-// }
