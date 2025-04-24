@@ -1,6 +1,7 @@
 import { ConfigProvider } from "antd";
 import { ThemeProvider } from "@theme/index";
 import { RectQueryProvider } from "@hooks/useReactQuery";
+import { EventProvider } from "@components/EventProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { NotificationProvider } from "@hooks/useNotification";
 import "@styles/main.scss";
@@ -34,7 +35,7 @@ export default function RootLayout({
             <NotificationProvider>
               <ConfigProvider>
                 <RectQueryProvider>
-                  {children}
+                  <EventProvider>{children}</EventProvider>
                 </RectQueryProvider>
               </ConfigProvider>
             </NotificationProvider>

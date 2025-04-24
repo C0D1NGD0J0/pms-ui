@@ -19,17 +19,17 @@ export default function AuthTemplate({
     let timeoutId: NodeJS.Timeout | null = null;
 
     if (isIdle && !isLoggedIn) {
-      setLoaderMessage("Logging out");
       timeoutId = setTimeout(() => {
+        setLoaderMessage("Logging out");
         return push("/login");
       }, 3000);
     }
 
     if (!isLoggedIn) {
-      setLoaderMessage("Logging out");
       timeoutId = setTimeout(() => {
+        setLoaderMessage("Logging out");
         push("/login");
-      }, 3000);
+      }, 5000);
     }
 
     return () => {

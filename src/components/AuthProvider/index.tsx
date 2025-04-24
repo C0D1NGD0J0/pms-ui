@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { Loading } from "@components/Loading";
 import { useAuth } from "@store/auth.store";
+import { Loading } from "@components/Loading";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -17,7 +17,7 @@ interface AuthProviderProps {
  * 3. Redirects authenticated users away from auth routes
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn } = useAuth();
   const { isFetchingUser, isError } = useCurrentUser();
   const pathname = usePathname();
   const router = useRouter();
