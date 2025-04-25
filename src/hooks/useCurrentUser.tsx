@@ -1,17 +1,24 @@
 "use client";
 
 import { useEffect } from "react";
-import { authService } from "@services/auth";
-import { useAuthActions, useAuth } from "@store/hooks/useAuth";
+import { useAuth } from "@store/auth.store";
+import { authService, EventTypes } from "@services/index";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
-const FIVE_MINUTES_IN_MS = 5 * 60 * 1000;
-const USER_QUERY_KEY = ["currentUser"];
+import { CURRENT_USER_QUERY_KEY, usePublish, useEvent } from "./event";
+
+const TWO_MINUTES_IN_MS = 2 * 60 * 1000;
 
 export const useCurrentUser = () => {
+  const publish = usePublish();
   const queryClient = useQueryClient();
-  const { setUser } = useAuthActions();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, client } = useAuth();
+
+  useEvent(EventTypes.GET_CURRENT_USER, () => {
+    if (client?.csub) {
+      refetch();
+    }
+  });
 
   const {
     data: userData,
@@ -21,24 +28,25 @@ export const useCurrentUser = () => {
     isSuccess,
     refetch,
   } = useQuery({
-    queryKey: USER_QUERY_KEY,
+    queryKey: CURRENT_USER_QUERY_KEY,
     queryFn: async () => {
       try {
-        const response = await authService.currentuser();
-        return response.data || null;
+        const response = await authService.currentuser(client?.csub ?? "");
+        console.log("Current user fetched:", response);
+        return response?.data || null;
       } catch (err: any) {
         console.info("Current user fetch failed:", err);
         const status = err.statusCode;
         if (status === 401 || status === 403) {
           console.warn(`Auth error (${status}) fetching current user.`);
-          // queryClient.removeQueries({ queryKey: USER_QUERY_KEY });
+          // queryClient.removeQueries({ queryKey: CURRENT_USER_QUERY_KEY });
         }
         throw err;
       }
     },
-    enabled: true,
     refetchOnWindowFocus: true,
-    staleTime: FIVE_MINUTES_IN_MS, // data is considered fresh for 5 minutes
+    enabled: !!client?.csub,
+    staleTime: TWO_MINUTES_IN_MS, // data is fresh for 2 minutes
     retry: (
       failureCount,
       error: { success: boolean; message: string; statusCode: number }
@@ -46,7 +54,9 @@ export const useCurrentUser = () => {
       const status = error.statusCode;
       // DO NOT retry if the error is 401 (Unauthorized) or 403 (Forbidden)
       if (status === 401 || status === 403) {
-        console.log("Retry aborted: Unauthorized (401) or Forbidden (403) error encountered while fetching current user.");
+        console.log(
+          "Retry aborted: Unauthorized (401) or Forbidden (403) error encountered while fetching current user."
+        );
         return false;
       }
 
@@ -56,7 +66,7 @@ export const useCurrentUser = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      setUser(userData);
+      publish(EventTypes.CURRENT_USER_UPDATED, userData);
     }
     if (isError) {
       // request failed
@@ -65,13 +75,13 @@ export const useCurrentUser = () => {
         console.log(
           `Sync: Clearing user in Zustand due to auth error (${status})`
         );
-        setUser(null);
-        queryClient.setQueryData(USER_QUERY_KEY, null);
+        publish(EventTypes.CURRENT_USER_UPDATED, null);
+        queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
       } else {
         console.log("Sync: Non-auth error fetching user:", error);
       }
     }
-  }, [isSuccess, isError, userData, error, setUser, queryClient]);
+  }, [isSuccess, isError, userData, error, queryClient, publish]);
 
   return {
     user: userData,

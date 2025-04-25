@@ -1,136 +1,220 @@
 "use client";
-import React, { useState, useRef } from "react";
-import { Button } from "@components/FormElements";
+import React, { useState } from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { FileUploader, FileItem } from "@components/FileUploader";
+import { PropertyFormValues } from "@interfaces/property.interface";
+import {
+  FormInput,
+  FormLabel,
+  FormField,
+  Select,
+} from "@components/FormElements";
 
-export function DocumentsTab() {
-  // State for uploaded files
-  const [propertyImages, setPropertyImages] = useState<File[]>([]);
-  const [propertyDocuments, setPropertyDocuments] = useState<File[]>([]);
+interface Props {
+  form: UseFormReturnType<PropertyFormValues>;
+  documentTypeOptions: {
+    value: "deed" | "tax" | "insurance" | "inspection" | "other" | "lease";
+    label: string;
+  }[];
+}
 
-  // Refs for file inputs
-  const imageInputRef = useRef<HTMLInputElement>(null);
-  const documentInputRef = useRef<HTMLInputElement>(null);
+export function DocumentsTab({ form, documentTypeOptions }: Props) {
+  const [currentDocType, setCurrentDocType] = useState<
+    "deed" | "tax" | "insurance" | "inspection" | "other" | "lease" | undefined
+  >(undefined);
+  const [currentDocDescription, setCurrentDocDescription] = useState("");
 
-  // Handle image upload
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setPropertyImages((prev) => {
-        // Limit to 5 images max
-        const combined = [...prev, ...newFiles];
-        return combined.slice(0, 5);
-      });
-    }
+  const handleRemoveImage = (index: number) => {
+    const currentImages = [...form.values.propertyImages];
+    currentImages.splice(index, 1);
+    form.setFieldValue("propertyImages", currentImages);
   };
 
-  // Handle document upload
-  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const newFiles = Array.from(e.target.files);
-      setPropertyDocuments((prev) => [...prev, ...newFiles]);
-    }
+  const handleRemoveDocument = (index: number) => {
+    const currentDocs = [...form.values.documents];
+    currentDocs.splice(index, 1);
+    form.setFieldValue("documents", currentDocs);
   };
 
-  // Trigger file input click
-  const handleBrowseImages = () => {
-    if (imageInputRef.current) {
-      imageInputRef.current.click();
-    }
+  const handleImageAdded = (file: FileItem) => {
+    const currentImages = [...form.values.propertyImages];
+    form.setFieldValue("propertyImages", [
+      ...currentImages,
+      {
+        fileName: file.fileName,
+        fileSize: file.fileSize,
+        file: file.file,
+        url: file.url,
+        isExternal: file.isExternal,
+      },
+    ]);
   };
 
-  const handleBrowseDocuments = () => {
-    if (documentInputRef.current) {
-      documentInputRef.current.click();
+  const handleDocumentAdded = (file: FileItem) => {
+    if (!currentDocType) {
+      alert("Please select a document type first");
+      return;
     }
+
+    const currentDocs = [...form.values.documents];
+    form.setFieldValue("documents", [
+      ...currentDocs,
+      {
+        documentType: currentDocType,
+        description: currentDocDescription,
+        externalUrl: file.externalUrl || "",
+        file: file.file,
+      },
+    ]);
+
+    // Reset form values
+    setCurrentDocType(undefined);
+    setCurrentDocDescription("");
   };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + " bytes";
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+    else return (bytes / 1048576).toFixed(1) + " MB";
+  };
+
+  const documentTypeField = (
+    <div className="form-fields">
+      <FormField>
+        <FormLabel htmlFor="documentType" label="Document Type" required />
+        <Select
+          id="documentType"
+          name="documentType"
+          value={currentDocType || ""}
+          onChange={(e) => {
+            const value = e.target.value as
+              | "deed"
+              | "tax"
+              | "insurance"
+              | "inspection"
+              | "other"
+              | "lease"
+              | undefined;
+            setCurrentDocType(value);
+          }}
+          options={documentTypeOptions}
+          placeholder="Select document type"
+        />
+      </FormField>
+    </div>
+  );
+
+  // Document description field
+  const descriptionField = (
+    <div className="form-fields">
+      <FormField>
+        <FormLabel htmlFor="description" label="Document Description" />
+        <FormInput
+          id="description"
+          name="description"
+          type="text"
+          value={currentDocDescription}
+          onChange={(e) => setCurrentDocDescription(e.target.value)}
+          placeholder="Enter a brief description"
+          hasError={false}
+        />
+      </FormField>
+    </div>
+  );
 
   return (
     <>
-      {/* Property Images section */}
       <FormSection
         title="Property Images"
         description="Upload images of the property (max 5 files, 3MB each)"
       >
-        <div className="file-upload-container">
-          <div className="file-upload-area">
-            <i className="bx bx-cloud-upload"></i>
-            <p>Click to browse files</p>
-            <input
-              type="file"
-              ref={imageInputRef}
-              multiple
-              accept="image/*"
-              className="file-input"
-              onChange={handleImageUpload}
-              style={{ display: "none" }}
-            />
-            <Button
-              label="Browse Files"
-              onClick={handleBrowseImages}
-              className="btn-outline"
-            />
-          </div>
-          <div className="uploaded-files">
-            <div className="upload-instructions">
-              <p>
-                Recommended: Upload photos of all rooms, exterior views, and
-                special features
-              </p>
-              <p>Formats: JPG, PNG, WEBP</p>
-            </div>
-            <ul className="file-list">
-              {propertyImages.map((file, index) => (
-                <li key={`img-${index}`} className="file-item">
-                  {file.name}
-                </li>
-              ))}
-            </ul>
-          </div>
+        <FileUploader
+          fileType="image"
+          onFileAdded={handleImageAdded}
+          acceptedFileTypes="image/*"
+          uploadInstructions="Recommended: Upload photos of all rooms, exterior views, and special features"
+        />
+
+        <div className="uploaded-files">
+          <ul className="file-list">
+            {form.values.propertyImages.map((image, index) => (
+              <li key={`img-${index}`} className="file-item">
+                <div className="file-info">
+                  <i className="bx bx-image"></i>
+                  <span className="file-name">{image.fileName}</span>
+                  <span className="file-size">
+                    ({formatFileSize(image.fileSize)})
+                  </span>
+                </div>
+                <button
+                  className="remove-file"
+                  onClick={() => handleRemoveImage(index)}
+                >
+                  <i className="bx bx-x"></i>
+                </button>
+              </li>
+            ))}
+          </ul>
         </div>
       </FormSection>
 
-      {/* Property Documents section */}
       <FormSection
         title="Property Documents"
         description="Upload property-related documents (deeds, certificates, etc.)"
       >
-        <div className="file-upload-container">
-          <div className="file-upload-area">
-            <i className="bx bx-file"></i>
-            <p>Drag and drop documents here or click to browse</p>
-            <input
-              type="file"
-              ref={documentInputRef}
-              multiple
-              accept=".pdf,.doc,.docx,.xls,.xlsx"
-              className="file-input"
-              onChange={handleDocumentUpload}
-              style={{ display: "none" }}
-            />
-            <Button
-              label="Browse Files"
-              onClick={handleBrowseDocuments}
-              className="btn-outline"
-            />
-          </div>
-          <div className="uploaded-files">
-            <div className="upload-instructions">
-              <p>
-                Suggested documents: Deed, Property tax records, Insurance
-                documents
-              </p>
-              <p>Formats: PDF, DOC, DOCX, XLS, XLSX</p>
-            </div>
+        <FileUploader
+          fileType="document"
+          onFileAdded={handleDocumentAdded}
+          acceptedFileTypes=".pdf,.doc,.docx,.xls,.xlsx"
+          documentTypeField={documentTypeField}
+          descriptionField={descriptionField}
+        />
+
+        {form.values.documents.length > 0 && (
+          <div className="uploaded-documents">
+            <h4>Added Documents</h4>
             <ul className="document-list">
-              {propertyDocuments.map((file, index) => (
-                <li key={`doc-${index}`} className="file-item">
-                  {file.name}
+              {form.values.documents.map((doc, index) => (
+                <li key={`doc-${index}`} className="document-item">
+                  <div className="document-info">
+                    <div className="document-type">
+                      <i className="bx bx-file"></i>
+                      <span>
+                        {documentTypeOptions.find(
+                          (t) => t.value === doc.documentType
+                        )?.label || doc.documentType}
+                      </span>
+                    </div>
+                    <div className="document-details">
+                      {doc.externalUrl && (
+                        <span className="document-url">
+                          <i className="bx bx-link"></i> {doc.externalUrl}
+                        </span>
+                      )}
+                      {doc.file && (
+                        <span className="document-filename">
+                          {doc.file.name} ({formatFileSize(doc.file.size)})
+                        </span>
+                      )}
+                      {doc.description && (
+                        <p className="document-description">
+                          {doc.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <button
+                    className="remove-document"
+                    onClick={() => handleRemoveDocument(index)}
+                  >
+                    <i className="bx bx-trash"></i>
+                  </button>
                 </li>
               ))}
             </ul>
           </div>
-        </div>
+        )}
       </FormSection>
     </>
   );

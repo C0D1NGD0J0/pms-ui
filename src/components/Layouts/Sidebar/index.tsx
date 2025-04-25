@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useTheme } from "@theme/index";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { useAuthActions, useAuth } from "@store/hooks";
+import { useAuthActions, useAuth } from "@store/auth.store";
 
 export const Sidebar = () => {
   const { logout } = useAuthActions();

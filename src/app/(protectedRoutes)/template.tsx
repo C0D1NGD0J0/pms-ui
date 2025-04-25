@@ -1,6 +1,5 @@
 "use client";
-import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { useIdleDetector } from "@hooks/useActive";
@@ -12,6 +11,7 @@ export default function AuthTemplate({
   children: React.ReactNode;
 }) {
   const { push } = useRouter();
+  const [loaderMessage, setLoaderMessage] = useState("Authenticating");
   const isIdle: boolean = useIdleDetector(10);
   const { isLoggedIn, refreshUser } = useCurrentUser();
 
@@ -20,8 +20,16 @@ export default function AuthTemplate({
 
     if (isIdle && !isLoggedIn) {
       timeoutId = setTimeout(() => {
+        setLoaderMessage("Logging out");
         return push("/login");
       }, 3000);
+    }
+
+    if (!isLoggedIn) {
+      timeoutId = setTimeout(() => {
+        setLoaderMessage("Logging out");
+        push("/login");
+      }, 5000);
     }
 
     return () => {
@@ -29,7 +37,8 @@ export default function AuthTemplate({
         clearTimeout(timeoutId);
       }
     };
-  }, [isIdle, isLoggedIn, push]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isIdle, isLoggedIn]);
 
   if (isLoggedIn && isIdle) {
     return (
@@ -49,17 +58,7 @@ export default function AuthTemplate({
   }
 
   if (!isLoggedIn) {
-    return (
-      <Loading
-        size="fullscreen"
-        description="Authenticating"
-        customBtn={
-          <Link className="btn btn-text" href={"/login"}>
-            Back to login
-          </Link>
-        }
-      />
-    );
+    return <Loading size="fullscreen" description={loaderMessage} />;
   }
 
   return <>{children}</>;

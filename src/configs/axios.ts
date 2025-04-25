@@ -166,6 +166,19 @@ class AxiosService implements IAxiosService {
     }
   }
 
+  async patch<T = any>(
+    url: string,
+    data?: object,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
+    try {
+      const response = await this.axios.patch(url, data, config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async delete<T = any>(
     url: string,
     params?: object,

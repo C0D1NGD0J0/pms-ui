@@ -1,0 +1,117 @@
+import { z } from "zod";
+import { csvUploadSchema, propertySchema } from "@validations/index";
+
+export type PropertyFormValues = z.infer<typeof propertySchema>;
+export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
+
+export const defaultPropertyValues: PropertyFormValues = {
+  name: "",
+  cid: "",
+  propertyType: "house",
+  status: "available",
+  managedBy: "",
+  yearBuilt: undefined,
+  address: "",
+  unitApartment: "",
+  city: "",
+  stateProvince: "",
+  postalCode: "",
+  country: "",
+  financialDetails: {
+    purchasePrice: 0,
+    purchaseDate: "",
+    marketValue: 0,
+    propertyTax: 0,
+    lastAssessmentDate: "",
+  },
+  specifications: {
+    totalArea: 0,
+    lotSize: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    floors: 1,
+    garageSpaces: 0,
+    maxOccupants: 1,
+  },
+  utilities: {
+    water: false,
+    gas: false,
+    electricity: false,
+    internet: false,
+    trash: false,
+    cableTV: false,
+  },
+  description: {
+    text: "",
+    html: "",
+  },
+  occupancyStatus: "vacant",
+  occupancyRate: 0,
+  interiorAmenities: {
+    airConditioning: false,
+    heating: false,
+    washerDryer: false,
+    dishwasher: false,
+    fridge: false,
+    furnished: false,
+    storageSpace: false,
+  },
+  communityAmenities: {
+    swimmingPool: false,
+    fitnessCenter: false,
+    elevator: false,
+    parking: false,
+    securitySystem: false,
+    petFriendly: false,
+    laundryFacility: false,
+    doorman: false,
+  },
+  documents: [],
+  propertyImages: [],
+};
+
+export const formFieldVisibilityMap = {
+  house: [
+    "totalArea",
+    "lotSize",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "garageSpaces",
+    "maxOccupants",
+  ],
+  townhouse: [
+    "totalArea",
+    "lotSize",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "garageSpaces",
+    "maxOccupants",
+  ],
+  apartment: ["totalArea", "bedrooms", "bathrooms", "floors", "maxOccupants"],
+  condominium: ["totalArea", "bedrooms", "bathrooms", "floors", "maxOccupants"],
+  commercial: [
+    "totalArea",
+    "floors",
+    "officeSpaces",
+    "meetingRooms",
+    "maxOccupants",
+  ],
+  industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
+};
+
+export type StaticPropertyFormConfig = {
+  propertyTypes: string[];
+  propertyStatuses: string[];
+  occupancyStatuses: string[];
+  documentTypes: string[];
+  currencies: string[];
+  specifications: {
+    [key: string]: {
+      type: string;
+      isRequired: boolean;
+      min: number;
+    };
+  };
+};

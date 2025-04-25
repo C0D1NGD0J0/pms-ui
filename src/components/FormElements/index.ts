@@ -9,6 +9,7 @@ export * from "@components/FormElements/FormField";
 export * from "@components/FormElements/FormInput";
 export * from "@components/FormElements/FormLabel";
 export * from "@components/FormElements/FormRadio";
+export * from "@components/FormElements/Modal";
 export * from "@components/FormElements/Select";
 export * from "@components/FormElements/TextArea";
 export * from "@components/FormElements/Toggle";

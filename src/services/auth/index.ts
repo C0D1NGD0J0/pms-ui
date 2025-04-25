@@ -39,10 +39,11 @@ class AuthService {
       throw error;
     }
   };
-  currentuser = async () => {
+  currentuser = async (cid: string) => {
     try {
+      if (!cid) return;
       const res = await axios.get<{ success: boolean; data: ICurrentUser }>(
-        `${this.baseUrl}/me`
+        `${this.baseUrl}/${cid}/me`
       );
 
       return res;

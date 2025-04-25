@@ -1,6 +1,7 @@
 import React, { KeyboardEvent, useState } from "react";
 
 type ToggleProps = {
+  id?: string;
   className?: string;
   onChange: (newState: boolean, name?: string) => void;
   initialState?: boolean;
@@ -11,6 +12,7 @@ export const Toggle: React.FC<ToggleProps> = ({
   className = "",
   onChange,
   initialState = false,
+  id,
   name,
 }) => {
   const [isToggled, setIsToggled] = useState(initialState);
@@ -32,6 +34,7 @@ export const Toggle: React.FC<ToggleProps> = ({
 
   return (
     <div
+      id={id}
       className={`toggle ${isToggled ? "toggled" : ""} ${className}`}
       onClick={toggle}
       onKeyDown={handleKeyDown}

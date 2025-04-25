@@ -1,20 +1,15 @@
 import { create } from "zustand";
 import { authService } from "@services/auth";
-import { ICurrentUser } from "@interfaces/index";
+import { ICurrentUser, UserClient } from "@interfaces/index";
 import { createJSONStorage, persist } from "zustand/middleware";
-
-export type UserClient = {
-  csub: string;
-  displayName: string;
-};
 
 type AuthState = {
   permissions: string[];
   user: ICurrentUser | null;
-  client: UserClient;
+  client: UserClient | null;
   actions: {
     logout: () => void;
-    setClient: (client: UserClient) => void;
+    setClient: (client: UserClient | null) => void;
     setUser: (user: ICurrentUser | null) => void;
     setPermissions: (permissions: string[]) => void;
   };
@@ -23,13 +18,14 @@ type AuthState = {
 const useAuthStore = create<AuthState>()(
   persist<AuthState>(
     (set, get) => ({
-      client: { csub: "", displayName: "" },
+      client: null,
       permissions: [],
       user: null,
       actions: {
         logout: async () => {
-          const csub = get().client.csub;
+          const csub = get().client?.csub;
           await authService.logout(csub);
+          sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
             permissions: [],
@@ -39,8 +35,8 @@ const useAuthStore = create<AuthState>()(
         setUser: (user: ICurrentUser | null) => {
           return set({ user });
         },
-        setClient: (client: UserClient) => {
-          return set({ client });
+        setClient: (client: UserClient | null) => {
+          return set({ client: client });
         },
         setPermissions: (permissions: string[]) => {
           return set({ permissions });
@@ -48,7 +44,7 @@ const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "auth-storage", // unique name for the storage (local storage key)
+      name: "auth-storage", // unique name for the storage (session storage key)
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => {
         return { client: state.client } as unknown as AuthState;
@@ -59,7 +55,7 @@ const useAuthStore = create<AuthState>()(
 
 export const useAuth = () => {
   const { client, permissions, user } = useAuthStore();
-  const isLoggedIn = !!user?.sub && !!client.csub;
+  const isLoggedIn = !!user?.sub && !!client?.csub;
   return {
     user,
     client,
@@ -77,7 +73,3 @@ export const useAuthActions = () => {
     setPermissions: actions.setPermissions,
   };
 };
-
-// if (process.env.NODE_ENV === "development") {
-//   mountStoreDevtool("Store", useAuthStore);
-// }

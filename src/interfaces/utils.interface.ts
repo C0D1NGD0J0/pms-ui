@@ -15,3 +15,10 @@ export interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
 }
+
+export type IPaginationQuery = {
+  page: number;
+  limit: number;
+  sort: "asc" | "desc";
+  skip: number;
+};
