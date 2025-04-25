@@ -34,9 +34,9 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
     onClose();
   };
 
-  const handleCsvValidation = async () => {
+  const handleCsvImport = async () => {
     try {
-      const resp = await validateCSV();
+      const resp = validationResult ? await processCSV() : await validateCSV();
       openNotification(
         "success",
         "Csv validation",
@@ -50,68 +50,68 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
     }
   };
 
-  const renderProcessingResults = () => {
-    if (!processingResult) return null;
+  // const renderProcessingResults = () => {
+  //   if (!processingResult) return null;
 
-    return (
-      <div className="processing-results">
-        <div
-          className={`result-icon ${
-            processingResult.success ? "success" : "error"
-          }`}
-        >
-          <i
-            className={`bx ${processingResult.success ? "bx-check" : "bx-x"}`}
-          ></i>
-        </div>
+  //   return (
+  //     <div className="processing-results">
+  //       <div
+  //         className={`result-icon ${
+  //           processingResult.success ? "success" : "error"
+  //         }`}
+  //       >
+  //         <i
+  //           className={`bx ${processingResult.success ? "bx-check" : "bx-x"}`}
+  //         ></i>
+  //       </div>
 
-        <h3>
-          {processingResult.success
-            ? "Import Completed Successfully"
-            : "Import Failed"}
-        </h3>
+  //       <h3>
+  //         {processingResult.success
+  //           ? "Import Completed Successfully"
+  //           : "Import Failed"}
+  //       </h3>
 
-        <div className="result-stats">
-          <div className="stat-item">
-            <span className="stat-label">Processed:</span>
-            <span className="stat-value">{processingResult.processed}</span>
-          </div>
-          {processingResult.failed > 0 && (
-            <div className="stat-item error">
-              <span className="stat-label">Failed:</span>
-              <span className="stat-value">{processingResult.failed}</span>
-            </div>
-          )}
-        </div>
+  //       <div className="result-stats">
+  //         <div className="stat-item">
+  //           <span className="stat-label">Processed:</span>
+  //           <span className="stat-value">{processingResult.processed}</span>
+  //         </div>
+  //         {processingResult.failed > 0 && (
+  //           <div className="stat-item error">
+  //             <span className="stat-label">Failed:</span>
+  //             <span className="stat-value">{processingResult.failed}</span>
+  //           </div>
+  //         )}
+  //       </div>
 
-        {processingResult.errors && processingResult.errors.length > 0 && (
-          <div className="processing-errors">
-            <h4>Errors:</h4>
-            <ul className="error-list">
-              {processingResult.errors.map((error, index) => (
-                <li key={index} className="error-item">
-                  <span className="error-row">Row {error.row}:</span>{" "}
-                  {error.message}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  };
+  //       {processingResult.errors && processingResult.errors.length > 0 && (
+  //         <div className="processing-errors">
+  //           <h4>Errors:</h4>
+  //           <ul className="error-list">
+  //             {processingResult.errors.map((error, index) => (
+  //               <li key={index} className="error-item">
+  //                 <span className="error-row">Row {error.row}:</span>{" "}
+  //                 {error.message}
+  //               </li>
+  //             ))}
+  //           </ul>
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   const renderModalContent = () => {
-    if (processingResult) {
-      return (
-        <>
-          {renderProcessingResults()}
-          <p className="action-hint">
-            You can now close this window or upload another file.
-          </p>
-        </>
-      );
-    }
+    // if (processingResult) {
+    //   return (
+    //     <>
+    //       {renderProcessingResults()}
+    //       <p className="action-hint">
+    //         You can now close this window or upload another file.
+    //       </p>
+    //     </>
+    //   );
+    // }
 
     if (isValidating) {
       return (
@@ -151,54 +151,20 @@ export function CsvUploadModal({ isOpen, onClose }: CSVUploadModalProps) {
   };
 
   const renderFooterActions = () => {
-    if (!validationResult) {
-      return (
-        <>
-          <Button
-            label="Upload Another"
-            onClick={resetState}
-            className="btn-default"
-          />
-          <Button label="Close" onClick={handleClose} className="btn-primary" />
-        </>
-      );
-    }
-
-    if (validationResult) {
-      return (
-        <>
-          <Button
-            label="Cancel"
-            onClick={handleClose}
-            className="btn-default"
-          />
-          <Button
-            label="Start Import"
-            onClick={processCSV}
-            className="btn-primary"
-            disabled={isProcessing || !validationResult.success}
-          />
-        </>
-      );
-    }
-
     return (
       <>
         <Button label="Cancel" onClick={handleClose} className="btn-default" />
         <Button
-          label="Validate CSV"
           className="btn-primary"
-          onClick={handleCsvValidation}
-          disabled={isValidating || !csvFile}
+          onClick={handleCsvImport}
+          disabled={isProcessing || isValidating || !csvFile}
+          label={validationResult ? "Start Import" : "Validate CSV"}
         />
       </>
     );
   };
 
   const getModalTitle = () => {
-    if (processingResult) {
-      return "Import Results";
-    }
     if (validationResult) {
       return "CSV Validation Results";
     }

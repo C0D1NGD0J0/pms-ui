@@ -63,6 +63,9 @@ export function useCsvUpload() {
       cid: form.values.cid,
       csvFile: form.values.csvFile,
     });
+    if (resp.success) {
+      form.setFieldValue("csvFile", form.values.csvFile);
+    }
     return resp;
   };
 

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { Table } from "@components/Table";
+import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
@@ -11,7 +12,10 @@ import {
   Property,
 } from "@/src/test-data";
 
+import { CsvUploadModal } from "./new/components";
+
 export default function Properties() {
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
   const rowSelection = {
@@ -29,16 +33,32 @@ export default function Properties() {
     // Implement bulk action logic here
   };
 
+  const openCsvModal = () => {
+    setIsCsvModalOpen(true);
+  };
+
+  const closeCsvModal = () => {
+    setIsCsvModalOpen(false);
+  };
+
   return (
     <div className="page properties">
       <PageHeader
         title="Property portfolio"
         subtitle="/properties/new"
         headerBtn={
-          <Link href="/properties/new" className="btn btn-primary">
-            <i className="bx bx-plus-circle"></i>
-            Add New Property
-          </Link>
+          <>
+            <Button
+              label="Import CSV"
+              onClick={openCsvModal}
+              icon={<i className="bx bx-upload"></i>}
+              className="btn btn-secondary mr-2"
+            />
+            <Link href="/properties/new" className="btn btn-primary">
+              <i className="bx bx-plus-circle"></i>
+              Add New Property
+            </Link>
+          </>
         }
       />
 
@@ -85,6 +105,7 @@ export default function Properties() {
           </Panel>
         </PanelsWrapper>
       </div>
+      <CsvUploadModal isOpen={isCsvModalOpen} onClose={closeCsvModal} />
     </div>
   );
 }
