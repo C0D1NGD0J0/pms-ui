@@ -76,10 +76,10 @@ export function BasicInfoTab({
             <Select
               id="propertyType"
               name="propertyType"
-              value={form.values.propertyType}
               onChange={handleOnChange}
               options={propertyTypeOptions}
               placeholder="Select property type"
+              value={form.values.propertyType || ""}
             />
           </FormField>
           <FormField
@@ -92,10 +92,10 @@ export function BasicInfoTab({
             <Select
               id="status"
               name="status"
-              value={form.values.status}
               onChange={handleOnChange}
-              options={propertyStatusOptions}
               placeholder="Select status"
+              options={propertyStatusOptions}
+              value={form.values.status || ""}
             />
           </FormField>
         </div>
@@ -257,16 +257,16 @@ export function BasicInfoTab({
         <div className="form-fields">
           <FormField
             error={{
-              msg: (form.errors["address"] as string) || "",
-              touched: form.isTouched("address"),
+              msg: (form.errors["address.fullAddress"] as string) || "",
+              touched: form.isTouched("address.fullAddress"),
             }}
           >
             <FormLabel htmlFor="address" label="Street Address" required />
             <DebouncedInput
               id="address"
-              name="address"
+              name="address.fullAddress"
               type="text"
-              value={form.values.address}
+              value={form.values.address.fullAddress}
               onChange={handleOnChange}
               placeholder="Enter street address"
               debounceDelay={800}
@@ -279,8 +279,8 @@ export function BasicInfoTab({
         <div className="form-fields">
           <FormField
             error={{
-              msg: (form.errors["unitApartment"] as string) || "",
-              touched: form.isTouched("unitApartment"),
+              msg: (form.errors["address.unitApartment"] as string) || "",
+              touched: form.isTouched("address.unitApartment"),
             }}
           >
             <FormLabel
@@ -289,12 +289,12 @@ export function BasicInfoTab({
             />
             <FormInput
               id="unitApartment"
-              name="unitApartment"
+              name="address.unitApartment"
               type="text"
-              value={form.values.unitApartment}
+              value={form.values.address.unitApartment}
               onChange={handleOnChange}
               placeholder="Enter unit or apartment number"
-              hasError={!!form.errors.unitApartment}
+              hasError={!!form.errors["address.unitApartment"]}
             />
           </FormField>
         </div>
@@ -302,31 +302,29 @@ export function BasicInfoTab({
         <div className="form-fields">
           <FormField
             error={{
-              msg: (form.errors["city"] as string) || "",
-              touched: form.isTouched("city"),
+              msg: (form.errors["address.city"] as string) || "",
+              touched: form.isTouched("address.city"),
             }}
           >
             <FormLabel htmlFor="city" label="City" />
             <FormInput
               id="city"
-              name="city"
+              name="address.city"
               type="text"
-              value={form.values.city}
+              value={form.values.address.city}
               onChange={handleOnChange}
               placeholder="Enter city"
-              hasError={!!form.errors.city}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="stateProvince" label="State/Province" />
             <FormInput
               id="stateProvince"
-              name="stateProvince"
+              name="address.stateProvince"
               type="text"
-              value={form.values.stateProvince}
+              value={form.values.address.stateProvince}
               onChange={handleOnChange}
               placeholder="Enter state/province"
-              hasError={false}
             />
           </FormField>
         </div>
@@ -336,20 +334,19 @@ export function BasicInfoTab({
             <FormLabel htmlFor="postalCode" label="Postal Code" />
             <FormInput
               id="postalCode"
-              name="postalCode"
+              name="address.postalCode"
               type="text"
-              value={form.values.postalCode}
+              value={form.values.address.postalCode}
               onChange={handleOnChange}
               placeholder="Enter postal code"
-              hasError={false}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="country" label="Country" />
             <Select
               id="country"
-              name="country"
-              value={form.values.country}
+              name="address.country"
+              value={form.values.address.country}
               onChange={handleOnChange}
               options={countryOptions}
               placeholder="Select country"

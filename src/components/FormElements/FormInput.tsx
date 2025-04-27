@@ -30,7 +30,7 @@ interface FormInputProps {
   maxLength?: number;
   pattern?: string;
   ariaLabel?: string;
-  hasError: boolean;
+  hasError?: boolean;
   ariaDescribedBy?: string;
 }
 

@@ -110,7 +110,8 @@ export const errorFormatter = (error: unknown): string => {
   }
   // regular error object
   else {
-    result = (error as Error).message;
+    console.log(error)
+    result = (error as Error)?.message;
   }
   return result;
 };

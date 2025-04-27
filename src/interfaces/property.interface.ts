@@ -7,16 +7,18 @@ export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
 export const defaultPropertyValues: PropertyFormValues = {
   name: "",
   cid: "",
-  propertyType: "house",
-  status: "available",
+  status: undefined,
   managedBy: "",
-  yearBuilt: undefined,
-  address: "",
-  unitApartment: "",
-  city: "",
-  stateProvince: "",
-  postalCode: "",
-  country: "",
+  yearBuilt: 1800,
+  propertyType: undefined,
+  address: {
+    fullAddress: "",
+    city: "",
+    stateProvince: "",
+    postalCode: "",
+    country: "",
+    unitApartment: "",
+  },
   financialDetails: {
     purchasePrice: 0,
     purchaseDate: "",
@@ -45,8 +47,7 @@ export const defaultPropertyValues: PropertyFormValues = {
     text: "",
     html: "",
   },
-  occupancyStatus: "vacant",
-  occupancyRate: 0,
+  occupancyStatus: undefined,
   interiorAmenities: {
     airConditioning: false,
     heating: false,
@@ -66,6 +67,7 @@ export const defaultPropertyValues: PropertyFormValues = {
     laundryFacility: false,
     doorman: false,
   },
+  totalUnits: 0,
   documents: [],
   propertyImages: [],
 };
@@ -89,15 +91,23 @@ export const formFieldVisibilityMap = {
     "garageSpaces",
     "maxOccupants",
   ],
-  apartment: ["totalArea", "bedrooms", "bathrooms", "floors", "maxOccupants"],
-  condominium: ["totalArea", "bedrooms", "bathrooms", "floors", "maxOccupants"],
-  commercial: [
+  apartment: [
     "totalArea",
+    "bedrooms",
+    "bathrooms",
     "floors",
-    "officeSpaces",
-    "meetingRooms",
     "maxOccupants",
+    "totalUnits",
   ],
+  condominium: [
+    "totalArea",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "maxOccupants",
+    "totalUnits",
+  ],
+  commercial: ["totalArea", "floors", "totalUnits", "maxOccupants"],
   industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
 };
 
@@ -115,3 +125,26 @@ export type StaticPropertyFormConfig = {
     };
   };
 };
+
+export enum PropertyTypesEnum {
+  HOUSE = "house",
+  CONDO = "condominium",
+  APARTMENT = "apartment",
+  TOWNHOUSE = "townhouse",
+  COMMERCIAL = "commercial",
+  INDUSTRIAL = "industrial",
+}
+
+export enum PropertyStatusEnum {
+  OCCUPIED = "occupied",
+  INACTIVE = "inactive",
+  AVAILABLE = "available",
+  UNDER_MAINTENANCE = "maintenance",
+  UNDER_CONSTRUCTION = "construction",
+}
+
+export enum PropertyOccupancyStatusEnum {
+  VACANT = "vacant",
+  OCCUPIED = "occupied",
+  PARTIALLY_OCCUPIED = "partially_occupied",
+}
