@@ -28,10 +28,10 @@ export default function Properties() {
     type: "checkbox" as const,
   };
 
-  const handleBulkAction = () => {
-    console.log(`Performing bulk action on: ${selectedRowKeys.join(", ")}`);
-    // Implement bulk action logic here
-  };
+  // const handleBulkAction = () => {
+  //   console.log(`Performing bulk action on: ${selectedRowKeys.join(", ")}`);
+  //   // Implement bulk action logic here
+  // };
 
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
