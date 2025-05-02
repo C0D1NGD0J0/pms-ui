@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { TabList } from "./TabContainer";
 import { useTabsContext } from "../hook";
 import { TabPanelContent } from "./TabPanelContent";

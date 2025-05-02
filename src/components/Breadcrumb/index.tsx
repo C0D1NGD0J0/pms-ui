@@ -23,7 +23,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   return (
     <div className={`page-breadcrumb ${className}`}>
       <AntBreadcrumb
-        items={breadcrumbItems.map((item, _index) => ({
+        items={breadcrumbItems.map((item) => ({
           title: item.href ? (
             <Link href={item.href}>{item.title}</Link>
           ) : (

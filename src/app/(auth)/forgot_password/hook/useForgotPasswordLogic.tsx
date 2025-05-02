@@ -1,8 +1,8 @@
 import { useForm } from "@mantine/form";
-import { useMutation } from "@tanstack/react-query";
-import { zodResolver } from "mantine-form-zod-resolver";
 import { authService } from "@services/auth";
 import { errorFormatter } from "@utils/helpers";
+import { useMutation } from "@tanstack/react-query";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
 import { ForgotPasswordSchema } from "@validations/auth.validations";
 
