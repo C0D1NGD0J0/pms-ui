@@ -924,47 +924,47 @@ export const propertyColumns = [
     render: (_: string) => "View | Edit",
   },
 ];
-export const generatePropertyColumn = () => {
-  return [
-    {
-      title: "Name",
-      dataIndex: "name",
-    },
-    {
-      title: "Property Type",
-      dataIndex: "propertyType",
-      render: (type: string) => type.charAt(0).toUpperCase() + type.slice(1),
-    },
-    {
-      title: "Address",
-      dataIndex: "address",
-      render: (address: any) => {
-        if (address.state !== address.city) {
-          return `${address.street}, ${address.city}, ${address.state}, ${address.country}`;
-        }
-        return `${address.street}, ${address.city}, ${address.country}`;
-      },
-    },
-    {
-      title: "Details",
-      dataIndex: "specifications",
-      render: (specs: any, record: any) => {
-        if (
-          record.propertyType === "commercial" ||
-          record.propertyType === "industrial"
-        ) {
-          return `${specs?.totalArea || 0} sq ft`;
-        }
-        return `${specs?.bedrooms || 0} bed, ${specs?.bathrooms || 0} bath, ${
-          specs?.totalArea || 0
-        } sq ft`;
-      },
-    },
-    { title: "Status", dataIndex: "status", isStatus: true },
-    {
-      title: "Action",
-      dataIndex: "id",
-      render: (_: string) => "View | Edit",
-    },
-  ];
-};
+// export const generatedPropertyColumn = () => {
+//   return [
+//     {
+//       title: "Name",
+//       dataIndex: "name",
+//     },
+//     {
+//       title: "Property Type",
+//       dataIndex: "propertyType",
+//       render: (type: string) => type.charAt(0).toUpperCase() + type.slice(1),
+//     },
+//     {
+//       title: "Address",
+//       dataIndex: "address",
+//       render: (address: any) => {
+//         if (address.state !== address.city) {
+//           return `${address.street}, ${address.city}, ${address.state}, ${address.country}`;
+//         }
+//         return `${address.street}, ${address.city}, ${address.country}`;
+//       },
+//     },
+//     {
+//       title: "Details",
+//       dataIndex: "specifications",
+//       render: (specs: any, record: any) => {
+//         if (
+//           record.propertyType === "commercial" ||
+//           record.propertyType === "industrial"
+//         ) {
+//           return `${specs?.totalArea || 0} sq ft`;
+//         }
+//         return `${specs?.bedrooms || 0} bed, ${specs?.bathrooms || 0} bath, ${
+//           specs?.totalArea || 0
+//         } sq ft`;
+//       },
+//     },
+//     { title: "Status", dataIndex: "status", isStatus: true },
+//     {
+//       title: "Action",
+//       dataIndex: "id",
+//       render: (_: string) => "View | Edit",
+//     },
+//   ];
+// };

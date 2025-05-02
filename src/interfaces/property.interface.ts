@@ -207,6 +207,7 @@ export interface IPropertyAddress {
   state: string;
   country: string;
   postCode: string;
+  fullAddress?: string;
   streetNumber: string;
 }
 

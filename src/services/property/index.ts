@@ -73,11 +73,11 @@ class PropertyService {
 
   async getClientProperties(
     cid: string,
-    filterQuery: Partial<IPropertyFilterParams> = {},
-    pagination: IPaginationQuery
+    pagination: IPaginationQuery,
+    filterQuery?: Partial<IPropertyFilterParams>
   ) {
     try {
-      const queryString = this.buildQueryString(filterQuery, pagination);
+      const queryString = this.buildQueryString(filterQuery ?? {}, pagination);
       const result = await axios.get<IServerResponse<IProperty[]>>(
         `${this.baseUrl}/${cid}/client_properties?${queryString}`,
         this.axiosConfig
@@ -315,6 +315,7 @@ class PropertyService {
       ...(pagination.sortBy && { sortBy: pagination.sortBy }),
     });
 
+    if (Object.keys(data).length === 0) return params.toString();
     const filterEntries: [string, string | number | null | undefined][] = [
       ["propertyType", data.propertyType],
       ["status", data.status],

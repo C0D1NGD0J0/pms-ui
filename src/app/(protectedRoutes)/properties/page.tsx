@@ -7,10 +7,10 @@ import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
-import { generatePropertyColumn } from "@/src/test-data";
 
 import { useGetAllProperties } from "./hooks";
 import { CsvUploadModal } from "./new/components";
+import { generatePropertyColumn } from "./utils/index";
 
 export default function Properties() {
   const { client } = useAuth();
@@ -98,7 +98,7 @@ export default function Properties() {
                   handlePageChange(page);
                 },
               }}
-              rowKey="id"
+              rowKey="pid"
               withHeader
             />
           </Panel>
