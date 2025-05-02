@@ -43,7 +43,7 @@ class AxiosService implements IAxiosService {
       headers: {
         "Content-Type": "application/json",
       },
-      timeout: 30000,
+      timeout: 45000,
     });
 
     this.setupInterceptors();

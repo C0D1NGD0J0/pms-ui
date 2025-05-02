@@ -31,8 +31,8 @@ export const useCurrentUser = () => {
     queryKey: CURRENT_USER_QUERY_KEY,
     queryFn: async () => {
       try {
+        console.log("Current user start fetchin...");
         const response = await authService.currentuser(client?.csub ?? "");
-        console.log("Current user fetched:", response);
         return response?.data || null;
       } catch (err: any) {
         console.info("Current user fetch failed:", err);

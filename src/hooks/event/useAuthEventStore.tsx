@@ -15,7 +15,7 @@ export function useAuthEventStore() {
   useEvent(EventTypes.LOGIN_SUCCESS, (loginData: UserClient | null) => {
     if (loginData?.csub) {
       setClient(loginData);
-      queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+      queryClient.fetchQuery({ queryKey: CURRENT_USER_QUERY_KEY });
     }
   });
 
