@@ -1,4 +1,5 @@
-export interface ISuccessReturnData<T = unknown> {
+export interface IServerResponse<T> {
+  pagination?: IPaginationResponse | null;
   success: boolean;
   msg?: string;
   data: T;
@@ -19,6 +20,16 @@ export interface ThemeContextType {
 export type IPaginationQuery = {
   page: number;
   limit: number;
-  sort: "asc" | "desc";
-  skip: number;
+  total?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc" | "";
 };
+
+// Pagination interface
+export interface IPaginationResponse {
+  total: number;
+  perPage: number;
+  totalPages: number;
+  currentPage: number;
+  hasMoreResource: boolean;
+}

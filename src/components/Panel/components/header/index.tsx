@@ -14,8 +14,10 @@ export interface PanelHeaderProps {
   filterOpts?: {
     value: string;
     isVisible?: boolean;
-    options: { label: string; value: string }[];
+    sortDirection?: "asc" | "desc" | "";
     onFilterChange: (value: string) => void;
+    options: { label: string; value: string }[];
+    onSortDirectionChange?: (sort: "asc" | "desc") => void;
   } | null;
 }
 
@@ -27,6 +29,8 @@ export function PanelHeader({
 }: PanelHeaderProps) {
   const isSeachVisible = (searchOpts && searchOpts?.isVisible) || false;
   const isFilterVisible = filterOpts?.isVisible || false;
+  const [_sortBy, setSortBy] = React.useState<string>("");
+  console.log(filterOpts);
   return (
     <div className="panel-header">
       <div className="panel-header__title">
@@ -52,7 +56,10 @@ export function PanelHeader({
             <div className="filter-options">
               <select
                 className="filter-select"
-                onChange={(e) => filterOpts?.onFilterChange(e.target.value)}
+                onChange={(e) => {
+                  setSortBy(e.target.value);
+                  filterOpts?.onFilterChange(e.target.value);
+                }}
               >
                 {filterOpts?.options.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -60,6 +67,24 @@ export function PanelHeader({
                   </option>
                 ))}
               </select>
+              {_sortBy && filterOpts.sortDirection && (
+                <button
+                  className="sort-direction-btn"
+                  onClick={() =>
+                    filterOpts.onSortDirectionChange?.(
+                      filterOpts.sortDirection === "asc" ? "desc" : "asc"
+                    )
+                  }
+                >
+                  <i
+                    className={`bx ${
+                      filterOpts.sortDirection === "asc"
+                        ? "bx-up-arrow-alt"
+                        : "bx-down-arrow-alt"
+                    }`}
+                  ></i>
+                </button>
+              )}
             </div>
           )}
         </div>

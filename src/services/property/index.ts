@@ -1,6 +1,10 @@
 import axios from "@configs/axios";
-import { IPaginationQuery } from "@interfaces/utils.interface";
-import { PropertyFormValues } from "@interfaces/property.interface";
+import { IPaginationQuery, IServerResponse } from "@interfaces/utils.interface";
+import {
+  IPropertyFilterParams,
+  PropertyFormValues,
+  IProperty,
+} from "@interfaces/property.interface";
 
 class PropertyService {
   private axiosConfig = {};
@@ -67,16 +71,14 @@ class PropertyService {
     }
   }
 
-  async getClientProperties(cid: string, pagination: IPaginationQuery) {
+  async getClientProperties(
+    cid: string,
+    filterQuery: Partial<IPropertyFilterParams> = {},
+    pagination: IPaginationQuery
+  ) {
     try {
-      const queryString = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-        sort: pagination.sort,
-        skip: pagination.skip.toString(),
-      }).toString();
-
-      const result = await axios.get(
+      const queryString = this.buildQueryString(filterQuery, pagination);
+      const result = await axios.get<IServerResponse<IProperty[]>>(
         `${this.baseUrl}/${cid}/client_properties?${queryString}`,
         this.axiosConfig
       );
@@ -149,6 +151,8 @@ class PropertyService {
     const formData = new FormData();
 
     if (propertyData.name) formData.append("name", propertyData.name);
+    if (propertyData.totalUnits)
+      formData.append("totalUnits", propertyData.totalUnits.toString());
     if (propertyData.propertyType)
       formData.append("propertyType", propertyData.propertyType);
     if (propertyData.status) formData.append("status", propertyData.status);
@@ -156,19 +160,11 @@ class PropertyService {
       formData.append("managedBy", propertyData.managedBy);
     if (propertyData.yearBuilt !== undefined)
       formData.append("yearBuilt", propertyData.yearBuilt.toString());
-    if (propertyData.address) formData.append("address", propertyData.address);
-    if (propertyData.unitApartment)
-      formData.append("unitApartment", propertyData.unitApartment);
-    if (propertyData.city) formData.append("city", propertyData.city);
-    if (propertyData.stateProvince)
-      formData.append("stateProvince", propertyData.stateProvince);
-    if (propertyData.postalCode)
-      formData.append("postalCode", propertyData.postalCode);
-    if (propertyData.country) formData.append("country", propertyData.country);
+    if (propertyData.address?.fullAddress)
+      formData.append("address.fullAddress", propertyData.address.fullAddress);
+
     if (propertyData.occupancyStatus)
       formData.append("occupancyStatus", propertyData.occupancyStatus);
-    if (propertyData.occupancyRate !== undefined)
-      formData.append("occupancyRate", propertyData.occupancyRate.toString());
 
     if (propertyData.financialDetails) {
       const { financialDetails } = propertyData;
@@ -306,6 +302,39 @@ class PropertyService {
     }
 
     return formData;
+  }
+
+  private buildQueryString(
+    data: Partial<IPropertyFilterParams>,
+    pagination: IPaginationQuery
+  ) {
+    const params = new URLSearchParams({
+      page: pagination.page.toString(),
+      limit: pagination.limit.toString(),
+      ...(pagination.sort && { sort: pagination.sort }),
+      ...(pagination.sortBy && { sortBy: pagination.sortBy }),
+    });
+
+    const filterEntries: [string, string | number | null | undefined][] = [
+      ["propertyType", data.propertyType],
+      ["status", data.status],
+      ["occupancyStatus", data.occupancyStatus],
+      ["minPrice", data.minPrice],
+      ["maxPrice", data.maxPrice],
+      ["searchTerm", data.searchTerm],
+      ["minArea", data.minArea],
+      ["maxArea", data.maxArea],
+      ["minYear", data.minYear],
+      ["maxYear", data.maxYear],
+    ];
+
+    filterEntries.forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== "") {
+        params.append(key, value.toString());
+      }
+    });
+
+    return params.toString();
   }
 }
 

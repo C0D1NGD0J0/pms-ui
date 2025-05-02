@@ -6,6 +6,7 @@ import {
   TablePaginationConfig,
   Table as AntTable,
 } from "antd";
+import { stat } from "fs";
 
 export interface TableColumn<T> {
   title: string;
@@ -29,7 +30,7 @@ export interface TableProps<T> {
   emptyText?: string;
   antTableProps?: AntTableProps<T>;
   withHeader?: boolean;
-  pagination?: boolean | { pageSize?: number; showSizeChanger?: boolean };
+  pagination?: boolean | Partial<TablePaginationConfig>;
   rowSelection?: {
     type?: "checkbox" | "radio";
     selectedRowKeys?: React.Key[];
@@ -54,7 +55,6 @@ export function Table<T extends object>({
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
 
-  // column configurations for ant table
   const tableColumns = columns.map((column) => ({
     title: column.title,
     dataIndex: column.dataIndex as string,
@@ -66,10 +66,9 @@ export function Table<T extends object>({
       (column.isStatus ? (value: any) => renderStatusBadge(value) : undefined),
   }));
 
-  // render status badges
   const renderStatusBadge = (status: string) => {
     if (!status) return null;
-
+    console.log(status);
     let statusClass = "muted";
     const statusLower = status.toLowerCase();
 
@@ -113,10 +112,13 @@ export function Table<T extends object>({
           className: "pagination",
         }
       : {
-          pageSize: pagination?.pageSize || 10,
-          showSizeChanger: pagination?.showSizeChanger || false,
+          total: pagination.total,
+          pageSize: pagination.pageSize,
+          current: pagination.current,
+          onChange: pagination.onChange,
           position: ["bottomCenter"],
           className: "pagination",
+          ...pagination,
         };
   const tableComponent = (
     <AntTable
@@ -129,7 +131,6 @@ export function Table<T extends object>({
       rowSelection={rowSelection}
       className="panel-content-table custom-table-wrapper"
       {...antTableProps}
-      // override default antdesign styles
       components={{
         table: (props) => <table {...props} className="custom-table"></table>,
         header: {
@@ -178,6 +179,8 @@ export function Table<T extends object>({
             isVisible: filterOpts?.isVisible || false,
             options: filterOpts?.options || [],
             onFilterChange: handleFilterChange,
+            sortDirection: filterOpts?.sortDirection || "desc",
+            onSortDirectionChange: filterOpts?.onSortDirectionChange,
           }}
         />
       )}
@@ -186,5 +189,4 @@ export function Table<T extends object>({
   );
 }
 
-// Export pagination type for reuse
 export type PaginationType = false | TablePaginationConfig;

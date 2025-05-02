@@ -1,37 +1,40 @@
 "use client";
 import Link from "next/link";
 import { Table } from "@components/Table";
+import { useAuth } from "@store/auth.store";
+import { IProperty } from "@interfaces/index";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
-import {
-  statusFilterOptions,
-  propertyColumns,
-  properties,
-  Property,
-} from "@/src/test-data";
+import { generatePropertyColumn } from "@/src/test-data";
 
+import { useGetAllProperties } from "./hooks";
 import { CsvUploadModal } from "./new/components";
 
 export default function Properties() {
+  const { client } = useAuth();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const {
+    filterOptions,
+    properties,
+    totalCount,
+    pagination,
+    handleSortChange,
+    handlePageChange,
+    handleSortByChange,
+  } = useGetAllProperties(client?.csub || "");
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (selected: React.Key[], selectedRows: Property[]) => {
+    onChange: (selected: React.Key[], selectedRows: IProperty[]) => {
       console.log(`Selected row keys: ${selected}`);
       console.log("Selected rows: ", selectedRows);
       setSelectedRowKeys(selected);
     },
     type: "checkbox" as const,
   };
-
-  // const handleBulkAction = () => {
-  //   console.log(`Performing bulk action on: ${selectedRowKeys.join(", ")}`);
-  //   // Implement bulk action logic here
-  // };
 
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
@@ -64,23 +67,9 @@ export default function Properties() {
 
       <div className="flex-row">
         <PanelsWrapper>
-          {/* {selectedRowKeys.length > 0 && (
-            <div className="bulk-actions mb-3">
-              <button className="btn btn-secondary" onClick={handleBulkAction}>
-                <i className="bx bx-cog"></i>
-                Bulk Action ({selectedRowKeys.length})
-              </button>
-              <button
-                className="btn btn-text ml-2"
-                onClick={() => setSelectedRowKeys([])}
-              >
-                Clear Selection
-              </button>
-            </div>
-          )} */}
           <Panel>
             <Table
-              columns={propertyColumns}
+              columns={generatePropertyColumn()}
               dataSource={properties}
               searchOpts={{
                 isVisible: true,
@@ -92,15 +81,25 @@ export default function Properties() {
               filterOpts={{
                 value: "all",
                 isVisible: true,
-                options: statusFilterOptions,
+                options: filterOptions,
                 onFilterChange: (value: string) => {
-                  console.log("Filter value:", value);
+                  handleSortByChange(value);
+                },
+                sortDirection: pagination.sort,
+                onSortDirectionChange: (sort: "asc" | "desc") => {
+                  handleSortChange(sort);
                 },
               }}
-              pagination={{ pageSize: 10 }}
+              pagination={{
+                total: totalCount,
+                current: pagination.page,
+                pageSize: pagination.limit,
+                onChange: (page: number) => {
+                  handlePageChange(page);
+                },
+              }}
               rowKey="id"
               withHeader
-              rowSelection={rowSelection}
             />
           </Panel>
         </PanelsWrapper>
