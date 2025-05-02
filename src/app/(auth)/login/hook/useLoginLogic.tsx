@@ -29,8 +29,8 @@ export function useLoginLogic() {
 
   const form = useForm<ILoginForm>({
     initialValues: {
-      password: "password",
-      email: "wayne@example.com",
+      password: "",
+      email: "",
       otpCode: "",
       rememberMe: false,
     },

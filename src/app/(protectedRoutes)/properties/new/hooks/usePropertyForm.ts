@@ -1,3 +1,4 @@
+import { useAuth } from "@store/index";
 import { useForm } from "@mantine/form";
 import { ChangeEvent, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -11,6 +12,7 @@ import {
 } from "@interfaces/property.interface";
 
 export function usePropertyForm() {
+  const { client } = useAuth();
   const [activeTab, setActiveTab] = useState("basic");
 
   const { data: formConfig, isLoading: isConfigLoading } =
@@ -29,6 +31,7 @@ export function usePropertyForm() {
 
   const handleSubmit = async (values: PropertyFormValues) => {
     try {
+      values.cid = client?.csub ?? "";
       await createPropertyMutation.mutateAsync(values);
     } catch (error) {
       console.error("Error creating property:", error);

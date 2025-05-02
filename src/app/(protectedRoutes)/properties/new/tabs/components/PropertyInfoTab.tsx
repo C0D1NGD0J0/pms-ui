@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { Loading } from "@components/Loading";
-import { FormSection } from "@components/FormLayout";
 import { UseFormReturnType } from "@mantine/form";
+import { FormSection } from "@components/FormLayout";
 import { usePropertyFormMetaData } from "@hooks/index";
 import { usePropertyFormActions } from "@store/propertyform.store";
 import {
@@ -287,31 +287,33 @@ export function PropertyInfoTab({
             <Select
               id="occupancyStatus"
               name="occupancyStatus"
-              value={form.values.occupancyStatus}
               onChange={handleOnChange}
               options={occupancyStatusOptions}
               placeholder="Select occupancy status"
+              value={form.values.occupancyStatus || ""}
             />
           </FormField>
-          <FormField
-            error={{
-              msg: (form.errors["occupancyRate"] as string) || "",
-              touched: form.isTouched("occupancyRate"),
-            }}
-          >
-            <FormLabel htmlFor="occupancyRate" label="Occupancy Rate (%)" />
-            <FormInput
-              id="occupancyRate"
-              name="occupancyRate"
-              type="number"
-              value={form.values.occupancyRate.toString()}
-              onChange={handleOnChange}
-              placeholder="Enter occupancy rate"
-              min="0"
-              max="100"
-              hasError={!!form.errors["occupancyRate"]}
-            />
-          </FormField>
+          {isFieldVisible("totalUnits") && (
+            <FormField
+              error={{
+                msg: (form.errors["totalUnits"] as string) || "",
+                touched: form.isTouched("totalUnits"),
+              }}
+            >
+              <FormLabel htmlFor="totalUnits" label="Total Units" />
+              <FormInput
+                id="totalUnits"
+                name="totalUnits"
+                type="number"
+                value={form.values.totalUnits.toString()}
+                onChange={handleOnChange}
+                placeholder="Enter total building units"
+                min="0"
+                max="250"
+                hasError={!!form.errors["totalUnits"]}
+              />
+            </FormField>
+          )}
         </div>
       </FormSection>
 

@@ -155,14 +155,14 @@ export default function CreateProperty() {
 
               <div className="form-actions">
                 <Button
-                  className="btn btn-default"
+                  className="btn btn-default btn-grow"
                   label="Cancel"
                   onClick={() => form.reset()}
                 />
 
                 {activeTab !== "documents" ? (
                   <Button
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-grow"
                     label="Next"
                     onClick={() => {
                       const currentIndex = tabs.findIndex(
@@ -177,7 +177,7 @@ export default function CreateProperty() {
                   <Button
                     type="submit"
                     label="Create Property"
-                    className="btn btn-primary"
+                    className="btn btn-primary btn-grow"
                     disabled={!form.isValid() || isSubmitting}
                   />
                 )}
