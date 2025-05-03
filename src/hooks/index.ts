@@ -4,5 +4,6 @@ export * from "./useDebounce";
 export * from "./useReactQuery";
 export * from "./usePagination";
 export * from "./useCurrentUser";
+export * from "./useScrollToTop";
 export * from "./useNotification";
 export * from "./usePropertyFormMetaData";
