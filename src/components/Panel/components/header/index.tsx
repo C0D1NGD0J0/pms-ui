@@ -30,7 +30,7 @@ export function PanelHeader({
   const isSeachVisible = (searchOpts && searchOpts?.isVisible) || false;
   const isFilterVisible = filterOpts?.isVisible || false;
   const [_sortBy, setSortBy] = React.useState<string>("");
-  console.log(filterOpts);
+
   return (
     <div className="panel-header">
       <div className="panel-header__title">

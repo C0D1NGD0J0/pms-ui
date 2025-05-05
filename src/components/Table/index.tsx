@@ -68,7 +68,6 @@ export function Table<T extends object>({
 
   const renderStatusBadge = (status: string) => {
     if (!status) return null;
-    console.log(status);
     let statusClass = "muted";
     const statusLower = status.toLowerCase();
 

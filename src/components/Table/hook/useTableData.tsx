@@ -29,7 +29,6 @@ export const useTableData = <TData,>({
     refetchInterval,
     placeholderData: keepPreviousData,
   });
-
   return {
     data,
     isLoading,
