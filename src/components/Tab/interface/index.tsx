@@ -4,6 +4,7 @@ export interface TabItem {
   id: string;
   label: string;
   content: ReactNode;
+  hasError?: boolean;
   disabled?: boolean;
 }
 
@@ -19,6 +20,7 @@ export interface TabsProps {
   onChange?: (tabId: string) => void;
   className?: string;
   ariaLabel?: string;
+  scrollOnChange?: boolean; // New prop to optionally disable auto-scrolling
 }
 
 export interface TabListProps {
@@ -32,6 +34,7 @@ export interface TabListItemProps {
   label: ReactNode;
   disabled?: boolean;
   className?: string;
+  hasError?: boolean;
 }
 
 export interface TabPanelProps {

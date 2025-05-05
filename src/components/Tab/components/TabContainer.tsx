@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
+import { useScrollToTop } from "@hooks/useScrollToTop";
 
 import { TabsContext } from "../hook";
 import { TabListProps, TabsProps } from "../interface";
@@ -9,21 +11,21 @@ export const TabContainer: React.FC<TabsProps> = ({
   onChange,
   className = "",
   ariaLabel = "Tabs",
+  scrollOnChange = true, // New prop to optionally disable auto-scrolling
 }) => {
+  const { scrollToTop } = useScrollToTop();
   const [activeTabId, setActiveTabId] = useState<string>(defaultTab || "");
   const [availableTabs, setAvailableTabs] = useState<{
     [key: string]: boolean;
   }>({});
 
-  // Register tab method for children
   const registerTab = (id: string, disabled: boolean) => {
     setAvailableTabs((prev) => ({ ...prev, [id]: !disabled }));
   };
 
-  // Set first available tab if no default
+  // init activetab if none is set
   useEffect(() => {
     if (!activeTabId && Object.keys(availableTabs).length > 0) {
-      // Find first enabled tab
       const firstAvailableTab = Object.entries(availableTabs)
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         .find(([_, enabled]) => enabled)?.[0];
@@ -34,13 +36,25 @@ export const TabContainer: React.FC<TabsProps> = ({
     }
   }, [availableTabs, activeTabId]);
 
+  // to update activeTabId if defaultTab changes
+  useEffect(() => {
+    if (defaultTab && defaultTab !== activeTabId) {
+      setActiveTabId(defaultTab);
+    }
+  }, [defaultTab]);
+
   // Call onChange when active tab changes
   useEffect(() => {
-    if (activeTabId && onChange) {
-      console.log(activeTabId, "---tabid");
-      onChange(activeTabId);
+    if (activeTabId) {
+      if (onChange) {
+        onChange(activeTabId);
+      }
+
+      if (scrollOnChange) {
+        scrollToTop(null);
+      }
     }
-  }, [activeTabId]);
+  }, [activeTabId, onChange, scrollOnChange]);
 
   return (
     <TabsContext.Provider value={{ activeTabId, setActiveTabId, registerTab }}>
