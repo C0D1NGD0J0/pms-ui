@@ -1,5 +1,6 @@
 import axios, { AxiosError } from "axios";
 import { IErrorReturnData } from "@interfaces/index";
+import _ from "lodash";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
   const phoneRegex =
@@ -110,8 +111,66 @@ export const errorFormatter = (error: unknown): string => {
   }
   // regular error object
   else {
-    console.log(error)
+    console.log(error);
     result = (error as Error)?.message;
   }
   return result;
+};
+
+export const extractChangesBetweenObjects = <
+  T extends Record<string, unknown>,
+  K extends Record<string, unknown>
+>(
+  original: T,
+  current: K,
+  parentKey = ""
+): Record<string, any> | null => {
+  if (
+    typeof current !== "object" ||
+    current === null ||
+    Array.isArray(current)
+  ) {
+    if (!_.isEqual(current, original)) {
+      return current;
+    }
+    return {};
+  }
+
+  let hasChanges = false;
+  const changes: Record<string, any> = {};
+
+  for (const key in current) {
+    const fullKey = parentKey ? `${parentKey}.${key}` : key;
+    const originalValue =
+      original && typeof original === "object" ? original[key] : undefined;
+    const currentValue = current[key];
+
+    if (Array.isArray(currentValue)) {
+      // Implementation for array comparison would go here
+      if (!_.isEqual(currentValue, originalValue)) {
+        changes[key] = currentValue;
+        hasChanges = true;
+      }
+    } else if (
+      typeof currentValue === "object" &&
+      currentValue !== null &&
+      originalValue
+    ) {
+      // recursive case for nested objects
+      const nestedChanges = extractChangesBetweenObjects(
+        originalValue,
+        currentValue,
+        fullKey
+      );
+      if (Object.keys(nestedChanges).length > 0) {
+        changes[key] = nestedChanges;
+        hasChanges = true;
+      }
+    } else if (!_.isEqual(currentValue, originalValue)) {
+      changes[key] = currentValue;
+      hasChanges = true;
+    }
+  }
+
+  return hasChanges ? changes : null;
 };
