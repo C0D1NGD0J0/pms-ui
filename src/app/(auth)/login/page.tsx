@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React from "react";
-import { useAuth } from "@store/auth.store";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@store/auth.store";
 
 import { useLoginLogic } from "./hook";
 import { LoginView as Component } from "./view";
@@ -9,11 +10,13 @@ import { LoginView as Component } from "./view";
 export default function Login() {
   const { push } = useRouter();
   const logic = useLoginLogic();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isAuthLoading } = useAuth();
 
-  if (isLoggedIn) {
-    return push("/dashboard");
-  }
+  useEffect(() => {
+    if (isLoggedIn && !isAuthLoading) {
+      push("/dashboard");
+    }
+  }, [isAuthLoading, isLoggedIn]);
 
   return (
     <Component

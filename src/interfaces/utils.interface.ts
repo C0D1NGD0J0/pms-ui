@@ -1,9 +1,17 @@
 export interface IServerResponse<T> {
-  pagination?: IPaginationResponse | null;
   success: boolean;
   msg?: string;
   data: T;
 }
+
+export type IServerResponseWithPagination<T> = {
+  success: boolean;
+  msg?: string;
+  data: {
+    items: T;
+    pagination: IPaginationResponse;
+  };
+};
 
 export interface IErrorReturnData {
   success: boolean;
