@@ -8,7 +8,7 @@ import {
 
 export const propertySchema = z
   .object({
-    cid: z.string().min(8, "client-id is missing").default(""),
+    cid: z.string().min(8, "client-id is missing").optional(),
     name: z.string().min(5, "Property name is required"),
     propertyType: z
       .nativeEnum(PropertyTypesEnum, {
@@ -26,12 +26,13 @@ export const propertySchema = z
     address: z.object({
       unitApartment: z.string().optional(),
       city: z.string().optional(),
-      stateProvince: z.string().optional(),
-      postalCode: z.string().optional(),
+      state: z.string().optional(),
+      postCode: z.string().optional(),
       country: z.string().default("us"),
       fullAddress: z
         .string()
-        .min(10, "Address is required and must be at least 10 characters"),
+        .min(10, "Address is required and must be at least 10 characters")
+        .optional(),
     }),
     financialDetails: z.object({
       purchasePrice: z.number().min(0).optional(),

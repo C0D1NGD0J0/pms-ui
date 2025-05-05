@@ -2,6 +2,10 @@ import { z } from "zod";
 import { csvUploadSchema, propertySchema } from "@validations/index";
 
 export type PropertyFormValues = z.infer<typeof propertySchema>;
+export type EditPropertyFormValues = Omit<
+  PropertyFormValues,
+  "createdBy" | "deletedAt" | "pid" | "__v" | "createdAt" | "updatedAt"
+>;
 export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
 
 export const defaultPropertyValues: PropertyFormValues = {
@@ -211,7 +215,7 @@ export interface IPropertyAddress {
   streetNumber: string;
 }
 
-export interface IProperty {
+export interface IPropertyDocument {
   fees: IPropertyFees;
   specifications: IPropertySpecifications;
   utilities: IPropertyUtilities;

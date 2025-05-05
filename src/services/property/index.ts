@@ -1,9 +1,15 @@
 import axios from "@configs/axios";
-import { IPaginationQuery, IServerResponse } from "@interfaces/utils.interface";
 import {
+  IPaginationQuery,
+  IServerResponse,
+  IServerResponseWithPagination,
+} from "@interfaces/utils.interface";
+import {
+  EditPropertyFormValues,
   IPropertyFilterParams,
   PropertyFormValues,
   IProperty,
+  IPropertyDocument,
 } from "@interfaces/property.interface";
 
 class PropertyService {
@@ -78,24 +84,26 @@ class PropertyService {
   ) {
     try {
       const queryString = this.buildQueryString(filterQuery ?? {}, pagination);
-      const result = await axios.get<IServerResponse<IProperty[]>>(
+      const result = await axios.get<
+        IServerResponseWithPagination<IPropertyDocument[]>
+      >(
         `${this.baseUrl}/${cid}/client_properties?${queryString}`,
         this.axiosConfig
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error("Error fetching client properties:", error);
       throw error;
     }
   }
 
-  async getClientProperty(cid: string, propertyId: string) {
+  async getClientProperty(cid: string, propertyPid: string) {
     try {
-      const result = await axios.get(
-        `${this.baseUrl}/${cid}/client_property/${propertyId}`,
+      const result = await axios.get<IServerResponse<IPropertyDocument>>(
+        `${this.baseUrl}/${cid}/client_property/${propertyPid}`,
         this.axiosConfig
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error("Error fetching clientproperty:", error);
       throw error;
@@ -118,7 +126,7 @@ class PropertyService {
   async updateClientProperty(
     cid: string,
     pid: string,
-    propertyData: Partial<PropertyFormValues>
+    propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
       const result = await axios.put(

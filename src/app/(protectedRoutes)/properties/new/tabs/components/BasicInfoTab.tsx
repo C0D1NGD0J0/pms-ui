@@ -2,7 +2,10 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { PropertyFormValues } from "@interfaces/property.interface";
+import {
+  EditPropertyFormValues,
+  PropertyFormValues,
+} from "@interfaces/property.interface";
 import {
   DebouncedInput,
   DatePicker,
@@ -13,7 +16,7 @@ import {
 } from "@components/FormElements";
 
 interface Props {
-  form: UseFormReturnType<PropertyFormValues>;
+  form: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
   propertyTypeOptions: { value: string; label: string }[];
   propertyStatusOptions: { value: string; label: string }[];
   handleOnChange: (
@@ -32,14 +35,7 @@ export function BasicInfoTab({
     { value: "2", label: "Sarah Johnson" },
     { value: "3", label: "Michael Davis" },
   ];
-
-  const countryOptions = [
-    { value: "us", label: "United States" },
-    { value: "ca", label: "Canada" },
-    { value: "uk", label: "United Kingdom" },
-    { value: "au", label: "Australia" },
-  ];
-
+  console.log(form.errors, "error");
   return (
     <>
       <FormSection
@@ -57,6 +53,7 @@ export function BasicInfoTab({
             <FormInput
               id="name"
               name="name"
+              required
               value={form.values.name}
               onChange={handleOnChange}
               hasError={!!form.errors.name}
@@ -237,16 +234,16 @@ export function BasicInfoTab({
               htmlFor="lastAssessmentDate"
               label="Last Assessment Date"
             />
-            <FormInput
+            <DatePicker
               id="lastAssessmentDate"
-              name="financialDetails.lastAssessmentDate"
-              type="date"
-              value={form.values.financialDetails.lastAssessmentDate}
               onChange={handleOnChange}
               placeholder="Select last assessment date"
+              name="financialDetails.lastAssessmentDate"
+              value={form.values.financialDetails.lastAssessmentDate}
               hasError={!!form.errors["financialDetails.lastAssessmentDate"]}
             />
           </FormField>
+          <div style={{ width: "50%" }}></div>
         </div>
       </FormSection>
 
@@ -262,17 +259,17 @@ export function BasicInfoTab({
             }}
           >
             <FormLabel htmlFor="address" label="Street Address" required />
-            <DebouncedInput
+            {/* <DebouncedInput
               id="address"
               name="address.fullAddress"
               type="text"
-              value={form.values.address.fullAddress}
+              value={""}
               onChange={handleOnChange}
               placeholder="Enter street address"
               debounceDelay={800}
               // validateFn={validateAddress}
               // onValidationComplete={handleAddressValidationComplete}
-            />
+            /> */}
           </FormField>
         </div>
 
@@ -291,7 +288,11 @@ export function BasicInfoTab({
               id="unitApartment"
               name="address.unitApartment"
               type="text"
-              value={form.values.address.unitApartment}
+              value={
+                form.values.address.unitApartment ||
+                form.values.address.fullAddress ||
+                ""
+              }
               onChange={handleOnChange}
               placeholder="Enter unit or apartment number"
               hasError={!!form.errors["address.unitApartment"]}
@@ -308,22 +309,24 @@ export function BasicInfoTab({
           >
             <FormLabel htmlFor="city" label="City" />
             <FormInput
+              disabled
               id="city"
-              name="address.city"
               type="text"
-              value={form.values.address.city}
-              onChange={handleOnChange}
+              onChange={() => ""}
+              name="address.city"
               placeholder="Enter city"
+              value={form.values.address.city || ""}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="stateProvince" label="State/Province" />
             <FormInput
-              id="stateProvince"
-              name="address.stateProvince"
+              disabled
               type="text"
-              value={form.values.address.stateProvince}
-              onChange={handleOnChange}
+              id="stateProvince"
+              onChange={() => ""}
+              name="address.state"
+              value={form.values.address.state || ""}
               placeholder="Enter state/province"
             />
           </FormField>
@@ -333,23 +336,25 @@ export function BasicInfoTab({
           <FormField>
             <FormLabel htmlFor="postalCode" label="Postal Code" />
             <FormInput
+              disabled
               id="postalCode"
-              name="address.postalCode"
+              name="address.postCode"
               type="text"
-              value={form.values.address.postalCode}
-              onChange={handleOnChange}
+              value={form.values.address.postCode || ""}
+              onChange={() => ""}
               placeholder="Enter postal code"
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="country" label="Country" />
-            <Select
+            <FormInput
+              disabled
+              type="text"
               id="country"
+              onChange={() => ""}
               name="address.country"
-              value={form.values.address.country}
-              onChange={handleOnChange}
-              options={countryOptions}
-              placeholder="Select country"
+              value={form.values.address.country || ""}
+              placeholder="Enter country"
             />
           </FormField>
         </div>
