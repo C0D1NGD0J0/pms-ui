@@ -24,15 +24,19 @@ export const propertySchema = z
       .optional(),
 
     address: z.object({
-      unitApartment: z.string().optional(),
+      unitNumber: z.string().optional(),
       city: z.string().optional(),
+      street: z.string().optional(),
       state: z.string().optional(),
       postCode: z.string().optional(),
       country: z.string().default("us"),
+      coordinates: z
+        .array(z.number())
+        .length(2, "Coordinates are required")
+        .optional(),
       fullAddress: z
         .string()
-        .min(10, "Address is required and must be at least 10 characters")
-        .optional(),
+        .min(10, "Address is required and must be at least 10 characters"),
     }),
     financialDetails: z.object({
       purchasePrice: z.number().min(0).optional(),
@@ -40,6 +44,14 @@ export const propertySchema = z
       marketValue: z.number().min(0).optional(),
       propertyTax: z.number().min(0).optional(),
       lastAssessmentDate: z.string().optional(),
+    }),
+
+    fees: z.object({
+      currency: z.string().default("USD"),
+      taxAmount: z.string().default("0.00"),
+      rentalAmount: z.string().default("0.00"),
+      managementFees: z.string().default("0.00"),
+      securityDeposit: z.string().default("0.00"),
     }),
 
     specifications: z.object({

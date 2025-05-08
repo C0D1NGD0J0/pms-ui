@@ -2,14 +2,13 @@
 import Link from "next/link";
 import { Table } from "@components/Table";
 import { useAuth } from "@store/auth.store";
-import { IProperty } from "@interfaces/index";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
+import { useGetAllProperties } from "@properties/hooks";
+import { CsvUploadModal } from "@properties/components";
 import { PanelsWrapper, Panel } from "@components/Panel";
 
-import { useGetAllProperties } from "./hooks";
-import { CsvUploadModal } from "./new/components";
 import { generatePropertyColumn } from "./utils/index";
 
 export default function Properties() {

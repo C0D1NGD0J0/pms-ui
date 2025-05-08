@@ -18,12 +18,11 @@ export const TabListItem: React.FC<TabListItemProps> = ({
       setActiveTabId(id);
     }
   };
-
   return (
     <li
       className={`settings-tab ${isActive ? "active" : ""} ${
         disabled ? "disabled" : ""
-      } ${hasError ? "has-error" : ""} ${className}`}
+      } ${hasError && hasError ? "has-error" : ""} ${className}`}
       onClick={handleClick}
       role="tab"
       id={`tab-${id}`}

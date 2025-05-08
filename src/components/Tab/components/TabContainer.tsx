@@ -11,7 +11,7 @@ export const TabContainer: React.FC<TabsProps> = ({
   onChange,
   className = "",
   ariaLabel = "Tabs",
-  scrollOnChange = true, // New prop to optionally disable auto-scrolling
+  scrollOnChange = true,
 }) => {
   const { scrollToTop } = useScrollToTop();
   const [activeTabId, setActiveTabId] = useState<string>(defaultTab || "");
@@ -23,7 +23,6 @@ export const TabContainer: React.FC<TabsProps> = ({
     setAvailableTabs((prev) => ({ ...prev, [id]: !disabled }));
   };
 
-  // init activetab if none is set
   useEffect(() => {
     if (!activeTabId && Object.keys(availableTabs).length > 0) {
       const firstAvailableTab = Object.entries(availableTabs)
@@ -36,14 +35,12 @@ export const TabContainer: React.FC<TabsProps> = ({
     }
   }, [availableTabs, activeTabId]);
 
-  // to update activeTabId if defaultTab changes
   useEffect(() => {
     if (defaultTab && defaultTab !== activeTabId) {
       setActiveTabId(defaultTab);
     }
   }, [defaultTab]);
 
-  // Call onChange when active tab changes
   useEffect(() => {
     if (activeTabId) {
       if (onChange) {

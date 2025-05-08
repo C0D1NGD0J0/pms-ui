@@ -11,14 +11,15 @@ import {
   PanelHeader,
   Panel,
 } from "@components/Panel";
-
-import { usePropertyEditForm } from "./hooks";
 import {
   PropertyInfoTab,
   BasicInfoTab,
   AmenitiesTab,
   DocumentsTab,
-} from "../../new/tabs/components";
+  FinancialTab,
+} from "@properties/components";
+
+import { usePropertyEditForm } from "./hooks";
 
 export default function EditProperty() {
   const params = useParams();
@@ -29,6 +30,7 @@ export default function EditProperty() {
     activeTab,
     isLoading,
     setActiveTab,
+    saveAddress,
     hasTabErrors,
     isSubmitting,
     handleSubmit,
@@ -45,11 +47,17 @@ export default function EditProperty() {
       content: (
         <BasicInfoTab
           form={form}
+          saveAddress={saveAddress}
+          handleOnChange={handleOnChange}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
-          handleOnChange={handleOnChange}
         />
       ),
+    },
+    {
+      key: "financial",
+      tabLabel: "Financial",
+      content: <FinancialTab form={form} handleOnChange={handleOnChange} />,
     },
     {
       key: "property",
@@ -96,7 +104,18 @@ export default function EditProperty() {
   }
   return (
     <div className="page edit-property">
-      <PageHeader title="Edit Property" subtitle={`/properties/${pid}/edit`} />
+      <PageHeader
+        title="Edit Property"
+        headerBtn={
+          <Button
+            type="submit"
+            form="property-form"
+            label="Save Changes"
+            className="btn btn-primary"
+            disabled={!form.isValid() || isSubmitting}
+          />
+        }
+      />
 
       <div className="flex-row resource-form">
         <PanelsWrapper>
@@ -109,9 +128,8 @@ export default function EditProperty() {
                       <TabListItem
                         id={tab.key}
                         key={tab.key}
-                        disabled={false}
                         label={tab.tabLabel}
-                        hasError={hasTabErrors(form.errors, tab.key)}
+                        hasError={hasTabErrors(tab.key)}
                       />
                     ))}
                   </TabList>

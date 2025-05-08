@@ -10,15 +10,15 @@ import {
   PanelHeader,
   Panel,
 } from "@components/Panel";
-
-import { usePropertyForm } from "./hooks";
-import { CsvUploadModal } from "./components";
 import {
   PropertyInfoTab,
+  CsvUploadModal,
   BasicInfoTab,
   AmenitiesTab,
   DocumentsTab,
-} from "./tabs/components";
+} from "@properties/components";
+
+import { usePropertyForm } from "./hooks";
 
 export default function CreateProperty() {
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
@@ -31,6 +31,7 @@ export default function CreateProperty() {
     isSubmitting,
     handleSubmit,
     handleOnChange,
+    hasTabErrors,
     propertyTypeOptions,
     propertyStatusOptions,
     documentTypeOptions,
@@ -51,6 +52,7 @@ export default function CreateProperty() {
       content: (
         <BasicInfoTab
           form={form}
+          saveAddress={(c) => console.log(c)}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
           handleOnChange={handleOnChange}
@@ -131,6 +133,7 @@ export default function CreateProperty() {
                         key={tab.key}
                         disabled={false}
                         label={tab.tabLabel}
+                        hasError={hasTabErrors(tab.key)}
                       />
                     ))}
                   </TabList>
