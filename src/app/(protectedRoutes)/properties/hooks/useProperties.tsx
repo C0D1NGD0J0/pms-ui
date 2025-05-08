@@ -29,7 +29,7 @@ export const useGetAllProperties = (cid: string) => {
   return {
     ...tableData,
     filterOptions: sortOptions,
-    properties: tableData.data?.data.items || [],
+    properties: tableData.data?.items || [],
     totalCount: 15,
   };
 };

@@ -1,35 +1,40 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAuth } from "@store/index";
-import { useForm } from "@mantine/form";
+import { useEffect, useState } from "react";
 import { propertyService } from "@services/property";
-import { zodResolver } from "mantine-form-zod-resolver";
-import { ChangeEvent, useEffect, useState } from "react";
 import { useNotification } from "@hooks/useNotification";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { extractChangesBetweenObjects } from "@utils/helpers";
-import { propertySchema } from "@validations/property.validations";
-import { usePropertyFormMetaData } from "@hooks/usePropertyFormMetaData";
-import {
-  EditPropertyFormValues,
-  defaultPropertyValues,
-  PropertyFormValues,
-} from "@interfaces/property.interface";
+import { EditPropertyFormValues } from "@interfaces/property.interface";
+import { usePropertyFormBase } from "@hooks/property/usePropertyFormBase";
 
 export function usePropertyEditForm(pid: string) {
   const { client } = useAuth();
   const { openNotification } = useNotification();
-  const [activeTab, setActiveTab] = useState("basic");
   const [originalValues, setOriginalValues] =
     useState<EditPropertyFormValues | null>(null);
-
-  const { data: formConfig, isLoading: isConfigLoading } =
-    usePropertyFormMetaData();
 
   const { data: propertyData, isLoading: isPropertyLoading } = useQuery({
     queryKey: ["/property", pid],
     enabled: !!pid && !!client?.csub,
     queryFn: () => propertyService.getClientProperty(client?.csub || "", pid),
   });
+
+  const baseHook = usePropertyFormBase();
+  const {
+    form,
+    activeTab,
+    setActiveTab,
+    formConfig,
+    saveAddress,
+    hasTabErrors,
+    isConfigLoading,
+    handleOnChange,
+    propertyTypeOptions,
+    propertyStatusOptions,
+    occupancyStatusOptions,
+    documentTypeOptions,
+  } = baseHook;
 
   const updatePropertyMutation = useMutation({
     mutationFn: (data: Partial<EditPropertyFormValues>) =>
@@ -50,20 +55,92 @@ export function usePropertyEditForm(pid: string) {
     },
   });
 
-  const form = useForm<EditPropertyFormValues>({
-    initialValues: defaultPropertyValues,
-    validate: zodResolver(propertySchema),
-    validateInputOnBlur: true,
-    validateInputOnChange: true,
-  });
-  console.log("Form values", propertyData);
-
   useEffect(() => {
     if (propertyData) {
-      form.setValues({
-        ...propertyData,
-      });
-      setOriginalValues(propertyData);
+      const transformedData: EditPropertyFormValues = {
+        name: propertyData.name || "",
+        cid: propertyData.cid || "",
+        status: propertyData.status as any,
+        managedBy: propertyData.managedBy || "",
+        yearBuilt: propertyData.yearBuilt || 1800,
+        propertyType: propertyData.propertyType as any,
+        address: {
+          fullAddress: propertyData.address?.fullAddress || "",
+          city: propertyData.address?.city || "",
+          state: propertyData.address?.state || "",
+          postCode: propertyData.address?.postCode || "",
+          country: propertyData.address?.country || "",
+          unitNumber: propertyData.address?.unitNumber || "",
+          street: propertyData.address?.street || "",
+          streetNumber: propertyData.address?.streetNumber || "",
+          coordinates: propertyData.address?.coordinates,
+        },
+        financialDetails: {
+          purchasePrice: 0,
+          purchaseDate: "",
+          marketValue: 0,
+          propertyTax: 0,
+          lastAssessmentDate: "",
+        },
+        fees: {
+          currency: propertyData.fees?.currency || "USD",
+          taxAmount: propertyData.fees?.taxAmount || "0",
+          rentalAmount: propertyData.fees?.rentalAmount || "0",
+          managementFees: propertyData.fees?.managementFees || "0",
+          securityDeposit: propertyData.fees?.securityDeposit || "0",
+        },
+        specifications: {
+          totalArea: propertyData.specifications?.totalArea || 0,
+          lotSize: propertyData.specifications?.lotSize || 0,
+          bedrooms: propertyData.specifications?.bedrooms || 0,
+          bathrooms: propertyData.specifications?.bathrooms || 0,
+          floors: propertyData.specifications?.floors || 1,
+          garageSpaces: propertyData.specifications?.garageSpaces || 0,
+          maxOccupants: propertyData.specifications?.maxOccupants || 1,
+        },
+        utilities: {
+          water: propertyData.utilities?.water || false,
+          gas: propertyData.utilities?.gas || false,
+          electricity: propertyData.utilities?.electricity || false,
+          internet: propertyData.utilities?.internet || false,
+          trash: false,
+          cableTV: propertyData.utilities?.cableTV || false,
+        },
+        description: {
+          text: propertyData.description?.text || "",
+          html: propertyData.description?.html || "",
+        },
+        occupancyStatus: propertyData.occupancyStatus as any,
+        interiorAmenities: {
+          airConditioning:
+            propertyData.interiorAmenities?.airConditioning || false,
+          heating: propertyData.interiorAmenities?.heating || false,
+          washerDryer: propertyData.interiorAmenities?.washerDryer || false,
+          dishwasher: propertyData.interiorAmenities?.dishwasher || false,
+          fridge: propertyData.interiorAmenities?.fridge || false,
+          furnished: propertyData.interiorAmenities?.furnished || false,
+          storageSpace: propertyData.interiorAmenities?.storageSpace || false,
+        },
+        communityAmenities: {
+          swimmingPool: propertyData.communityAmenities?.swimmingPool || false,
+          fitnessCenter:
+            propertyData.communityAmenities?.fitnessCenter || false,
+          elevator: propertyData.communityAmenities?.elevator || false,
+          parking: propertyData.communityAmenities?.parking || false,
+          securitySystem:
+            propertyData.communityAmenities?.securitySystem || false,
+          petFriendly: propertyData.communityAmenities?.petFriendly || false,
+          laundryFacility:
+            propertyData.communityAmenities?.laundryFacility || false,
+          doorman: propertyData.communityAmenities?.doorman || false,
+        },
+        totalUnits: propertyData.totalUnits || 0,
+        documents: propertyData.documents || [],
+        propertyImages: [],
+      };
+
+      form.setValues(transformedData);
+      setOriginalValues(transformedData);
     }
   }, [propertyData]);
 
@@ -88,166 +165,27 @@ export function usePropertyEditForm(pid: string) {
     }
   };
 
-  const handleOnChange = (
-    e:
-      | ChangeEvent<
-          | HTMLInputElement
-          | HTMLSelectElement
-          | HTMLTextAreaElement
-          | HTMLSelectElement
-        >
-      | string,
-    field?: keyof PropertyFormValues | string
-  ) => {
-    if (typeof e === "string" && field) {
-      if (field.includes(".")) {
-        const [parent, child] = field.split(".");
-        const parentValue = form.values[parent as keyof PropertyFormValues];
-        if (
-          parentValue &&
-          typeof parentValue === "object" &&
-          !Array.isArray(parentValue)
-        ) {
-          form.setFieldValue(parent as any, {
-            ...parentValue,
-            [child]: e,
-          });
-        }
-      } else {
-        form.setFieldValue(field as any, e);
-      }
-      return;
-    } else if (typeof e !== "string") {
-      const { name, value, type } = e.target;
-      const checked = (e.target as HTMLInputElement).checked;
-
-      if (name.includes(".")) {
-        const [parent, child] = name.split(".");
-        const parentValue = form.values[parent as keyof PropertyFormValues];
-        if (
-          parentValue &&
-          typeof parentValue === "object" &&
-          !Array.isArray(parentValue)
-        ) {
-          form.setFieldValue(parent as any, {
-            ...parentValue,
-            [child]: type === "checkbox" ? checked : value,
-          });
-        }
-      } else {
-        form.setFieldValue(
-          name as string,
-          type === "checkbox" ? checked : value
-        );
-      }
-    }
-  };
-
-  const getPropertyTypeOptions = () => {
-    if (!formConfig?.propertyTypes) return [];
-    return formConfig.propertyTypes.map((type) => ({
-      value: type,
-      label: type.charAt(0).toUpperCase() + type.slice(1),
-    }));
-  };
-
-  const getPropertyStatusOptions = () => {
-    if (!formConfig?.propertyStatuses) return [];
-    return formConfig.propertyStatuses.map((status) => ({
-      value: status,
-      label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
-    }));
-  };
-
-  const getOccupancyStatusOptions = () => {
-    if (!formConfig?.occupancyStatuses) return [];
-    return formConfig.occupancyStatuses.map((status) => ({
-      value: status,
-      label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
-    }));
-  };
-
-  const getDocumentTypeOptions = () => {
-    if (!formConfig?.documentTypes) return [];
-    return formConfig.documentTypes.map((type) => ({
-      value: type,
-      label: type.charAt(0).toUpperCase() + type.slice(1),
-    }));
-  };
-
-  const hasTabErrors = (errors: any, tabKey: string) => {
-    const tabFields = {
-      basic: [
-        "name",
-        "propertyType",
-        "status",
-        "managedBy",
-        "yearBuilt",
-        "address.fullAddress",
-        "address.unitApartment",
-        "address.city",
-        "address.state",
-        "address.postCode",
-        "address.country",
-        "financialDetails.purchasePrice",
-        "financialDetails.purchaseDate",
-        "financialDetails.marketValue",
-        "financialDetails.propertyTax",
-        "financialDetails.lastAssessmentDate",
-      ],
-      property: [
-        "specifications.totalArea",
-        "specifications.lotSize",
-        "specifications.bedrooms",
-        "specifications.bathrooms",
-        "specifications.floors",
-        "specifications.garageSpaces",
-        "specifications.maxOccupants",
-        "utilities.water",
-        "utilities.gas",
-        "utilities.electricity",
-        "utilities.internet",
-        "utilities.trash",
-        "utilities.cableTV",
-        "occupancyStatus",
-        "totalUnits",
-        "description.text",
-        "description.html",
-      ],
-    };
-
-    return (
-      tabFields[tabKey as keyof typeof tabFields]?.some((field) => {
-        // nested fields
-        if (field.includes(".")) {
-          const [parent, child] = field.split(".");
-          return !!errors[parent as keyof typeof errors]?.[child];
-        }
-        return !!errors[field as keyof typeof errors];
-      }) || false
-    );
-  };
-
   return {
     form,
     activeTab,
     formConfig,
+    saveAddress,
     setActiveTab,
-    hasTabErrors,
     propertyData,
     handleOnChange,
     isConfigLoading,
     isPropertyLoading,
+    hasTabErrors,
     error: updatePropertyMutation.error,
     hasError: updatePropertyMutation.isError,
     handleSubmit: form.onSubmit(handleSubmit),
     isSuccess: updatePropertyMutation.isSuccess,
     successResponse: updatePropertyMutation.data,
     isSubmitting: updatePropertyMutation.isPending,
-    documentTypeOptions: getDocumentTypeOptions(),
-    propertyTypeOptions: getPropertyTypeOptions(),
+    documentTypeOptions,
+    propertyTypeOptions,
     isLoading: isConfigLoading || isPropertyLoading,
-    propertyStatusOptions: getPropertyStatusOptions(),
-    occupancyStatusOptions: getOccupancyStatusOptions(),
+    propertyStatusOptions,
+    occupancyStatusOptions,
   };
 }
