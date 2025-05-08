@@ -221,14 +221,12 @@ export function usePropertyFormBase({
 
   const saveAddress = useCallback(
     (address: PropertyFormValues["address"]) => {
-      form.setFieldValue("address.fullAddress", address.fullAddress);
-      form.setFieldValue("address.city", address.city);
-      form.setFieldValue("address.state", address.state);
-      form.setFieldValue("address.street", address.street);
-      form.setFieldValue("address.country", address.country);
-      form.setFieldValue("address.postCode", address.postCode);
-      form.setFieldValue("address.unitNumber", address.unitNumber);
-      form.setFieldValue("address.coordinates", address.coordinates);
+      const currentAddress = form.values.address || {};
+      const mergedAddress = {
+        ...currentAddress,
+        ...address,
+      };
+      form.setFieldValue("address", mergedAddress);
     },
     [form]
   );

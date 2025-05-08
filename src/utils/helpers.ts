@@ -1,6 +1,6 @@
+import _ from "lodash";
 import axios, { AxiosError } from "axios";
 import { IErrorReturnData } from "@interfaces/index";
-import _ from "lodash";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
   const phoneRegex =
@@ -117,60 +117,33 @@ export const errorFormatter = (error: unknown): string => {
   return result;
 };
 
-export const extractChangesBetweenObjects = <
-  T extends Record<string, unknown>,
-  K extends Record<string, unknown>
->(
+function isObject(x: unknown): x is Record<string, unknown> {
+  return x !== null && typeof x === "object" && !Array.isArray(x);
+}
+
+export function extractChanges<T extends object, U extends object>(
   original: T,
-  current: K,
-  parentKey = ""
-): Record<string, any> | null => {
-  if (
-    typeof current !== "object" ||
-    current === null ||
-    Array.isArray(current)
-  ) {
-    if (!_.isEqual(current, original)) {
-      return current;
-    }
-    return {};
+  current: U
+): Record<string, any> | null {
+  if (!isObject(original) || !isObject(current)) {
+    return !_.isEqual(original, current) ? (current as any) : null;
   }
 
-  let hasChanges = false;
-  const changes: Record<string, any> = {};
+  const diff: Record<string, any> = {};
 
-  for (const key in current) {
-    const fullKey = parentKey ? `${parentKey}.${key}` : key;
-    const originalValue =
-      original && typeof original === "object" ? original[key] : undefined;
-    const currentValue = current[key];
+  for (const [key, currVal] of Object.entries(current)) {
+    const origVal = (original as any)[key];
+    if (_.isEqual(origVal, currVal)) continue;
 
-    if (Array.isArray(currentValue)) {
-      // Implementation for array comparison would go here
-      if (!_.isEqual(currentValue, originalValue)) {
-        changes[key] = currentValue;
-        hasChanges = true;
-      }
-    } else if (
-      typeof currentValue === "object" &&
-      currentValue !== null &&
-      originalValue
-    ) {
-      // recursive case for nested objects
-      const nestedChanges = extractChangesBetweenObjects(
-        originalValue,
-        currentValue,
-        fullKey
-      );
-      if (Object.keys(nestedChanges).length > 0) {
-        changes[key] = nestedChanges;
-        hasChanges = true;
-      }
-    } else if (!_.isEqual(currentValue, originalValue)) {
-      changes[key] = currentValue;
-      hasChanges = true;
+    if (Array.isArray(currVal)) {
+      diff[key] = currVal;
+    } else if (isObject(currVal) && isObject(origVal)) {
+      const nested = extractChanges(origVal, currVal);
+      if (nested) diff[key] = nested;
+    } else {
+      diff[key] = currVal;
     }
   }
 
-  return hasChanges ? changes : null;
-};
+  return Object.keys(diff).length > 0 ? diff : null;
+}

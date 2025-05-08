@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 "use client";
 
 import type { ChangeEvent, FocusEvent } from "react";
@@ -32,7 +33,7 @@ interface GooglePlacesAutocompleteProps {
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
-  onPlaceSelected?: (place: PlaceResult) => void;
+  onPlaceSelected: (place: PlaceResult) => void;
   placeholder?: string;
   className?: string;
   required?: boolean;
@@ -81,21 +82,13 @@ export const GooglePlacesAutocomplete = forwardRef<
     const handlePlaceSelected = useCallback(
       (place: PlaceResult) => {
         if (!place || !place.address_components) return;
-
-        if (onPlaceSelected) {
-          onPlaceSelected(place);
-        }
-
-        if (localRef.current) {
-          const syntheticEvent = {
-            target: {
-              name: name,
-              value: place.formatted_address || "",
-            },
-          } as ChangeEvent<HTMLInputElement>;
-
-          onChange(syntheticEvent);
-        }
+        onChange({
+          target: {
+            name,
+            value: place.formatted_address,
+          },
+        } as ChangeEvent<HTMLInputElement>);
+        onPlaceSelected(place);
       },
       [onChange, name, onPlaceSelected]
     );
@@ -115,7 +108,6 @@ export const GooglePlacesAutocomplete = forwardRef<
     });
 
     useEffect(() => {
-      // sync forwardedRef with localRef
       if (forwardedRef) {
         if (typeof forwardedRef === "function") {
           forwardedRef(localRef.current);
@@ -141,8 +133,8 @@ export const GooglePlacesAutocomplete = forwardRef<
           name={name}
           type="text"
           value={value}
-          onChange={onChange}
           onBlur={onBlur}
+          onChange={readOnly ? () => "" : onChange}
           placeholder={placeholder}
           className={className}
           required={required}

@@ -111,6 +111,7 @@ export default function EditProperty() {
             type="submit"
             form="property-form"
             label="Save Changes"
+            onClick={handleSubmit}
             className="btn btn-primary"
             disabled={!form.isValid() || isSubmitting}
           />

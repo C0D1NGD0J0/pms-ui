@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import { getComponentValue } from "@components/FormElements/GooglePlacesAutocomplete";
@@ -150,6 +150,16 @@ export function BasicInfoTab({
             }}
           >
             <FormLabel htmlFor="address" label="Street Address" required />
+            <div
+              className="address-helper-text"
+              style={{
+                fontSize: "0.75rem",
+                color: "#6c757d",
+                marginBottom: "0.25rem",
+              }}
+            >
+              Please select an address from the dropdown after typing
+            </div>
             <GooglePlacesAutocomplete
               id="address"
               onChange={handleOnChange}
@@ -158,10 +168,14 @@ export function BasicInfoTab({
               value={form.values.address.fullAddress || ""}
               onPlaceSelected={(place) => {
                 if (!place || !place.address_components) return;
+
                 const addressComponents = place.address_components;
+                const unitNumber = form.values.address.unitNumber || "";
                 const address = {
                   fullAddress: place.formatted_address,
-                  city: getComponentValue(addressComponents, "locality"),
+                  city:
+                    getComponentValue(addressComponents, "locality") ||
+                    getComponentValue(addressComponents, "postal_town"),
                   state: getComponentValue(
                     addressComponents,
                     "administrative_area_level_1"
@@ -173,7 +187,8 @@ export function BasicInfoTab({
                     place.geometry.location.lat(),
                     place.geometry.location.lng(),
                   ],
-                  unitNumber: addressComponents[0].long_name || "",
+                  streetNumber: addressComponents[0].long_name || "",
+                  unitNumber,
                 };
                 saveAddress(address);
               }}
@@ -198,7 +213,7 @@ export function BasicInfoTab({
                 name="address.unitNumber"
                 type="text"
                 value={form.values.address.unitNumber || ""}
-                onChange={() => ""}
+                readOnly
                 disabled
                 placeholder="Enter unit or apartment number"
                 hasError={!!form.errors["address.unitNumber"]}
@@ -219,7 +234,7 @@ export function BasicInfoTab({
               disabled
               id="city"
               type="text"
-              onChange={() => ""}
+              readOnly
               name="address.city"
               placeholder="Enter city"
               value={form.values.address.city || ""}
@@ -231,7 +246,7 @@ export function BasicInfoTab({
               disabled
               type="text"
               id="stateProvince"
-              onChange={() => ""}
+              readOnly
               name="address.state"
               value={form.values.address.state || ""}
               placeholder="Enter state/province"
@@ -248,7 +263,7 @@ export function BasicInfoTab({
               name="address.postCode"
               type="text"
               value={form.values.address.postCode || ""}
-              onChange={() => ""}
+              onChange={() => "ffgcgfcfg"}
               placeholder="Enter postal code"
             />
           </FormField>
@@ -258,10 +273,10 @@ export function BasicInfoTab({
               disabled
               type="text"
               id="country"
-              onChange={() => ""}
+              readOnly
               name="address.country"
-              value={form.values.address.country || ""}
               placeholder="Enter country"
+              value={form.values.address.country || ""}
             />
           </FormField>
         </div>

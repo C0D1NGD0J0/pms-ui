@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAuth } from "@store/index";
 import { useEffect, useState } from "react";
+import { extractChanges } from "@utils/helpers";
 import { propertyService } from "@services/property";
 import { useNotification } from "@hooks/useNotification";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { extractChangesBetweenObjects } from "@utils/helpers";
 import { EditPropertyFormValues } from "@interfaces/property.interface";
 import { usePropertyFormBase } from "@hooks/property/usePropertyFormBase";
 
@@ -64,16 +64,27 @@ export function usePropertyEditForm(pid: string) {
         managedBy: propertyData.managedBy || "",
         yearBuilt: propertyData.yearBuilt || 1800,
         propertyType: propertyData.propertyType as any,
+        // address: {
+        //   fullAddress: propertyData.address?.fullAddress || "",
+        //   city: propertyData.address?.city || "",
+        //   state: propertyData.address?.state || "",
+        //   postCode: propertyData.address?.postCode || "",
+        //   country: propertyData.address?.country || "",
+        //   unitNumber: propertyData.address?.unitNumber || "",
+        //   street: propertyData.address?.street || "",
+        //   streetNumber: propertyData.address?.streetNumber || "",
+        //   coordinates: propertyData.address?.coordinates,
+        // },
         address: {
-          fullAddress: propertyData.address?.fullAddress || "",
-          city: propertyData.address?.city || "",
-          state: propertyData.address?.state || "",
-          postCode: propertyData.address?.postCode || "",
-          country: propertyData.address?.country || "",
-          unitNumber: propertyData.address?.unitNumber || "",
-          street: propertyData.address?.street || "",
-          streetNumber: propertyData.address?.streetNumber || "",
-          coordinates: propertyData.address?.coordinates,
+          fullAddress: "55 Water St, Brooklyn, NY 11201, USA",
+          city: "",
+          state: "New York",
+          postCode: "11201",
+          country: "United States",
+          unitNumber: "",
+          street: "Water Street",
+          streetNumber: "55",
+          coordinates: [40.7033634, -73.9916659],
         },
         financialDetails: {
           purchasePrice: 0,
@@ -151,13 +162,12 @@ export function usePropertyEditForm(pid: string) {
     }
     try {
       values.cid = client?.csub ?? "";
-      const changedValues = extractChangesBetweenObjects(
-        originalValues,
-        values
-      );
+      const changedValues = extractChanges(originalValues, values);
+
+      const changes = changedValues || {};
       const dataToSubmit: Partial<EditPropertyFormValues> = {
         cid: client?.csub ?? "",
-        ...(changedValues || {}),
+        ...changes,
       };
       await updatePropertyMutation.mutateAsync(dataToSubmit);
     } catch (error) {
