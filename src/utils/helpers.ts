@@ -123,15 +123,17 @@ function isObject(x: unknown): x is Record<string, unknown> {
 
 export function extractChanges<T extends object, U extends object>(
   original: T,
-  current: U
+  current: U,
+  opts: { ignoreKeys?: string[] } = {}
 ): Record<string, any> | null {
   if (!isObject(original) || !isObject(current)) {
     return !_.isEqual(original, current) ? (current as any) : null;
   }
-
+  const { ignoreKeys = [] } = opts;
   const diff: Record<string, any> = {};
 
   for (const [key, currVal] of Object.entries(current)) {
+    if (ignoreKeys.includes(key as string)) continue;
     const origVal = (original as any)[key];
     if (_.isEqual(origVal, currVal)) continue;
 
