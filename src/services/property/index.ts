@@ -129,7 +129,7 @@ class PropertyService {
     propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
-      const result = await axios.put(
+      const result = await axios.patch(
         `${this.baseUrl}/${cid}/client_property/${pid}`,
         propertyData,
         this.axiosConfig

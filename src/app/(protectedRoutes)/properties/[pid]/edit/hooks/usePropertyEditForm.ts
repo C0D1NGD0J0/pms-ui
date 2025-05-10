@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useAuth } from "@store/index";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { extractChanges } from "@utils/helpers";
 import { propertyService } from "@services/property";
 import { useNotification } from "@hooks/useNotification";
@@ -10,6 +11,7 @@ import { usePropertyFormBase } from "@hooks/property/usePropertyFormBase";
 
 export function usePropertyEditForm(pid: string) {
   const { client } = useAuth();
+  const router = useRouter();
   const { openNotification } = useNotification();
   const [originalValues, setOriginalValues] =
     useState<EditPropertyFormValues | null>(null);
@@ -39,13 +41,6 @@ export function usePropertyEditForm(pid: string) {
   const updatePropertyMutation = useMutation({
     mutationFn: (data: Partial<EditPropertyFormValues>) =>
       propertyService.updateClientProperty(client?.csub || "", pid, data),
-    onSuccess: () => {
-      openNotification(
-        "success",
-        "Property Updated",
-        "Property has been successfully updated."
-      );
-    },
     onError: (error: any) => {
       openNotification(
         "error",
@@ -162,14 +157,19 @@ export function usePropertyEditForm(pid: string) {
     }
     try {
       values.cid = client?.csub ?? "";
-      const changedValues = extractChanges(originalValues, values);
-
-      const changes = changedValues || {};
-      const dataToSubmit: Partial<EditPropertyFormValues> = {
-        cid: client?.csub ?? "",
-        ...changes,
-      };
-      await updatePropertyMutation.mutateAsync(dataToSubmit);
+      const changedValues: Partial<EditPropertyFormValues | null> =
+        extractChanges(originalValues, values, {
+          ignoreKeys: ["cid"],
+        });
+      if (changedValues) {
+        await updatePropertyMutation.mutateAsync(changedValues);
+      }
+      openNotification(
+        "success",
+        "Property Updated",
+        "Property has been successfully updated."
+      );
+      router.push("/properties");
     } catch (error) {
       console.error("Error updating property:", error);
     }
@@ -181,11 +181,11 @@ export function usePropertyEditForm(pid: string) {
     formConfig,
     saveAddress,
     setActiveTab,
+    hasTabErrors,
     propertyData,
     handleOnChange,
     isConfigLoading,
     isPropertyLoading,
-    hasTabErrors,
     error: updatePropertyMutation.error,
     hasError: updatePropertyMutation.isError,
     handleSubmit: form.onSubmit(handleSubmit),
