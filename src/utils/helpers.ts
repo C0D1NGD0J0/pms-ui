@@ -1,3 +1,4 @@
+import _ from "lodash";
 import axios, { AxiosError } from "axios";
 import { IErrorReturnData } from "@interfaces/index";
 
@@ -110,8 +111,41 @@ export const errorFormatter = (error: unknown): string => {
   }
   // regular error object
   else {
-    console.log(error)
+    console.log(error);
     result = (error as Error)?.message;
   }
   return result;
 };
+
+function isObject(x: unknown): x is Record<string, unknown> {
+  return x !== null && typeof x === "object" && !Array.isArray(x);
+}
+
+export function extractChanges<T extends object, U extends object>(
+  original: T,
+  current: U,
+  opts: { ignoreKeys?: string[] } = {}
+): Record<string, any> | null {
+  if (!isObject(original) || !isObject(current)) {
+    return !_.isEqual(original, current) ? (current as any) : null;
+  }
+  const { ignoreKeys = [] } = opts;
+  const diff: Record<string, any> = {};
+
+  for (const [key, currVal] of Object.entries(current)) {
+    if (ignoreKeys.includes(key as string)) continue;
+    const origVal = (original as any)[key];
+    if (_.isEqual(origVal, currVal)) continue;
+
+    if (Array.isArray(currVal)) {
+      diff[key] = currVal;
+    } else if (isObject(currVal) && isObject(origVal)) {
+      const nested = extractChanges(origVal, currVal);
+      if (nested) diff[key] = nested;
+    } else {
+      diff[key] = currVal;
+    }
+  }
+
+  return Object.keys(diff).length > 0 ? diff : null;
+}

@@ -9,6 +9,6 @@ export function usePropertyFormMetaData() {
       const { data } = await propertyService.getPropertyFormMetaData();
       return data;
     },
-    staleTime: 1000 * 60 * 60, // Cache for an hour
+    staleTime: 1000 * 60 * 60, // cache for an hour
   });
 }

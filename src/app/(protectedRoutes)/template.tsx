@@ -22,14 +22,14 @@ export default function AuthTemplate({
       timeoutId = setTimeout(() => {
         setLoaderMessage("Logging out");
         return push("/login");
-      }, 3000);
+      }, 10000);
     }
 
     if (!isLoggedIn) {
       timeoutId = setTimeout(() => {
         setLoaderMessage("Logging out");
         push("/login");
-      }, 5000);
+      }, 15000);
     }
 
     return () => {

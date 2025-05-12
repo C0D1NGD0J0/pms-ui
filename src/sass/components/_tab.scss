@@ -37,6 +37,21 @@
         background-color: hsl(194, 66%, 24%);
       }
     }
+
+    &.has-error {
+      position: relative;
+
+      .error-indicator {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: hslaGen($danger-color);
+        display: inline-block;
+      }
+    }
   }
 }
 

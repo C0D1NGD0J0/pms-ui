@@ -29,8 +29,8 @@ export function useLoginLogic() {
 
   const form = useForm<ILoginForm>({
     initialValues: {
-      password: "",
-      email: "",
+      password: "password",
+      email: "zlatan@example.com",
       otpCode: "",
       rememberMe: false,
     },
@@ -54,6 +54,7 @@ export function useLoginLogic() {
 
       form.reset();
       publish(EventTypes.LOGIN_SUCCESS, response.activeAccount);
+      publish(EventTypes.GET_CURRENT_USER, response.activeAccount);
       router.push("/dashboard");
     } catch (error: unknown) {
       openNotification("error", "Login process failed", errorFormatter(error));

@@ -1,11 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { Button } from "@components/FormElements";
 import { Modal } from "@components/FormElements/Modal";
 import { useNotification } from "@hooks/useNotification";
-
-import { FileInput } from "./FileInput";
-import { useCsvUpload } from "../hooks/useCsvUpload";
+import { FileInput, Button } from "@components/FormElements";
+import { useCsvUpload } from "@properties/hooks/useCsvUpload";
 
 interface CSVUploadModalProps {
   isOpen: boolean;

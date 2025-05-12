@@ -3,10 +3,12 @@
 import { useDebounce } from "@hooks/useDebounce";
 import React, {
   ChangeEvent,
+  useCallback,
   FocusEvent,
   forwardRef,
   useEffect,
   useState,
+  useMemo,
   useRef,
 } from "react";
 
@@ -16,6 +18,13 @@ interface ValidationResult {
   isValid: boolean;
   message?: string;
   data?: any;
+}
+
+interface ValidationState {
+  isValidating: boolean;
+  result: ValidationResult | null;
+  hasError: boolean;
+  errorMessage?: string;
 }
 
 interface DebouncedInputProps {
@@ -47,185 +56,246 @@ interface DebouncedInputProps {
   ariaDescribedBy?: string;
 }
 
-export const DebouncedInput = forwardRef<HTMLInputElement, DebouncedInputProps>(
-  (
-    {
-      id,
-      name,
-      type = "text",
-      value,
-      onChange,
-      onBlur,
-      onValidationComplete,
-      placeholder = " ",
-      className = "",
-      required = false,
-      disabled = false,
-      readOnly = false,
-      debounceDelay = 500,
-      validateFn,
-      autoComplete,
-      ariaLabel,
-      ariaDescribedBy,
-      ...rest
-    },
-    forwardedRef
-  ) => {
-    // Create a local ref that we will sync with the forwarded ref
-    const localRef = useRef<HTMLInputElement>(null);
+export const DebouncedInput = React.memo(
+  forwardRef<HTMLInputElement, DebouncedInputProps>(
+    (
+      {
+        id,
+        name,
+        type = "text",
+        value,
+        onChange,
+        onBlur,
+        onValidationComplete,
+        placeholder = " ",
+        className = "",
+        required = false,
+        disabled = false,
+        readOnly = false,
+        debounceDelay = 500,
+        validateFn,
+        autoComplete,
+        ariaLabel,
+        ariaDescribedBy,
+        ...rest
+      },
+      forwardedRef
+    ) => {
+      const localRef = useRef<HTMLInputElement>(null);
+      const [validationState, setValidationState] = useState<ValidationState>({
+        isValidating: false,
+        result: null,
+        hasError: false,
+        errorMessage: undefined,
+      });
 
-    // Sync the forwarded ref with our local ref
-    useEffect(() => {
-      if (!forwardedRef) return;
-
-      if (typeof forwardedRef === "function") {
-        forwardedRef(localRef.current);
-      } else {
-        forwardedRef.current = localRef.current;
-      }
-    }, [forwardedRef]);
-    const [isValidating, setIsValidating] = useState(false);
-    const [validationResult, setValidationResult] =
-      useState<ValidationResult | null>(null);
-    const [hasError, setHasError] = useState(false);
-    const [, setErrorMessage] = useState<string | undefined>(undefined);
-
-    // Track if component is mounted to prevent state updates after unmount
-    const isMountedRef = React.useRef(true);
-
-    // Track if the input was focused before validation started
-    const wasFocusedBeforeValidation = React.useRef(false);
-
-    // Use the useDebounce hook to debounce the input value
-    const debouncedValue = useDebounce(value, debounceDelay);
-
-    // Store previous debounced value to prevent duplicate validations
-    const prevDebouncedValueRef = React.useRef(debouncedValue);
-
-    // Run validation when the debounced value changes
-    useEffect(() => {
-      // Return early if the value hasn't actually changed to prevent unnecessary validations
-      if (prevDebouncedValueRef.current === debouncedValue) {
-        return;
-      }
-
-      prevDebouncedValueRef.current = debouncedValue;
-
-      const validateInput = async () => {
-        // Skip validation if no validation function or empty value
-        if (
-          !validateFn ||
-          (typeof debouncedValue === "string" && !debouncedValue.trim())
-        ) {
-          if (isMountedRef.current) {
-            setIsValidating(false);
+      const isMountedRef = useRef(true);
+      const hasFocusRef = useRef(false);
+      const debouncedValue = useDebounce(value, debounceDelay);
+      const prevDebouncedValueRef = useRef(debouncedValue);
+      const performValidation = useCallback(
+        async (valueToValidate: string | number) => {
+          if (
+            !validateFn ||
+            (typeof valueToValidate === "string" && !valueToValidate.trim())
+          ) {
+            return null;
           }
+
+          try {
+            return await validateFn(valueToValidate);
+          } catch (error) {
+            console.error("Validation error:", error);
+            return {
+              isValid: false,
+              message: "Validation failed",
+            };
+          }
+        },
+        [validateFn]
+      );
+
+      const handleValidationComplete = useCallback(
+        (result: ValidationResult) => {
+          if (onValidationComplete) {
+            onValidationComplete(result);
+          }
+        },
+        [onValidationComplete]
+      );
+
+      // Sync the forwarded ref with our local ref - only run when refs change
+      useEffect(() => {
+        if (!forwardedRef) return;
+
+        if (typeof forwardedRef === "function") {
+          forwardedRef(localRef.current);
+        } else {
+          forwardedRef.current = localRef.current;
+        }
+      }, [forwardedRef]);
+
+      useEffect(() => {
+        return () => {
+          isMountedRef.current = false;
+        };
+      }, []);
+
+      const updateFocusState = useCallback(() => {
+        if (localRef.current) {
+          hasFocusRef.current = document.activeElement === localRef.current;
+        }
+      }, []);
+
+      useEffect(() => {
+        const inputElement = localRef.current;
+        if (!inputElement) return;
+
+        const handleFocus = () => {
+          hasFocusRef.current = true;
+        };
+
+        const handleBlur = () => {
+          setTimeout(() => {
+            hasFocusRef.current = document.activeElement === inputElement;
+          }, 30);
+        };
+
+        inputElement.addEventListener("focus", handleFocus);
+        inputElement.addEventListener("blur", handleBlur);
+
+        return () => {
+          inputElement.removeEventListener("focus", handleFocus);
+          inputElement.removeEventListener("blur", handleBlur);
+        };
+      }, []);
+
+      useEffect(() => {
+        if (prevDebouncedValueRef.current === debouncedValue) {
           return;
         }
 
-        if (isMountedRef.current) {
-          // Check if the input has focus before starting validation
-          wasFocusedBeforeValidation.current =
-            document.activeElement === localRef.current;
-
-          setIsValidating(true);
+        prevDebouncedValueRef.current = debouncedValue;
+        if (!debouncedValue && typeof debouncedValue !== "number") {
+          return;
         }
-        try {
-          const result = await validateFn(debouncedValue);
-          if (isMountedRef.current) {
-            setValidationResult(result);
-            setHasError(!result.isValid);
-            setErrorMessage(result.message);
 
-            if (onValidationComplete) {
-              onValidationComplete(result);
-            }
+        const validateInput = async () => {
+          updateFocusState();
+          const hadFocusBeforeValidation = hasFocusRef.current;
+
+          if (isMountedRef.current) {
+            setValidationState((prev) => ({
+              ...prev,
+              isValidating: true,
+            }));
           }
-        } catch (error) {
-          console.error("Validation error:", error);
-          if (isMountedRef.current) {
-            setHasError(true);
-            setErrorMessage("Validation failed");
 
-            if (onValidationComplete) {
-              onValidationComplete({
-                isValid: false,
-                message: "Validation failed",
+          const result = await performValidation(debouncedValue);
+
+          if (isMountedRef.current) {
+            if (result) {
+              setValidationState({
+                isValidating: false,
+                result,
+                hasError: !result.isValid,
+                errorMessage: result.message,
               });
-            }
-          }
-        } finally {
-          if (isMountedRef.current) {
-            setIsValidating(false);
 
-            // Restore focus if the input had focus before validation
-            if (wasFocusedBeforeValidation.current && localRef.current) {
-              // Use a short timeout to ensure the DOM has settled
+              handleValidationComplete(result);
+            } else {
+              setValidationState((prev) => ({
+                ...prev,
+                isValidating: false,
+              }));
+            }
+
+            if (hadFocusBeforeValidation && localRef.current) {
               setTimeout(() => {
-                if (localRef.current) {
+                if (isMountedRef.current && localRef.current) {
                   localRef.current.focus();
+
+                  if (type !== "date" && type !== "time") {
+                    try {
+                      localRef.current.select();
+                    } catch (e: unknown) {
+                      console.error(
+                        "Error selecting input value after validation:",
+                        e
+                      );
+                      // ignore any errors for now <maybe log it later>
+                    }
+                  }
                 }
-              }, 0);
+              }, 500);
             }
           }
-        }
-      };
+        };
 
-      // Only validate if there's a value to validate
-      if (
-        debouncedValue ||
-        (typeof debouncedValue === "string" && debouncedValue.trim())
-      ) {
         validateInput();
-      }
-    }, [debouncedValue, validateFn, onValidationComplete]);
+      }, [
+        debouncedValue,
+        performValidation,
+        handleValidationComplete,
+        updateFocusState,
+        type,
+      ]);
 
-    // Clean up effect to prevent memory leaks and updates after unmount
-    useEffect(() => {
-      return () => {
-        isMountedRef.current = false;
-      };
-    }, []);
+      const compositeClassName = useMemo(() => {
+        return [
+          className,
+          validationState.isValidating ? "is-validating" : "",
+          validationState.result?.isValid ? "is-valid" : "",
+        ]
+          .filter(Boolean)
+          .join(" ");
+      }, [
+        className,
+        validationState.isValidating,
+        validationState.result?.isValid,
+      ]);
 
-    // Composite className that includes validation status
-    const compositeClassName = [
-      className,
-      isValidating ? "is-validating" : "",
-      validationResult?.isValid ? "is-valid" : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
+      const handleBlur = useCallback(
+        (e: FocusEvent<HTMLInputElement>) => {
+          hasFocusRef.current = false;
+          if (onBlur) {
+            onBlur(e);
+          }
+        },
+        [onBlur]
+      );
 
-    return (
-      <div className="debounced-input-wrapper">
-        <FormInput
-          ref={localRef}
-          id={id}
-          name={name}
-          type={type}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          placeholder={placeholder}
-          className={compositeClassName}
-          required={required}
-          disabled={disabled || isValidating}
-          readOnly={readOnly}
-          hasError={hasError}
-          autoComplete={autoComplete}
-          ariaLabel={ariaLabel}
-          ariaDescribedBy={ariaDescribedBy}
-          {...rest}
-        />
+      return (
+        <div className="debounced-input-wrapper">
+          <FormInput
+            ref={localRef}
+            id={id}
+            name={name}
+            type={type}
+            value={value}
+            onChange={onChange}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            className={compositeClassName}
+            required={required}
+            disabled={disabled || validationState.isValidating}
+            readOnly={readOnly}
+            hasError={validationState.hasError}
+            autoComplete={autoComplete}
+            ariaLabel={ariaLabel}
+            ariaDescribedBy={ariaDescribedBy}
+            {...rest}
+          />
 
-        {isValidating && (
-          <div className="validation-indicator">
-            <span className="spinner"></span>
-          </div>
-        )}
-      </div>
-    );
-  }
+          {validationState.isValidating && (
+            <div className="validation-indicator">
+              <span className="spinner"></span>
+            </div>
+          )}
+        </div>
+      );
+    }
+  )
 );
 
 DebouncedInput.displayName = "DebouncedInput";

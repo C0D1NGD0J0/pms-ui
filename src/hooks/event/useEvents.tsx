@@ -1,4 +1,4 @@
-import { DependencyList, useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import {
   EventSystemHandler,
   Unsubscribe,

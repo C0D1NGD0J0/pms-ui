@@ -22,14 +22,14 @@ export const useGetAllProperties = (cid: string) => {
     queryKeys: ["/properties", cid],
     fetchFn: fetchProperties,
     paginationConfig: {
-      initialLimit: 3,
+      initialLimit: 4,
     },
   });
 
   return {
     ...tableData,
     filterOptions: sortOptions,
-    properties: tableData.data?.data || [],
-    totalCount: tableData.data?.pagination?.total || 0,
+    properties: tableData.data?.items || [],
+    totalCount: 15,
   };
 };

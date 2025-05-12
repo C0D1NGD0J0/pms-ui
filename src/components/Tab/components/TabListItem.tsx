@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-
 import { TabList } from "./TabContainer";
 import { useTabsContext } from "../hook";
 import { TabPanelContent } from "./TabPanelContent";
@@ -8,16 +6,11 @@ import { TabListItemProps, TabItem } from "../interface";
 export const TabListItem: React.FC<TabListItemProps> = ({
   id,
   label,
-  disabled = false,
   className = "",
+  disabled = false,
+  hasError = false,
 }) => {
-  const { activeTabId, setActiveTabId, registerTab } = useTabsContext();
-
-  // Register this tab with parent on mount
-  // useEffect(() => {
-  //   registerTab(id, disabled);
-  // }, [id, disabled, registerTab]);
-
+  const { activeTabId, setActiveTabId } = useTabsContext();
   const isActive = activeTabId === id;
 
   const handleClick = () => {
@@ -25,12 +18,11 @@ export const TabListItem: React.FC<TabListItemProps> = ({
       setActiveTabId(id);
     }
   };
-
   return (
     <li
       className={`settings-tab ${isActive ? "active" : ""} ${
         disabled ? "disabled" : ""
-      } ${className}`}
+      } ${hasError && hasError ? "has-error" : ""} ${className}`}
       onClick={handleClick}
       role="tab"
       id={`tab-${id}`}
@@ -41,6 +33,12 @@ export const TabListItem: React.FC<TabListItemProps> = ({
       data-tab={id}
     >
       {label}
+      {hasError && (
+        <span
+          className="error-indicator"
+          aria-label="This tab has errors"
+        ></span>
+      )}
     </li>
   );
 };
@@ -54,6 +52,7 @@ export const createTabsFromItems = (items: TabItem[]) => {
             key={`tab-${item.id}`}
             id={item.id}
             label={item.label}
+            hasError={item.hasError}
             disabled={item.disabled}
           />
         ))}

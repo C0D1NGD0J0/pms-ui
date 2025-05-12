@@ -1,3 +1,4 @@
+import { authService } from "@services/auth";
 import { EventTypes } from "@services/events";
 import { useAuthActions } from "@store/auth.store";
 import { useQueryClient } from "@tanstack/react-query";
@@ -8,20 +9,35 @@ import { useEvent } from "./useEvent";
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];
 
 export function useAuthEventStore() {
-  const { setUser, setClient, logout } = useAuthActions();
   const queryClient = useQueryClient();
+  const { setUser, setAuthLoading, setClient, logout } = useAuthActions();
 
-  //resetting user data when login success
   useEvent(EventTypes.LOGIN_SUCCESS, (loginData: UserClient | null) => {
     if (loginData?.csub) {
+      setAuthLoading(true);
       setClient(loginData);
-      queryClient.invalidateQueries({ queryKey: CURRENT_USER_QUERY_KEY });
     }
   });
+
+  useEvent(
+    EventTypes.GET_CURRENT_USER,
+    async (loginData: UserClient | null) => {
+      if (loginData?.csub) {
+        const resp = await authService.currentuser(loginData.csub);
+        if (resp) {
+          setUser(resp.data);
+          setClient(resp.data.client);
+          queryClient.setQueryData(CURRENT_USER_QUERY_KEY, resp.data);
+          setAuthLoading(false);
+        }
+      }
+    }
+  );
 
   useEvent(EventTypes.CURRENT_USER_UPDATED, (userData: ICurrentUser | null) => {
     setUser(userData);
     setClient(userData?.client ?? null);
+    setAuthLoading(false);
   });
 
   useEvent(EventTypes.LOGOUT, () => {
@@ -33,6 +49,7 @@ export function useAuthEventStore() {
     if (!account) {
       return;
     }
+    setAuthLoading(true);
     setClient(account);
   });
 

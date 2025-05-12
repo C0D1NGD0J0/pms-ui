@@ -7,10 +7,12 @@ type AuthState = {
   permissions: string[];
   user: ICurrentUser | null;
   client: UserClient | null;
+  isAuthLoading: boolean;
   actions: {
     logout: () => void;
-    setClient: (client: UserClient | null) => void;
     setUser: (user: ICurrentUser | null) => void;
+    setAuthLoading: (isLoading: boolean) => void;
+    setClient: (client: UserClient | null) => void;
     setPermissions: (permissions: string[]) => void;
   };
 };
@@ -21,6 +23,7 @@ const useAuthStore = create<AuthState>()(
       client: null,
       permissions: [],
       user: null,
+      isAuthLoading: false,
       actions: {
         logout: async () => {
           const csub = get().client?.csub;
@@ -29,6 +32,7 @@ const useAuthStore = create<AuthState>()(
           return set({
             user: null,
             permissions: [],
+            isAuthLoading: false,
             client: { csub: "", displayName: "" },
           });
         },
@@ -40,6 +44,9 @@ const useAuthStore = create<AuthState>()(
         },
         setPermissions: (permissions: string[]) => {
           return set({ permissions });
+        },
+        setAuthLoading: (isAuthLoading: boolean) => {
+          return set({ isAuthLoading });
         },
       },
     }),
@@ -54,13 +61,14 @@ const useAuthStore = create<AuthState>()(
 );
 
 export const useAuth = () => {
-  const { client, permissions, user } = useAuthStore();
+  const { client, permissions, user, isAuthLoading } = useAuthStore();
   const isLoggedIn = !!user?.sub && !!client?.csub;
   return {
     user,
     client,
     isLoggedIn,
     permissions,
+    isAuthLoading,
   };
 };
 
@@ -70,6 +78,7 @@ export const useAuthActions = () => {
     logout: actions.logout,
     setUser: actions.setUser,
     setClient: actions.setClient,
+    setAuthLoading: actions.setAuthLoading,
     setPermissions: actions.setPermissions,
   };
 };

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
+import { stat } from "fs";
 import React, { ReactNode, useState } from "react";
 import { PanelHeaderProps, PanelContent, PanelHeader } from "@components/Panel";
 import {
@@ -6,7 +7,6 @@ import {
   TablePaginationConfig,
   Table as AntTable,
 } from "antd";
-import { stat } from "fs";
 
 export interface TableColumn<T> {
   title: string;
@@ -68,7 +68,6 @@ export function Table<T extends object>({
 
   const renderStatusBadge = (status: string) => {
     if (!status) return null;
-    console.log(status);
     let statusClass = "muted";
     const statusLower = status.toLowerCase();
 
