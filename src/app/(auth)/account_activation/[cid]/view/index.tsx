@@ -127,7 +127,7 @@ export function AccountActivationView({
       {isSuccess ? (
         <Result
           status="success"
-          title="Contratulation, account has now been activated. Please login to proceed."
+          title="Congratulations, account has now been activated. Please login to proceed."
           extra={[
             <Link key="login" href="/login" className="btn btn-primary">
               Login
