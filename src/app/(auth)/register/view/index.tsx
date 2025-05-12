@@ -67,7 +67,7 @@ export function RegisterView({
     <>
       <AuthContentHeader
         title="Register"
-        subtitle="Alredy have an account?"
+        subtitle="Already have an account?"
         headerLink="/login"
         headerLinkText="Login"
       />
