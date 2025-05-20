@@ -32,6 +32,11 @@
       "@utils/*": ["src/utils/*"],
       "@services/*": ["src/services/*"],
       "@validations/*": ["src/validations/*"],
+
+      "@properties/*": ["src/app/(protectedRoutes)/properties/*"],
+      "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/*"],
+      "@auth/*": ["src/app/(auth)/*"],
+
       "@/*": ["./*"]
     }
   },

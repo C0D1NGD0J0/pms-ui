@@ -10,7 +10,7 @@ import {
 } from "@components/FormElements/";
 import {
   AuthContentHeader,
-  AuthContenFooter,
+  AuthContentFooter,
   AuthContentBody,
 } from "@components/AuthLayout";
 
@@ -106,7 +106,7 @@ export function LoginView({
             <Button
               type="submit"
               disabled={!form.isValid()}
-              className="btn btn-primary"
+              className="btn btn-primary btn-grow"
               label={`${isSubmitting ? "Processing..." : "Login"}`}
             />
           </div>

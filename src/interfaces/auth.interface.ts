@@ -1,6 +1,6 @@
 import { z } from "zod";
+import { UserClient } from "@store/auth.store";
 import { GDPRSettings } from "@store/interface";
-import { UserClient } from "@store/hooks/useAuth";
 import {
   AccountActivationSchema,
   ResetPasswordSchema,

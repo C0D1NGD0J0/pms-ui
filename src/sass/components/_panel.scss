@@ -5,6 +5,7 @@
   width: 100%;
   display: flex;
   padding: 2rem 0;
+  flex-wrap: wrap;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 48%), 1fr));
 
   .panel {
@@ -17,6 +18,8 @@
       justify-content: space-between;
       background: hslaGen($white-color);
       border-bottom: 1px solid hslaGen($grey-color, 0.2);
+      border-bottom-right-radius: 0.2rem;
+      border-bottom-left-radius: 0.2rem;
       &__title {
         max-width: 25rem;
         h4 {
@@ -32,12 +35,44 @@
 
         .filter-options {
           position: relative;
+          display: flex;
+          gap: 0.8rem;
 
           .filter-select {
             padding: 0.3rem;
+            font-size: $fs-sm;
             border-radius: 0.3rem;
+            text-transform: lowercase;
             border: 1px solid hslaGen($grey-color);
-            font-size: $fs-md;
+          }
+
+          .sort-direction-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 2.4rem;
+            height: 2.4rem;
+            cursor: pointer;
+            color: hslaGen($blue-ink-color);
+            @include transition(all, 0.3s, ease);
+
+            i {
+              font-size: 1.8rem;
+            }
+
+            &:hover {
+              background-color: hslaGen($grey-color, 0.1);
+              transform: translateY(-2px);
+              @include transition(all, 0.3s, ease);
+            }
+
+            &:active {
+              transform: translateY(0);
+              @include transition(all, 0.15s, ease);
+            }
           }
         }
 

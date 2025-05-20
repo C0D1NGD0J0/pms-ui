@@ -22,3 +22,23 @@
     /* padding-right: 2rem; */
   }
 }
+.page-breadcrumb {
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+
+  .ant-breadcrumb {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+
+    a {
+      color: hslaGen($grey-color);
+      transition: color 0.3s;
+      &:hover {
+        color: hslaGen($primary-color);
+      }
+    }
+    .ant-breadcrumb-separator {
+      margin-inline: 0.5rem;
+    }
+  }
+}

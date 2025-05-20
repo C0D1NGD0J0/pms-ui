@@ -14,8 +14,8 @@ interface FormInputProps {
     | "url"
     | "date"
     | "time";
-  value: string | number;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  value?: string | number;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
   onkeydown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
@@ -30,7 +30,7 @@ interface FormInputProps {
   maxLength?: number;
   pattern?: string;
   ariaLabel?: string;
-  hasError: boolean;
+  hasError?: boolean;
   ariaDescribedBy?: string;
 }
 
@@ -84,7 +84,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
         name={name}
         type={type}
         value={value}
-        onChange={onChange}
+        onChange={readOnly ? () => "" : onChange}
         onBlur={handleBlur}
         placeholder={placeholder}
         className={inputClasses}

@@ -1,8 +1,17 @@
-export interface ISuccessReturnData<T = unknown> {
+export interface IServerResponse<T> {
   success: boolean;
   msg?: string;
   data: T;
 }
+
+export type IServerResponseWithPagination<T> = {
+  success: boolean;
+  msg?: string;
+  data: {
+    items: T;
+    pagination: IPaginationResponse;
+  };
+};
 
 export interface IErrorReturnData {
   success: boolean;
@@ -14,4 +23,21 @@ export type Theme = "light" | "dark";
 export interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+}
+
+export type IPaginationQuery = {
+  page: number;
+  limit: number;
+  total?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc" | "";
+};
+
+// Pagination interface
+export interface IPaginationResponse {
+  total: number;
+  perPage: number;
+  totalPages: number;
+  currentPage: number;
+  hasMoreResource: boolean;
 }

@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "@mantine/form";
+import { usePublish } from "@hooks/index";
 import { useRouter } from "next/navigation";
 import { authService } from "@services/auth";
-import { useAuthActions } from "@store/hooks";
+import { EventTypes } from "@services/events";
 import { errorFormatter } from "@utils/helpers";
+import { useAuthActions } from "@store/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { ILoginForm } from "@interfaces/auth.interface";
@@ -13,6 +15,7 @@ import { LoginSchema } from "@validations/auth.validations";
 
 export function useLoginLogic() {
   const router = useRouter();
+  const publish = usePublish();
   const { setClient } = useAuthActions();
   const { openNotification } = useNotification();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,8 +29,8 @@ export function useLoginLogic() {
 
   const form = useForm<ILoginForm>({
     initialValues: {
-      password: "",
-      email: "",
+      password: "password",
+      email: "zlatan@example.com",
       otpCode: "",
       rememberMe: false,
     },
@@ -50,7 +53,8 @@ export function useLoginLogic() {
       }
 
       form.reset();
-      setClient(response.activeAccount);
+      publish(EventTypes.LOGIN_SUCCESS, response.activeAccount);
+      publish(EventTypes.GET_CURRENT_USER, response.activeAccount);
       router.push("/dashboard");
     } catch (error: unknown) {
       openNotification("error", "Login process failed", errorFormatter(error));
@@ -59,6 +63,14 @@ export function useLoginLogic() {
 
   const handleSelect = (csub: string) => {
     setSelectedClient(csub);
+    const selectedAccount = userAccounts.find(
+      (account) => account.csub === csub
+    );
+    if (selectedAccount) {
+      setClient(selectedAccount);
+      publish(EventTypes.ACCOUNT_SWITCHED, selectedAccount);
+      router.push("/dashboard");
+    }
   };
 
   return {

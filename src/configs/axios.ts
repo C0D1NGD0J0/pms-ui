@@ -43,7 +43,7 @@ class AxiosService implements IAxiosService {
       headers: {
         "Content-Type": "application/json",
       },
-      timeout: 30000,
+      timeout: 45000,
     });
 
     this.setupInterceptors();
@@ -160,6 +160,19 @@ class AxiosService implements IAxiosService {
   ): Promise<T> {
     try {
       const response = await this.axios.put(url, data, config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async patch<T = any>(
+    url: string,
+    data?: object,
+    config?: AxiosRequestConfig
+  ): Promise<T> {
+    try {
+      const response = await this.axios.patch(url, data, config);
       return response.data;
     } catch (error) {
       throw error;
