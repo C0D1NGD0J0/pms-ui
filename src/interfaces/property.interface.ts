@@ -144,6 +144,7 @@ export type PropertyFormValues = Omit<
   status?: PropertyStatusEnum;
   occupancyStatus?: PropertyOccupancyStatusEnum;
   propertyImages: any[];
+  units?: Array<import("./unit.interface").IUnit>;
 };
 
 export type EditPropertyFormValues = PropertyFormValues;

@@ -17,6 +17,7 @@ import {
   AmenitiesTab,
   DocumentsTab,
   FinancialTab,
+  UnitsTab,
 } from "@properties/components";
 
 import { usePropertyEditForm } from "./hooks";
@@ -96,6 +97,11 @@ export default function EditProperty() {
           }
         />
       ),
+    },
+    {
+      key: "units",
+      tabLabel: "Units",
+      content: <UnitsTab form={form} handleOnChange={handleOnChange} />,
     },
   ];
 
