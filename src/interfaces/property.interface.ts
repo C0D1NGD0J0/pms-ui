@@ -9,6 +9,7 @@ export enum PropertyTypesEnum {
   TOWNHOUSE = "townhouse",
   COMMERCIAL = "commercial",
   INDUSTRIAL = "industrial",
+  MIXED_PROPERTY = "mixed",
 }
 
 export enum PropertyStatusEnum {
@@ -134,6 +135,9 @@ export interface IPropertyDocument {
     propertyTax: number;
     lastAssessmentDate: string;
   };
+  isVacant: () => boolean;
+  isMultiUnit: () => boolean;
+  toJSON: () => IPropertyDocument;
 }
 
 export type PropertyFormValues = Omit<
@@ -144,7 +148,6 @@ export type PropertyFormValues = Omit<
   status?: PropertyStatusEnum;
   occupancyStatus?: PropertyOccupancyStatusEnum;
   propertyImages: any[];
-  units?: Array<import("./unit.interface").IUnit>;
 };
 
 export type EditPropertyFormValues = PropertyFormValues;
@@ -294,4 +297,28 @@ export interface IPropertyFilterParams {
   maxArea: number | "";
   minYear: number | "";
   maxYear: number | "";
+}
+
+export type PropertyTypeRules = Record<string, PropertyTypeRule>;
+export interface PropertyTypeRule {
+  minUnits: number;
+  validateBedBath: boolean;
+  isMultiUnit: boolean;
+  defaultUnits: number;
+  visibleFields: {
+    // Core property fields
+    core: string[];
+    // Property specification fields
+    specifications: string[];
+    // Financial and fee fields
+    financial: string[];
+    // Amenity fields
+    amenities: string[];
+    // Document and media fields
+    documents: string[];
+    // Unit-level fields (managed per unit)
+    unit: string[];
+  };
+  requiredFields: string[];
+  helpText: Record<string, string>;
 }

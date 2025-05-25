@@ -1,14 +1,17 @@
 import axios from "@configs/axios";
 import {
+  postTransformPropertiesData,
+  postTransformPropertyData,
+} from "@/src/models/property";
+import {
+  IServerResponseWithPagination,
   IPaginationQuery,
   IServerResponse,
-  IServerResponseWithPagination,
 } from "@interfaces/utils.interface";
 import {
   EditPropertyFormValues,
   IPropertyFilterParams,
   PropertyFormValues,
-  IProperty,
   IPropertyDocument,
 } from "@interfaces/property.interface";
 
@@ -90,7 +93,11 @@ class PropertyService {
         `${this.baseUrl}/${cid}/client_properties?${queryString}`,
         this.axiosConfig
       );
-      return result.data;
+      const transformedData = postTransformPropertiesData(result.data.items);
+      return {
+        ...result.data,
+        items: transformedData,
+      };
     } catch (error) {
       console.error("Error fetching client properties:", error);
       throw error;
@@ -103,7 +110,8 @@ class PropertyService {
         `${this.baseUrl}/${cid}/client_property/${propertyPid}`,
         this.axiosConfig
       );
-      return result.data;
+      const transformedData = postTransformPropertyData(result.data);
+      return transformedData;
     } catch (error) {
       console.error("Error fetching clientproperty:", error);
       throw error;
