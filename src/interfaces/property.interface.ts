@@ -103,6 +103,7 @@ export interface IPropertyAddress {
   coordinates?: number[];
 }
 
+// Base property document interface (data only, no methods)
 export interface IPropertyDocument {
   fees: IPropertyFees;
   specifications: IPropertySpecifications;
@@ -135,10 +136,49 @@ export interface IPropertyDocument {
     propertyTax: number;
     lastAssessmentDate: string;
   };
-  isVacant: () => boolean;
-  isMultiUnit: () => boolean;
-  toJSON: () => IPropertyDocument;
 }
+
+// Business methods interface (no data properties)
+export interface IPropertyModelMethods {
+  // Occupancy status methods
+  isVacant(): boolean;
+  isOccupied(): boolean;
+  isUnderMaintenance(): boolean;
+
+  // Unit type methods
+  isMultiUnit(): boolean;
+  isSingleFamily(): boolean;
+  getMinUnits(): number;
+  getDefaultUnits(): number;
+  shouldValidateBedBath(): boolean;
+  isValidUnitCount(): boolean;
+
+  // Financial and validation methods
+  hasFinancialInfo(): boolean;
+  hasAddress(): boolean;
+  getMonthlyRental(): number;
+  getSecurityDeposit(): number;
+  getTotalValue(): number;
+
+  // Property type classification methods
+  isCommercialType(): boolean;
+  isResidentialType(): boolean;
+  isMixedUseType(): boolean;
+
+  // Calculated property methods
+  getPropertyAge(): number | null;
+  getTotalBedrooms(): number;
+  getTotalBathrooms(): number;
+  getTotalArea(): number;
+
+  // Utility methods
+  hasAmenity(amenityCategory: string, amenityName: string): boolean;
+  getRawData(): IPropertyDocument;
+  toJSON(): IPropertyDocument;
+}
+
+// propertyModel becomes data + methods via intersection
+export type IPropertyModel = IPropertyDocument & IPropertyModelMethods;
 
 export type PropertyFormValues = Omit<
   IPropertyDocument,
@@ -153,122 +193,6 @@ export type PropertyFormValues = Omit<
 export type EditPropertyFormValues = PropertyFormValues;
 
 export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
-
-export const defaultPropertyValues: PropertyFormValues = {
-  name: "",
-  cid: "",
-  status: undefined as any,
-  managedBy: "",
-  yearBuilt: 1800,
-  propertyType: undefined as any,
-  address: {
-    fullAddress: "",
-    city: "",
-    state: "",
-    postCode: "",
-    country: "",
-    street: "",
-    streetNumber: "",
-    unitNumber: "",
-  },
-  financialDetails: {
-    purchasePrice: 0,
-    purchaseDate: "",
-    marketValue: 0,
-    propertyTax: 0,
-    lastAssessmentDate: "",
-  },
-  fees: {
-    currency: "USD",
-    taxAmount: "0.00",
-    rentalAmount: "0.00",
-    managementFees: "0.00",
-    securityDeposit: "0.00",
-  },
-  specifications: {
-    totalArea: 0,
-    lotSize: 0,
-    bedrooms: 0,
-    bathrooms: 0,
-    floors: 1,
-    garageSpaces: 0,
-    maxOccupants: 1,
-  },
-  utilities: {
-    water: false,
-    gas: false,
-    electricity: false,
-    internet: false,
-    trash: false,
-    cableTV: false,
-  },
-  description: {
-    text: "",
-    html: "",
-  },
-  occupancyStatus: undefined as any,
-  interiorAmenities: {
-    airConditioning: false,
-    heating: false,
-    washerDryer: false,
-    dishwasher: false,
-    fridge: false,
-    furnished: false,
-    storageSpace: false,
-  },
-  communityAmenities: {
-    swimmingPool: false,
-    fitnessCenter: false,
-    elevator: false,
-    parking: false,
-    securitySystem: false,
-    petFriendly: false,
-    laundryFacility: false,
-    doorman: false,
-  },
-  totalUnits: 0,
-  documents: [],
-  propertyImages: [],
-};
-
-export const formFieldVisibilityMap = {
-  house: [
-    "totalArea",
-    "lotSize",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "garageSpaces",
-    "maxOccupants",
-  ],
-  townhouse: [
-    "totalArea",
-    "lotSize",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "garageSpaces",
-    "maxOccupants",
-  ],
-  apartment: [
-    "totalArea",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "maxOccupants",
-    "totalUnits",
-  ],
-  condominium: [
-    "totalArea",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "maxOccupants",
-    "totalUnits",
-  ],
-  commercial: ["totalArea", "floors", "totalUnits", "maxOccupants"],
-  industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
-};
 
 export type StaticPropertyFormConfig = {
   propertyTypes: string[];

@@ -1,4 +1,7 @@
-import { PropertyTypeRule } from "@interfaces/property.interface";
+import {
+  PropertyFormValues,
+  PropertyTypeRule,
+} from "@interfaces/property.interface";
 
 export const SIGNUP_ACCOUNT_TYPE_OPTIONS = [
   { value: "personal", label: "Personal" },
@@ -314,4 +317,120 @@ export const propertyTypeRules: PropertyTypeRules = {
       maxOccupants: "Maximum occupancy for the entire building",
     },
   }),
+};
+
+export const defaultPropertyValues: PropertyFormValues = {
+  name: "",
+  cid: "",
+  status: undefined as any,
+  managedBy: "",
+  yearBuilt: 1800,
+  propertyType: undefined as any,
+  address: {
+    fullAddress: "",
+    city: "",
+    state: "",
+    postCode: "",
+    country: "",
+    street: "",
+    streetNumber: "",
+    unitNumber: "",
+  },
+  financialDetails: {
+    purchasePrice: 0,
+    purchaseDate: "",
+    marketValue: 0,
+    propertyTax: 0,
+    lastAssessmentDate: "",
+  },
+  fees: {
+    currency: "USD",
+    taxAmount: "0.00",
+    rentalAmount: "0.00",
+    managementFees: "0.00",
+    securityDeposit: "0.00",
+  },
+  specifications: {
+    totalArea: 0,
+    lotSize: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    floors: 1,
+    garageSpaces: 0,
+    maxOccupants: 1,
+  },
+  utilities: {
+    water: false,
+    gas: false,
+    electricity: false,
+    internet: false,
+    trash: false,
+    cableTV: false,
+  },
+  description: {
+    text: "",
+    html: "",
+  },
+  occupancyStatus: undefined as any,
+  interiorAmenities: {
+    airConditioning: false,
+    heating: false,
+    washerDryer: false,
+    dishwasher: false,
+    fridge: false,
+    furnished: false,
+    storageSpace: false,
+  },
+  communityAmenities: {
+    swimmingPool: false,
+    fitnessCenter: false,
+    elevator: false,
+    parking: false,
+    securitySystem: false,
+    petFriendly: false,
+    laundryFacility: false,
+    doorman: false,
+  },
+  totalUnits: 0,
+  documents: [],
+  propertyImages: [],
+};
+
+export const formFieldVisibilityMap = {
+  house: [
+    "totalArea",
+    "lotSize",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "garageSpaces",
+    "maxOccupants",
+  ],
+  townhouse: [
+    "totalArea",
+    "lotSize",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "garageSpaces",
+    "maxOccupants",
+  ],
+  apartment: [
+    "totalArea",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "maxOccupants",
+    "totalUnits",
+  ],
+  condominium: [
+    "totalArea",
+    "bedrooms",
+    "bathrooms",
+    "floors",
+    "maxOccupants",
+    "totalUnits",
+  ],
+  commercial: ["totalArea", "floors", "totalUnits", "maxOccupants"],
+  industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
 };

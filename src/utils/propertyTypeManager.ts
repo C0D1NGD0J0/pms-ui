@@ -1,4 +1,6 @@
-import { propertyTypeRules, PropertyTypeRule } from "./constants";
+import { PropertyTypeRule } from "@interfaces/property.interface";
+
+import { propertyTypeRules } from "./constants";
 
 export class PropertyTypeManager {
   /**

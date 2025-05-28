@@ -140,6 +140,18 @@ export function extractChanges<T extends object, U extends object>(
     if (Array.isArray(currVal)) {
       diff[key] = currVal;
     } else if (isObject(currVal) && isObject(origVal)) {
+      if (key === "address") {
+        const origFullAddress = (origVal as any)?.fullAddress;
+        const currFullAddress = (currVal as any)?.fullAddress;
+        const objlength = Object.keys(origVal).length;
+        const currObjLength = Object.keys(currVal).length;
+
+        if (origFullAddress !== currFullAddress || currObjLength > objlength) {
+          diff[key] = currVal;
+          continue;
+        }
+      }
+
       const nested = extractChanges(origVal, currVal);
       if (nested) diff[key] = nested;
     } else {

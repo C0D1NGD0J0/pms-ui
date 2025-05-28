@@ -1,6 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
+import {
+  IPropertyDocument,
+  IPropertyModel,
+} from "@interfaces/property.interface";
+import { PropertyModel } from "@models/property";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
@@ -12,12 +17,12 @@ import {
   Panel,
 } from "@components/Panel";
 import {
+  PropertyUnitModal,
   PropertyInfoTab,
   BasicInfoTab,
   AmenitiesTab,
   DocumentsTab,
   FinancialTab,
-  UnitsTab,
 } from "@properties/components";
 
 import { usePropertyEditForm } from "./hooks";
@@ -25,6 +30,7 @@ import { usePropertyEditForm } from "./hooks";
 export default function EditProperty() {
   const params = useParams();
   const pid = params.pid as string;
+  const [openModal, setOpenModal] = useState(false);
 
   const {
     form,
@@ -35,10 +41,13 @@ export default function EditProperty() {
     hasTabErrors,
     isSubmitting,
     handleSubmit,
+    propertyData,
     handleOnChange,
     propertyTypeOptions,
     propertyStatusOptions,
     documentTypeOptions,
+    isTabVisible,
+    propertyTypeUtils,
   } = usePropertyEditForm(pid);
 
   const tabs = [
@@ -98,29 +107,59 @@ export default function EditProperty() {
         />
       ),
     },
-    {
-      key: "units",
-      tabLabel: "Units",
-      content: <UnitsTab form={form} handleOnChange={handleOnChange} />,
-    },
-  ];
+  ].filter((tab) => isTabVisible(tab.key));
 
   if (isLoading) {
     return <Loading size="regular" description="Loading property data..." />;
   }
+
+  if (!propertyData) {
+    return <Loading size="regular" description="Property data not found." />;
+  }
+
+  const handleOpenUnitModal = () => {
+    setOpenModal(true);
+  };
+  const handleCloseUnitModal = () => {
+    setOpenModal(false);
+    console.log("close modal", form.validate());
+  };
+
+  // Helper function to safely get raw data from PropertyModel or fallback to raw object
+  const getPropertyRawData = (
+    data: IPropertyModel | IPropertyDocument
+  ): IPropertyDocument => {
+    if (data instanceof PropertyModel) {
+      return data.getRawData();
+    }
+    return data as IPropertyDocument;
+  };
+
   return (
     <div className="page edit-property">
       <PageHeader
         title="Edit Property"
         headerBtn={
-          <Button
-            type="submit"
-            form="property-form"
-            label="Save Changes"
-            onClick={handleSubmit}
-            className="btn btn-primary"
-            disabled={!form.isValid() || isSubmitting}
-          />
+          <div className="flex-row">
+            {propertyTypeUtils.supportsMultipleUnits && (
+              <Button
+                type="button"
+                label="Add Units"
+                className="btn-outline"
+                onClick={handleOpenUnitModal}
+                icon={<i className="bx bx-building-house"></i>}
+              />
+            )}
+            <Button
+              type="submit"
+              form="property-form"
+              label="Save Changes"
+              onClick={handleSubmit}
+              className="btn-primary"
+              icon={<i className="bx bx-save"></i>}
+              disabled={!form.isValid() || isSubmitting}
+            />
+          </div>
         }
       />
 
@@ -207,6 +246,11 @@ export default function EditProperty() {
           </Panel>
         </PanelsWrapper>
       </div>
+      <PropertyUnitModal
+        isOpen={openModal}
+        onClose={handleCloseUnitModal}
+        property={getPropertyRawData(propertyData)}
+      />
     </div>
   );
 }

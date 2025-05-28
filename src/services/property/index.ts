@@ -13,6 +13,7 @@ import {
   IPropertyFilterParams,
   PropertyFormValues,
   IPropertyDocument,
+  IPropertyModel,
 } from "@interfaces/property.interface";
 
 class PropertyService {
@@ -104,7 +105,10 @@ class PropertyService {
     }
   }
 
-  async getClientProperty(cid: string, propertyPid: string) {
+  async getClientProperty(
+    cid: string,
+    propertyPid: string
+  ): Promise<IPropertyModel> {
     try {
       const result = await axios.get<IServerResponse<IPropertyDocument>>(
         `${this.baseUrl}/${cid}/client_property/${propertyPid}`,
@@ -136,6 +140,7 @@ class PropertyService {
     pid: string,
     propertyData: Partial<EditPropertyFormValues>
   ) {
+    console.log("Updating property with data:", propertyData);
     try {
       const result = await axios.patch(
         `${this.baseUrl}/${cid}/client_property/${pid}`,

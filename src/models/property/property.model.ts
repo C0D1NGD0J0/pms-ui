@@ -1,4 +1,7 @@
-import { IPropertyDocument } from "@interfaces/property.interface";
+import {
+  IPropertyModelMethods,
+  IPropertyDocument,
+} from "@interfaces/property.interface";
 
 export interface IPropertyTypeStrategy {
   isMultiUnit(propertyType: string, totalUnits: number): boolean;
@@ -7,7 +10,7 @@ export interface IPropertyTypeStrategy {
   shouldValidateBedBath(propertyType: string, totalUnits: number): boolean;
 }
 
-class DefaultPropertyTypeStrategy implements IPropertyTypeStrategy {
+export class DefaultPropertyTypeStrategy implements IPropertyTypeStrategy {
   private readonly multiUnitTypes = new Set([
     "apartment",
     "condominium",
@@ -55,43 +58,43 @@ class DefaultPropertyTypeStrategy implements IPropertyTypeStrategy {
   }
 }
 
-export class PropertyModel {
-  readonly #data: IPropertyDocument;
-  readonly #typeStrategy: IPropertyTypeStrategy;
+export class PropertyModel implements IPropertyModelMethods {
+  private readonly data: IPropertyDocument;
+  private readonly typeStrategy: IPropertyTypeStrategy;
 
   constructor(
     propertyData: IPropertyDocument,
     typeStrategy?: IPropertyTypeStrategy
   ) {
-    this.#data = propertyData;
-    this.#typeStrategy = typeStrategy || new DefaultPropertyTypeStrategy();
+    this.data = propertyData;
+    this.typeStrategy = typeStrategy || new DefaultPropertyTypeStrategy();
 
     return new Proxy(this, {
       get: (target, prop) => {
         if (prop in target) {
           return target[prop as keyof typeof target];
         }
-        return this.#data[prop as keyof IPropertyDocument];
+        return this.data[prop as keyof IPropertyDocument];
       },
-    });
+    }) as unknown as PropertyModel & IPropertyDocument;
   }
 
   isVacant(): boolean {
-    return this.#data.occupancyStatus === "vacant";
+    return this.data.occupancyStatus === "vacant";
   }
 
   isOccupied(): boolean {
-    return this.#data.occupancyStatus === "occupied";
+    return this.data.occupancyStatus === "occupied";
   }
 
   isUnderMaintenance(): boolean {
-    return this.#data.occupancyStatus === "maintenance";
+    return this.data.occupancyStatus === "maintenance";
   }
 
   isMultiUnit(): boolean {
-    return this.#typeStrategy.isMultiUnit(
-      this.#data.propertyType,
-      this.#data.totalUnits
+    return this.typeStrategy.isMultiUnit(
+      this.data.propertyType,
+      this.data.totalUnits
     );
   }
 
@@ -100,39 +103,55 @@ export class PropertyModel {
   }
 
   getMinUnits(): number {
-    return this.#typeStrategy.getMinUnits(this.#data.propertyType);
+    return this.typeStrategy.getMinUnits(this.data.propertyType);
   }
 
   getDefaultUnits(): number {
-    return this.#typeStrategy.getDefaultUnits(this.#data.propertyType);
+    return this.typeStrategy.getDefaultUnits(this.data.propertyType);
   }
 
   shouldValidateBedBath(): boolean {
-    return this.#typeStrategy.shouldValidateBedBath(
-      this.#data.propertyType,
-      this.#data.totalUnits
+    return this.typeStrategy.shouldValidateBedBath(
+      this.data.propertyType,
+      this.data.totalUnits
     );
   }
 
   isValidUnitCount(): boolean {
-    return this.#data.totalUnits >= this.getMinUnits();
+    return this.data.totalUnits >= this.getMinUnits();
   }
 
   hasFinancialInfo(): boolean {
     return !!(
-      this.#data.financialDetails?.purchasePrice ||
-      this.#data.financialDetails?.marketValue ||
-      this.#data.fees?.rentalAmount
+      this.data.financialDetails?.purchasePrice ||
+      this.data.financialDetails?.marketValue ||
+      this.data.fees?.rentalAmount
     );
   }
 
   hasAddress(): boolean {
-    return !!(this.#data.address?.fullAddress || this.#data.address?.street);
+    return !!(this.data.address?.fullAddress || this.data.address?.street);
+  }
+
+  getMonthlyRental(): number {
+    return parseFloat(this.data.fees?.rentalAmount || "0");
+  }
+
+  getSecurityDeposit(): number {
+    return parseFloat(this.data.fees?.securityDeposit || "0");
+  }
+
+  getTotalValue(): number {
+    return (
+      this.data.financialDetails?.marketValue ||
+      this.data.financialDetails?.purchasePrice ||
+      0
+    );
   }
 
   isCommercialType(): boolean {
     return ["commercial", "industrial", "mixed-use"].includes(
-      this.#data.propertyType
+      this.data.propertyType
     );
   }
 
@@ -143,55 +162,39 @@ export class PropertyModel {
       "condominium",
       "townhouse",
       "estate",
-    ].includes(this.#data.propertyType);
+    ].includes(this.data.propertyType);
   }
 
   isMixedUseType(): boolean {
-    return this.#data.propertyType === "mixed";
-  }
-
-  getMonthlyRental(): number {
-    return parseFloat(this.#data.fees?.rentalAmount || "0");
-  }
-
-  getSecurityDeposit(): number {
-    return parseFloat(this.#data.fees?.securityDeposit || "0");
-  }
-
-  getTotalValue(): number {
-    return (
-      this.#data.financialDetails?.marketValue ||
-      this.#data.financialDetails?.purchasePrice ||
-      0
-    );
+    return this.data.propertyType === "mixed";
   }
 
   getPropertyAge(): number | null {
-    if (!this.#data.yearBuilt) return null;
-    return new Date().getFullYear() - this.#data.yearBuilt;
+    if (!this.data.yearBuilt) return null;
+    return new Date().getFullYear() - this.data.yearBuilt;
+  }
+
+  getTotalBedrooms(): number {
+    return this.data.specifications?.bedrooms || 0;
+  }
+
+  getTotalBathrooms(): number {
+    return this.data.specifications?.bathrooms || 0;
+  }
+
+  getTotalArea(): number {
+    return this.data.specifications?.totalArea || 0;
   }
 
   hasAmenity(amenityCategory: string, amenityName: string): boolean {
-    const amenities = this.#data[
+    const amenities = this.data[
       amenityCategory as keyof IPropertyDocument
     ] as any;
     return amenities?.[amenityName] === true;
   }
 
-  getTotalBedrooms(): number {
-    return this.#data.specifications?.bedrooms || 0;
-  }
-
-  getTotalBathrooms(): number {
-    return this.#data.specifications?.bathrooms || 0;
-  }
-
-  getTotalArea(): number {
-    return this.#data.specifications?.totalArea || 0;
-  }
-
   getRawData(): IPropertyDocument {
-    return { ...this.#data };
+    return { ...this.data };
   }
 
   toJSON(): IPropertyDocument {
@@ -223,5 +226,3 @@ export function postTransformPropertiesData(
 ): PropertyModel[] {
   return data.map((item) => new PropertyModel(item, strategy));
 }
-
-export { DefaultPropertyTypeStrategy };

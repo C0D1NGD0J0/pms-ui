@@ -3,11 +3,16 @@ import { useAuth } from "@store/index";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { extractChanges } from "@utils/helpers";
+import { PropertyModel } from "@models/property";
 import { propertyService } from "@services/property";
 import { useNotification } from "@hooks/useNotification";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { EditPropertyFormValues } from "@interfaces/property.interface";
 import { usePropertyFormBase } from "@hooks/property/usePropertyFormBase";
+import {
+  EditPropertyFormValues,
+  IPropertyDocument,
+  IPropertyModel,
+} from "@interfaces/property.interface";
 
 export function usePropertyEditForm(pid: string) {
   const { client } = useAuth();
@@ -16,11 +21,12 @@ export function usePropertyEditForm(pid: string) {
   const [originalValues, setOriginalValues] =
     useState<EditPropertyFormValues | null>(null);
 
-  const { data: propertyData, isLoading: isPropertyLoading } = useQuery({
-    queryKey: ["/property", pid],
-    enabled: !!pid && !!client?.csub,
-    queryFn: () => propertyService.getClientProperty(client?.csub || "", pid),
-  });
+  const { data: propertyData, isLoading: isPropertyLoading } =
+    useQuery<IPropertyModel>({
+      queryKey: ["/property", pid],
+      enabled: !!pid && !!client?.csub,
+      queryFn: () => propertyService.getClientProperty(client?.csub || "", pid),
+    });
 
   const baseHook = usePropertyFormBase();
   const {
@@ -36,6 +42,14 @@ export function usePropertyEditForm(pid: string) {
     propertyStatusOptions,
     occupancyStatusOptions,
     documentTypeOptions,
+
+    isTabVisible,
+    isFieldVisible,
+    isFieldRequired,
+    getFieldHelpText,
+    propertyTypeUtils,
+    currentPropertyType,
+    currentTotalUnits,
   } = baseHook;
 
   const updatePropertyMutation = useMutation({
@@ -52,101 +66,82 @@ export function usePropertyEditForm(pid: string) {
 
   useEffect(() => {
     if (propertyData) {
-      const transformedData: EditPropertyFormValues = {
-        name: propertyData.name || "",
-        cid: propertyData.cid || "",
-        status: propertyData.status as any,
-        managedBy: propertyData.managedBy || "",
-        yearBuilt: propertyData.yearBuilt || 1800,
-        propertyType: propertyData.propertyType as any,
-        // address: {
-        //   fullAddress: propertyData.address?.fullAddress || "",
-        //   city: propertyData.address?.city || "",
-        //   state: propertyData.address?.state || "",
-        //   postCode: propertyData.address?.postCode || "",
-        //   country: propertyData.address?.country || "",
-        //   unitNumber: propertyData.address?.unitNumber || "",
-        //   street: propertyData.address?.street || "",
-        //   streetNumber: propertyData.address?.streetNumber || "",
-        //   coordinates: propertyData.address?.coordinates,
-        // },
-        address: {
-          fullAddress: "55 Water St, Brooklyn, NY 11201, USA",
-          city: "",
-          state: "New York",
-          postCode: "11201",
-          country: "United States",
-          unitNumber: "",
-          street: "Water Street",
-          streetNumber: "55",
-          coordinates: [40.7033634, -73.9916659],
-        },
+      const rawData: IPropertyDocument =
+        propertyData instanceof PropertyModel
+          ? propertyData.getRawData()
+          : (propertyData as IPropertyDocument);
+      console.log("Raw property data:", rawData);
+      const transformedData = {
+        name: rawData.name || "",
+        cid: rawData.cid || "",
+        status: rawData.status as any,
+        managedBy: rawData.managedBy || "",
+        yearBuilt: rawData.yearBuilt || 1800,
+        propertyType: rawData.propertyType as any,
+        address: rawData.address || undefined,
         financialDetails: {
-          purchasePrice: 0,
-          purchaseDate: "",
-          marketValue: 0,
-          propertyTax: 0,
-          lastAssessmentDate: "",
+          purchasePrice: rawData.financialDetails?.purchasePrice || 0,
+          purchaseDate: rawData.financialDetails?.purchaseDate || "",
+          marketValue: rawData.financialDetails?.marketValue || 0,
+          propertyTax: rawData.financialDetails?.propertyTax || 0,
+          lastAssessmentDate:
+            rawData.financialDetails?.lastAssessmentDate || "",
         },
         fees: {
-          currency: propertyData.fees?.currency || "USD",
-          taxAmount: propertyData.fees?.taxAmount || "0",
-          rentalAmount: propertyData.fees?.rentalAmount || "0",
-          managementFees: propertyData.fees?.managementFees || "0",
-          securityDeposit: propertyData.fees?.securityDeposit || "0",
+          currency: rawData.fees?.currency || "USD",
+          taxAmount: rawData.fees?.taxAmount || 0,
+          rentalAmount: rawData.fees?.rentalAmount || 0,
+          managementFees: rawData.fees?.managementFees || 0,
+          securityDeposit: rawData.fees?.securityDeposit || 0,
         },
         specifications: {
-          totalArea: propertyData.specifications?.totalArea || 0,
-          lotSize: propertyData.specifications?.lotSize || 0,
-          bedrooms: propertyData.specifications?.bedrooms || 0,
-          bathrooms: propertyData.specifications?.bathrooms || 0,
-          floors: propertyData.specifications?.floors || 1,
-          garageSpaces: propertyData.specifications?.garageSpaces || 0,
-          maxOccupants: propertyData.specifications?.maxOccupants || 1,
+          totalArea: rawData.specifications?.totalArea || 0,
+          lotSize: rawData.specifications?.lotSize || 0,
+          bedrooms: rawData.specifications?.bedrooms || 0,
+          bathrooms: rawData.specifications?.bathrooms || 0,
+          floors: rawData.specifications?.floors || 1,
+          garageSpaces: rawData.specifications?.garageSpaces || 0,
+          maxOccupants: rawData.specifications?.maxOccupants || 1,
         },
         utilities: {
-          water: propertyData.utilities?.water || false,
-          gas: propertyData.utilities?.gas || false,
-          electricity: propertyData.utilities?.electricity || false,
-          internet: propertyData.utilities?.internet || false,
+          water: rawData.utilities?.water || false,
+          gas: rawData.utilities?.gas || false,
+          electricity: rawData.utilities?.electricity || false,
+          internet: rawData.utilities?.internet || false,
           trash: false,
-          cableTV: propertyData.utilities?.cableTV || false,
+          cableTV: rawData.utilities?.cableTV || false,
         },
         description: {
-          text: propertyData.description?.text || "",
-          html: propertyData.description?.html || "",
+          text: rawData.description?.text || "",
+          html: rawData.description?.html || "",
         },
-        occupancyStatus: propertyData.occupancyStatus as any,
+        occupancyStatus: rawData.occupancyStatus as any,
         interiorAmenities: {
-          airConditioning:
-            propertyData.interiorAmenities?.airConditioning || false,
-          heating: propertyData.interiorAmenities?.heating || false,
-          washerDryer: propertyData.interiorAmenities?.washerDryer || false,
-          dishwasher: propertyData.interiorAmenities?.dishwasher || false,
-          fridge: propertyData.interiorAmenities?.fridge || false,
-          furnished: propertyData.interiorAmenities?.furnished || false,
-          storageSpace: propertyData.interiorAmenities?.storageSpace || false,
+          airConditioning: rawData.interiorAmenities?.airConditioning || false,
+          heating: rawData.interiorAmenities?.heating || false,
+          washerDryer: rawData.interiorAmenities?.washerDryer || false,
+          dishwasher: rawData.interiorAmenities?.dishwasher || false,
+          fridge: rawData.interiorAmenities?.fridge || false,
+          furnished: rawData.interiorAmenities?.furnished || false,
+          storageSpace: rawData.interiorAmenities?.storageSpace || false,
         },
         communityAmenities: {
-          swimmingPool: propertyData.communityAmenities?.swimmingPool || false,
-          fitnessCenter:
-            propertyData.communityAmenities?.fitnessCenter || false,
-          elevator: propertyData.communityAmenities?.elevator || false,
-          parking: propertyData.communityAmenities?.parking || false,
-          securitySystem:
-            propertyData.communityAmenities?.securitySystem || false,
-          petFriendly: propertyData.communityAmenities?.petFriendly || false,
-          laundryFacility:
-            propertyData.communityAmenities?.laundryFacility || false,
-          doorman: propertyData.communityAmenities?.doorman || false,
+          swimmingPool: rawData.communityAmenities?.swimmingPool || false,
+          fitnessCenter: rawData.communityAmenities?.fitnessCenter || false,
+          elevator: rawData.communityAmenities?.elevator || false,
+          parking: rawData.communityAmenities?.parking || false,
+          securitySystem: rawData.communityAmenities?.securitySystem || false,
+          petFriendly: rawData.communityAmenities?.petFriendly || false,
+          laundryFacility: rawData.communityAmenities?.laundryFacility || false,
+          doorman: rawData.communityAmenities?.doorman || false,
         },
-        totalUnits: propertyData.totalUnits || 0,
-        documents: propertyData.documents || [],
+        totalUnits: rawData.totalUnits || 0,
+        documents: rawData.documents || [],
         propertyImages: [],
       };
 
-      form.setValues(transformedData);
-      setOriginalValues(transformedData);
+      form.setValues(transformedData as unknown as EditPropertyFormValues);
+      setOriginalValues(transformedData as unknown as EditPropertyFormValues);
     }
   }, [propertyData]);
 
@@ -197,5 +192,13 @@ export function usePropertyEditForm(pid: string) {
     isLoading: isConfigLoading || isPropertyLoading,
     propertyStatusOptions,
     occupancyStatusOptions,
+    // New property type aware features
+    isTabVisible,
+    isFieldVisible,
+    isFieldRequired,
+    getFieldHelpText,
+    propertyTypeUtils,
+    currentPropertyType,
+    currentTotalUnits,
   };
 }

@@ -182,12 +182,15 @@ export function BasicInfoTab({
                   ),
                   street: getComponentValue(addressComponents, "route"),
                   country: getComponentValue(addressComponents, "country"),
-                  postCode: getComponentValue(addressComponents, "postal_code"),
+                  postCode: getComponentValue(
+                    addressComponents,
+                    "postal_code"
+                  ).toString(),
                   coordinates: [
                     place.geometry.location.lat(),
                     place.geometry.location.lng(),
                   ],
-                  streetNumber: addressComponents[0].long_name || "",
+                  streetNumber: addressComponents[0].long_name.toString() || "",
                   unitNumber,
                 };
                 saveAddress(address);
@@ -231,10 +234,9 @@ export function BasicInfoTab({
           >
             <FormLabel htmlFor="city" label="City" />
             <FormInput
-              disabled
+              readOnly
               id="city"
               type="text"
-              readOnly
               name="address.city"
               placeholder="Enter city"
               value={form.values.address.city || ""}
@@ -243,10 +245,9 @@ export function BasicInfoTab({
           <FormField>
             <FormLabel htmlFor="stateProvince" label="State/Province" />
             <FormInput
-              disabled
+              readOnly
               type="text"
               id="stateProvince"
-              readOnly
               name="address.state"
               value={form.values.address.state || ""}
               placeholder="Enter state/province"
@@ -258,22 +259,21 @@ export function BasicInfoTab({
           <FormField>
             <FormLabel htmlFor="postalCode" label="Postal Code" />
             <FormInput
-              disabled
+              readOnly
+              type="text"
               id="postalCode"
               name="address.postCode"
-              type="text"
-              value={form.values.address.postCode || ""}
-              onChange={() => "ffgcgfcfg"}
               placeholder="Enter postal code"
+              value={form.values.address.postCode || ""}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="country" label="Country" />
             <FormInput
               disabled
+              readOnly
               type="text"
               id="country"
-              readOnly
               name="address.country"
               placeholder="Enter country"
               value={form.values.address.country || ""}
