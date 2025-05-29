@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { extractChanges } from "@utils/helpers";
 import { PropertyModel } from "@models/property";
 import { propertyService } from "@services/property";
+import { PROPERTY_QUERY_KEYS } from "@utils/constants";
 import { useNotification } from "@hooks/useNotification";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { usePropertyFormBase } from "@hooks/property/usePropertyFormBase";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   EditPropertyFormValues,
   IPropertyDocument,
@@ -15,16 +16,17 @@ import {
 } from "@interfaces/property.interface";
 
 export function usePropertyEditForm(pid: string) {
-  const { client } = useAuth();
   const router = useRouter();
+  const { client } = useAuth();
+  const queryClient = useQueryClient();
   const { openNotification } = useNotification();
   const [originalValues, setOriginalValues] =
     useState<EditPropertyFormValues | null>(null);
 
   const { data: propertyData, isLoading: isPropertyLoading } =
     useQuery<IPropertyModel>({
-      queryKey: ["/property", pid],
       enabled: !!pid && !!client?.csub,
+      queryKey: PROPERTY_QUERY_KEYS.propertyById(client?.csub || "", pid),
       queryFn: () => propertyService.getClientProperty(client?.csub || "", pid),
     });
 
@@ -164,6 +166,9 @@ export function usePropertyEditForm(pid: string) {
         "Property Updated",
         "Property has been successfully updated."
       );
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.propertyById(client?.csub || "", pid),
+      });
       router.push("/properties");
     } catch (error) {
       console.error("Error updating property:", error);

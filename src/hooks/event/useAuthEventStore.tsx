@@ -2,11 +2,10 @@ import { authService } from "@services/auth";
 import { EventTypes } from "@services/events";
 import { useAuthActions } from "@store/auth.store";
 import { useQueryClient } from "@tanstack/react-query";
+import { CURRENT_USER_QUERY_KEY } from "@utils/constants";
 import { ICurrentUser, UserClient } from "@interfaces/index";
 
 import { useEvent } from "./useEvent";
-
-export const CURRENT_USER_QUERY_KEY = ["currentUser"];
 
 export function useAuthEventStore() {
   const queryClient = useQueryClient();

@@ -346,12 +346,26 @@ export function PropertyInfoTab({
           >
             <FormLabel
               htmlFor="totalUnits"
-              label="Total Units"
+              label=""
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
               required={PropertyTypeManager.isFieldRequired(
                 propertyType,
                 "totalUnits"
               )}
-            />
+            >
+              <span>Total Units</span>
+              <small style={{ fontSize: "1rem" }} className="form-help-text">
+                {PropertyTypeManager.getHelpText(
+                  propertyType,
+                  "totalUnits",
+                  numUnits
+                )}
+              </small>
+            </FormLabel>
             <FormInput
               id="totalUnits"
               name="totalUnits"
@@ -367,13 +381,6 @@ export function PropertyInfoTab({
               max={250}
               hasError={!!form.errors["totalUnits"]}
             />
-            <small className="form-help-text">
-              {PropertyTypeManager.getHelpText(
-                propertyType,
-                "totalUnits",
-                numUnits
-              )}
-            </small>
           </FormField>
         </div>
       </FormSection>

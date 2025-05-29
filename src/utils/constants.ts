@@ -434,3 +434,15 @@ export const formFieldVisibilityMap = {
   commercial: ["totalArea", "floors", "totalUnits", "maxOccupants"],
   industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
 };
+
+export const PROPERTY_QUERY_KEYS = {
+  allProperties: (csub: string, pid: string, pagination: unknown) => [
+    "/getProperties",
+    csub,
+    pagination,
+    pid,
+  ],
+  propertyById: (pid: string, csub: string) => ["/getProperty", csub, pid],
+  propertyUnits: (pid: string, uid: string) => ["/getPropertyUnits", pid, uid],
+};
+export const CURRENT_USER_QUERY_KEY = ["currentUser"];

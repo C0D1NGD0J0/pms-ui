@@ -1,15 +1,15 @@
 "use client";
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
+import { Loading } from "@components/Loading";
+import { PropertyModel } from "@models/property";
+import { PageHeader } from "@components/PageElements";
+import { Button, Form } from "@components/FormElements";
+import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import {
   IPropertyDocument,
   IPropertyModel,
 } from "@interfaces/property.interface";
-import { PropertyModel } from "@models/property";
-import { Loading } from "@components/Loading";
-import { PageHeader } from "@components/PageElements";
-import { Button, Form } from "@components/FormElements";
-import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import {
   PanelsWrapper,
   PanelContent,
