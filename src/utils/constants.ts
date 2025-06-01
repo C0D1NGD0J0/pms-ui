@@ -2,6 +2,11 @@ import {
   PropertyFormValues,
   PropertyTypeRule,
 } from "@interfaces/property.interface";
+import {
+  UnitTypeRules,
+  UnitTypeEnum,
+  UnitTypeRule,
+} from "@interfaces/unit.interface";
 
 export const SIGNUP_ACCOUNT_TYPE_OPTIONS = [
   { value: "personal", label: "Personal" },
@@ -14,6 +19,35 @@ export const ACCOUNT_TYPES = {
 };
 
 export const MAX_TOTAL_UNITS = 250;
+
+// Unit Features Configuration
+export const unitFeatures = [
+  {
+    value: "cooling",
+    label: "Air Conditioning",
+    amenityKey: "airConditioning",
+  },
+  {
+    value: "heating",
+    label: "Heating",
+    amenityKey: "heating",
+  },
+  {
+    value: "washer-dryer",
+    label: "Washer/Dryer",
+    amenityKey: "washerDryer",
+  },
+  {
+    value: "dishwasher",
+    label: "Dishwasher",
+    amenityKey: "dishwasher",
+  },
+  {
+    value: "parking",
+    label: "Parking",
+    amenityKey: "parking",
+  },
+];
 
 export type PropertyTypeRules = Record<string, PropertyTypeRule>;
 
@@ -104,6 +138,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: false,
     isMultiUnit: true,
     defaultUnits: 4,
+    allowedUnitTypes: ["residential", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -131,6 +166,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     defaultUnits: 4,
     isMultiUnit: true,
     validateBedBath: false,
+    allowedUnitTypes: ["residential", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -157,6 +193,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: false,
     isMultiUnit: true,
     defaultUnits: 4,
+    allowedUnitTypes: ["commercial", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -182,6 +219,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: false,
     isMultiUnit: false,
     defaultUnits: 1,
+    allowedUnitTypes: ["commercial", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -208,6 +246,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: true,
     isMultiUnit: false,
     defaultUnits: 1,
+    allowedUnitTypes: ["residential"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -239,6 +278,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: true,
     isMultiUnit: false,
     defaultUnits: 1,
+    allowedUnitTypes: ["residential"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -269,6 +309,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: false,
     isMultiUnit: true,
     defaultUnits: 8,
+    allowedUnitTypes: ["residential"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -296,6 +337,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     validateBedBath: false,
     isMultiUnit: true,
     defaultUnits: 6,
+    allowedUnitTypes: ["residential", "commercial", "mixed_use", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
       specifications: [
@@ -315,6 +357,117 @@ export const propertyTypeRules: PropertyTypeRules = {
       floors: "Number of floors in the mixed-use building",
       address: "Full address of the mixed-use property",
       maxOccupants: "Maximum occupancy for the entire building",
+    },
+  }),
+};
+
+// Unit Type Rules - define field visibility and validation for different unit types
+const createUnitRule = (overrides: Partial<UnitTypeRule>): UnitTypeRule => {
+  const defaults: UnitTypeRule = {
+    requiredFields: ["unitNumber", "type", "totalArea", "rentAmount"],
+    visibleFields: {
+      specifications: ["totalArea", "rooms", "bathrooms", "maxOccupants"],
+      amenities: ["airConditioning", "washerDryer", "dishwasher", "parking"],
+      utilities: ["gas", "trash", "water", "heating", "centralAC"],
+      fees: ["rentAmount", "securityDeposit"],
+    },
+    helpText: {},
+  };
+
+  return {
+    ...defaults,
+    ...overrides,
+    visibleFields: {
+      specifications:
+        overrides.visibleFields?.specifications ||
+        defaults.visibleFields.specifications,
+      amenities:
+        overrides.visibleFields?.amenities || defaults.visibleFields.amenities,
+      utilities:
+        overrides.visibleFields?.utilities || defaults.visibleFields.utilities,
+      fees: overrides.visibleFields?.fees || defaults.visibleFields.fees,
+    },
+    helpText: {
+      ...defaults.helpText,
+      ...overrides.helpText,
+    },
+  };
+};
+
+export const unitTypeRules: UnitTypeRules = {
+  [UnitTypeEnum.RESIDENTIAL]: createUnitRule({
+    requiredFields: ["unitNumber", "type", "totalArea", "rentAmount"],
+    visibleFields: {
+      specifications: ["totalArea", "rooms", "bathrooms", "maxOccupants"],
+      amenities: [
+        "airConditioning",
+        "heating",
+        "washerDryer",
+        "dishwasher",
+        "parking",
+      ],
+      utilities: ["gas", "trash", "water", "heating", "centralAC"],
+      fees: ["rentAmount", "securityDeposit"],
+    },
+    helpText: {
+      bathrooms: "Number of bathrooms in this residential unit",
+      rooms: "Number of rooms/bedrooms in this unit",
+      maxOccupants: "Maximum number of people allowed in this unit",
+    },
+  }),
+
+  [UnitTypeEnum.COMMERCIAL]: createUnitRule({
+    requiredFields: ["unitNumber", "type", "totalArea", "rentAmount"],
+    visibleFields: {
+      specifications: ["totalArea", "maxOccupants", "rooms"],
+      amenities: ["airConditioning", "parking"],
+      utilities: ["gas", "trash", "water", "heating", "centralAC"],
+      fees: ["rentAmount", "securityDeposit"],
+    },
+    helpText: {
+      totalArea: "Total floor area of this commercial space",
+      maxOccupants: "Maximum occupancy for this commercial unit",
+    },
+  }),
+
+  [UnitTypeEnum.MIXED_USE]: createUnitRule({
+    requiredFields: ["unitNumber", "type", "totalArea", "rentAmount"],
+    visibleFields: {
+      specifications: ["totalArea", "rooms", "bathrooms", "maxOccupants"],
+      amenities: ["airConditioning", "washerDryer", "dishwasher", "parking"],
+      utilities: ["gas", "trash", "water", "heating", "centralAC"],
+      fees: ["rentAmount", "securityDeposit"],
+    },
+    helpText: {
+      bathrooms: "Number of bathrooms (if applicable for mixed-use)",
+      rooms: "Number of rooms (if residential portion exists)",
+    },
+  }),
+
+  [UnitTypeEnum.STORAGE]: createUnitRule({
+    requiredFields: ["unitNumber", "type", "totalArea", "rentAmount"],
+    visibleFields: {
+      specifications: ["totalArea"],
+      amenities: ["parking"],
+      utilities: ["heating"],
+      fees: ["rentAmount", "securityDeposit"],
+    },
+    helpText: {
+      totalArea: "Total storage area in square feet",
+      rentAmount: "Monthly rental fee for this storage unit",
+    },
+  }),
+
+  [UnitTypeEnum.OTHER]: createUnitRule({
+    requiredFields: ["unitNumber", "type", "totalArea", "rentAmount"],
+    visibleFields: {
+      specifications: ["totalArea", "maxOccupants", "rooms"],
+      amenities: ["airConditioning", "parking"],
+      utilities: ["gas", "trash", "water", "heating"],
+      fees: ["rentAmount", "securityDeposit"],
+    },
+    helpText: {
+      totalArea: "Total area of this unit",
     },
   }),
 };

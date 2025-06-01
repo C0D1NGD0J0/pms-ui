@@ -1,6 +1,7 @@
 import {
   IPropertyModelMethods,
   IPropertyDocument,
+  IPropertyModel,
 } from "@interfaces/property.interface";
 
 export interface IPropertyTypeStrategy {
@@ -76,7 +77,7 @@ export class PropertyModel implements IPropertyModelMethods {
         }
         return this.data[prop as keyof IPropertyDocument];
       },
-    }) as unknown as PropertyModel & IPropertyDocument;
+    }) as any;
   }
 
   isVacant(): boolean {
@@ -201,28 +202,30 @@ export class PropertyModel implements IPropertyModelMethods {
     return this.getRawData();
   }
 
-  static create(data: IPropertyDocument): PropertyModel {
-    return new PropertyModel(data);
+  static create(data: IPropertyDocument): IPropertyModel {
+    return new PropertyModel(data) as unknown as IPropertyModel;
   }
 
   static createWithStrategy(
     data: IPropertyDocument,
     strategy: IPropertyTypeStrategy
-  ): PropertyModel {
-    return new PropertyModel(data, strategy);
+  ): IPropertyModel {
+    return new PropertyModel(data, strategy) as unknown as IPropertyModel;
   }
 }
 
 export function postTransformPropertyData(
   data: IPropertyDocument,
   strategy?: IPropertyTypeStrategy
-): PropertyModel {
-  return new PropertyModel(data, strategy);
+): IPropertyModel {
+  return new PropertyModel(data, strategy) as unknown as IPropertyModel;
 }
 
 export function postTransformPropertiesData(
   data: IPropertyDocument[],
   strategy?: IPropertyTypeStrategy
-): PropertyModel[] {
-  return data.map((item) => new PropertyModel(item, strategy));
+): IPropertyModel[] {
+  return data.map(
+    (item) => new PropertyModel(item, strategy) as unknown as IPropertyModel
+  );
 }

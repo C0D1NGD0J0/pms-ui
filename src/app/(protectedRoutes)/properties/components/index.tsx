@@ -1,3 +1,3 @@
 export * from "./tabs";
 export * from "./CsvUploadModal";
-export * from "./PropertyUnitModal";
+export * from "./propertyUnitModal";

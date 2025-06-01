@@ -227,4 +227,15 @@ export class PropertyTypeManager {
     const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
     return rules.minUnits;
   }
+
+  /**
+   * Gets the allowed unit types for a property type
+   *
+   * @param propertyType The type of property
+   * @returns Array of allowed unit type strings
+   */
+  static getAllowedUnitTypes(propertyType: string): string[] {
+    const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
+    return rules.allowedUnitTypes || ["residential"];
+  }
 }

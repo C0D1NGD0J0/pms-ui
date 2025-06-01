@@ -5,9 +5,12 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { defaultPropertyValues } from "@utils/constants";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { propertySchema } from "@validations/property.validations";
-import { PropertyFormValues } from "@interfaces/property.interface";
 import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
 import { usePropertyFormMetaData } from "@hooks/property/usePropertyFormMetaData";
+import {
+  StaticPropertyFormConfig,
+  PropertyFormValues,
+} from "@interfaces/property.interface";
 
 export type PropertyFormBaseProps = {
   initialValues?: PropertyFormValues;
@@ -20,7 +23,7 @@ export function usePropertyFormBase({
   const [activeTab, setActiveTab] = useState("basic");
 
   const { data: formConfig, isLoading: isConfigLoading } =
-    usePropertyFormMetaData();
+    usePropertyFormMetaData<StaticPropertyFormConfig>("propertyForm");
 
   const getPropertyTypeOptions = useCallback(() => {
     if (!formConfig?.propertyTypes) return [];

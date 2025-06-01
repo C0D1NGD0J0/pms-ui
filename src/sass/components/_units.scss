@@ -29,6 +29,12 @@
   }
 }
 
+.unit-actions {
+  gap: 0.4rem;
+  display: flex;
+  align-items: center;
+}
+
 .unit-list {
   margin-bottom: 20px;
 }
@@ -48,14 +54,6 @@
   font-size: 12px;
   color: #7d8da1;
   margin-top: 8px;
-}
-
-.mt-2 {
-  margin-top: 8px;
-}
-
-.text-primary {
-  color: hslaGen($primary-color);
 }
 
 .file-upload-area {

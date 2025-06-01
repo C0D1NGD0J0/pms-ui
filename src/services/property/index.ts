@@ -122,10 +122,10 @@ class PropertyService {
     }
   }
 
-  async getPropertyFormMetaData() {
+  async getPropertyFormMetaData(formType: string) {
     try {
       const result = await axios.get(
-        `${this.baseUrl}/property_form_metadata`,
+        `${this.baseUrl}/property_form_metadata?formType=${formType}`,
         this.axiosConfig
       );
       return result;

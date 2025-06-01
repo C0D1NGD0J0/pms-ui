@@ -136,6 +136,7 @@ export interface IPropertyDocument {
     propertyTax: number;
     lastAssessmentDate: string;
   };
+  unitInfo?: IUnitInfo;
 }
 
 // Business methods interface (no data properties)
@@ -209,6 +210,12 @@ export type StaticPropertyFormConfig = {
   };
 };
 
+export type StaticUnitFormConfig = {
+  unitTypes: { value: string; label: string }[];
+  unitStatus: { value: string; label: string }[];
+  unitFeatures: { value: string; label: string }[];
+};
+
 export interface IPropertyFilterParams {
   status: string;
   address: string;
@@ -229,6 +236,7 @@ export interface PropertyTypeRule {
   validateBedBath: boolean;
   isMultiUnit: boolean;
   defaultUnits: number;
+  allowedUnitTypes?: string[];
   visibleFields: {
     // Core property fields
     core: string[];
@@ -245,4 +253,22 @@ export interface PropertyTypeRule {
   };
   requiredFields: string[];
   helpText: Record<string, string>;
+}
+
+interface IUnitInfo {
+  suggestedNextUnitNumber?: string;
+  availableSpaces: number;
+  lastUnitNumber?: string;
+  unitStats: IUnitStats;
+  currentUnits: number;
+  canAddUnit: boolean;
+  totalUnits: number;
+}
+interface IUnitStats {
+  maintenance: number;
+  available: number;
+  occupied: number;
+  reserved: number;
+  inactive: number;
+  vacant: number;
 }

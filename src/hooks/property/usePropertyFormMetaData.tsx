@@ -1,12 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 import { propertyService } from "@services/index";
-import { StaticPropertyFormConfig } from "@interfaces/property.interface";
 
-export function usePropertyFormMetaData() {
-  return useQuery<StaticPropertyFormConfig>({
-    queryKey: ["propertyFormMetadata"],
-    queryFn: async () => {
-      const { data } = await propertyService.getPropertyFormMetaData();
+export function usePropertyFormMetaData<T>(formType: string) {
+  return useQuery<T>({
+    queryKey: ["/propertyFormMetadata", formType],
+    queryFn: async ({ queryKey }) => {
+      const [, formType] = queryKey;
+      if (!formType) {
+        return;
+      }
+      const { data } = await propertyService.getPropertyFormMetaData(
+        formType as string
+      );
       return data;
     },
     staleTime: 1000 * 60 * 60, // cache for an hour
