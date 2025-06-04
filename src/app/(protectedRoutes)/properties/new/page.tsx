@@ -32,6 +32,7 @@ export default function CreateProperty() {
     handleSubmit,
     handleOnChange,
     hasTabErrors,
+    formConfig,
     propertyTypeOptions,
     propertyStatusOptions,
     documentTypeOptions,
@@ -65,9 +66,10 @@ export default function CreateProperty() {
       content: (
         <PropertyInfoTab
           form={form}
+          formConfig={formConfig}
+          handleOnChange={handleOnChange}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
-          handleOnChange={handleOnChange}
         />
       ),
     },

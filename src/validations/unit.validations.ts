@@ -73,3 +73,7 @@ export const unitSchema = z.object({
 export const unitsArraySchema = z
   .array(unitSchema)
   .min(1, "At least one unit is required");
+
+export const unitsFormSchema = z.object({
+  units: unitsArraySchema,
+});

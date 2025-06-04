@@ -238,4 +238,21 @@ export class PropertyTypeManager {
     const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
     return rules.allowedUnitTypes || ["residential"];
   }
+
+  /**
+   * Filters unit types based on what's allowed for a property type
+   *
+   * @param propertyType The type of property
+   * @param availableUnitTypes Array of all available unit types
+   * @returns Array of unit types filtered for this property type
+   */
+  static getFilteredUnitTypes(
+    propertyType: string,
+    availableUnitTypes: Array<{ value: string; label: string }>
+  ): Array<{ value: string; label: string }> {
+    const allowedTypes = this.getAllowedUnitTypes(propertyType);
+    return availableUnitTypes.filter((unitType) =>
+      allowedTypes.includes(unitType.value)
+    );
+  }
 }

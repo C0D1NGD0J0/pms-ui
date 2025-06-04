@@ -111,7 +111,7 @@ class PropertyService {
   ): Promise<IPropertyModel> {
     try {
       const result = await axios.get<IServerResponse<IPropertyDocument>>(
-        `${this.baseUrl}/${cid}/client_property/${propertyPid}`,
+        `${this.baseUrl}/${cid}/client_properties/${propertyPid}`,
         this.axiosConfig
       );
       const transformedData = postTransformPropertyData(result.data);

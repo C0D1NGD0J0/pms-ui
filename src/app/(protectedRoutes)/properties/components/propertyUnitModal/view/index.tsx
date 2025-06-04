@@ -61,9 +61,9 @@ export function PropertyUnitModalView({
       <Modal.Header title="Manage Property Units" onClose={onClose} />
       <Modal.Content>
         <Form
-          id="property-units-form"
-          onSubmit={form.onSubmit(handleSubmit)}
           disabled={isSubmitting}
+          id="property-units-form"
+          onSubmit={handleSubmit}
         >
           <FormSection
             title=""
@@ -421,10 +421,10 @@ export function PropertyUnitModalView({
         />
         <Button
           type="submit"
-          form="property-units-form"
+          formId="property-units-form"
           className="btn btn-primary"
+          disabled={!form.isValid() || isSubmitting}
           label={isSubmitting ? "Saving..." : "Save Units"}
-          disabled={isSubmitting}
         />
       </Modal.Footer>
     </Modal>

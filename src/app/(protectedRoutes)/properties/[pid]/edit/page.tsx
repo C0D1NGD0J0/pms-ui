@@ -2,14 +2,10 @@
 import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
-import { PropertyModel } from "@models/property";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
+import { IPropertyDocument } from "@interfaces/property.interface";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
-import {
-  IPropertyDocument,
-  IPropertyModel,
-} from "@interfaces/property.interface";
 import {
   PanelsWrapper,
   PanelContent,
@@ -36,6 +32,7 @@ export default function EditProperty() {
     form,
     activeTab,
     isLoading,
+    formConfig,
     setActiveTab,
     saveAddress,
     hasTabErrors,
@@ -75,6 +72,7 @@ export default function EditProperty() {
       content: (
         <PropertyInfoTab
           form={form}
+          formConfig={formConfig}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
           handleOnChange={handleOnChange}
@@ -123,16 +121,6 @@ export default function EditProperty() {
   const handleCloseUnitModal = () => {
     setOpenModal(false);
     console.log("close modal", form.validate());
-  };
-
-  // Helper function to safely get raw data from PropertyModel or fallback to raw object
-  const getPropertyRawData = (
-    data: IPropertyModel | IPropertyDocument
-  ): IPropertyDocument => {
-    if (data instanceof PropertyModel) {
-      return data.getRawData();
-    }
-    return data as IPropertyDocument;
   };
 
   return (
@@ -249,7 +237,7 @@ export default function EditProperty() {
       <PropertyUnitModal
         isOpen={openModal}
         onClose={handleCloseUnitModal}
-        property={getPropertyRawData(propertyData)}
+        property={form.values as unknown as IPropertyDocument}
       />
     </div>
   );

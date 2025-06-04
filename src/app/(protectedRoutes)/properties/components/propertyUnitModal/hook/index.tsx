@@ -1,33 +1,41 @@
 import { useState } from "react";
+import { useAuth } from "@store/index";
 import { useForm } from "@mantine/form";
+import { PROPERTY_QUERY_KEYS } from "@utils/constants";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
 import { UnitTypeManager } from "@utils/unitTypeManager";
 import { usePropertyFormMetaData } from "@hooks/property";
-import { unitSchema } from "@validations/unit.validations";
+import { propertyUnitService } from "@services/propertyUnit";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { StaticUnitFormConfig } from "@interfaces/property.interface";
+import { unitsFormSchema, unitSchema } from "@validations/unit.validations";
 import {
   defaultUnitValues,
   UnitFormValues,
   UnitStatusEnum,
   UnitTypeEnum,
+  UnitType,
 } from "@interfaces/unit.interface";
 
 import { UsePropertyUnitLogicProps, UnitsFormData } from "../interface/index";
+const FORM_MAX_UNITS = 20;
 
 export function usePropertyUnitLogic({
   property,
   onClose,
 }: UsePropertyUnitLogicProps) {
   const [isMultiUnit, setIsMultiUnit] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeUnitIndex, setActiveUnitIndex] = useState(0);
   const [unitNumberingScheme, setUnitNumberingScheme] =
     useState<string>("numeric");
   const [customPrefix, setCustomPrefix] = useState("");
   const { openNotification } = useNotification();
+  const { client } = useAuth();
+  const queryClient = useQueryClient();
 
-  const form = useForm<UnitsFormData>({
+  const form = useForm({
     initialValues: {
       units: [
         {
@@ -36,6 +44,8 @@ export function usePropertyUnitLogic({
         },
       ],
     },
+    validate: zodResolver(unitsFormSchema),
+    validateInputOnBlur: true,
     validateInputOnChange: true,
   });
   const { data: formConfig } =
@@ -45,10 +55,12 @@ export function usePropertyUnitLogic({
     property.propertyType
   );
 
-  const unitTypeOptions =
-    formConfig?.unitTypes?.filter((option) =>
-      allowedUnitTypes.includes(option.value)
-    ) || [];
+  const unitTypeOptions = formConfig?.unitTypes
+    ? PropertyTypeManager.getFilteredUnitTypes(
+        property.propertyType,
+        formConfig.unitTypes
+      )
+    : [];
 
   const currentUnit = form.values.units[activeUnitIndex];
   const totalUnitsCreated = form.values.units.length;
@@ -101,15 +113,11 @@ export function usePropertyUnitLogic({
   const generateNumberByScheme = (sequence: number): string => {
     switch (unitNumberingScheme) {
       case "floor":
-        // Floor-based: 0001 (ground), 1001, 1002, 1003, 1011, 1012, etc.
-        // Extract floor from first unit or use default
         const firstUnit = form.values.units[0];
         let baseFloor = 1;
         if (firstUnit?.unitNumber && /^\d{4}$/.test(firstUnit.unitNumber)) {
           baseFloor = parseInt(firstUnit.unitNumber.substring(0, 1));
         }
-        // use current unit's floor if specified, otherwise use base floor
-        // floor 0 (ground floor)
         const currentFloor =
           currentUnit?.floor !== undefined ? currentUnit.floor : baseFloor;
         const unitNumber = sequence.toString().padStart(3, "0");
@@ -119,7 +127,6 @@ export function usePropertyUnitLogic({
         return `Suite-${sequence.toString().padStart(3, "0")}`;
 
       case "alpha":
-        // A-101, B-101, ..., Z-101, A-102
         const alphabetIndex = (sequence - 1) % 26;
         const numberPart = Math.floor((sequence - 1) / 26) + 101;
         const letter = String.fromCharCode(65 + alphabetIndex); // A-Z
@@ -131,66 +138,72 @@ export function usePropertyUnitLogic({
 
       case "numeric":
       default:
-        // Simple numeric: 101, 102, 103
         return (100 + sequence).toString();
     }
   };
 
-  const validateRequiredFields = (unit: UnitFormValues): boolean => {
-    const requiredFields = [
-      "unitNumber",
-      "type",
-      "specifications.totalArea",
-      "fees.rentAmount",
-    ];
+  const validateUnitWithTypeManager = (
+    unit: UnitFormValues
+  ): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
 
-    for (const field of requiredFields) {
-      if (field.includes(".")) {
-        const [parent, child] = field.split(".");
-        const parentObj = unit[parent as keyof UnitFormValues] as any;
-        if (
-          !parentObj ||
-          parentObj[child] === undefined ||
-          parentObj[child] === 0 ||
-          parentObj[child] === ""
-        ) {
-          return false;
-        }
-      } else {
-        const value = unit[field as keyof UnitFormValues];
-        if (value === undefined || value === "" || value === 0) {
-          return false;
-        }
-      }
+    const zodValidation = unitSchema.safeParse(unit);
+    if (!zodValidation.success) {
+      zodValidation.error.errors.forEach((err) => {
+        errors.push(`${err.path.join(".")}: ${err.message}`);
+      });
     }
-    return true;
+
+    if (unit.type) {
+      const requiredFields = UnitTypeManager.getRequiredFields(
+        unit.type as UnitType
+      );
+
+      requiredFields.forEach((field) => {
+        if (field.includes(".")) {
+          const [parent, child] = field.split(".");
+          const parentObj = unit[parent as keyof UnitFormValues] as Record<
+            string,
+            unknown
+          >;
+          if (
+            !parentObj ||
+            parentObj[child] === undefined ||
+            parentObj[child] === 0 ||
+            parentObj[child] === ""
+          ) {
+            errors.push(`${field} is required for ${unit.type} units`);
+          }
+        } else {
+          const value = unit[field as keyof UnitFormValues];
+          if (value === undefined || value === "" || value === 0) {
+            errors.push(`${field} is required for ${unit.type} units`);
+          }
+        }
+      });
+    }
+
+    return { isValid: errors.length === 0, errors };
   };
 
   const handleCopyUnit = () => {
-    if (!validateRequiredFields(currentUnit)) {
+    const validation = validateUnitWithTypeManager(currentUnit);
+    if (!validation.isValid) {
       openNotification(
         "error",
         "Validation Error",
-        "Please fill in all required fields (Unit Number, Type, Total Area, and Rent Amount) before copying."
+        `Please fix the following errors before copying:\n${validation.errors.join(
+          "\n"
+        )}`
       );
       return;
     }
 
-    if (totalUnitsCreated >= property.totalUnits) {
+    if (totalUnitsCreated >= FORM_MAX_UNITS) {
       openNotification(
         "error",
-        "Unit Limit Exceeded",
-        `Cannot add more units. This property has a maximum of ${property.totalUnits} units.`
-      );
-      return;
-    }
-
-    const validation = unitSchema.safeParse(currentUnit);
-    if (!validation.success) {
-      openNotification(
-        "error",
-        "Validation Error",
-        "Please fix all validation errors in the current unit before copying."
+        "Form Unit Limit Exceeded",
+        `Cannot add more units. Form is limited to ${FORM_MAX_UNITS} units. For larger batches, please use CSV upload.`
       );
       return;
     }
@@ -200,10 +213,7 @@ export function usePropertyUnitLogic({
       unitNumber: generateNextUnitNumber(),
     };
 
-    // Add new unit to form
     form.setFieldValue("units", [...form.values.units, newUnit]);
-
-    // Switch to the new unit
     setActiveUnitIndex(form.values.units.length);
 
     openNotification(
@@ -239,32 +249,71 @@ export function usePropertyUnitLogic({
     );
   };
 
-  const handleSubmit = (values: UnitsFormData) => {
-    setIsSubmitting(true);
+  const createUnitsMutation = useMutation({
+    mutationFn: (data: { units: UnitFormValues[] }) => {
+      if (!client?.csub) throw new Error("Client not authenticated");
+      return propertyUnitService.createUnits(client.csub, property.id, data);
+    },
+    onSuccess: (response, variables) => {
+      if (!client?.csub) return;
 
-    // Here we would typically send the data to the server
-    console.log("Submitting units data:", {
-      propertyId: property.id,
-      units: values.units,
-    });
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.propertyUnits(property.id, client.csub),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.propertyById(property.id, client.csub),
+      });
 
-    // Simulating API call
-    setTimeout(() => {
-      setIsSubmitting(false);
       openNotification(
         "success",
-        "Units Saved",
-        `Successfully saved ${values.units.length} units.`
+        "Units Created",
+        `Successfully created ${variables.units.length} units.`
       );
-    }, 1000);
+      onClose();
+    },
+    onError: (error: any) => {
+      console.error("Error creating units:", error);
+      openNotification(
+        "error",
+        "Failed to Create Units",
+        error?.response?.data?.message ||
+          "An error occurred while creating units."
+      );
+    },
+  });
+
+  const handleSubmit = (values: any) => {
+    const formData = values as UnitsFormData;
+    const allValidationErrors: string[] = [];
+
+    formData.units.forEach((unit, index) => {
+      const validation = validateUnitWithTypeManager(unit);
+      if (!validation.isValid) {
+        allValidationErrors.push(
+          `Unit ${index + 1}: ${validation.errors.join(", ")}`
+        );
+      }
+    });
+
+    if (allValidationErrors.length > 0) {
+      openNotification(
+        "error",
+        "Validation Failed",
+        `Please fix the following errors:\n${allValidationErrors.join("\n")}`
+      );
+      return;
+    }
+
+    // Submit if validation passes
+    // createUnitsMutation.mutate({ units: formData.units });
   };
 
   const handleAddAnotherUnit = () => {
-    if (totalUnitsCreated >= property.totalUnits) {
+    if (totalUnitsCreated >= FORM_MAX_UNITS) {
       openNotification(
         "error",
-        "Unit Limit Exceeded",
-        `Cannot add more units. This property has a maximum of ${property.totalUnits} units.`
+        "Form Unit Limit Exceeded",
+        `Cannot add more units. Form is limited to ${FORM_MAX_UNITS} units. For larger batches, please use CSV upload.`
       );
       return;
     }
@@ -323,10 +372,8 @@ export function usePropertyUnitLogic({
 
   const handleCancel = () => {
     form.reset();
-
     setActiveUnitIndex(0);
     setIsMultiUnit(false);
-    setIsSubmitting(false);
 
     onClose();
   };
@@ -339,7 +386,7 @@ export function usePropertyUnitLogic({
     form,
     isMultiUnit,
     setIsMultiUnit,
-    isSubmitting,
+    isSubmitting: createUnitsMutation.isPending,
     activeUnitIndex,
     setActiveUnitIndex,
 
@@ -360,7 +407,7 @@ export function usePropertyUnitLogic({
 
     handleCopyUnit,
     handleRemoveUnit,
-    handleSubmit,
+    handleSubmit: form.onSubmit(handleSubmit),
     handleAddAnotherUnit,
     handleCancel,
     handleFieldChange,

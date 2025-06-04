@@ -1,9 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
-import { Loading } from "@components/Loading";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { usePropertyFormMetaData } from "@hooks/index";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { usePropertyFormActions } from "@store/propertyform.store";
 import { PropertyFormValues } from "@interfaces/property.interface";
@@ -17,6 +15,7 @@ import {
 } from "@components/FormElements";
 
 interface Props {
+  formConfig: any;
   form: UseFormReturnType<PropertyFormValues>;
   propertyTypeOptions: { value: string; label: string }[];
   propertyStatusOptions: { value: string; label: string }[];
@@ -34,10 +33,9 @@ export function PropertyInfoTab({
   propertyTypeOptions: _propertyTypeOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   propertyStatusOptions: _propertyStatusOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   handleOnChange,
+  formConfig,
 }: Props) {
   const { setTabValidation } = usePropertyFormActions();
-  const { data: formConfig, isLoading: isFormConfigLoading } =
-    usePropertyFormMetaData();
 
   const propertyType = form.values.propertyType || "house";
   const numUnits = parseInt(form.values.totalUnits?.toString() || "1", 10);
@@ -58,12 +56,8 @@ export function PropertyInfoTab({
     setTabValidation("property", isValid);
   }, [form.values.specifications, formConfig, setTabValidation]);
 
-  if (isFormConfigLoading) {
-    return <Loading size="regular" description="Gathering form data..." />;
-  }
-
   const occupancyStatusOptions =
-    formConfig?.occupancyStatuses.map((status) => ({
+    formConfig?.occupancyStatuses.map((status: string) => ({
       value: status,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
     })) || [];

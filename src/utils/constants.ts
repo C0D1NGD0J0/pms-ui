@@ -189,10 +189,10 @@ export const propertyTypeRules: PropertyTypeRules = {
   }),
 
   commercial: createRule({
-    minUnits: 4,
+    minUnits: 3,
     validateBedBath: false,
     isMultiUnit: true,
-    defaultUnits: 4,
+    defaultUnits: 3,
     allowedUnitTypes: ["commercial", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
@@ -217,8 +217,8 @@ export const propertyTypeRules: PropertyTypeRules = {
   industrial: createRule({
     minUnits: 1,
     validateBedBath: false,
-    isMultiUnit: false,
-    defaultUnits: 1,
+    isMultiUnit: true,
+    defaultUnits: 2,
     allowedUnitTypes: ["commercial", "storage"],
     visibleFields: {
       core: BASE_FIELDS.core,
@@ -596,6 +596,10 @@ export const PROPERTY_QUERY_KEYS = {
     pid,
   ],
   propertyById: (pid: string, csub: string) => ["/getProperty", csub, pid],
-  propertyUnits: (pid: string, uid: string) => ["/getPropertyUnits", pid, uid],
+  propertyUnits: (pid: string, csub: string) => [
+    "/getPropertyUnits",
+    csub,
+    pid,
+  ],
 };
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];
