@@ -34,13 +34,17 @@ a.btn {
     flex: 1 1 auto;
   }
 
-  // Color Variants
   &-primary {
     background-color: hslaGen($primary-color);
+    border: 0.1rem solid hslaGen($primary-color);
     color: hslaGen($white-color);
 
     &:hover {
       background-color: hslaGen($primary-color);
+    }
+
+    i {
+      color: hslaGen($white-color);
     }
   }
 
@@ -101,6 +105,9 @@ a.btn {
     background-color: transparent;
     color: hslaGen($blue-ink-color);
     border: 1px solid hslaGen($blue-ink-color);
+    i {
+      color: hslaGen($blue-ink-color);
+    }
   }
 
   &-outline-warning {
@@ -108,7 +115,6 @@ a.btn {
     color: hslaGen($blue-ink-color);
   }
 
-  // Size Variants
   &-sm {
     padding: 0.5rem 1rem;
     font-size: $fs-xsm;

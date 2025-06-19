@@ -10,18 +10,21 @@ export const TabContainer: React.FC<TabsProps> = ({
   defaultTab,
   onChange,
   className = "",
+  mode = "new",
   ariaLabel = "Tabs",
   scrollOnChange = true,
 }) => {
   const { scrollToTop } = useScrollToTop();
-  const [activeTabId, setActiveTabId] = useState<string>(defaultTab || "");
   const [availableTabs, setAvailableTabs] = useState<{
     [key: string]: boolean;
   }>({});
-
-  const registerTab = (id: string, disabled: boolean) => {
-    setAvailableTabs((prev) => ({ ...prev, [id]: !disabled }));
-  };
+  const [activeTabId, setActiveTabId] = useState<string>(() => {
+    if (mode === "edit" && typeof window !== "undefined") {
+      const saved = localStorage.getItem("activeTab");
+      return saved || defaultTab || "";
+    }
+    return defaultTab || "";
+  });
 
   useEffect(() => {
     if (!activeTabId && Object.keys(availableTabs).length > 0) {
@@ -36,15 +39,10 @@ export const TabContainer: React.FC<TabsProps> = ({
   }, [availableTabs, activeTabId]);
 
   useEffect(() => {
-    if (defaultTab && defaultTab !== activeTabId) {
-      setActiveTabId(defaultTab);
-    }
-  }, [defaultTab]);
-
-  useEffect(() => {
     if (activeTabId) {
       if (onChange) {
         onChange(activeTabId);
+        localStorage.setItem("activeTab", activeTabId);
       }
 
       if (scrollOnChange) {
@@ -52,6 +50,10 @@ export const TabContainer: React.FC<TabsProps> = ({
       }
     }
   }, [activeTabId, onChange, scrollOnChange]);
+
+  const registerTab = (id: string, disabled: boolean) => {
+    setAvailableTabs((prev) => ({ ...prev, [id]: !disabled }));
+  };
 
   return (
     <TabsContext.Provider value={{ activeTabId, setActiveTabId, registerTab }}>

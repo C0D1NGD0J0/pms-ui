@@ -9,6 +9,7 @@ export enum PropertyTypesEnum {
   TOWNHOUSE = "townhouse",
   COMMERCIAL = "commercial",
   INDUSTRIAL = "industrial",
+  MIXED_PROPERTY = "mixed",
 }
 
 export enum PropertyStatusEnum {
@@ -33,7 +34,6 @@ type MongoDbGeneratedFields =
   | "updatedAt"
   | "createdBy"
   | "deletedAt"
-  | "pid"
   | "id";
 
 // Define property interfaces
@@ -102,6 +102,7 @@ export interface IPropertyAddress {
   coordinates?: number[];
 }
 
+// Base property document interface (data only, no methods)
 export interface IPropertyDocument {
   fees: IPropertyFees;
   specifications: IPropertySpecifications;
@@ -113,11 +114,11 @@ export interface IPropertyDocument {
   _id: string;
   cid: string;
   name: string;
-  propertyType: string;
-  status: string;
+  propertyType: PropertyTypesEnum;
+  status: PropertyStatusEnum;
   managedBy: string;
   yearBuilt: number;
-  occupancyStatus: string;
+  occupancyStatus: PropertyOccupancyStatusEnum;
   totalUnits: number;
   createdBy: string;
   deletedAt: string | null;
@@ -134,7 +135,50 @@ export interface IPropertyDocument {
     propertyTax: number;
     lastAssessmentDate: string;
   };
+  unitInfo?: IUnitInfo;
 }
+
+// Business methods interface (no data properties)
+export interface IPropertyModelMethods {
+  // Occupancy status methods
+  isVacant(): boolean;
+  isOccupied(): boolean;
+  isUnderMaintenance(): boolean;
+
+  // Unit type methods
+  isMultiUnit(): boolean;
+  isSingleFamily(): boolean;
+  getMinUnits(): number;
+  getDefaultUnits(): number;
+  shouldValidateBedBath(): boolean;
+  isValidUnitCount(): boolean;
+
+  // Financial and validation methods
+  hasFinancialInfo(): boolean;
+  hasAddress(): boolean;
+  getMonthlyRental(): number;
+  getSecurityDeposit(): number;
+  getTotalValue(): number;
+
+  // Property type classification methods
+  isCommercialType(): boolean;
+  isResidentialType(): boolean;
+  isMixedUseType(): boolean;
+
+  // Calculated property methods
+  getPropertyAge(): number | null;
+  getTotalBedrooms(): number;
+  getTotalBathrooms(): number;
+  getTotalArea(): number;
+
+  // Utility methods
+  hasAmenity(amenityCategory: string, amenityName: string): boolean;
+  getRawData(): IPropertyDocument;
+  toJSON(): IPropertyDocument;
+}
+
+// propertyModel becomes data + methods via intersection
+export type IPropertyModel = IPropertyDocument & IPropertyModelMethods;
 
 export type PropertyFormValues = Omit<
   IPropertyDocument,
@@ -150,9 +194,92 @@ export type EditPropertyFormValues = PropertyFormValues;
 
 export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
 
+export type StaticPropertyFormConfig = {
+  propertyTypes: string[];
+  propertyStatuses: string[];
+  occupancyStatuses: string[];
+  documentTypes: string[];
+  currencies: { value: string; label: string }[];
+  specifications: {
+    [key: string]: {
+      type: string;
+      isRequired: boolean;
+      min: number;
+    };
+  };
+};
+
+export type StaticUnitFormConfig = {
+  unitTypes: { value: string; label: string }[];
+  unitStatus: { value: string; label: string }[];
+  currencies: { value: string; label: string }[];
+  unitFeatures: { value: string; label: string }[];
+  unitAmenities: { value: string; label: string }[];
+  unitUtilities: { value: string; label: string }[];
+  prefixOptions: { value: string; label: string; example: string }[];
+};
+
+export interface IPropertyFilterParams {
+  status: string;
+  address: string;
+  propertyType: string;
+  occupancyStatus: string;
+  minPrice: number | "";
+  maxPrice: number | "";
+  searchTerm: string;
+  minArea: number | "";
+  maxArea: number | "";
+  minYear: number | "";
+  maxYear: number | "";
+}
+
+export type PropertyTypeRules = Record<string, PropertyTypeRule>;
+export interface PropertyTypeRule {
+  minUnits: number;
+  validateBedBath: boolean;
+  isMultiUnit: boolean;
+  defaultUnits: number;
+  allowedUnitTypes?: string[];
+  visibleFields: {
+    // Core property fields
+    core: string[];
+    // Property specification fields
+    specifications: string[];
+    // Financial and fee fields
+    financial: string[];
+    // Amenity fields
+    amenities: string[];
+    // Document and media fields
+    documents: string[];
+    // Unit-level fields (managed per unit)
+    unit: string[];
+  };
+  requiredFields: string[];
+  helpText: Record<string, string>;
+}
+
+interface IUnitInfo {
+  suggestedNextUnitNumber?: string;
+  availableSpaces: number;
+  lastUnitNumber?: string;
+  unitStats: IUnitStats;
+  currentUnits: number;
+  canAddUnit: boolean;
+  totalUnits: number;
+}
+interface IUnitStats {
+  maintenance: number;
+  available: number;
+  occupied: number;
+  reserved: number;
+  inactive: number;
+  vacant: number;
+}
+
 export const defaultPropertyValues: PropertyFormValues = {
   name: "",
   cid: "",
+  pid: "",
   status: undefined as any,
   managedBy: "",
   yearBuilt: 1800,
@@ -226,71 +353,3 @@ export const defaultPropertyValues: PropertyFormValues = {
   documents: [],
   propertyImages: [],
 };
-
-export const formFieldVisibilityMap = {
-  house: [
-    "totalArea",
-    "lotSize",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "garageSpaces",
-    "maxOccupants",
-  ],
-  townhouse: [
-    "totalArea",
-    "lotSize",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "garageSpaces",
-    "maxOccupants",
-  ],
-  apartment: [
-    "totalArea",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "maxOccupants",
-    "totalUnits",
-  ],
-  condominium: [
-    "totalArea",
-    "bedrooms",
-    "bathrooms",
-    "floors",
-    "maxOccupants",
-    "totalUnits",
-  ],
-  commercial: ["totalArea", "floors", "totalUnits", "maxOccupants"],
-  industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
-};
-
-export type StaticPropertyFormConfig = {
-  propertyTypes: string[];
-  propertyStatuses: string[];
-  occupancyStatuses: string[];
-  documentTypes: string[];
-  currencies: string[];
-  specifications: {
-    [key: string]: {
-      type: string;
-      isRequired: boolean;
-      min: number;
-    };
-  };
-};
-
-export interface IPropertyFilterParams {
-  status: string;
-  address: string;
-  propertyType: string;
-  occupancyStatus: string;
-  minPrice: number | "";
-  maxPrice: number | "";
-  searchTerm: string;
-  minArea: number | "";
-  maxArea: number | "";
-  minYear: number | "";
-  maxYear: number | "";
-}
