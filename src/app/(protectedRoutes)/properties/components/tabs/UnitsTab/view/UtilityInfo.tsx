@@ -26,19 +26,19 @@ export function UnitUtilities({
       <div className="form-section">
         <h5>Utilities Included in Rent</h5>
         <div className="form-fields">
-          {utilitiesOptions.map(({ label }) => (
+          {utilitiesOptions.map(({ value, label }) => (
             <FormField
-              key={label}
+              key={value}
               error={{
-                msg: (errors[`utilities.${label}`] as string) || "",
-                touched: isTouched(`utilities.${label}`),
+                msg: (errors[`utilities.${value}`] as string) || "",
+                touched: isTouched(`utilities.${value}`),
               }}
             >
               <Checkbox
-                id={`unit-utility-${label}`}
-                name={`utilities.${label}`}
+                id={`unit-utility-${value}`}
+                name={`utilities.${value}`}
                 checked={
-                  unit.utilities[label as keyof typeof unit.utilities] || false
+                  unit.utilities[value as keyof typeof unit.utilities] || false
                 }
                 onChange={onFieldChange}
                 label={label}
