@@ -29,7 +29,6 @@ export function UnitActions({
   const currentSchemeLabel =
     prefixOptions.find((option) => option.value === unitNumberingScheme)
       ?.label || "Numeric";
-  console.log(prefixOptions);
   return (
     <div className="unit-actions">
       <div style={{ position: "relative" }}>
