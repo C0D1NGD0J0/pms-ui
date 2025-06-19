@@ -1,6 +1,5 @@
 import { create } from "zustand";
-import { PropertyFormValues } from "@interfaces/index";
-import { defaultPropertyValues } from "@utils/constants";
+import { defaultPropertyValues, PropertyFormValues } from "@interfaces/index";
 
 interface PropertyFormState {
   formValues: PropertyFormValues;

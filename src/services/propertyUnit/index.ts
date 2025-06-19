@@ -31,14 +31,14 @@ export interface IUnitFilterParams {
 
 class PropertyUnitService {
   private axiosConfig = {};
-  private readonly baseUrl = `/api/v1`;
+  private readonly baseUrl = `/api/v1/properties`;
 
   constructor() {}
 
   async createUnits(cid: string, pid: string, data: ICreateUnitsRequest) {
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units`,
+        `${this.baseUrl}/${cid}/client_properties/${pid}/units/`,
         data,
         this.axiosConfig
       );

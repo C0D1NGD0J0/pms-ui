@@ -1,20 +1,172 @@
 import { z } from "zod";
-import { UnitStatusEnum, UnitTypeEnum } from "@interfaces/unit.interface";
+import { unitTypeRules } from "@utils/constants";
+import {
+  UnitStatusEnum,
+  UnitTypeEnum,
+  UnitType,
+} from "@interfaces/unit.interface";
+
+const createNumericField = (
+  min?: number,
+  max?: number,
+  fieldName = "Field",
+  messages = ["", ""]
+) => {
+  let numberSchema = z.number();
+
+  if (min !== undefined) {
+    const minMessage = messages[0] || `${fieldName} must be at least ${min}`;
+    numberSchema = numberSchema.min(min, minMessage);
+  }
+  if (max !== undefined) {
+    const maxMessage = messages[1] || `${fieldName} cannot exceed ${max}`;
+    numberSchema = numberSchema.max(max, maxMessage);
+  }
+  return z
+    .string()
+    .regex(
+      /^-?\d+(\.\d+)?$/,
+      `${fieldName} must be a valid number without alphabetic characters`
+    )
+    .transform(Number)
+    .or(numberSchema);
+};
+
+export function createUnitSchema(unitType: UnitType) {
+  const rules =
+    unitTypeRules[unitType] || unitTypeRules[UnitTypeEnum.RESIDENTIAL];
+  const requiredFields = rules.requiredFields || [];
+
+  const isRequired = (fieldPath: string) =>
+    requiredFields.includes(fieldPath) ||
+    requiredFields.includes(fieldPath.split(".").pop() || "");
+
+  const specificationsSchema = z.object({
+    totalArea: createNumericField(0, undefined, "totalArea", [
+      `Total area is required for ${unitType} units`,
+      "Total area cannot be negative",
+    ]).refine((val) => {
+      if (isRequired("specifications.totalArea") || isRequired("totalArea")) {
+        return val > 0;
+      }
+      return true;
+    }, `Total area is required for ${unitType} units`),
+
+    rooms: isRequired("specifications.rooms")
+      ? createNumericField(1, 20, "rooms", [
+          `Number of rooms is required for ${unitType} units`,
+          "Room cannot exceed 20",
+        ])
+      : createNumericField(0, 20, "rooms", [
+          `room cannot be negative`,
+          "Room cannot exceed 20",
+        ]).default(1),
+
+    bathrooms: isRequired("specifications.bathrooms")
+      ? createNumericField(1, 20, "bathrooms", [
+          `Number of bathrooms is required for ${unitType} units`,
+          "Bathrooms cannot exceed 20",
+        ])
+      : createNumericField(0, 20, "bathrooms", [
+          `Bathrooms cannot be negative`,
+          "Bathrooms cannot exceed 20",
+        ]).default(1),
+
+    maxOccupants: isRequired("specifications.maxOccupants")
+      ? createNumericField(1, 50, "maxOccupants", [
+          `Max occupants is required for ${unitType} units`,
+          "Max occupants cannot exceed 50",
+        ])
+      : createNumericField(1, 50, "maxOccupants", [
+          `Max occupants cannot be negative`,
+          "Max occupants cannot exceed 50",
+        ]).default(1),
+  });
+
+  const feesSchema = z.object({
+    currency: z.enum(["USD", "EUR", "GBP", "CAD"]).default("USD"),
+    rentAmount: createNumericField(0, 100000, "rentAmount", [
+      "Rent amount is required",
+      "Rent amount cannot exceed 100000",
+    ]).refine((val) => {
+      if (isRequired("fees.rentAmount") || isRequired("rentAmount")) {
+        return val > 0;
+      }
+      return true;
+    }, `Rent amount is required for ${unitType} units`),
+    securityDeposit: z
+      .number()
+      .min(0, "Security deposit cannot be negative")
+      .default(0),
+  });
+
+  const amenitiesSchema = z.object({
+    airConditioning: z.boolean().default(false),
+    heating: z.boolean().default(false),
+    washerDryer: z.boolean().default(false),
+    dishwasher: z.boolean().default(false),
+    parking: z.boolean().default(false),
+    storage: z.boolean().default(false),
+    cableTV: z.boolean().default(false),
+    internet: z.boolean().default(false),
+  });
+
+  const utilitiesSchema = z.object({
+    gas: z.boolean().default(false),
+    trash: z.boolean().default(false),
+    water: z.boolean().default(false),
+    heating: z.boolean().default(false),
+    centralAC: z.boolean().default(false),
+  });
+
+  return z.object({
+    id: z.string().optional(),
+    unitNumber: z
+      .string()
+      .min(1, "Unit number is required")
+      .max(10, "Unit number cannot exceed 50 characters"),
+    unitType: z.nativeEnum(UnitTypeEnum, {
+      required_error: "Unit type is required",
+    }),
+    status: z.nativeEnum(UnitStatusEnum).default(UnitStatusEnum.AVAILABLE),
+    floor: createNumericField(-4, 100, "floor"),
+    isActive: z.boolean().default(true),
+    puid: z
+      .string()
+      .min(24, "Property unique ID (puid) is required")
+      .max(38, "Invalid property unique ID (puid) detected."),
+    specifications: specificationsSchema,
+    amenities: amenitiesSchema,
+    utilities: utilitiesSchema,
+    fees: feesSchema,
+    description: z
+      .string()
+      .max(1000, "Description cannot exceed 1000 characters")
+      .optional(),
+  });
+}
 
 export const unitSchema = z.object({
+  id: z.string().optional(),
+  puid: z
+    .string()
+    .min(30, "Property unique ID (puid) is required")
+    .max(36, "Invalid property unique ID (puid) detected."),
   unitNumber: z
     .string()
     .min(1, "Unit number is required")
     .max(50, "Unit number cannot exceed 50 characters"),
-  type: z.nativeEnum(UnitTypeEnum, {
+  unitType: z.nativeEnum(UnitTypeEnum, {
     required_error: "Unit type is required",
   }),
   status: z.nativeEnum(UnitStatusEnum).default(UnitStatusEnum.AVAILABLE),
   floor: z
     .number()
-    .min(1, "Floor must be at least 1")
-    .max(200, "Floor cannot exceed 200")
-    .optional(),
+    .min(
+      -4,
+      "Floor must be at least -4 (for basements) or 0 (for ground floor)"
+    )
+    .max(80, "Floor cannot exceed 80"),
   isActive: z.boolean().default(true),
   specifications: z.object({
     totalArea: z
@@ -23,7 +175,7 @@ export const unitSchema = z.object({
     rooms: z
       .number()
       .min(0, "Rooms cannot be negative")
-      .max(20, "Rooms cannot exceed 20")
+      .max(50, "Rooms cannot exceed 50")
       .optional(),
     bathrooms: z
       .number()
@@ -33,7 +185,7 @@ export const unitSchema = z.object({
     maxOccupants: z
       .number()
       .min(1, "Max occupants must be at least 1")
-      .max(50, "Max occupants cannot exceed 50")
+      .max(0, "Max occupants cannot exceed 50")
       .optional(),
   }),
   amenities: z.object({
@@ -54,7 +206,7 @@ export const unitSchema = z.object({
     centralAC: z.boolean().default(false),
   }),
   fees: z.object({
-    currency: z.enum(["USD", "EUR", "GBP", "CAD", "AUD", "JPY"]).default("USD"),
+    currency: z.enum(["USD", "EUR", "GBP", "CAD"]).default("USD"),
     rentAmount: z
       .number()
       .min(0, "Rent amount cannot be negative")
@@ -76,4 +228,6 @@ export const unitsArraySchema = z
 
 export const unitsFormSchema = z.object({
   units: unitsArraySchema,
+  pid: z.string(),
+  cid: z.string(),
 });

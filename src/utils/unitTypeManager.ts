@@ -193,24 +193,6 @@ export class UnitTypeManager {
   }
 
   /**
-   * Gets field visibility for specifications category specifically
-   * Useful for hiding bathrooms in storage units
-   *
-   * @param unitType The type of unit
-   * @returns Object with boolean flags for each specification field
-   */
-  static getSpecificationVisibility(unitType: UnitType | string) {
-    const visibleFields = this.getVisibleFields(unitType, "specifications");
-
-    return {
-      totalArea: visibleFields.includes("totalArea"),
-      rooms: visibleFields.includes("rooms"),
-      bathrooms: visibleFields.includes("bathrooms"),
-      maxOccupants: visibleFields.includes("maxOccupants"),
-    };
-  }
-
-  /**
    * Gets the unit features that should be visible for a specific unit type
    * Filters the unitFeatures array based on the unit type's visible amenities
    *

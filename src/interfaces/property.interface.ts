@@ -34,7 +34,6 @@ type MongoDbGeneratedFields =
   | "updatedAt"
   | "createdBy"
   | "deletedAt"
-  | "pid"
   | "id";
 
 // Define property interfaces
@@ -115,11 +114,11 @@ export interface IPropertyDocument {
   _id: string;
   cid: string;
   name: string;
-  propertyType: string;
-  status: string;
+  propertyType: PropertyTypesEnum;
+  status: PropertyStatusEnum;
   managedBy: string;
   yearBuilt: number;
-  occupancyStatus: string;
+  occupancyStatus: PropertyOccupancyStatusEnum;
   totalUnits: number;
   createdBy: string;
   deletedAt: string | null;
@@ -200,7 +199,7 @@ export type StaticPropertyFormConfig = {
   propertyStatuses: string[];
   occupancyStatuses: string[];
   documentTypes: string[];
-  currencies: string[];
+  currencies: { value: string; label: string }[];
   specifications: {
     [key: string]: {
       type: string;
@@ -213,7 +212,11 @@ export type StaticPropertyFormConfig = {
 export type StaticUnitFormConfig = {
   unitTypes: { value: string; label: string }[];
   unitStatus: { value: string; label: string }[];
+  currencies: { value: string; label: string }[];
   unitFeatures: { value: string; label: string }[];
+  unitAmenities: { value: string; label: string }[];
+  unitUtilities: { value: string; label: string }[];
+  prefixOptions: { value: string; label: string; example: string }[];
 };
 
 export interface IPropertyFilterParams {
@@ -272,3 +275,81 @@ interface IUnitStats {
   inactive: number;
   vacant: number;
 }
+
+export const defaultPropertyValues: PropertyFormValues = {
+  name: "",
+  cid: "",
+  pid: "",
+  status: undefined as any,
+  managedBy: "",
+  yearBuilt: 1800,
+  propertyType: undefined as any,
+  address: {
+    fullAddress: "",
+    city: "",
+    state: "",
+    postCode: "",
+    country: "",
+    street: "",
+    streetNumber: "",
+    unitNumber: "",
+  },
+  financialDetails: {
+    purchasePrice: 0,
+    purchaseDate: "",
+    marketValue: 0,
+    propertyTax: 0,
+    lastAssessmentDate: "",
+  },
+  fees: {
+    currency: "USD",
+    taxAmount: "0.00",
+    rentalAmount: "0.00",
+    managementFees: "0.00",
+    securityDeposit: "0.00",
+  },
+  specifications: {
+    totalArea: 0,
+    lotSize: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    floors: 1,
+    garageSpaces: 0,
+    maxOccupants: 1,
+  },
+  utilities: {
+    water: false,
+    gas: false,
+    electricity: false,
+    internet: false,
+    trash: false,
+    cableTV: false,
+  },
+  description: {
+    text: "",
+    html: "",
+  },
+  occupancyStatus: undefined as any,
+  interiorAmenities: {
+    airConditioning: false,
+    heating: false,
+    washerDryer: false,
+    dishwasher: false,
+    fridge: false,
+    furnished: false,
+    storageSpace: false,
+  },
+  communityAmenities: {
+    swimmingPool: false,
+    fitnessCenter: false,
+    elevator: false,
+    parking: false,
+    securitySystem: false,
+    petFriendly: false,
+    laundryFacility: false,
+    doorman: false,
+  },
+  totalUnits: 0,
+  documents: [],
+  propertyImages: [],
+};

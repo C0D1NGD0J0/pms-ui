@@ -16,7 +16,7 @@ import {
 
 interface Props {
   formConfig: any;
-  form: UseFormReturnType<PropertyFormValues>;
+  propertyForm: UseFormReturnType<PropertyFormValues>;
   propertyTypeOptions: { value: string; label: string }[];
   propertyStatusOptions: { value: string; label: string }[];
   handleOnChange: (
@@ -29,7 +29,7 @@ interface Props {
 }
 
 export function PropertyInfoTab({
-  form,
+  propertyForm: form,
   propertyTypeOptions: _propertyTypeOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   propertyStatusOptions: _propertyStatusOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   handleOnChange,

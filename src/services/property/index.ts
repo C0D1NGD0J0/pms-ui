@@ -1,8 +1,5 @@
 import axios from "@configs/axios";
-import {
-  postTransformPropertiesData,
-  postTransformPropertyData,
-} from "@/src/models/property";
+import { postTransformPropertiesData } from "@/src/models/property";
 import {
   IServerResponseWithPagination,
   IPaginationQuery,
@@ -13,7 +10,6 @@ import {
   IPropertyFilterParams,
   PropertyFormValues,
   IPropertyDocument,
-  IPropertyModel,
 } from "@interfaces/property.interface";
 
 class PropertyService {
@@ -108,14 +104,15 @@ class PropertyService {
   async getClientProperty(
     cid: string,
     propertyPid: string
-  ): Promise<IPropertyModel> {
+  ): Promise<IPropertyDocument> {
     try {
       const result = await axios.get<IServerResponse<IPropertyDocument>>(
-        `${this.baseUrl}/${cid}/client_properties/${propertyPid}`,
+        `${this.baseUrl}/${cid}/client_properties/${propertyPid}?q`,
         this.axiosConfig
       );
-      const transformedData = postTransformPropertyData(result.data);
-      return transformedData;
+      // const transformedData = postTransformPropertyData(result.data);
+      // console.log("Transformed Property Data:", transformedData);
+      return result.data;
     } catch (error) {
       console.error("Error fetching clientproperty:", error);
       throw error;
@@ -128,7 +125,7 @@ class PropertyService {
         `${this.baseUrl}/property_form_metadata?formType=${formType}`,
         this.axiosConfig
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error("Error fetching static property form config:", error);
       throw error;
@@ -140,10 +137,9 @@ class PropertyService {
     pid: string,
     propertyData: Partial<EditPropertyFormValues>
   ) {
-    console.log("Updating property with data:", propertyData);
     try {
       const result = await axios.patch(
-        `${this.baseUrl}/${cid}/client_property/${pid}`,
+        `${this.baseUrl}/${cid}/client_properties/${pid}`,
         propertyData,
         this.axiosConfig
       );

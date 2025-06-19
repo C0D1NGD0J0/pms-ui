@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { unitSchema } from "@validations/unit.validations";
+import { unitsFormSchema, unitSchema } from "@validations/unit.validations";
 
 export const UnitTypeEnum = {
   RESIDENTIAL: "residential",
@@ -20,6 +20,7 @@ export const UnitStatusEnum = {
 export type UnitType = (typeof UnitTypeEnum)[keyof typeof UnitTypeEnum];
 export type UnitStatus = (typeof UnitStatusEnum)[keyof typeof UnitStatusEnum];
 export type UnitFormValues = z.infer<typeof unitSchema>;
+export type UnitsFormValues = z.infer<typeof unitsFormSchema>;
 export type Currency = "USD" | "EUR" | "GBP" | "CAD";
 
 export interface UnitTypeRule {
@@ -34,11 +35,11 @@ export interface UnitTypeRule {
 }
 
 export type UnitTypeRules = Record<UnitType, UnitTypeRule>;
-
 export interface IUnit {
   id?: string;
+  puid: string;
   unitNumber: string;
-  type: UnitType | "";
+  unitType: UnitType | "";
   status: UnitStatus | "";
   floor?: number;
   isActive?: boolean;
@@ -70,12 +71,13 @@ export interface IUnit {
     rentAmount: number;
     securityDeposit?: number;
   };
+  totalArea: number;
   description?: string;
 }
 
 export const defaultUnitValues: UnitFormValues = {
   unitNumber: "",
-  type: UnitTypeEnum.RESIDENTIAL,
+  unitType: UnitTypeEnum.RESIDENTIAL,
   status: UnitStatusEnum.AVAILABLE,
   floor: 1,
   isActive: true,
@@ -107,5 +109,6 @@ export const defaultUnitValues: UnitFormValues = {
     rentAmount: 0,
     securityDeposit: 0,
   },
+  puid: "",
   description: "",
 };

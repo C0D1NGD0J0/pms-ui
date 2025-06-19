@@ -17,7 +17,7 @@ import {
 
 interface Props {
   saveAddress: (address: EditPropertyFormValues["address"]) => void;
-  form: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
+  propertyForm: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
   propertyTypeOptions: { value: string; label: string }[];
   propertyStatusOptions: { value: string; label: string }[];
   handleOnChange: (
@@ -26,7 +26,7 @@ interface Props {
 }
 
 export function BasicInfoTab({
-  form,
+  propertyForm: form,
   saveAddress,
   propertyTypeOptions,
   propertyStatusOptions,
