@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
-import { usePropertyFormBase } from "@properties/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import {
   PanelsWrapper,
@@ -19,24 +18,24 @@ import {
   DocumentsTab,
 } from "@properties/components";
 
-import { usePropertyForm } from "./hook";
+import { usePropertyForm } from "./hooks";
 
 export default function CreateProperty() {
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
+
   const {
+    form,
     activeTab,
-    formConfig,
-    saveAddress,
     setActiveTab,
-    hasTabErrors,
-    propertyForm,
+    isConfigLoading,
+    isSubmitting,
+    handleSubmit,
     handleOnChange,
-    formConfigLoading,
-    documentTypeOptions,
+    hasTabErrors,
     propertyTypeOptions,
     propertyStatusOptions,
-  } = usePropertyFormBase();
-  const { isSubmitting, handleCreateSubmit } = usePropertyForm();
+    documentTypeOptions,
+  } = usePropertyForm();
 
   const handleOpenCSVModal = () => {
     setIsCSVModalOpen(true);
@@ -52,11 +51,11 @@ export default function CreateProperty() {
       tabLabel: "Basic information",
       content: (
         <BasicInfoTab
-          saveAddress={saveAddress}
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
+          form={form}
+          saveAddress={(c) => console.log(c)}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
+          handleOnChange={handleOnChange}
         />
       ),
     },
@@ -65,30 +64,24 @@ export default function CreateProperty() {
       tabLabel: "Property Details",
       content: (
         <PropertyInfoTab
-          propertyForm={propertyForm}
-          formConfig={formConfig}
-          handleOnChange={handleOnChange}
+          form={form}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
+          handleOnChange={handleOnChange}
         />
       ),
     },
     {
       key: "amenities",
       tabLabel: "Amenities",
-      content: (
-        <AmenitiesTab
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
-        />
-      ),
+      content: <AmenitiesTab form={form} handleOnChange={handleOnChange} />,
     },
     {
       key: "documents",
       tabLabel: "Photos & Documents",
       content: (
         <DocumentsTab
-          propertyForm={propertyForm}
+          form={form}
           documentTypeOptions={
             documentTypeOptions as {
               value:
@@ -106,8 +99,8 @@ export default function CreateProperty() {
     },
   ];
 
-  if (formConfigLoading) {
-    return <Loading size="regular" description="Setting up propertyForm..." />;
+  if (isConfigLoading) {
+    return <Loading size="regular" description="Setting up form..." />;
   }
 
   return (
@@ -127,16 +120,12 @@ export default function CreateProperty() {
 
       <CsvUploadModal isOpen={isCSVModalOpen} onClose={handleCloseCSVModal} />
 
-      <div className="flex-row resource-propertyForm">
+      <div className="flex-row resource-form">
         <PanelsWrapper>
           <Panel>
             <PanelHeader
               headerTitleComponent={
-                <TabContainer
-                  mode="new"
-                  onChange={setActiveTab}
-                  defaultTab={activeTab}
-                >
+                <TabContainer onChange={setActiveTab} defaultTab={activeTab}>
                   <TabList>
                     {tabs.map((tab) => (
                       <TabListItem
@@ -152,8 +141,8 @@ export default function CreateProperty() {
               }
             />
             <Form
-              onSubmit={propertyForm.onSubmit(handleCreateSubmit)}
-              id="property-propertyForm"
+              onSubmit={handleSubmit}
+              id="property-form"
               disabled={isSubmitting}
             >
               {tabs.map((tab) => (
@@ -167,11 +156,11 @@ export default function CreateProperty() {
                 </PanelContent>
               ))}
 
-              <div className="propertyForm-actions">
+              <div className="form-actions">
                 <Button
                   className="btn btn-default btn-grow"
                   label="Cancel"
-                  onClick={() => propertyForm.reset()}
+                  onClick={() => form.reset()}
                 />
 
                 {activeTab !== "documents" ? (
@@ -192,7 +181,7 @@ export default function CreateProperty() {
                     type="submit"
                     label="Create Property"
                     className="btn btn-primary btn-grow"
-                    disabled={!propertyForm.isValid() || isSubmitting}
+                    disabled={!form.isValid() || isSubmitting}
                   />
                 )}
               </div>

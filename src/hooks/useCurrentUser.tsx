@@ -3,10 +3,9 @@
 import { useEffect } from "react";
 import { useAuth } from "@store/auth.store";
 import { authService, EventTypes } from "@services/index";
-import { CURRENT_USER_QUERY_KEY } from "@utils/constants";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
-import { usePublish, useEvent } from "./event";
+import { CURRENT_USER_QUERY_KEY, usePublish, useEvent } from "./event";
 
 const TWO_MINUTES_IN_MS = 2 * 60 * 1000;
 

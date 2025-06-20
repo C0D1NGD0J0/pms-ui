@@ -15,14 +15,20 @@ import {
 } from "@components/FormElements";
 
 interface Props {
-  currencyOptions: { value: string; label: string }[];
   form: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
   handleOnChange: (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string
   ) => void;
 }
 
-export function FinancialTab({ form, handleOnChange, currencyOptions }: Props) {
+export function FinancialTab({ form, handleOnChange }: Props) {
+  const currencyOptions = [
+    { value: "USD", label: "USD ($)" },
+    { value: "CAD", label: "CAD (C$)" },
+    { value: "EUR", label: "EUR (€)" },
+    { value: "GBP", label: "GBP (£)" },
+  ];
+
   return (
     <>
       <FormSection

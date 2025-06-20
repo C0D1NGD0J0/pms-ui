@@ -31,7 +31,6 @@
       "@theme/*": ["src/theme/*"],
       "@utils/*": ["src/utils/*"],
       "@services/*": ["src/services/*"],
-      "@models/*": ["src/models/*"],
       "@validations/*": ["src/validations/*"],
 
       "@properties/*": ["src/app/(protectedRoutes)/properties/*"],

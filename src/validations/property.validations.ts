@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { MAX_TOTAL_UNITS } from "@utils/constants";
-import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import {
   PropertyOccupancyStatusEnum,
   PropertyStatusEnum,
@@ -78,13 +77,7 @@ export const propertySchema = z
     }),
 
     occupancyStatus: z.nativeEnum(PropertyOccupancyStatusEnum).optional(),
-    totalUnits: z
-      .union([z.string().transform((val) => Number(val)), z.number()])
-      .refine((val) => !isNaN(val), {
-        message: "Total units must be a valid number",
-      })
-      .transform((val) => Number(val))
-      .pipe(z.number().min(0).max(MAX_TOTAL_UNITS).default(1)),
+    totalUnits: z.number().min(0).max(MAX_TOTAL_UNITS).default(0),
 
     interiorAmenities: z.object({
       airConditioning: z.boolean().default(false),
@@ -122,72 +115,16 @@ export const propertySchema = z
     propertyImages: z.array(z.any()).default([]),
   })
   .superRefine((data, ctx) => {
-    const propertyType = data.propertyType || "house";
-    const totalUnits = Number(data.totalUnits);
-    const rules = PropertyTypeManager.getRules(propertyType);
+    const multiUnitPropertyTypes = ["apartment", "condominium", "commercial"];
 
-    if (isNaN(totalUnits) || totalUnits < rules.minUnits) {
+    if (
+      multiUnitPropertyTypes.includes(data.propertyType || "") &&
+      (data.totalUnits === undefined || data.totalUnits === 0)
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: `This property type requires at least ${rules.minUnits} units.`,
+        message: "Total units is required for this property type.",
         path: ["totalUnits"],
-      });
-    }
-
-    const shouldValidate = PropertyTypeManager.shouldValidateBedBath(
-      propertyType,
-      totalUnits
-    );
-
-    // If bedrooms/bathrooms shouldn't be validated (multi-unit properties), return early
-    if (!shouldValidate) {
-      return;
-    }
-
-    // For single-family homes with only one unit, validate bedroom/bathroom counts
-    if (totalUnits === 1 && rules.validateBedBath) {
-      if (
-        data.specifications.bedrooms === 0 &&
-        rules.requiredFields.includes("bedrooms")
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Number of bedrooms is required for this property type.",
-          path: ["specifications.bedrooms"],
-        });
-      }
-
-      if (
-        data.specifications.bathrooms === 0 &&
-        rules.requiredFields.includes("bathrooms")
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Number of bathrooms is required for this property type.",
-          path: ["specifications.bathrooms"],
-        });
-      }
-
-      rules.requiredFields.forEach((field: string) => {
-        if (field === "bedrooms" || field === "bathrooms") {
-          return;
-        }
-
-        // nested fields like specifications.totalArea
-        if (field.includes(".")) {
-          const [parent, child] = field.split(".");
-          if (parent === "specifications") {
-            const specValue =
-              data.specifications[child as keyof typeof data.specifications];
-            if (specValue === undefined || specValue === 0) {
-              ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: `${field} is required for this property type.`,
-                path: [field],
-              });
-            }
-          }
-        }
       });
     }
   });
