@@ -16,7 +16,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
   return (
     <div className={`form-section ${className}`}>
       <div className="form-section_header">
-        <h3 className="form-section_header-title">{title}</h3>
+        <h4 className="form-section_header-title">{title}</h4>
         {description && <p>{description}</p>}
       </div>
       {children}

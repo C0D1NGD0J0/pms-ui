@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
+import { usePropertyFormBase } from "@properties/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import {
   PanelsWrapper,
@@ -17,28 +18,33 @@ import {
   AmenitiesTab,
   DocumentsTab,
   FinancialTab,
+  UnitsTab,
 } from "@properties/components";
 
-import { usePropertyEditForm } from "./hooks";
+import { usePropertyEditForm } from "../hook";
 
 export default function EditProperty() {
   const params = useParams();
   const pid = params.pid as string;
 
   const {
-    form,
     activeTab,
-    isLoading,
-    setActiveTab,
+    formConfig,
     saveAddress,
+    setActiveTab,
     hasTabErrors,
-    isSubmitting,
-    handleSubmit,
+    isTabVisible,
+    propertyForm,
     handleOnChange,
+    documentTypeOptions,
     propertyTypeOptions,
     propertyStatusOptions,
-    documentTypeOptions,
-  } = usePropertyEditForm(pid);
+  } = usePropertyFormBase();
+  const { handleUpdate, propertyData, isDataLoading, isSubmitting } =
+    usePropertyEditForm({
+      propertyForm,
+      pid,
+    });
 
   const tabs = [
     {
@@ -46,8 +52,8 @@ export default function EditProperty() {
       tabLabel: "Basic information",
       content: (
         <BasicInfoTab
-          form={form}
           saveAddress={saveAddress}
+          propertyForm={propertyForm}
           handleOnChange={handleOnChange}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
@@ -57,31 +63,43 @@ export default function EditProperty() {
     {
       key: "financial",
       tabLabel: "Financial",
-      content: <FinancialTab form={form} handleOnChange={handleOnChange} />,
+      content: (
+        <FinancialTab
+          form={propertyForm}
+          handleOnChange={handleOnChange}
+          currencyOptions={formConfig?.currencies || []}
+        />
+      ),
     },
     {
       key: "property",
       tabLabel: "Property Details",
       content: (
         <PropertyInfoTab
-          form={form}
+          formConfig={formConfig}
+          propertyForm={propertyForm}
+          handleOnChange={handleOnChange}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
-          handleOnChange={handleOnChange}
         />
       ),
     },
     {
       key: "amenities",
       tabLabel: "Amenities",
-      content: <AmenitiesTab form={form} handleOnChange={handleOnChange} />,
+      content: (
+        <AmenitiesTab
+          propertyForm={propertyForm}
+          handleOnChange={handleOnChange}
+        />
+      ),
     },
     {
       key: "documents",
       tabLabel: "Photos & Documents",
       content: (
         <DocumentsTab
-          form={form}
+          propertyForm={propertyForm}
           documentTypeOptions={
             documentTypeOptions as {
               value:
@@ -97,24 +115,39 @@ export default function EditProperty() {
         />
       ),
     },
-  ];
+    {
+      key: "units",
+      tabLabel: "Units",
+      content: <UnitsTab property={propertyForm.values} />,
+    },
+  ].filter((tab) => isTabVisible(tab.key));
 
-  if (isLoading) {
+  if (isDataLoading) {
     return <Loading size="regular" description="Loading property data..." />;
   }
+
+  if (!propertyData) {
+    return <Loading size="regular" description="Property data not found." />;
+  }
+
   return (
     <div className="page edit-property">
       <PageHeader
-        title="Edit Property"
+        title={`Edit property ${activeTab === "units" ? "units" : ""}`}
         headerBtn={
-          <Button
-            type="submit"
-            form="property-form"
-            label="Save Changes"
-            onClick={handleSubmit}
-            className="btn btn-primary"
-            disabled={!form.isValid() || isSubmitting}
-          />
+          <div className="flex-row">
+            {activeTab !== "units" && (
+              <Button
+                type="submit"
+                form="property-form"
+                label="Save Changes"
+                onClick={handleUpdate}
+                className="btn-primary"
+                icon={<i className="bx bx-save"></i>}
+                disabled={!propertyForm.isValid() || false}
+              />
+            )}
+          </div>
         }
       />
 
@@ -123,7 +156,11 @@ export default function EditProperty() {
           <Panel>
             <PanelHeader
               headerTitleComponent={
-                <TabContainer onChange={setActiveTab} defaultTab={activeTab}>
+                <TabContainer
+                  mode="edit"
+                  onChange={setActiveTab}
+                  defaultTab={activeTab}
+                >
                   <TabList>
                     {tabs.map((tab) => (
                       <TabListItem
@@ -138,8 +175,8 @@ export default function EditProperty() {
               }
             />
             <Form
-              onSubmit={handleSubmit}
               id="property-form"
+              onSubmit={handleUpdate}
               disabled={isSubmitting}
             >
               {tabs.map((tab) => (
@@ -153,50 +190,52 @@ export default function EditProperty() {
                 </PanelContent>
               ))}
 
-              <div className="form-actions">
-                {activeTab === "basic" ? (
-                  <Button
-                    className="btn btn-default btn-grow"
-                    label="Cancel"
-                    onClick={() => window.history.back()}
-                  />
-                ) : (
-                  <Button
-                    className="btn btn-default btn-grow"
-                    label="Back"
-                    onClick={() => {
-                      const currentIndex = tabs.findIndex(
-                        (tab) => tab.key === activeTab
-                      );
-                      if (currentIndex > 0) {
-                        setActiveTab(tabs[currentIndex - 1].key);
-                      }
-                    }}
-                  />
-                )}
+              {activeTab !== "units" ? (
+                <div className="form-actions">
+                  {activeTab === "basic" ? (
+                    <Button
+                      className="btn btn-default btn-grow"
+                      label="Cancel"
+                      onClick={() => window.history.back()}
+                    />
+                  ) : (
+                    <Button
+                      className="btn btn-default btn-grow"
+                      label="Back"
+                      onClick={() => {
+                        const currentIndex = tabs.findIndex(
+                          (tab) => tab.key === activeTab
+                        );
+                        if (currentIndex > 0) {
+                          setActiveTab(tabs[currentIndex - 1].key);
+                        }
+                      }}
+                    />
+                  )}
 
-                {activeTab !== "documents" ? (
-                  <Button
-                    className="btn btn-primary btn-grow"
-                    label="Next"
-                    onClick={() => {
-                      const currentIndex = tabs.findIndex(
-                        (tab) => tab.key === activeTab
-                      );
-                      if (currentIndex < tabs.length - 1) {
-                        setActiveTab(tabs[currentIndex + 1].key);
-                      }
-                    }}
-                  />
-                ) : (
-                  <Button
-                    type="submit"
-                    label="Update Property"
-                    className="btn btn-primary btn-grow"
-                    disabled={!form.isValid() || isSubmitting}
-                  />
-                )}
-              </div>
+                  {activeTab !== "documents" ? (
+                    <Button
+                      className="btn btn-primary btn-grow"
+                      label="Next"
+                      onClick={() => {
+                        const currentIndex = tabs.findIndex(
+                          (tab) => tab.key === activeTab
+                        );
+                        if (currentIndex < tabs.length - 1) {
+                          setActiveTab(tabs[currentIndex + 1].key);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <Button
+                      type="submit"
+                      label="Update Property"
+                      className="btn btn-primary btn-grow"
+                      disabled={!propertyForm.isValid() || isSubmitting}
+                    />
+                  )}
+                </div>
+              ) : null}
             </Form>
           </Panel>
         </PanelsWrapper>

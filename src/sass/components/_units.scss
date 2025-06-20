@@ -1,0 +1,86 @@
+@use "../abstract/index" as *;
+
+.unit-card {
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  border: 1px solid #e0e0e0;
+  transition: box-shadow 0.3s ease;
+  background-color: hslaGen($white-color);
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .unit-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e0e0e0;
+
+    h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: hslaGen($primary-color);
+    }
+  }
+}
+
+.unit-actions {
+  gap: 0.4rem;
+  display: flex;
+  align-items: center;
+}
+
+.unit-list {
+  margin-bottom: 20px;
+}
+
+.units-container {
+  margin-top: 20px;
+}
+
+.add-unit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.help-text {
+  font-size: 12px;
+  color: #7d8da1;
+  margin-top: 8px;
+}
+
+.file-upload-area {
+  border: 2px dashed #e0e0e0;
+  padding: 24px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: hslaGen($primary-color, 0.6);
+  }
+
+  i {
+    font-size: 32px;
+    color: hslaGen($primary-color, 0.7);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  p {
+    margin: 8px 0;
+    color: hslaGen($grey-color, 0.8);
+  }
+
+  .file-input {
+    display: none;
+  }
+}
