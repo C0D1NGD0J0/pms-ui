@@ -6,7 +6,7 @@ import { FormField, Checkbox } from "@components/FormElements";
 import { PropertyFormValues } from "@interfaces/property.interface";
 
 interface Props {
-  propertyForm: UseFormReturnType<PropertyFormValues>;
+  form: UseFormReturnType<PropertyFormValues>;
   handleOnChange: (
     event:
       | React.ChangeEvent<
@@ -16,7 +16,7 @@ interface Props {
   ) => void;
 }
 
-export function AmenitiesTab({ propertyForm: form, handleOnChange }: Props) {
+export function AmenitiesTab({ form, handleOnChange }: Props) {
   return (
     <>
       <FormSection

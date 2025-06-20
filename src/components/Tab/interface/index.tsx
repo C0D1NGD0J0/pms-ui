@@ -20,7 +20,6 @@ export interface TabsProps {
   onChange?: (tabId: string) => void;
   className?: string;
   ariaLabel?: string;
-  mode?: "new" | "edit";
   scrollOnChange?: boolean; // New prop to optionally disable auto-scrolling
 }
 

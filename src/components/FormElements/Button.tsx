@@ -9,7 +9,6 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   disabled?: boolean;
   style?: CSSProperties;
   icon?: React.ReactNode;
-  formId?: string;
   renderChildren?: boolean;
   iconPosition?: "left" | "right";
   type?: "button" | "submit" | "reset";
@@ -23,7 +22,6 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   children,
   className,
-  formId = "",
   ariaLabel,
   key = new Date().getTime().toString(),
   type = "button",
@@ -35,7 +33,6 @@ export const Button: React.FC<ButtonProps> = ({
       type={type}
       style={style}
       key={key}
-      {...(formId && formId.trim() !== "" && { form: formId })}
       disabled={disabled}
       onClick={onClick}
       aria-label={ariaLabel || label}
