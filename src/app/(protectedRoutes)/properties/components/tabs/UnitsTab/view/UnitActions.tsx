@@ -2,10 +2,9 @@ import React, { useState } from "react";
 import { Button } from "@components/FormElements";
 
 interface Props {
-  canAddUnit: boolean;
-  canRemoveUnit: boolean;
-  onCopyUnit: () => void;
   currentUnit: any;
+  canAddUnit: boolean;
+  onCopyUnit: () => void;
   isFormSubmitting?: boolean;
   unitNumberingScheme: string;
   onRemoveUnit: (puid: string) => void;
@@ -17,7 +16,6 @@ export function UnitActions({
   onCopyUnit,
   canAddUnit,
   onRemoveUnit,
-  canRemoveUnit,
   prefixOptions,
   unitNumberingScheme,
   isFormSubmitting = false,
@@ -110,7 +108,7 @@ export function UnitActions({
         label=""
         title="Remove Unit"
         className="btn-text"
-        disabled={!canRemoveUnit || isFormSubmitting}
+        disabled={isFormSubmitting}
         icon={<i className="bx bx-trash danger"></i>}
         onClick={() => onRemoveUnit(currentUnit.puid)}
       />

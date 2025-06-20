@@ -27,16 +27,35 @@ export function UnitsTab({ property }: Props) {
     isSubmitting,
     validateUnit,
     handleSubmit,
-    canRemoveUnit,
     handleOnChange,
     handleCopyUnit,
-    setCustomPrefix,
+    unitNumberingScheme,
+    setUnitNumberingScheme,
     handleUnitSelect,
     handleRemoveUnit,
+    handleLoadMore,
+    hasNextPage,
+    isFetchingNextPage,
+    allUnits,
     handleAddAnotherUnit,
   } = useUnitsForm({
     property,
   });
+
+  if (!currentUnit && allUnits.length) {
+    return (
+      <UnitNavigation
+        units={allUnits}
+        currentUnit={null}
+        hasNextPage={hasNextPage}
+        validateUnit={validateUnit}
+        onLoadMore={handleLoadMore}
+        addNewUnit={handleAddAnotherUnit}
+        setCurrentUnit={handleUnitSelect}
+        isLoadingMore={isFetchingNextPage}
+      />
+    );
+  }
 
   if (!currentUnit) {
     return (
@@ -64,10 +83,14 @@ export function UnitsTab({ property }: Props) {
   return (
     <div className="form-section">
       <UnitNavigation
+        units={allUnits}
         currentUnit={currentUnit}
+        hasNextPage={hasNextPage}
         validateUnit={validateUnit}
-        units={unitForm.values.units}
+        onLoadMore={handleLoadMore}
+        addNewUnit={handleAddAnotherUnit}
         setCurrentUnit={handleUnitSelect}
+        isLoadingMore={isFetchingNextPage}
       />
 
       <div className="form-header">
@@ -76,10 +99,9 @@ export function UnitsTab({ property }: Props) {
             canAddUnit={canAddUnit}
             currentUnit={currentUnit}
             onCopyUnit={handleCopyUnit}
-            canRemoveUnit={canRemoveUnit}
             onRemoveUnit={handleRemoveUnit}
-            unitNumberingScheme={customPrefix}
-            onNumberingSchemeChange={setCustomPrefix}
+            unitNumberingScheme={unitNumberingScheme}
+            onNumberingSchemeChange={setUnitNumberingScheme}
             prefixOptions={formConfig?.prefixOptions || []}
           />
         </div>

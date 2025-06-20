@@ -9,11 +9,14 @@ import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { createUnitSchema } from "@validations/unit.validations";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useConditionalRender, useNotification } from "@hooks/index";
-import { usePropertyFormMetaData } from "@app/(protectedRoutes)/properties/hooks";
 import {
   StaticUnitFormConfig,
   PropertyFormValues,
 } from "@interfaces/property.interface";
+import {
+  usePropertyFormMetaData,
+  useGetPropertyUnits,
+} from "@app/(protectedRoutes)/properties/hooks";
 import {
   UnitsFormValues,
   UnitFormValues,
@@ -34,12 +37,31 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
   const { isVisible } = useConditionalRender({
     unitType: currentUnit?.unitType,
   });
+  const {
+    data: savedUnitsData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useGetPropertyUnits(client?.csub || "", property.pid, {
+    limit: 2,
+    sortBy: "floor",
+  });
+
+  // Flatten the infinite query data
+  const savedUnits =
+    savedUnitsData?.pages?.flatMap((page) => page?.items || []) || [];
+
   const unitForm = useForm<UnitsFormValues>({
     initialValues: {
       units: [],
+      cid: client?.csub || "",
+      pid: property.pid,
     },
   });
-  const totalUnitsCreated = unitForm.values.units.length;
+
+  const newUnits = unitForm.values.units;
+  const allUnits = [...savedUnits, ...newUnits] as UnitFormValues[];
+  const totalUnitsCreated = newUnits.length;
 
   const {
     customPrefix,
@@ -57,10 +79,14 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
   });
 
   const findUnitByPuid = (puid: string): UnitFormValues | undefined => {
-    return unitForm.values.units.find((unit) => (unit as any).puid === puid);
+    return allUnits.find((unit) => (unit as any).puid === puid);
   };
 
   const findUnitIndexByPuid = (puid: string): number => {
+    return allUnits.findIndex((unit) => (unit as any).puid === puid);
+  };
+
+  const findNewUnitIndexByPuid = (puid: string): number => {
     return unitForm.values.units.findIndex(
       (unit) => (unit as any).puid === puid
     );
@@ -115,14 +141,11 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
     const formErrors: Record<string, string> = {};
 
     errors.forEach((error) => {
-      // parse errors like "specifications.rooms: Number of room is required"
       const [fieldPath, message] = error.split(": ");
       if (fieldPath && message) {
-        // Store errors in the format components expect (without units.X prefix)
         formErrors[fieldPath] = message;
       }
     });
-    console.log(unit, "Unit validation result:", formErrors);
     unitForm.setErrors(formErrors);
   };
 
@@ -184,12 +207,20 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
     const unitToRemove = findUnitByPuid(puid);
     if (!unitToRemove) return;
 
-    const newUnits = unitForm.values.units.filter((unit) => unit.puid !== puid);
-    unitForm.setFieldValue("units", newUnits);
+    if (!unitToRemove.propertyId) {
+      const newUnits = unitForm.values.units.filter(
+        (unit) => unit.puid !== puid
+      );
+      unitForm.setFieldValue("units", newUnits);
+    }
 
     if (currentUnit?.puid === puid) {
-      if (newUnits.length > 0) {
-        setCurrentUnit(newUnits[0]);
+      if (allUnits.length > 1) {
+        // Select another unit (prefer new units, then saved units)
+        const remainingUnits = allUnits.filter(
+          (unit) => (unit as any).puid !== puid
+        );
+        setCurrentUnit(remainingUnits[remainingUnits.length - 1]);
       } else {
         setCurrentUnit(null);
       }
@@ -198,7 +229,7 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
     openNotification(
       "success",
       "Unit Removed",
-      `Unit removed successfully. ${newUnits.length} units remaining.`
+      `Unit removed successfully. ${newUnits.length} new units remaining.`
     );
   };
 
@@ -279,7 +310,6 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
       return;
     }
 
-    // Submit if validation passes
     createUnitsMutation.mutate({ units: formData.units });
   };
 
@@ -346,56 +376,68 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
   };
 
   const handleUnitChange = (updatedUnit: UnitFormValues) => {
-    const index = findUnitIndexByPuid(updatedUnit.puid);
-    if (index !== -1) {
-      unitForm.setFieldValue(`units.${index}`, updatedUnit);
+    // Check if this is a saved unit being edited for the first time
+    const isSavedUnit = savedUnits.some(
+      (unit) => (unit as any).puid === (updatedUnit as any).puid
+    );
+
+    if (isSavedUnit) {
+      // Move saved unit to form state for editing
+      const newFormUnits = [...unitForm.values.units, updatedUnit];
+      unitForm.setFieldValue("units", newFormUnits);
       setCurrentUnit(updatedUnit);
       validateCurrentUnitAndSetErrors();
+    } else {
+      // Handle new unit (already in form)
+      const index = findNewUnitIndexByPuid((updatedUnit as any).puid);
+      if (index !== -1) {
+        unitForm.setFieldValue(`units.${index}`, updatedUnit);
+        setCurrentUnit(updatedUnit);
+        validateCurrentUnitAndSetErrors();
+      }
+    }
 
-      // Auto-detect numbering pattern when unit number is manually changed
-      if (updatedUnit.unitNumber !== currentUnit?.unitNumber) {
-        const detectedPattern = detectNumberingPattern(updatedUnit.unitNumber);
-        if (detectedPattern !== unitNumberingScheme) {
-          setUnitNumberingScheme(detectedPattern);
+    // Auto-detect numbering pattern when unit number is manually changed
+    if (updatedUnit.unitNumber !== currentUnit?.unitNumber) {
+      const detectedPattern = detectNumberingPattern(updatedUnit.unitNumber);
+      if (detectedPattern !== unitNumberingScheme) {
+        setUnitNumberingScheme(detectedPattern);
 
-          // Extract and set custom prefix if detected as custom pattern
-          if (detectedPattern === "custom") {
-            const parsed = parseCustomUnit(updatedUnit.unitNumber);
-            if (parsed) {
-              setCustomPrefix(parsed.prefix);
-            }
+        // Extract and set custom prefix if detected as custom pattern
+        if (detectedPattern === "custom") {
+          const parsed = parseCustomUnit(updatedUnit.unitNumber);
+          if (parsed) {
+            setCustomPrefix(parsed.prefix);
           }
-        }
-
-        // Check for floor-unit number correlation and show warning
-        const floorValidation = validateUnitNumberFloorCorrelation(
-          updatedUnit.unitNumber,
-          updatedUnit.floor
-        );
-
-        if (!floorValidation.isValid && floorValidation.suggestedFloor) {
-          openNotification(
-            "warning",
-            "Floor and Unit Number Mismatch",
-            `${floorValidation.message}\n\nConsider updating the floor to ${floorValidation.suggestedFloor} to match the unit number pattern.`
-          );
         }
       }
 
-      // Check for floor changes
-      if (currentUnit && updatedUnit.floor !== currentUnit.floor) {
-        const floorValidation = validateUnitNumberFloorCorrelation(
-          updatedUnit.unitNumber,
-          updatedUnit.floor
-        );
+      const floorValidation = validateUnitNumberFloorCorrelation(
+        updatedUnit.unitNumber,
+        updatedUnit.floor
+      );
 
-        if (!floorValidation.isValid) {
-          openNotification(
-            "warning",
-            "Floor and Unit Number Mismatch",
-            `${floorValidation.message}\n\nThe unit number may need to be updated to match the new floor.`
-          );
-        }
+      if (!floorValidation.isValid && floorValidation.suggestedFloor) {
+        openNotification(
+          "warning",
+          "Floor and Unit Number Mismatch",
+          `${floorValidation.message}\n\nConsider updating the floor to ${floorValidation.suggestedFloor} to match the unit number pattern.`
+        );
+      }
+    }
+
+    if (currentUnit && updatedUnit.floor !== currentUnit.floor) {
+      const floorValidation = validateUnitNumberFloorCorrelation(
+        updatedUnit.unitNumber,
+        updatedUnit.floor
+      );
+
+      if (!floorValidation.isValid) {
+        openNotification(
+          "warning",
+          "Floor and Unit Number Mismatch",
+          `${floorValidation.message}\n\nThe unit number may need to be updated to match the new floor.`
+        );
       }
     }
   };
@@ -473,9 +515,13 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
     [currentUnit, handleUnitChange]
   );
 
-  const canAddUnit = totalUnitsCreated <= FORM_MAX_UNITS;
-  const canRemoveUnit = totalUnitsCreated > 0;
+  const handleLoadMore = () => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
 
+  const canAddUnit = totalUnitsCreated <= FORM_MAX_UNITS;
   return {
     unitForm,
     isVisible,
@@ -483,17 +529,22 @@ export function useUnitsForm({ property }: { property: PropertyFormValues }) {
     canAddUnit,
     currentUnit,
     customPrefix,
-    canRemoveUnit,
     setCurrentUnit,
     handleCopyUnit,
     handleOnChange,
     unitTypeOptions,
     setCustomPrefix,
+    unitNumberingScheme,
+    setUnitNumberingScheme,
     handleRemoveUnit,
     handleUnitSelect,
     handleUnitChange,
     formConfigLoading,
     handleAddAnotherUnit,
+    handleLoadMore,
+    hasNextPage,
+    isFetchingNextPage,
+    allUnits,
     validateUnit: validateUnitWithTypeManager,
     isSubmitting: createUnitsMutation.isPending,
     handleSubmit: unitForm.onSubmit(handleSubmit),

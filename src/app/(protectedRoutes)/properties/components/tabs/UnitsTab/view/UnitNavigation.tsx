@@ -1,14 +1,19 @@
 import React from "react";
+import { Button } from "@components/FormElements";
 import { UnitsFormValues, UnitFormValues } from "@interfaces/unit.interface";
 
 interface Props {
   units: UnitsFormValues["units"];
-  currentUnit: UnitFormValues;
+  currentUnit: UnitFormValues | null;
   setCurrentUnit: (unit: UnitFormValues) => void;
   validateUnit: (unit: UnitFormValues) => {
     isValid: boolean;
     errors: string[];
   };
+  addNewUnit: () => void;
+  onLoadMore?: () => void;
+  hasNextPage?: boolean;
+  isLoadingMore?: boolean;
 }
 
 export function UnitNavigation({
@@ -16,72 +21,88 @@ export function UnitNavigation({
   currentUnit,
   validateUnit,
   setCurrentUnit,
+  onLoadMore,
+  hasNextPage,
+  addNewUnit,
+  isLoadingMore,
 }: Props) {
   if (units.length < 1) {
-    return null;
+    return (
+      <div className="unit-navigation">
+        <div className="unit-navigation__header">
+          <h5 className="unit-navigation__title">Unit Navigation</h5>
+          <button type="button" className="unit-navigation__add-btn">
+            Add Unit
+          </button>
+        </div>
+        <div className="unit-navigation__empty-state">
+          No units available. Click &ldquo;Add Unit&rdquo; to create your first
+          unit.
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div
-      style={{
-        marginBottom: "20px",
-        padding: "15px",
-        backgroundColor: "#f8f9fa",
-        borderRadius: "8px",
-        border: "1px solid #e9ecef",
-      }}
-    >
-      <h5 style={{ margin: "0 0 10px 0", color: "#124e66" }}>
-        Unit Navigation
-      </h5>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "8px",
-          alignItems: "center",
-        }}
-      >
+    <div className="unit-navigation">
+      <div className="unit-navigation__header">
+        <h5 className="unit-navigation__title">Unit Navigation</h5>
+        <div className="unit-navigation__load-more">
+          <Button
+            label="Add Unit"
+            onClick={addNewUnit}
+            className="btn-success btn-rounded"
+          />
+          {hasNextPage && (
+            <Button
+              onClick={onLoadMore}
+              disabled={isLoadingMore}
+              className="btn btn-rounded btn-outline"
+              label={isLoadingMore ? "Loading..." : "Load More"}
+            />
+          )}
+        </div>
+      </div>
+
+      <div className="unit-navigation__list">
         {units.map((unit, index) => {
           const validation = validateUnit(unit);
           const isActive = currentUnit?.puid === (unit as any).puid;
-          const unitWithPuid = unit as any; // Cast to bypass puid validation for now
+          const unitWithPuid = unit as any;
+
+          const itemClasses = [
+            "unit-navigation__item",
+            isActive ? "unit-navigation__item--active" : "",
+            !validation.isValid
+              ? "unit-navigation__item--invalid"
+              : "unit-navigation__item--valid",
+          ]
+            .filter(Boolean)
+            .join(" ");
 
           return (
-            <button
+            <div
               key={unitWithPuid.puid || index}
-              type="button"
+              className={itemClasses}
               onClick={() => {
                 setCurrentUnit(unitWithPuid);
               }}
-              style={{
-                padding: "8px 16px",
-                border: "1px solid #dee2e6",
-                borderRadius: "4px",
-                backgroundColor: isActive ? "#007bff" : "white",
-                color: isActive ? "white" : "#495057",
-                cursor: "pointer",
-                fontSize: "14px",
-                position: "relative",
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setCurrentUnit(unitWithPuid);
+                }
               }}
-              title={`Unit ${index + 1}: ${unit.unitNumber || "Untitled"}`}
+              title={`Unit ${unit.unitNumber || `${index + 1}`}${
+                !validation.isValid ? " - Has validation errors" : ""
+              }`}
             >
-              {unit.unitNumber || `Unit ${index + 1}`}
-              {!validation.isValid && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-4px",
-                    right: "-4px",
-                    width: "8px",
-                    height: "8px",
-                    backgroundColor: "#dc3545",
-                    borderRadius: "50%",
-                  }}
-                  title="Has validation errors"
-                />
-              )}
-            </button>
+              <p className="unit-navigation__item-text">
+                {unit.unitNumber || `Unit ${index + 1}`}
+              </p>
+            </div>
           );
         })}
       </div>

@@ -148,6 +148,7 @@ export function createUnitSchema(unitType: UnitType) {
 
 export const unitSchema = z.object({
   id: z.string().optional(),
+  propertyId: z.string().optional(),
   puid: z
     .string()
     .min(30, "Property unique ID (puid) is required")
