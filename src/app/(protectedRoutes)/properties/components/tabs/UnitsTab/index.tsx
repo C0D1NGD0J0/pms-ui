@@ -3,7 +3,7 @@ import { Button } from "@components/FormElements";
 import { FormSection } from "@components/FormLayout";
 import { PropertyFormValues } from "@interfaces/property.interface";
 
-import { useUnitsForm } from "./hook";
+import { useUnitForm } from "./hook";
 import {
   UnitFinancialInfo,
   UnitNavigation,
@@ -20,11 +20,11 @@ export function UnitsTab({ property }: Props) {
   const {
     unitForm,
     isVisible,
-    canAddUnit,
     formConfig,
-    currentUnit,
     customPrefix,
     isSubmitting,
+    canAddUnit,
+    currentUnit,
     validateUnit,
     handleSubmit,
     handleOnChange,
@@ -38,9 +38,14 @@ export function UnitsTab({ property }: Props) {
     isFetchingNextPage,
     allUnits,
     handleAddAnotherUnit,
-  } = useUnitsForm({
-    property,
-  });
+    isEditMode,
+    newUnits,
+  } = useUnitForm({ property });
+
+  const totalUnits = allUnits.length;
+  const pendingUnits = newUnits.filter(
+    (unit) => !unit.id || !unit.propertyId
+  ).length;
 
   if (!currentUnit && allUnits.length) {
     return (
@@ -50,9 +55,9 @@ export function UnitsTab({ property }: Props) {
         hasNextPage={hasNextPage}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        addNewUnit={handleAddAnotherUnit}
         setCurrentUnit={handleUnitSelect}
         isLoadingMore={isFetchingNextPage}
+        addNewUnit={handleAddAnotherUnit}
       />
     );
   }
@@ -82,15 +87,21 @@ export function UnitsTab({ property }: Props) {
 
   return (
     <div className="form-section">
+      <div style={{ fontSize: "12px", color: "#666", marginBottom: "10px" }}>
+        Mode: {isEditMode ? "Edit" : "Create"} | Unit: {currentUnit.unitNumber}{" "}
+        | ID: {currentUnit?.puid ? currentUnit.puid : "No ID"} | Units:{" "}
+        {totalUnits} ({pendingUnits} pending)
+      </div>
+
       <UnitNavigation
         units={allUnits}
         currentUnit={currentUnit}
         hasNextPage={hasNextPage}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        addNewUnit={handleAddAnotherUnit}
         setCurrentUnit={handleUnitSelect}
         isLoadingMore={isFetchingNextPage}
+        addNewUnit={handleAddAnotherUnit}
       />
 
       <div className="form-header">
@@ -153,7 +164,7 @@ export function UnitsTab({ property }: Props) {
         <Button
           form="units-form"
           onClick={handleSubmit}
-          label="Save Unit Changes"
+          label={isEditMode ? "Update Unit" : "Save Unit Changes"}
           className="btn btn-primary btn-grow"
           disabled={!unitForm.isValid || isSubmitting}
         />

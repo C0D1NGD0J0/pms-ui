@@ -70,9 +70,13 @@ export function UnitNavigation({
           const isActive = currentUnit?.puid === (unit as any).puid;
           const unitWithPuid = unit as any;
 
+          // Detect unsaved units (no backend IDs)
+          const isUnsaved = !unitWithPuid.id || !unitWithPuid.propertyId;
+
           const itemClasses = [
             "unit-navigation__item",
             isActive ? "unit-navigation__item--active" : "",
+            isUnsaved ? "unit-navigation__item--unsaved" : "",
             !validation.isValid
               ? "unit-navigation__item--invalid"
               : "unit-navigation__item--valid",
@@ -96,8 +100,8 @@ export function UnitNavigation({
                 }
               }}
               title={`Unit ${unit.unitNumber || `${index + 1}`}${
-                !validation.isValid ? " - Has validation errors" : ""
-              }`}
+                isUnsaved ? " - Unsaved" : ""
+              }${!validation.isValid ? " - Has validation errors" : ""}`}
             >
               <p className="unit-navigation__item-text">
                 {unit.unitNumber || `Unit ${index + 1}`}

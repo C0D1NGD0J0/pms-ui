@@ -95,7 +95,6 @@ export function useUnitNumbering({
     };
   };
 
-  // Get last number from existing units of same pattern
   const getLastNumber = (units: UnitFormValues[], pattern: string): number => {
     let filteredUnits: number[] = [];
 
@@ -143,8 +142,96 @@ export function useUnitNumbering({
       : 0;
   };
 
-  // Generate next unit number
-  const generateNextUnitNumber = (): string => {
+  const incrementUnitNumber = (baseUnitNumber: string): string => {
+    const pattern = detectNumberingPattern(baseUnitNumber);
+
+    switch (pattern) {
+      case "alpha":
+        const alphaMatch = baseUnitNumber.match(/^([A-Z])-(\d+)$/);
+        if (alphaMatch) {
+          const letter = alphaMatch[1];
+          const number = parseInt(alphaMatch[2]) + 1;
+          return `${letter}-${number}`;
+        }
+        break;
+
+      case "custom":
+        const customMatch = baseUnitNumber.match(/^([A-Za-z]+)-(\d+)$/);
+        if (customMatch) {
+          const prefix = customMatch[1];
+          const number = parseInt(customMatch[2]) + 1;
+          return `${prefix}-${number.toString().padStart(3, "0")}`;
+        }
+        break;
+
+      case "suite":
+        const suiteMatch = baseUnitNumber.match(/^Suite-(\d+)$/i);
+        if (suiteMatch) {
+          const number = parseInt(suiteMatch[1]) + 1;
+          return `Suite-${number.toString().padStart(3, "0")}`;
+        }
+        break;
+
+      case "floor":
+        if (/^\d{4}$/.test(baseUnitNumber)) {
+          const number = parseInt(baseUnitNumber) + 1;
+          return number.toString();
+        }
+        break;
+
+      case "numeric":
+        if (/^\d+$/.test(baseUnitNumber)) {
+          const number = parseInt(baseUnitNumber) + 1;
+          return number.toString();
+        }
+        break;
+    }
+
+    // Fallback: just add 1 to any trailing number
+    const match = baseUnitNumber.match(/^(.*)(\d+)(.*)$/);
+    if (match) {
+      const prefix = match[1];
+      const number = parseInt(match[2]) + 1;
+      const suffix = match[3];
+      return `${prefix}${number}${suffix}`;
+    }
+
+    // Ultimate fallback
+    return `${baseUnitNumber}-Copy`;
+  };
+
+  const isUnitNumberTaken = (unitNumber: string): boolean => {
+    return existingUnits.some((unit) => unit.unitNumber === unitNumber);
+  };
+
+  const generateNextUnitNumberFromSource = (
+    sourceUnitNumber: string
+  ): string => {
+    let nextNumber = incrementUnitNumber(sourceUnitNumber);
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loops
+
+    // Keep incrementing until we find an available number
+    while (isUnitNumberTaken(nextNumber) && attempts < maxAttempts) {
+      nextNumber = incrementUnitNumber(nextNumber);
+      attempts++;
+    }
+
+    if (attempts >= maxAttempts) {
+      // Fallback to timestamp-based unique number
+      const timestamp = Date.now().toString().slice(-4);
+      return `${sourceUnitNumber}-${timestamp}`;
+    }
+
+    return nextNumber;
+  };
+
+  const generateNextUnitNumber = (sourceUnitNumber?: string): string => {
+    // If copying from a specific unit, increment from that unit's number
+    if (sourceUnitNumber) {
+      return generateNextUnitNumberFromSource(sourceUnitNumber);
+    }
+
     // Use suggested number for first unit
     if (existingUnits.length === 0) {
       if (suggestedNumber) {
