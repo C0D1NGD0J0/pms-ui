@@ -75,6 +75,7 @@ export function useBaseUnitForm({
     if (savedUnits.length > 0) {
       const firstSavedUnit = savedUnits[0];
       setCurrentUnit(firstSavedUnit as UnitFormValues);
+      setOriginalUnit(firstSavedUnit as UnitFormValues);
       unitForm.setFieldValue("units", savedUnits);
     }
   }, [savedUnitsData?.pages]);
@@ -319,7 +320,6 @@ export function useBaseUnitForm({
     } else {
       setOriginalUnit(null);
     }
-    console.log(originalUnit, "changes...", currentUnit);
   }, []);
 
   const handleUnitChange = (updatedUnit: UnitFormValues) => {
