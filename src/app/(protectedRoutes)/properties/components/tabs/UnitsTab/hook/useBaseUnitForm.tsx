@@ -2,10 +2,11 @@
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@store/index";
 import { useForm } from "@mantine/form";
-import { ChangeEvent, useCallback, useState, useMemo } from "react";
+import { extractChanges } from "@utils/helpers";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { createUnitSchema } from "@validations/unit.validations";
 import { useConditionalRender, useNotification } from "@hooks/index";
+import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
 import {
   StaticUnitFormConfig,
   PropertyFormValues,
@@ -39,6 +40,7 @@ export function useBaseUnitForm({
   const { client } = useAuth();
   const { openNotification } = useNotification();
   const [currentUnit, setCurrentUnit] = useState<UnitFormValues | null>(null);
+  const [originalUnit, setOriginalUnit] = useState<UnitFormValues | null>(null);
 
   const { data: formConfig, isLoading: formConfigLoading } =
     usePropertyFormMetaData<StaticUnitFormConfig>("unitForm");
@@ -69,9 +71,24 @@ export function useBaseUnitForm({
     },
   });
 
+  useEffect(() => {
+    if (savedUnits.length > 0) {
+      const firstSavedUnit = savedUnits[0];
+      setCurrentUnit(firstSavedUnit as UnitFormValues);
+      unitForm.setFieldValue("units", savedUnits);
+    }
+  }, [savedUnitsData?.pages]);
+
   const newUnits = unitForm.values.units;
-  const allUnits = [...savedUnits, ...newUnits] as UnitFormValues[];
   const totalUnitsCreated = newUnits.length;
+
+  const hasUnsavedChanges = useMemo(() => {
+    if (!currentUnit || !originalUnit) return false;
+    if (!currentUnit.propertyId || !currentUnit.id) return false; // only perform this for saved units
+    console.log(currentUnit, "Checking for unsaved changes...", originalUnit);
+    const changes = extractChanges(originalUnit, currentUnit);
+    return changes !== null;
+  }, [currentUnit, originalUnit]);
 
   const {
     customPrefix,
@@ -89,11 +106,13 @@ export function useBaseUnitForm({
   });
 
   const findUnitByPuid = (puid: string): UnitFormValues | undefined => {
-    return allUnits.find((unit) => (unit as any).puid === puid);
+    return unitForm.values.units.find((unit) => (unit as any).puid === puid);
   };
 
   const findUnitIndexByPuid = (puid: string): number => {
-    return allUnits.findIndex((unit) => (unit as any).puid === puid);
+    return unitForm.values.units.findIndex(
+      (unit) => (unit as any).puid === puid
+    );
   };
 
   const findNewUnitIndexByPuid = (puid: string): number => {
@@ -102,7 +121,6 @@ export function useBaseUnitForm({
     );
   };
 
-  // Memoize expensive calculations
   const allowedUnitTypes = useMemo(
     () => PropertyTypeManager.getAllowedUnitTypes(property.propertyType),
     [property.propertyType]
@@ -119,7 +137,6 @@ export function useBaseUnitForm({
     [property.propertyType, formConfig?.unitTypes]
   );
 
-  // validations
   const validateUnitWithTypeManager = (
     unit: UnitFormValues | null
   ): { isValid: boolean; errors: string[] } => {
@@ -167,13 +184,11 @@ export function useBaseUnitForm({
   };
 
   const copyUnitForCreation = (sourceUnit: UnitFormValues): UnitFormValues => {
-    // Deep clone user-editable fields, excluding backend fields
     const deepClonedFields = {
       unitType: sourceUnit.unitType,
       status: sourceUnit.status,
       floor: sourceUnit.floor,
       isActive: sourceUnit.isActive,
-      // Deep clone nested objects
       specifications: {
         ...sourceUnit.specifications,
       },
@@ -196,7 +211,6 @@ export function useBaseUnitForm({
     };
   };
 
-  // unit management - optimized with useCallback for child components
   const handleCopyUnit = useCallback(() => {
     const validation = validateUnitWithTypeManager(currentUnit);
     if (!validation.isValid) {
@@ -270,9 +284,9 @@ export function useBaseUnitForm({
       }
 
       if (currentUnit?.puid === puid) {
-        if (allUnits.length > 1) {
+        if (unitForm.values.units.length > 1) {
           // Select another unit (prefer new units, then saved units)
-          const remainingUnits = allUnits.filter(
+          const remainingUnits = unitForm.values.units.filter(
             (unit) => (unit as any).puid !== puid
           );
           setCurrentUnit(remainingUnits[remainingUnits.length - 1]);
@@ -291,36 +305,67 @@ export function useBaseUnitForm({
       findUnitByPuid,
       unitForm,
       currentUnit,
-      allUnits,
+      unitForm.values.units,
       setCurrentUnit,
       openNotification,
     ]
   );
 
   const handleUnitSelect = useCallback((unit: UnitFormValues) => {
-    console.log("Selecting unit:", unit);
     setCurrentUnit(unit);
+
+    if (unit.propertyId && unit.id) {
+      setOriginalUnit(unit);
+    } else {
+      setOriginalUnit(null);
+    }
+    console.log(originalUnit, "changes...", currentUnit);
   }, []);
 
   const handleUnitChange = (updatedUnit: UnitFormValues) => {
-    // check if this is a saved unit being edited for the first time
     const isSavedUnit = savedUnits.some(
       (unit) => (unit as any).puid === (updatedUnit as any).puid
     );
 
     if (isSavedUnit) {
-      // Move saved unit to form state for editing
-      const newFormUnits = [...unitForm.values.units, updatedUnit];
-      unitForm.setFieldValue("units", newFormUnits);
-      setCurrentUnit(updatedUnit);
+      // Check if unit is already in form state to prevent duplication
+      const isAlreadyInForm = unitForm.values.units.some(
+        (unit) => unit.puid === (updatedUnit as any).puid
+      );
+
+      if (!isAlreadyInForm) {
+        // Only add if not already in form
+        const newFormUnits = [...unitForm.values.units, updatedUnit];
+        unitForm.setFieldValue("units", newFormUnits);
+        setCurrentUnit(updatedUnit);
+        console.log(
+          unitForm.values.units,
+          "first time editing saved unit, added to form:",
+          updatedUnit
+        );
+      } else {
+        // Update existing unit in form
+        const index = findNewUnitIndexByPuid((updatedUnit as any).puid);
+        if (index !== -1) {
+          unitForm.setFieldValue(`units.${index}`, updatedUnit);
+          setCurrentUnit(updatedUnit);
+          console.log(
+            "second time editing saved unit, added to form:",
+            updatedUnit
+          );
+        }
+      }
       validateCurrentUnitAndSetErrors();
     } else {
-      // Handle new unit (already in form)
       const index = findNewUnitIndexByPuid((updatedUnit as any).puid);
       if (index !== -1) {
         unitForm.setFieldValue(`units.${index}`, updatedUnit);
         setCurrentUnit(updatedUnit);
         validateCurrentUnitAndSetErrors();
+        console.log(
+          "third time editing saved unit, added to form:",
+          updatedUnit
+        );
       }
     }
 
@@ -504,10 +549,11 @@ export function useBaseUnitForm({
     unitForm,
     currentUnit,
     setCurrentUnit,
-    allUnits,
+    allUnits: unitForm.values.units,
     savedUnits,
     newUnits,
     totalUnitsCreated,
+    hasUnsavedChanges,
 
     formConfig,
     formConfigLoading,

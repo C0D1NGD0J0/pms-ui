@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import { extractChanges } from "@utils/helpers";
 import { Button } from "@components/FormElements";
 import { FormSection } from "@components/FormLayout";
+import { Modal } from "@components/FormElements/Modal";
+import { UnitFormValues } from "@interfaces/unit.interface";
 import { PropertyFormValues } from "@interfaces/property.interface";
 
 import { useUnitForm } from "./hook";
@@ -17,6 +20,10 @@ interface Props {
 }
 
 export function UnitsTab({ property }: Props) {
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [navigationTarget, setNavigationTarget] =
+    useState<UnitFormValues | null>(null);
+
   const {
     unitForm,
     isVisible,
@@ -39,13 +46,66 @@ export function UnitsTab({ property }: Props) {
     allUnits,
     handleAddAnotherUnit,
     isEditMode,
+    totalUnitsCreated,
     newUnits,
+    hasUnsavedChanges,
   } = useUnitForm({ property });
 
-  const totalUnits = allUnits.length;
   const pendingUnits = newUnits.filter(
     (unit) => !unit.id || !unit.propertyId
   ).length;
+
+  // Protected navigation function
+  const handleProtectedUnitSelect = (targetUnit: UnitFormValues) => {
+    if (hasUnsavedChanges) {
+      setNavigationTarget(targetUnit);
+      setShowUnsavedModal(true);
+    } else {
+      handleUnitSelect(targetUnit);
+    }
+  };
+
+  // Check for actual modifications (not just form presence)
+  const checkUnitHasUnsavedChanges = (unit: UnitFormValues): boolean => {
+    // For current unit, use the hasUnsavedChanges state (deep comparison)
+    if (currentUnit?.puid === unit.puid) {
+      return hasUnsavedChanges;
+    }
+
+    // For other units, check if they've been modified from their original saved state
+    const originalSavedUnit = allUnits.find(
+      (u) => u.puid === unit.puid && u.propertyId && u.id
+    );
+    const formUnit = newUnits.find((formUnit) => formUnit.puid === unit.puid);
+
+    if (!originalSavedUnit || !formUnit) return false;
+
+    // Use extractChanges to detect actual modifications
+    const changes = extractChanges(originalSavedUnit, formUnit);
+    return changes !== null;
+  };
+
+  const handleSaveAndSwitch = async () => {
+    handleSubmit();
+    setShowUnsavedModal(false);
+    if (navigationTarget) {
+      handleUnitSelect(navigationTarget);
+      setNavigationTarget(null);
+    }
+  };
+
+  const handleDiscardAndSwitch = () => {
+    setShowUnsavedModal(false);
+    if (navigationTarget) {
+      handleUnitSelect(navigationTarget);
+      setNavigationTarget(null);
+    }
+  };
+
+  const handleCancelNavigation = () => {
+    setShowUnsavedModal(false);
+    setNavigationTarget(null);
+  };
 
   if (!currentUnit && allUnits.length) {
     return (
@@ -55,9 +115,10 @@ export function UnitsTab({ property }: Props) {
         hasNextPage={hasNextPage}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        setCurrentUnit={handleUnitSelect}
+        setCurrentUnit={handleProtectedUnitSelect}
         isLoadingMore={isFetchingNextPage}
         addNewUnit={handleAddAnotherUnit}
+        hasUnsavedChanges={checkUnitHasUnsavedChanges}
       />
     );
   }
@@ -90,7 +151,7 @@ export function UnitsTab({ property }: Props) {
       <div style={{ fontSize: "12px", color: "#666", marginBottom: "10px" }}>
         Mode: {isEditMode ? "Edit" : "Create"} | Unit: {currentUnit.unitNumber}{" "}
         | ID: {currentUnit?.puid ? currentUnit.puid : "No ID"} | Units:{" "}
-        {totalUnits} ({pendingUnits} pending)
+        {totalUnitsCreated} ({pendingUnits} pending)
       </div>
 
       <UnitNavigation
@@ -99,10 +160,41 @@ export function UnitsTab({ property }: Props) {
         hasNextPage={hasNextPage}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        setCurrentUnit={handleUnitSelect}
+        setCurrentUnit={handleProtectedUnitSelect}
         isLoadingMore={isFetchingNextPage}
         addNewUnit={handleAddAnotherUnit}
+        hasUnsavedChanges={checkUnitHasUnsavedChanges}
       />
+
+      <Modal isOpen={showUnsavedModal} onClose={handleCancelNavigation}>
+        <div style={{ padding: "20px" }}>
+          <h3 style={{ marginBottom: "15px" }}>Unsaved Changes</h3>
+          <p style={{ marginBottom: "20px" }}>
+            You have unsaved changes to unit {currentUnit?.unitNumber}. What
+            would you like to do?
+          </p>
+          <div
+            style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}
+          >
+            <Button
+              label="Cancel"
+              onClick={handleCancelNavigation}
+              className="btn btn-outline"
+            />
+            <Button
+              label="Discard Changes"
+              onClick={handleDiscardAndSwitch}
+              className="btn btn-secondary"
+            />
+            <Button
+              label="Save & Switch"
+              onClick={handleSaveAndSwitch}
+              className="btn btn-primary"
+              disabled={!unitForm.isValid}
+            />
+          </div>
+        </div>
+      </Modal>
 
       <div className="form-header">
         <div className="form-actions">
@@ -119,7 +211,7 @@ export function UnitsTab({ property }: Props) {
       </div>
 
       <div className="unit-editor">
-        <FormSection title="Basic Details">
+        <FormSection title="Basic Details" collapsible defaultCollapsed>
           <UnitBasicInfo
             unit={currentUnit}
             errors={unitForm.errors}
@@ -132,7 +224,7 @@ export function UnitsTab({ property }: Props) {
           />
         </FormSection>
 
-        <FormSection title="Financial Information">
+        <FormSection title="Financial Information" collapsible defaultCollapsed>
           <UnitFinancialInfo
             unit={currentUnit}
             errors={unitForm.errors}
@@ -142,7 +234,7 @@ export function UnitsTab({ property }: Props) {
           />
         </FormSection>
 
-        <FormSection title="Utilities">
+        <FormSection title="Utilities" collapsible defaultCollapsed>
           <UnitUtilities
             unit={currentUnit}
             errors={unitForm.errors}

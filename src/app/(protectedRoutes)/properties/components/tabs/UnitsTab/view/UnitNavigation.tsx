@@ -14,6 +14,7 @@ interface Props {
   onLoadMore?: () => void;
   hasNextPage?: boolean;
   isLoadingMore?: boolean;
+  hasUnsavedChanges?: (unit: UnitFormValues) => boolean;
 }
 
 export function UnitNavigation({
@@ -25,6 +26,7 @@ export function UnitNavigation({
   hasNextPage,
   addNewUnit,
   isLoadingMore,
+  hasUnsavedChanges,
 }: Props) {
   if (units.length < 1) {
     return (
@@ -70,13 +72,12 @@ export function UnitNavigation({
           const isActive = currentUnit?.puid === (unit as any).puid;
           const unitWithPuid = unit as any;
 
-          // Detect unsaved units (no backend IDs)
           const isUnsaved = !unitWithPuid.id || !unitWithPuid.propertyId;
-
+          const hasChanges = hasUnsavedChanges?.(unitWithPuid) || false;
           const itemClasses = [
             "unit-navigation__item",
             isActive ? "unit-navigation__item--active" : "",
-            isUnsaved ? "unit-navigation__item--unsaved" : "",
+            isUnsaved || hasChanges ? "unit-navigation__item--unsaved" : "",
             !validation.isValid
               ? "unit-navigation__item--invalid"
               : "unit-navigation__item--valid",
@@ -86,7 +87,7 @@ export function UnitNavigation({
 
           return (
             <div
-              key={unitWithPuid.puid || index}
+              key={index}
               className={itemClasses}
               onClick={() => {
                 setCurrentUnit(unitWithPuid);
@@ -101,7 +102,9 @@ export function UnitNavigation({
               }}
               title={`Unit ${unit.unitNumber || `${index + 1}`}${
                 isUnsaved ? " - Unsaved" : ""
-              }${!validation.isValid ? " - Has validation errors" : ""}`}
+              }${hasChanges ? " - Has unsaved changes" : ""}${
+                !validation.isValid ? " - Has validation errors" : ""
+              }`}
             >
               <p className="unit-navigation__item-text">
                 {unit.unitNumber || `Unit ${index + 1}`}
