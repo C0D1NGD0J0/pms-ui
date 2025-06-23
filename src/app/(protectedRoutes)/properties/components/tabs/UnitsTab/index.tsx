@@ -55,7 +55,6 @@ export function UnitsTab({ property }: Props) {
     (unit) => !unit.id || !unit.propertyId
   ).length;
 
-  // Protected navigation function
   const handleProtectedUnitSelect = (targetUnit: UnitFormValues) => {
     if (hasUnsavedChanges) {
       setNavigationTarget(targetUnit);
@@ -65,7 +64,6 @@ export function UnitsTab({ property }: Props) {
     }
   };
 
-  // Check for actual modifications (not just form presence)
   const checkUnitHasUnsavedChanges = (unit: UnitFormValues): boolean => {
     // For current unit, use the hasUnsavedChanges state (deep comparison)
     if (currentUnit?.puid === unit.puid) {

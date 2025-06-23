@@ -334,7 +334,7 @@ export function useBaseUnitForm({
       );
 
       if (!isAlreadyInForm) {
-        // Only add if not already in form
+        // only add if not already in form
         const newFormUnits = [...unitForm.values.units, updatedUnit];
         unitForm.setFieldValue("units", newFormUnits);
         setCurrentUnit(updatedUnit);
