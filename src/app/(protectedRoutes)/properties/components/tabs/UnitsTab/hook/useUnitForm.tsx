@@ -1,11 +1,11 @@
 import { useCallback } from "react";
 import { useAuth } from "@store/index";
+import { parseError } from "@utils/helpers";
 import { PROPERTY_QUERY_KEYS } from "@utils/constants";
 import { propertyUnitService } from "@services/propertyUnit";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { PropertyFormValues } from "@interfaces/property.interface";
 import { UnitsFormValues, UnitFormValues } from "@interfaces/unit.interface";
-import { parseError } from "@utils/errorParser";
 
 import { useBaseUnitForm } from "./useBaseUnitForm";
 
@@ -70,10 +70,9 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
       const { message, fieldErrors } = parseError(error);
       console.error("Error creating units:", error);
 
-      // Apply field errors to form if they exist
       if (Object.keys(fieldErrors).length > 0) {
         Object.entries(fieldErrors).forEach(([field, errors]) => {
-          unitForm.setFieldError(field, errors[0]); // Use first error message
+          unitForm.setFieldError(field, (errors as any)[0]);
         });
       }
 
@@ -117,10 +116,9 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
       const { message, fieldErrors } = parseError(error);
       console.error("Error updating unit:", error);
 
-      // Apply field errors to form if they exist
       if (Object.keys(fieldErrors).length > 0) {
         Object.entries(fieldErrors).forEach(([field, errors]) => {
-          unitForm.setFieldError(field, errors[0]); // Use first error message
+          unitForm.setFieldError(field, (errors as any)[0]);
         });
       }
 
