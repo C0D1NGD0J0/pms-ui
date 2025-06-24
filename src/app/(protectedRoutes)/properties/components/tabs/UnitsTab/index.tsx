@@ -14,6 +14,7 @@ import {
   UnitUtilities,
   UnitActions,
 } from "./view";
+import { Loading } from "@components/Loading";
 
 interface Props {
   property: PropertyFormValues;
@@ -21,6 +22,8 @@ interface Props {
 
 export function UnitsTab({ property }: Props) {
   const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [unitToDelete, setUnitToDelete] = useState<UnitFormValues | null>(null);
   const [navigationTarget, setNavigationTarget] =
     useState<UnitFormValues | null>(null);
 
@@ -30,6 +33,7 @@ export function UnitsTab({ property }: Props) {
     formConfig,
     customPrefix,
     isSubmitting,
+    isDeleting,
     canAddUnit,
     currentUnit,
     validateUnit,
@@ -40,6 +44,7 @@ export function UnitsTab({ property }: Props) {
     setUnitNumberingScheme,
     handleUnitSelect,
     handleRemoveUnit,
+    handleDeleteUnit,
     handleLoadMore,
     hasNextPage,
     isFetchingNextPage,
@@ -65,20 +70,16 @@ export function UnitsTab({ property }: Props) {
   };
 
   const checkUnitHasUnsavedChanges = (unit: UnitFormValues): boolean => {
-    // For current unit, use the hasUnsavedChanges state (deep comparison)
     if (currentUnit?.puid === unit.puid) {
       return hasUnsavedChanges;
     }
 
-    // For other units, check if they've been modified from their original saved state
     const originalSavedUnit = allUnits.find(
       (u) => u.puid === unit.puid && u.propertyId && u.id
     );
     const formUnit = newUnits.find((formUnit) => formUnit.puid === unit.puid);
 
     if (!originalSavedUnit || !formUnit) return false;
-
-    // Use extractChanges to detect actual modifications
     const changes = extractChanges(originalSavedUnit, formUnit);
     return changes !== null;
   };
@@ -103,6 +104,28 @@ export function UnitsTab({ property }: Props) {
   const handleCancelNavigation = () => {
     setShowUnsavedModal(false);
     setNavigationTarget(null);
+  };
+
+  const handleDeleteRequest = (unit: UnitFormValues) => {
+    if (unit.id && unit.propertyId) {
+      setUnitToDelete(unit);
+      setShowDeleteModal(true);
+    } else {
+      handleRemoveUnit(unit.puid);
+    }
+  };
+
+  const handleConfirmDelete = () => {
+    if (unitToDelete) {
+      handleDeleteUnit(unitToDelete);
+      setShowDeleteModal(false);
+      setUnitToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setUnitToDelete(null);
   };
 
   if (!currentUnit && allUnits.length) {
@@ -141,6 +164,14 @@ export function UnitsTab({ property }: Props) {
           />
         </div>
       </div>
+    );
+  }
+
+  if (isDeleting || isSubmitting) {
+    return (
+      <Loading
+        description={isDeleting ? "Deleting unit..." : "Saving unit..."}
+      />
     );
   }
 
@@ -194,13 +225,53 @@ export function UnitsTab({ property }: Props) {
         </div>
       </Modal>
 
+      <Modal isOpen={showDeleteModal} onClose={handleCancelDelete}>
+        <div style={{ padding: "20px" }}>
+          <h3 style={{ marginBottom: "15px", color: "#dc3545" }}>
+            Delete Unit
+          </h3>
+          <p style={{ marginBottom: "20px" }}>
+            Are you sure you want to permanently delete unit{" "}
+            <strong>{unitToDelete?.unitNumber}</strong>?
+          </p>
+          <div
+            style={{ marginBottom: "20px", fontSize: "14px", color: "#666" }}
+          >
+            <div>Unit Type: {unitToDelete?.unitType}</div>
+            <div>Floor: {unitToDelete?.floor}</div>
+            <div>Status: {unitToDelete?.status}</div>
+          </div>
+          <p
+            style={{ marginBottom: "20px", color: "#dc3545", fontSize: "14px" }}
+          >
+            <strong>This action cannot be undone.</strong>
+          </p>
+          <div
+            style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}
+          >
+            <Button
+              label="Cancel"
+              onClick={handleCancelDelete}
+              className="btn btn-outline"
+              disabled={isDeleting}
+            />
+            <Button
+              label={isDeleting ? "Deleting..." : "Delete Unit"}
+              onClick={handleConfirmDelete}
+              className="btn btn-danger"
+              disabled={isDeleting}
+            />
+          </div>
+        </div>
+      </Modal>
+
       <div className="form-header">
         <div className="form-actions">
           <UnitActions
             canAddUnit={canAddUnit}
             currentUnit={currentUnit}
             onCopyUnit={handleCopyUnit}
-            onRemoveUnit={handleRemoveUnit}
+            onRemoveUnit={handleDeleteRequest}
             unitNumberingScheme={unitNumberingScheme}
             onNumberingSchemeChange={setUnitNumberingScheme}
             prefixOptions={formConfig?.prefixOptions || []}

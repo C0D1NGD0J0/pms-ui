@@ -29,7 +29,11 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
   } = baseForm;
 
   const createMutation = useMutation({
-    mutationFn: async (data: { units: UnitFormValues[] }) => {
+    mutationFn: async (data: {
+      units: UnitFormValues[];
+      cid: string;
+      pid: string;
+    }) => {
       if (!client?.csub) throw new Error("Client not authenticated");
       return await propertyUnitService.createUnits(
         client.csub,
@@ -126,10 +130,81 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (puid: string) => {
+      if (!client?.csub) throw new Error("Client not authenticated");
+      return await propertyUnitService.deleteUnit(
+        client.csub,
+        property.pid,
+        puid
+      );
+    },
+    onSuccess: (_, puid) => {
+      if (!client?.csub) return;
+
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
+          client.csub,
+          property.pid,
+          {
+            limit: 2,
+            sortBy: "floor",
+          }
+        ),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(
+          property.pid,
+          client.csub
+        ),
+      });
+
+      const updatedUnits = unitForm.values.units.filter(
+        (unit) => unit.puid !== puid
+      );
+      unitForm.setFieldValue("units", updatedUnits);
+      if (currentUnit?.puid === puid) {
+        if (updatedUnits.length > 0) {
+          baseForm.handleUnitSelect(updatedUnits[updatedUnits.length - 1]);
+        } else {
+          baseForm.setCurrentUnit(null);
+        }
+      }
+
+      openNotification(
+        "success",
+        "Unit Deleted",
+        "Unit has been permanently deleted."
+      );
+    },
+    onError: (error: any) => {
+      const { message } = parseError(error);
+      console.error("Error deleting unit:", error);
+      openNotification("error", "Failed to Delete Unit", message);
+    },
+  });
+
   const isEditMode = !!(currentUnit?.propertyId && currentUnit?.id);
   const isSubmitting = isEditMode
     ? updateMutation.isPending
     : createMutation.isPending;
+  const isDeleting = deleteMutation.isPending;
+
+  const handleDeleteUnit = useCallback(
+    (unit: UnitFormValues) => {
+      if (!unit.id || !unit.propertyId) {
+        openNotification(
+          "error",
+          "Cannot Delete Unit",
+          "Only saved units can be deleted permanently."
+        );
+        return;
+      }
+
+      deleteMutation.mutate(unit.puid);
+    },
+    [deleteMutation, openNotification]
+  );
 
   const handleAddAnotherUnit = useCallback(() => {
     if (totalUnitsCreated >= FORM_MAX_UNITS) {
@@ -180,7 +255,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
     updateMutation.mutate(unit);
   };
 
-  const handleSubmit = (values?: UnitsFormValues) => {
+  const handleSubmit = (values: UnitsFormValues) => {
     if (isEditMode) {
       if (!currentUnit) {
         openNotification(
@@ -194,7 +269,11 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
     } else {
       const formData = values || unitForm.values;
       const allValidationErrors: string[] = [];
-
+      const newUnits = formData.units.filter((unit) => {
+        if (!unit.propertyId && !unit.id) {
+          return true;
+        }
+      });
       formData.units.forEach((unit, index) => {
         const validation = validateUnit(unit);
         if (!validation.isValid) {
@@ -214,7 +293,11 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
         return;
       }
 
-      createMutation.mutate({ units: formData.units });
+      createMutation.mutate({
+        units: newUnits,
+        cid: values.cid,
+        pid: values.pid,
+      });
     }
   };
 
@@ -222,7 +305,9 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
     ...baseForm,
     isEditMode,
     isSubmitting,
+    isDeleting,
     handleAddAnotherUnit,
+    handleDeleteUnit,
     handleUpdateUnit: isEditMode ? handleUpdateUnit : undefined,
     handleSubmit: isEditMode ? handleSubmit : unitForm.onSubmit(handleSubmit),
   };

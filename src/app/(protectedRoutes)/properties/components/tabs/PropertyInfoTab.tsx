@@ -7,10 +7,11 @@ import { usePropertyFormActions } from "@store/propertyform.store";
 import { PropertyFormValues } from "@interfaces/property.interface";
 import {
   FormField,
-  FormLabel,
   FormInput,
+  FormLabel,
   Checkbox,
   Textarea,
+  Tooltip,
   Select,
 } from "@components/FormElements";
 
@@ -340,41 +341,36 @@ export function PropertyInfoTab({
           >
             <FormLabel
               htmlFor="totalUnits"
-              label=""
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
+              label="Total Units"
               required={PropertyTypeManager.isFieldRequired(
                 propertyType,
                 "totalUnits"
               )}
-            >
-              <span>Total Units</span>
-              <small style={{ fontSize: "1rem" }} className="form-help-text">
-                {PropertyTypeManager.getHelpText(
-                  propertyType,
-                  "totalUnits",
-                  numUnits
-                )}
-              </small>
-            </FormLabel>
-            <FormInput
-              id="totalUnits"
-              name="totalUnits"
-              type="number"
-              value={form.values.totalUnits?.toString() || "1"}
-              onChange={(e) => {
-                const value = e.target.value;
-                const numValue = value === "" ? 0 : parseInt(value, 10);
-                form.setFieldValue("totalUnits", numValue);
-              }}
-              placeholder="Enter total building units"
-              min={1}
-              max={250}
-              hasError={!!form.errors["totalUnits"]}
             />
+            <Tooltip
+              content={PropertyTypeManager.getHelpText(
+                propertyType,
+                "totalUnits",
+                numUnits
+              )}
+              placement="top"
+            >
+              <FormInput
+                id="totalUnits"
+                name="totalUnits"
+                type="number"
+                value={form.values.totalUnits?.toString() || "1"}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("totalUnits", numValue);
+                }}
+                placeholder="Enter total building units"
+                min={1}
+                max={250}
+                hasError={!!form.errors["totalUnits"]}
+              />
+            </Tooltip>
           </FormField>
         </div>
       </FormSection>
