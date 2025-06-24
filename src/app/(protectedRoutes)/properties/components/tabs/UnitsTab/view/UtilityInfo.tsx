@@ -26,31 +26,34 @@ export function UnitUtilities({
       <div className="form-section">
         <h5>Utilities Included in Rent</h5>
         <div className="form-fields">
-          {utilitiesOptions.map(({ value, label }) => (
-            <FormField
-              key={value}
-              error={{
-                msg: (errors[`utilities.${value}`] as string) || "",
-                touched: isTouched(`utilities.${value}`),
-              }}
-            >
-              <Checkbox
-                id={`unit-utility-${value}`}
-                name={`utilities.${value}`}
-                checked={
-                  unit.utilities[value as keyof typeof unit.utilities] || false
-                }
-                onChange={onFieldChange}
-                label={label}
-              />
-            </FormField>
-          ))}
+          {utilitiesOptions.map(({ value, label }) => {
+            return (
+              <FormField
+                key={value}
+                error={{
+                  msg: (errors[`utilities.${value}`] as string) || "",
+                  touched: isTouched(`utilities.${value}`),
+                }}
+              >
+                <Checkbox
+                  id={`unit-utility-${value}`}
+                  name={`utilities.${value}`}
+                  checked={
+                    unit.utilities[value as keyof typeof unit.utilities] ||
+                    false
+                  }
+                  onChange={onFieldChange}
+                  label={label}
+                />
+              </FormField>
+            );
+          })}
         </div>
       </div>
       <div className="form-section">
         <h5>Unit Amenities</h5>
         <div className="form-fields">
-          {amenitiesOptions.map(({ label }) => {
+          {amenitiesOptions.map(({ value, label }) => {
             return (
               <FormField
                 key={label}
@@ -63,7 +66,7 @@ export function UnitUtilities({
                   id={`unit-amenity-${label}`}
                   name={`amenities.${label}`}
                   checked={
-                    unit.amenities[label as keyof typeof unit.amenities] ||
+                    unit.amenities[value as keyof typeof unit.amenities] ||
                     false
                   }
                   onChange={onFieldChange}

@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Button } from "@components/FormElements";
+import { UnitFormValues } from "@interfaces/unit.interface";
 
 interface Props {
-  currentUnit: any;
+  currentUnit: UnitFormValues;
   canAddUnit: boolean;
   onCopyUnit: () => void;
   isFormSubmitting?: boolean;
   unitNumberingScheme: string;
-  onRemoveUnit: (puid: string) => void;
+  onRemoveUnit: (unit: UnitFormValues) => void;
   onNumberingSchemeChange: (scheme: string) => void;
   prefixOptions: { value: string; label: string; example: string }[];
 }
@@ -110,7 +111,7 @@ export function UnitActions({
         className="btn-text"
         disabled={isFormSubmitting}
         icon={<i className="bx bx-trash danger"></i>}
-        onClick={() => onRemoveUnit(currentUnit.puid)}
+        onClick={() => onRemoveUnit(currentUnit)}
       />
     </div>
   );
