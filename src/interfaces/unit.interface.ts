@@ -39,10 +39,10 @@ export interface IUnit {
   id?: string;
   puid: string;
   unitNumber: string;
-  unitType: UnitType;
-  status: UnitStatus;
-  floor: number;
-  isActive: boolean;
+  unitType: UnitType | "";
+  status: UnitStatus | "";
+  floor?: number;
+  isActive?: boolean;
   specifications: {
     totalArea: number;
     rooms?: number;

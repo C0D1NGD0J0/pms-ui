@@ -15,4 +15,3 @@ export * from "@components/FormElements/Select";
 export * from "@components/FormElements/TextArea";
 export * from "@components/FormElements/Toggle";
 export * from "@components/FormElements/FileInput";
-export * from "@components/FormElements/Tooltip";

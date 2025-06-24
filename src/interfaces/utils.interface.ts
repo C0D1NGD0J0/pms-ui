@@ -41,9 +41,3 @@ export interface IPaginationResponse {
   currentPage: number;
   hasMoreResource: boolean;
 }
-
-export interface ParsedError {
-  message: string;
-  fieldErrors: Record<string, string[]>;
-  statusCode?: number;
-}

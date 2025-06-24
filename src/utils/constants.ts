@@ -1,11 +1,9 @@
-import { IPaginationQuery } from "@interfaces/index";
 import { PropertyTypeRule } from "@interfaces/property.interface";
 import {
   UnitTypeRules,
   UnitTypeEnum,
   UnitTypeRule,
 } from "@interfaces/unit.interface";
-import { get } from "lodash";
 
 export const SIGNUP_ACCOUNT_TYPE_OPTIONS = [
   { value: "personal", label: "Personal" },
@@ -529,16 +527,10 @@ export const PROPERTY_QUERY_KEYS = {
     pid,
   ],
   getPropertyByPid: (pid: string, csub: string) => ["/getProperty", csub, pid],
-  getPropertyUnits: (
-    pid: string,
-    csub: string,
-    pagination: Omit<IPaginationQuery, "page">
-  ) => ["/getPropertyUnits", csub, pid, pagination],
-  getPropertyUnitByPuid: (pid: string, csub: string, puid: string) => [
-    "/getPropertyUnit",
+  getPropertyUnits: (pid: string, csub: string) => [
+    "/getPropertyUnits",
     csub,
     pid,
-    puid,
   ],
 };
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

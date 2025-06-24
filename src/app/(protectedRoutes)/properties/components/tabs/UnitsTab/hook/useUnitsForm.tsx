@@ -2,11 +2,13 @@
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "@store/index";
 import { useForm } from "@mantine/form";
-import { extractChanges } from "@utils/helpers";
+import { PROPERTY_QUERY_KEYS } from "@utils/constants";
+import { ChangeEvent, useCallback, useState } from "react";
+import { propertyUnitService } from "@services/propertyUnit";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { createUnitSchema } from "@validations/unit.validations";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useConditionalRender, useNotification } from "@hooks/index";
-import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
 import {
   StaticUnitFormConfig,
   PropertyFormValues,
@@ -24,31 +26,17 @@ import {
 
 import { useUnitNumbering } from "./useUnitNumbering";
 
-export interface BaseUnitFormConfig {
-  mode: "create" | "edit" | "hybrid";
-  maxUnits?: number;
-}
-
-export function useBaseUnitForm({
-  property,
-  config,
-}: {
-  property: PropertyFormValues;
-  config: BaseUnitFormConfig;
-}) {
-  const FORM_MAX_UNITS = config.maxUnits || 20;
+export function useUnitsForm({ property }: { property: PropertyFormValues }) {
+  const FORM_MAX_UNITS = 20;
   const { client } = useAuth();
+  const queryClient = useQueryClient();
   const { openNotification } = useNotification();
   const [currentUnit, setCurrentUnit] = useState<UnitFormValues | null>(null);
-  const [originalUnit, setOriginalUnit] = useState<UnitFormValues | null>(null);
-
   const { data: formConfig, isLoading: formConfigLoading } =
     usePropertyFormMetaData<StaticUnitFormConfig>("unitForm");
-
   const { isVisible } = useConditionalRender({
     unitType: currentUnit?.unitType,
   });
-
   const {
     data: savedUnitsData,
     fetchNextPage,
@@ -71,25 +59,9 @@ export function useBaseUnitForm({
     },
   });
 
-  useEffect(() => {
-    if (savedUnits.length > 0) {
-      const firstSavedUnit = savedUnits[0];
-      setCurrentUnit(firstSavedUnit as UnitFormValues);
-      setOriginalUnit(firstSavedUnit as UnitFormValues);
-      unitForm.setFieldValue("units", savedUnits);
-    }
-  }, [savedUnitsData?.pages]);
-
   const newUnits = unitForm.values.units;
+  const allUnits = [...savedUnits, ...newUnits] as UnitFormValues[];
   const totalUnitsCreated = newUnits.length;
-
-  const hasUnsavedChanges = useMemo(() => {
-    if (!currentUnit || !originalUnit) return false;
-    if (!currentUnit.propertyId || !currentUnit.id) return false; // only perform this for saved units
-    console.log(currentUnit, "Checking for unsaved changes...", originalUnit);
-    const changes = extractChanges(originalUnit, currentUnit);
-    return changes !== null;
-  }, [currentUnit, originalUnit]);
 
   const {
     customPrefix,
@@ -107,13 +79,11 @@ export function useBaseUnitForm({
   });
 
   const findUnitByPuid = (puid: string): UnitFormValues | undefined => {
-    return unitForm.values.units.find((unit) => (unit as any).puid === puid);
+    return allUnits.find((unit) => (unit as any).puid === puid);
   };
 
   const findUnitIndexByPuid = (puid: string): number => {
-    return unitForm.values.units.findIndex(
-      (unit) => (unit as any).puid === puid
-    );
+    return allUnits.findIndex((unit) => (unit as any).puid === puid);
   };
 
   const findNewUnitIndexByPuid = (puid: string): number => {
@@ -122,21 +92,16 @@ export function useBaseUnitForm({
     );
   };
 
-  const allowedUnitTypes = useMemo(
-    () => PropertyTypeManager.getAllowedUnitTypes(property.propertyType),
-    [property.propertyType]
+  const allowedUnitTypes = PropertyTypeManager.getAllowedUnitTypes(
+    property.propertyType
   );
 
-  const unitTypeOptions = useMemo(
-    () =>
-      formConfig?.unitTypes
-        ? PropertyTypeManager.getFilteredUnitTypes(
-            property.propertyType,
-            formConfig.unitTypes
-          )
-        : [],
-    [property.propertyType, formConfig?.unitTypes]
-  );
+  const unitTypeOptions = formConfig?.unitTypes
+    ? PropertyTypeManager.getFilteredUnitTypes(
+        property.propertyType,
+        formConfig.unitTypes
+      )
+    : [];
 
   const validateUnitWithTypeManager = (
     unit: UnitFormValues | null
@@ -184,35 +149,7 @@ export function useBaseUnitForm({
     unitForm.setErrors(formErrors);
   };
 
-  const copyUnitForCreation = (sourceUnit: UnitFormValues): UnitFormValues => {
-    const deepClonedFields = {
-      unitType: sourceUnit.unitType,
-      status: sourceUnit.status,
-      floor: sourceUnit.floor,
-      isActive: sourceUnit.isActive,
-      specifications: {
-        ...sourceUnit.specifications,
-      },
-      amenities: {
-        ...sourceUnit.amenities,
-      },
-      utilities: {
-        ...sourceUnit.utilities,
-      },
-      fees: {
-        ...sourceUnit.fees,
-      },
-      description: sourceUnit.description,
-    };
-
-    return {
-      ...deepClonedFields,
-      puid: uuidv4(),
-      unitNumber: generateNextUnitNumber(sourceUnit.unitNumber),
-    };
-  };
-
-  const handleCopyUnit = useCallback(() => {
+  const handleCopyUnit = () => {
     const validation = validateUnitWithTypeManager(currentUnit);
     if (!validation.isValid) {
       openNotification(
@@ -227,7 +164,7 @@ export function useBaseUnitForm({
 
     if (!currentUnit) return;
 
-    // check unit number and floor correlation
+    // Validate unit number and floor correlation
     const floorValidation = validateUnitNumberFloorCorrelation(
       currentUnit.unitNumber,
       currentUnit.floor
@@ -251,7 +188,11 @@ export function useBaseUnitForm({
       return;
     }
 
-    const newUnit = copyUnitForCreation(currentUnit);
+    const newUnit: UnitFormValues = {
+      ...currentUnit,
+      puid: uuidv4(),
+      unitNumber: generateNextUnitNumber(),
+    };
     unitForm.setFieldValue("units", [...unitForm.values.units, newUnit]);
     setCurrentUnit(newUnit);
 
@@ -260,120 +201,204 @@ export function useBaseUnitForm({
       "Unit Duplicated",
       `Unit duplicated successfully. ${totalUnitsCreated + 1} units created.`
     );
-  }, [
-    currentUnit,
-    validateUnitWithTypeManager,
-    openNotification,
-    validateUnitNumberFloorCorrelation,
-    totalUnitsCreated,
-    FORM_MAX_UNITS,
-    copyUnitForCreation,
-    unitForm,
-    setCurrentUnit,
-  ]);
+  };
 
-  const handleRemoveUnit = useCallback(
-    (puid: string) => {
-      const unitToRemove = findUnitByPuid(puid);
-      if (!unitToRemove) return;
-      console.log("Removing unit:", unitToRemove);
-      if (!unitToRemove.propertyId) {
-        const newUnits = unitForm.values.units.filter(
-          (unit) => unit.puid !== puid
+  const handleRemoveUnit = (puid: string) => {
+    const unitToRemove = findUnitByPuid(puid);
+    if (!unitToRemove) return;
+
+    if (!unitToRemove.propertyId) {
+      const newUnits = unitForm.values.units.filter(
+        (unit) => unit.puid !== puid
+      );
+      unitForm.setFieldValue("units", newUnits);
+    }
+
+    if (currentUnit?.puid === puid) {
+      if (allUnits.length > 1) {
+        // Select another unit (prefer new units, then saved units)
+        const remainingUnits = allUnits.filter(
+          (unit) => (unit as any).puid !== puid
         );
-        unitForm.setFieldValue("units", newUnits);
+        setCurrentUnit(remainingUnits[remainingUnits.length - 1]);
+      } else {
+        setCurrentUnit(null);
       }
+    }
 
-      if (currentUnit?.puid === puid) {
-        if (unitForm.values.units.length > 1) {
-          // Select another unit (prefer new units, then saved units)
-          const remainingUnits = unitForm.values.units.filter(
-            (unit) => (unit as any).puid !== puid
-          );
-          setCurrentUnit(remainingUnits[remainingUnits.length - 1]);
-        } else {
-          setCurrentUnit(null);
-        }
-      }
+    openNotification(
+      "success",
+      "Unit Removed",
+      `Unit removed successfully. ${newUnits.length} new units remaining.`
+    );
+  };
+
+  const createUnitsMutation = useMutation({
+    mutationFn: (data: { units: UnitFormValues[] }) => {
+      if (!client?.csub) throw new Error("Client not authenticated");
+      return propertyUnitService.createUnits(client.csub, property.pid, data);
+    },
+    onSuccess: (response, variables) => {
+      if (!client?.csub) return;
+
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
+          property.pid,
+          client.csub
+        ),
+      });
+      queryClient.invalidateQueries({
+        queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(
+          property.pid,
+          client.csub
+        ),
+      });
 
       openNotification(
         "success",
-        "Unit Removed",
-        `Unit removed successfully. ${newUnits.length} new units remaining.`
+        "Units Created",
+        `Successfully created ${variables.units.length} units.`
       );
     },
-    [
-      findUnitByPuid,
-      unitForm,
-      currentUnit,
-      unitForm.values.units,
-      setCurrentUnit,
-      openNotification,
-    ]
-  );
+    onError: (error: any) => {
+      console.error("Error creating units:", error);
+      openNotification(
+        "error",
+        "Failed to Create Units",
+        error?.response?.data?.message ||
+          "An error occurred while creating units."
+      );
+    },
+  });
 
-  const handleUnitSelect = useCallback((unit: UnitFormValues) => {
-    setCurrentUnit(unit);
+  const handleSubmit = (values: UnitsFormValues) => {
+    const formData = values;
+    const allValidationErrors: string[] = [];
+    const floorValidationErrors: string[] = [];
 
-    if (unit.propertyId && unit.id) {
-      setOriginalUnit(unit);
-    } else {
-      setOriginalUnit(null);
+    formData.units.forEach((unit, index) => {
+      const validation = validateUnitWithTypeManager(unit);
+      if (!validation.isValid) {
+        allValidationErrors.push(
+          `Unit ${index + 1}: ${validation.errors.join(", ")}`
+        );
+      }
+
+      // Check floor-unit number correlation
+      const floorValidation = validateUnitNumberFloorCorrelation(
+        unit.unitNumber,
+        unit.floor
+      );
+      if (!floorValidation.isValid) {
+        floorValidationErrors.push(
+          `Unit ${index + 1}: ${floorValidation.message}`
+        );
+      }
+    });
+
+    if (allValidationErrors.length > 0 || floorValidationErrors.length > 0) {
+      const errorMessage = [
+        ...allValidationErrors,
+        ...floorValidationErrors,
+      ].join("\n");
+
+      openNotification(
+        "error",
+        "Validation Failed",
+        `Please fix the following errors:\n${errorMessage}`
+      );
+      return;
     }
-  }, []);
+
+    createUnitsMutation.mutate({ units: formData.units });
+  };
+
+  const handleAddAnotherUnit = () => {
+    if (totalUnitsCreated >= FORM_MAX_UNITS) {
+      openNotification(
+        "error",
+        "Form Unit Limit Exceeded",
+        `Cannot add more units. Form is limited to ${FORM_MAX_UNITS} units. For larger batches, please use CSV upload.`
+      );
+      return;
+    }
+
+    const defaultUnitType =
+      allowedUnitTypes.length > 0
+        ? allowedUnitTypes[0]
+        : UnitTypeEnum.RESIDENTIAL;
+
+    const newUnit: UnitFormValues = {
+      unitNumber: generateNextUnitNumber(),
+      unitType: defaultUnitType as any,
+      status: UnitStatusEnum.AVAILABLE,
+      floor: 1,
+      isActive: true,
+      specifications: {
+        totalArea: 450,
+        rooms: 3,
+        bathrooms: 2,
+        maxOccupants: 5,
+      },
+      amenities: {
+        airConditioning: false,
+        heating: true,
+        washerDryer: true,
+        dishwasher: true,
+        parking: false,
+        storage: false,
+        cableTV: false,
+        internet: false,
+      },
+      utilities: {
+        gas: false,
+        trash: false,
+        water: true,
+        heating: true,
+        centralAC: false,
+      },
+      fees: {
+        rentAmount: 1800,
+        securityDeposit: 0,
+        currency: "USD" as const,
+      },
+      description: "",
+      puid: uuidv4(),
+    };
+
+    unitForm.setFieldValue("units", [...unitForm.values.units, newUnit]);
+    handleUnitSelect(newUnit);
+    validateCurrentUnitAndSetErrors();
+  };
+
+  const handleUnitSelect = (unit: UnitFormValues) => {
+    setCurrentUnit(unit);
+  };
 
   const handleUnitChange = (updatedUnit: UnitFormValues) => {
+    // Check if this is a saved unit being edited for the first time
     const isSavedUnit = savedUnits.some(
       (unit) => (unit as any).puid === (updatedUnit as any).puid
     );
 
     if (isSavedUnit) {
-      // Check if unit is already in form state to prevent duplication
-      const isAlreadyInForm = unitForm.values.units.some(
-        (unit) => unit.puid === (updatedUnit as any).puid
-      );
-
-      if (!isAlreadyInForm) {
-        // only add if not already in form
-        const newFormUnits = [...unitForm.values.units, updatedUnit];
-        unitForm.setFieldValue("units", newFormUnits);
-        setCurrentUnit(updatedUnit);
-        console.log(
-          unitForm.values.units,
-          "first time editing saved unit, added to form:",
-          updatedUnit
-        );
-      } else {
-        // Update existing unit in form
-        const index = findNewUnitIndexByPuid((updatedUnit as any).puid);
-        if (index !== -1) {
-          unitForm.setFieldValue(`units.${index}`, updatedUnit);
-          setCurrentUnit(updatedUnit);
-          console.log(
-            "second time editing saved unit, added to form:",
-            updatedUnit
-          );
-        }
-      }
+      // Move saved unit to form state for editing
+      const newFormUnits = [...unitForm.values.units, updatedUnit];
+      unitForm.setFieldValue("units", newFormUnits);
+      setCurrentUnit(updatedUnit);
       validateCurrentUnitAndSetErrors();
     } else {
+      // Handle new unit (already in form)
       const index = findNewUnitIndexByPuid((updatedUnit as any).puid);
       if (index !== -1) {
         unitForm.setFieldValue(`units.${index}`, updatedUnit);
         setCurrentUnit(updatedUnit);
         validateCurrentUnitAndSetErrors();
-        console.log(
-          "third time editing saved unit, added to form:",
-          updatedUnit
-        );
       }
     }
 
     // Auto-detect numbering pattern when unit number is manually changed
-    if (
-      updatedUnit.puid === currentUnit?.puid &&
-      updatedUnit.unitNumber !== currentUnit?.unitNumber
-    ) {
+    if (updatedUnit.unitNumber !== currentUnit?.unitNumber) {
       const detectedPattern = detectNumberingPattern(updatedUnit.unitNumber);
       if (detectedPattern !== unitNumberingScheme) {
         setUnitNumberingScheme(detectedPattern);
@@ -496,98 +521,32 @@ export function useBaseUnitForm({
     }
   };
 
-  const createDefaultUnit = (): UnitFormValues => {
-    const defaultUnitType =
-      allowedUnitTypes.length > 0
-        ? allowedUnitTypes[0]
-        : UnitTypeEnum.RESIDENTIAL;
-
-    return {
-      unitNumber: generateNextUnitNumber(),
-      unitType: defaultUnitType as any,
-      status: UnitStatusEnum.AVAILABLE,
-      floor: 1,
-      isActive: true,
-      specifications: {
-        totalArea: 450,
-        rooms: 3,
-        bathrooms: 2,
-        maxOccupants: 5,
-      },
-      amenities: {
-        airConditioning: false,
-        heating: true,
-        washerDryer: true,
-        dishwasher: true,
-        parking: false,
-        storage: false,
-        cableTV: false,
-        internet: false,
-      },
-      utilities: {
-        gas: false,
-        trash: false,
-        water: true,
-        heating: true,
-        centralAC: false,
-      },
-      fees: {
-        rentAmount: 1800,
-        securityDeposit: 0,
-        currency: "USD" as const,
-      },
-      description: "",
-      puid: uuidv4(),
-    };
-  };
-
-  const canAddUnit = totalUnitsCreated < FORM_MAX_UNITS;
-  const isEditableItem =
-    currentUnit && currentUnit.propertyId && currentUnit.id;
-
+  const canAddUnit = totalUnitsCreated <= FORM_MAX_UNITS;
   return {
     unitForm,
-    currentUnit,
-    setCurrentUnit,
-    allUnits: unitForm.values.units,
-    savedUnits,
-    newUnits,
-    totalUnitsCreated,
-    hasUnsavedChanges,
-
-    formConfig,
-    formConfigLoading,
     isVisible,
-    unitTypeOptions,
-    allowedUnitTypes,
+    formConfig,
     canAddUnit,
-    isEditableItem,
-
+    currentUnit,
     customPrefix,
+    setCurrentUnit,
+    handleCopyUnit,
+    handleOnChange,
+    unitTypeOptions,
     setCustomPrefix,
     unitNumberingScheme,
     setUnitNumberingScheme,
-    generateNextUnitNumber,
-
-    findUnitByPuid,
-    findUnitIndexByPuid,
-    findNewUnitIndexByPuid,
-    createDefaultUnit,
-
-    validateUnit: validateUnitWithTypeManager,
-    validateCurrentUnitAndSetErrors,
-    setFormErrors,
-
+    handleRemoveUnit,
     handleUnitSelect,
     handleUnitChange,
-    handleOnChange,
-    handleCopyUnit,
-    handleRemoveUnit,
-
+    formConfigLoading,
+    handleAddAnotherUnit,
     handleLoadMore,
     hasNextPage,
     isFetchingNextPage,
-    openNotification,
-    FORM_MAX_UNITS,
+    allUnits,
+    validateUnit: validateUnitWithTypeManager,
+    isSubmitting: createUnitsMutation.isPending,
+    handleSubmit: unitForm.onSubmit(handleSubmit),
   };
 }

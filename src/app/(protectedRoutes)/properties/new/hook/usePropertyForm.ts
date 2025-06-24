@@ -10,7 +10,7 @@ export function usePropertyForm() {
       propertyService.createProperty(data.cid ?? "", data),
   });
 
-  const handleSubmit = async (values: PropertyFormValues) => {
+  const handleCreateSubmit = async (values: PropertyFormValues) => {
     try {
       values.cid = client?.csub ?? "";
       await createPropertyMutation.mutateAsync(values);
@@ -20,7 +20,7 @@ export function usePropertyForm() {
   };
 
   return {
-    handleSubmit,
+    handleCreateSubmit,
     error: createPropertyMutation.error,
     hasError: createPropertyMutation.isError,
     isSuccess: createPropertyMutation.isSuccess,

@@ -12,7 +12,6 @@ export interface ICreateUnitsRequest {
 
 export interface IUpdateUnitRequest extends Partial<UnitFormValues> {
   unitId: string;
-  propertyId: string;
 }
 
 export interface IArchiveUnitsRequest {
@@ -82,12 +81,12 @@ class PropertyUnitService {
     }
   }
 
-  async updateUnit(cid: string, pid: string, data: UnitFormValues) {
+  async updateUnit(cid: string, pid: string, data: IUpdateUnitRequest) {
     try {
-      const { puid } = data;
+      const { unitId, ...updateData } = data;
       const result = await axios.patch(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units/${puid}`,
-        data,
+        `${this.baseUrl}/${cid}/client_properties/${pid}/units/${unitId}`,
+        updateData,
         this.axiosConfig
       );
       return result;

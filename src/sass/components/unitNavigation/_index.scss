@@ -123,42 +123,6 @@
         border-color: hslaGen($primary-color);
       }
     }
-
-    &--unsaved {
-      border: 2px solid hslaGen($warning-color);
-      box-shadow: 0 0 8px hslaGen($warning-color, 0.3);
-      background: hslaGen($warning-color, 0.05);
-
-      &:hover {
-        background-color: hslaGen($warning-color, 0.1);
-        border-color: hslaGen($warning-color);
-        box-shadow: 0 0 12px hslaGen($warning-color, 0.4);
-      }
-
-      &.unit-navigation__item--active {
-        background-color: hslaGen($warning-color, 0.15);
-        border-color: hslaGen($warning-color);
-        box-shadow: 0 0 12px hslaGen($warning-color, 0.5);
-
-        .unit-navigation__item-text {
-          color: hslaGen($warning-color, 0.8);
-          font-weight: $fw-bold;
-        }
-      }
-
-      // Add a small indicator dot for unsaved units
-      &::before {
-        content: "";
-        position: absolute;
-        top: -$space-sm;
-        left: -$space-sm;
-        width: 8px;
-        height: 8px;
-        background-color: hslaGen($warning-color);
-        border-radius: 50%;
-        border: 2px solid hslaGen($white-color);
-      }
-    }
   }
 
   &__item-text {

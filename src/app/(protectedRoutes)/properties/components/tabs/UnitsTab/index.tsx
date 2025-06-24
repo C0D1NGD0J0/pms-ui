@@ -1,12 +1,9 @@
-import React, { useState } from "react";
-import { extractChanges } from "@utils/helpers";
+import React from "react";
 import { Button } from "@components/FormElements";
 import { FormSection } from "@components/FormLayout";
-import { Modal } from "@components/FormElements/Modal";
-import { UnitFormValues } from "@interfaces/unit.interface";
 import { PropertyFormValues } from "@interfaces/property.interface";
 
-import { useUnitForm } from "./hook";
+import { useUnitsForm } from "./hook";
 import {
   UnitFinancialInfo,
   UnitNavigation,
@@ -14,28 +11,20 @@ import {
   UnitUtilities,
   UnitActions,
 } from "./view";
-import { Loading } from "@components/Loading";
 
 interface Props {
   property: PropertyFormValues;
 }
 
 export function UnitsTab({ property }: Props) {
-  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [unitToDelete, setUnitToDelete] = useState<UnitFormValues | null>(null);
-  const [navigationTarget, setNavigationTarget] =
-    useState<UnitFormValues | null>(null);
-
   const {
     unitForm,
     isVisible,
+    canAddUnit,
     formConfig,
+    currentUnit,
     customPrefix,
     isSubmitting,
-    isDeleting,
-    canAddUnit,
-    currentUnit,
     validateUnit,
     handleSubmit,
     handleOnChange,
@@ -44,89 +33,14 @@ export function UnitsTab({ property }: Props) {
     setUnitNumberingScheme,
     handleUnitSelect,
     handleRemoveUnit,
-    handleDeleteUnit,
     handleLoadMore,
     hasNextPage,
     isFetchingNextPage,
     allUnits,
     handleAddAnotherUnit,
-    isEditMode,
-    totalUnitsCreated,
-    newUnits,
-    hasUnsavedChanges,
-  } = useUnitForm({ property });
-
-  const pendingUnits = newUnits.filter(
-    (unit) => !unit.id || !unit.propertyId
-  ).length;
-
-  const handleProtectedUnitSelect = (targetUnit: UnitFormValues) => {
-    if (hasUnsavedChanges) {
-      setNavigationTarget(targetUnit);
-      setShowUnsavedModal(true);
-    } else {
-      handleUnitSelect(targetUnit);
-    }
-  };
-
-  const checkUnitHasUnsavedChanges = (unit: UnitFormValues): boolean => {
-    if (currentUnit?.puid === unit.puid) {
-      return hasUnsavedChanges;
-    }
-
-    const originalSavedUnit = allUnits.find(
-      (u) => u.puid === unit.puid && u.propertyId && u.id
-    );
-    const formUnit = newUnits.find((formUnit) => formUnit.puid === unit.puid);
-
-    if (!originalSavedUnit || !formUnit) return false;
-    const changes = extractChanges(originalSavedUnit, formUnit);
-    return changes !== null;
-  };
-
-  const handleSaveAndSwitch = async () => {
-    handleSubmit();
-    setShowUnsavedModal(false);
-    if (navigationTarget) {
-      handleUnitSelect(navigationTarget);
-      setNavigationTarget(null);
-    }
-  };
-
-  const handleDiscardAndSwitch = () => {
-    setShowUnsavedModal(false);
-    if (navigationTarget) {
-      handleUnitSelect(navigationTarget);
-      setNavigationTarget(null);
-    }
-  };
-
-  const handleCancelNavigation = () => {
-    setShowUnsavedModal(false);
-    setNavigationTarget(null);
-  };
-
-  const handleDeleteRequest = (unit: UnitFormValues) => {
-    if (unit.id && unit.propertyId) {
-      setUnitToDelete(unit);
-      setShowDeleteModal(true);
-    } else {
-      handleRemoveUnit(unit.puid);
-    }
-  };
-
-  const handleConfirmDelete = () => {
-    if (unitToDelete) {
-      handleDeleteUnit(unitToDelete);
-      setShowDeleteModal(false);
-      setUnitToDelete(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeleteModal(false);
-    setUnitToDelete(null);
-  };
+  } = useUnitsForm({
+    property,
+  });
 
   if (!currentUnit && allUnits.length) {
     return (
@@ -136,10 +50,9 @@ export function UnitsTab({ property }: Props) {
         hasNextPage={hasNextPage}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        setCurrentUnit={handleProtectedUnitSelect}
-        isLoadingMore={isFetchingNextPage}
         addNewUnit={handleAddAnotherUnit}
-        hasUnsavedChanges={checkUnitHasUnsavedChanges}
+        setCurrentUnit={handleUnitSelect}
+        isLoadingMore={isFetchingNextPage}
       />
     );
   }
@@ -167,103 +80,18 @@ export function UnitsTab({ property }: Props) {
     );
   }
 
-  if (isDeleting || isSubmitting) {
-    return (
-      <Loading
-        description={isDeleting ? "Deleting unit..." : "Saving unit..."}
-      />
-    );
-  }
-
   return (
     <div className="form-section">
-      <div style={{ fontSize: "12px", color: "#666", marginBottom: "10px" }}>
-        Mode: {isEditMode ? "Edit" : "Create"} | Unit: {currentUnit.unitNumber}{" "}
-        | ID: {currentUnit?.puid ? currentUnit.puid : "No ID"} | Units:{" "}
-        {totalUnitsCreated} ({pendingUnits} pending)
-      </div>
-
       <UnitNavigation
         units={allUnits}
         currentUnit={currentUnit}
         hasNextPage={hasNextPage}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        setCurrentUnit={handleProtectedUnitSelect}
-        isLoadingMore={isFetchingNextPage}
         addNewUnit={handleAddAnotherUnit}
-        hasUnsavedChanges={checkUnitHasUnsavedChanges}
+        setCurrentUnit={handleUnitSelect}
+        isLoadingMore={isFetchingNextPage}
       />
-
-      <Modal isOpen={showUnsavedModal} onClose={handleCancelNavigation}>
-        <div style={{ padding: "20px" }}>
-          <h3 style={{ marginBottom: "15px" }}>Unsaved Changes</h3>
-          <p style={{ marginBottom: "20px" }}>
-            You have unsaved changes to unit {currentUnit?.unitNumber}. What
-            would you like to do?
-          </p>
-          <div
-            style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}
-          >
-            <Button
-              label="Cancel"
-              onClick={handleCancelNavigation}
-              className="btn btn-outline"
-            />
-            <Button
-              label="Discard Changes"
-              onClick={handleDiscardAndSwitch}
-              className="btn btn-secondary"
-            />
-            <Button
-              label="Save & Switch"
-              onClick={handleSaveAndSwitch}
-              className="btn btn-primary"
-              disabled={!unitForm.isValid}
-            />
-          </div>
-        </div>
-      </Modal>
-
-      <Modal isOpen={showDeleteModal} onClose={handleCancelDelete}>
-        <div style={{ padding: "20px" }}>
-          <h3 style={{ marginBottom: "15px", color: "#dc3545" }}>
-            Delete Unit
-          </h3>
-          <p style={{ marginBottom: "20px" }}>
-            Are you sure you want to permanently delete unit{" "}
-            <strong>{unitToDelete?.unitNumber}</strong>?
-          </p>
-          <div
-            style={{ marginBottom: "20px", fontSize: "14px", color: "#666" }}
-          >
-            <div>Unit Type: {unitToDelete?.unitType}</div>
-            <div>Floor: {unitToDelete?.floor}</div>
-            <div>Status: {unitToDelete?.status}</div>
-          </div>
-          <p
-            style={{ marginBottom: "20px", color: "#dc3545", fontSize: "14px" }}
-          >
-            <strong>This action cannot be undone.</strong>
-          </p>
-          <div
-            style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}
-          >
-            <Button
-              label="Cancel"
-              onClick={handleCancelDelete}
-              className="btn btn-outline"
-              disabled={isDeleting}
-            />
-            <Button
-              label={isDeleting ? "Deleting..." : "Delete Unit"}
-              onClick={handleConfirmDelete}
-              className="btn btn-danger"
-              disabled={isDeleting}
-            />
-          </div>
-        </div>
-      </Modal>
 
       <div className="form-header">
         <div className="form-actions">
@@ -271,7 +99,7 @@ export function UnitsTab({ property }: Props) {
             canAddUnit={canAddUnit}
             currentUnit={currentUnit}
             onCopyUnit={handleCopyUnit}
-            onRemoveUnit={handleDeleteRequest}
+            onRemoveUnit={handleRemoveUnit}
             unitNumberingScheme={unitNumberingScheme}
             onNumberingSchemeChange={setUnitNumberingScheme}
             prefixOptions={formConfig?.prefixOptions || []}
@@ -280,7 +108,7 @@ export function UnitsTab({ property }: Props) {
       </div>
 
       <div className="unit-editor">
-        <FormSection title="Basic Details" collapsible defaultCollapsed>
+        <FormSection title="Basic Details">
           <UnitBasicInfo
             unit={currentUnit}
             errors={unitForm.errors}
@@ -293,7 +121,7 @@ export function UnitsTab({ property }: Props) {
           />
         </FormSection>
 
-        <FormSection title="Financial Information" collapsible defaultCollapsed>
+        <FormSection title="Financial Information">
           <UnitFinancialInfo
             unit={currentUnit}
             errors={unitForm.errors}
@@ -303,7 +131,7 @@ export function UnitsTab({ property }: Props) {
           />
         </FormSection>
 
-        <FormSection title="Utilities" collapsible defaultCollapsed>
+        <FormSection title="Utilities">
           <UnitUtilities
             unit={currentUnit}
             errors={unitForm.errors}
@@ -325,7 +153,7 @@ export function UnitsTab({ property }: Props) {
         <Button
           form="units-form"
           onClick={handleSubmit}
-          label={isEditMode ? "Update Unit" : "Save Unit Changes"}
+          label="Save Unit Changes"
           className="btn btn-primary btn-grow"
           disabled={!unitForm.isValid || isSubmitting}
         />

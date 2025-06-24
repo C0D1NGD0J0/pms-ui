@@ -36,7 +36,7 @@ export default function CreateProperty() {
     propertyTypeOptions,
     propertyStatusOptions,
   } = usePropertyFormBase();
-  const { isSubmitting, handleSubmit } = usePropertyForm();
+  const { isSubmitting, handleCreateSubmit } = usePropertyForm();
 
   const handleOpenCSVModal = () => {
     setIsCSVModalOpen(true);
@@ -127,7 +127,7 @@ export default function CreateProperty() {
 
       <CsvUploadModal isOpen={isCSVModalOpen} onClose={handleCloseCSVModal} />
 
-      <div className="flex-row resource-form">
+      <div className="flex-row resource-propertyForm">
         <PanelsWrapper>
           <Panel>
             <PanelHeader
@@ -152,9 +152,9 @@ export default function CreateProperty() {
               }
             />
             <Form
-              id="propertyForm"
+              onSubmit={propertyForm.onSubmit(handleCreateSubmit)}
+              id="property-propertyForm"
               disabled={isSubmitting}
-              onSubmit={propertyForm.onSubmit(handleSubmit)}
             >
               {tabs.map((tab) => (
                 <PanelContent
@@ -167,7 +167,7 @@ export default function CreateProperty() {
                 </PanelContent>
               ))}
 
-              <div className="form-actions">
+              <div className="propertyForm-actions">
                 <Button
                   className="btn btn-default btn-grow"
                   label="Cancel"

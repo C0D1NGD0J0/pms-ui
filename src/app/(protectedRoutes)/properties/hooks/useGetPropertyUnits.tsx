@@ -1,5 +1,4 @@
 import { propertyUnitService } from "@services/index";
-import { PROPERTY_QUERY_KEYS } from "@utils/constants";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { IPaginationQuery } from "@interfaces/utils.interface";
 
@@ -9,7 +8,7 @@ export function useGetPropertyUnits(
   pagination: Omit<IPaginationQuery, "page">
 ) {
   return useInfiniteQuery({
-    queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(cid, pid, pagination),
+    queryKey: ["/propertyUnits", cid, pid, pagination],
     queryFn: async ({ pageParam = 1 }) => {
       if (!cid || !pid) {
         return null;

@@ -2,6 +2,7 @@ import { useAuth } from "@store/index";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { extractChanges } from "@utils/helpers";
+import { PropertyModel } from "@models/property";
 import { UseFormReturnType } from "@mantine/form";
 import { propertyService } from "@services/property";
 import { PROPERTY_QUERY_KEYS } from "@utils/constants";
@@ -11,6 +12,7 @@ import {
   EditPropertyFormValues,
   PropertyFormValues,
   IPropertyDocument,
+  IPropertyModel,
 } from "@interfaces/property.interface";
 
 export function usePropertyEditForm({
