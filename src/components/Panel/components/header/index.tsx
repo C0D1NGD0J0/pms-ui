@@ -1,3 +1,4 @@
+import { Select } from "@components/FormElements";
 import React, { ChangeEvent, ReactNode } from "react";
 
 export interface PanelHeaderProps {
@@ -54,19 +55,18 @@ export function PanelHeader({
           )}
           {isFilterVisible && filterOpts && filterOpts.options?.length > 0 && (
             <div className="filter-options">
-              <select
+              <Select
+                id="filter-select"
+                name="filter"
                 className="filter-select"
-                onChange={(e) => {
-                  setSortBy(e.target.value);
-                  filterOpts?.onFilterChange(e.target.value);
+                value={filterOpts.value}
+                options={filterOpts.options}
+                onChange={(value) => {
+                  setSortBy(value);
+                  filterOpts?.onFilterChange(value);
                 }}
-              >
-                {filterOpts?.options.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                placeholder="Filter by..."
+              />
               {_sortBy && filterOpts.sortDirection && (
                 <button
                   className="sort-direction-btn"

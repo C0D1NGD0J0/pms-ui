@@ -142,6 +142,7 @@
   }
 
   &_select {
+    // Legacy support - modern styling handled by _select.scss
     @include custom-dropdown;
   }
 

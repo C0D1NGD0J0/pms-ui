@@ -103,7 +103,6 @@ export function Table<T extends object>({
     return <span className={`status ${statusClass}`}>{status}</span>;
   };
 
-  // Configure pagination - fixed to match Ant Design's expected types
   const paginationConfig: false | TablePaginationConfig =
     pagination === false
       ? false
@@ -136,7 +135,9 @@ export function Table<T extends object>({
         table: (props) => (
           <table
             {...props}
-            className={`${tableVariant === "alt-2" ? "table-alt-2" : "custom-table"}`}
+            className={`${
+              tableVariant === "alt-2" ? "table-alt-2" : "custom-table"
+            }`}
           ></table>
         ),
         header: {
