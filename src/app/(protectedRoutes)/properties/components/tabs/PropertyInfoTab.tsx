@@ -1,25 +1,23 @@
 "use client";
-import React from "react";
-import { Loading } from "@components/Loading";
+import React, { useEffect } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { usePropertyFormMetaData } from "@hooks/index";
+import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { usePropertyFormActions } from "@store/propertyform.store";
-import {
-  formFieldVisibilityMap,
-  PropertyFormValues,
-} from "@interfaces/property.interface";
+import { PropertyFormValues } from "@interfaces/property.interface";
 import {
   FormField,
-  FormLabel,
   FormInput,
+  FormLabel,
   Checkbox,
   Textarea,
+  Tooltip,
   Select,
 } from "@components/FormElements";
 
 interface Props {
-  form: UseFormReturnType<PropertyFormValues>;
+  formConfig: any;
+  propertyForm: UseFormReturnType<PropertyFormValues>;
   propertyTypeOptions: { value: string; label: string }[];
   propertyStatusOptions: { value: string; label: string }[];
   handleOnChange: (
@@ -32,25 +30,26 @@ interface Props {
 }
 
 export function PropertyInfoTab({
-  form,
+  propertyForm: form,
   propertyTypeOptions: _propertyTypeOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   propertyStatusOptions: _propertyStatusOptions, // eslint-disable-line @typescript-eslint/no-unused-vars
   handleOnChange,
+  formConfig,
 }: Props) {
   const { setTabValidation } = usePropertyFormActions();
-  const { data: formConfig, isLoading: isFormConfigLoading } =
-    usePropertyFormMetaData();
 
   const propertyType = form.values.propertyType || "house";
-  const visibleFields = formFieldVisibilityMap[
-    propertyType as keyof typeof formFieldVisibilityMap
-  ] || ["totalArea"];
+  const numUnits = parseInt(form.values.totalUnits?.toString() || "1", 10);
 
   const isFieldVisible = (fieldName: string) => {
-    return visibleFields.includes(fieldName);
+    return PropertyTypeManager.isFieldVisible(
+      propertyType,
+      fieldName,
+      numUnits
+    );
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const isValid = formConfig?.specifications?.totalArea?.isRequired
       ? !!form.values.specifications.totalArea
       : true;
@@ -58,12 +57,8 @@ export function PropertyInfoTab({
     setTabValidation("property", isValid);
   }, [form.values.specifications, formConfig, setTabValidation]);
 
-  if (isFormConfigLoading) {
-    return <Loading size="regular" description="Gathering form data..." />;
-  }
-
   const occupancyStatusOptions =
-    formConfig?.occupancyStatuses.map((status) => ({
+    formConfig?.occupancyStatuses.map((status: string) => ({
       value: status,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
     })) || [];
@@ -85,14 +80,21 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="totalArea"
                 label="Total Area (sq ft)"
-                required={formConfig?.specifications?.totalArea?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "totalArea"
+                )}
               />
               <FormInput
                 id="totalArea"
                 name="specifications.totalArea"
                 type="number"
                 value={form.values.specifications.totalArea.toString()}
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.totalArea", numValue);
+                }}
                 placeholder="Enter total area"
                 min={
                   formConfig?.specifications?.totalArea?.min?.toString() || "0"
@@ -112,7 +114,10 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="lotSize"
                 label="Lot Size (sq ft)"
-                required={formConfig?.specifications?.lotSize?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "lotSize"
+                )}
               />
               <FormInput
                 id="lotSize"
@@ -141,14 +146,21 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="bedrooms"
                 label="Bedrooms"
-                required={formConfig?.specifications?.bedrooms?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "bedrooms"
+                )}
               />
               <FormInput
                 id="bedrooms"
                 name="specifications.bedrooms"
                 type="number"
                 value={form.values.specifications.bedrooms.toString()}
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.bedrooms", numValue);
+                }}
                 placeholder="Enter number of bedrooms"
                 min={
                   formConfig?.specifications?.bedrooms?.min?.toString() || "0"
@@ -168,14 +180,21 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="bathrooms"
                 label="Bathrooms"
-                required={formConfig?.specifications?.bathrooms?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "bathrooms"
+                )}
               />
               <FormInput
                 id="bathrooms"
                 name="specifications.bathrooms"
                 type="number"
                 value={form.values.specifications.bathrooms.toString()}
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.bathrooms", numValue);
+                }}
                 placeholder="Enter number of bathrooms"
                 min={
                   formConfig?.specifications?.bathrooms?.min?.toString() || "0"
@@ -198,14 +217,21 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="floors"
                 label="Floors"
-                required={formConfig?.specifications?.floors?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "floors"
+                )}
               />
               <FormInput
                 id="floors"
                 name="specifications.floors"
                 type="number"
                 value={form.values.specifications.floors.toString()}
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.floors", numValue);
+                }}
                 placeholder="Enter number of floors"
                 min={formConfig?.specifications?.floors?.min?.toString() || "1"}
                 hasError={!!form.errors["specifications.floors"]}
@@ -221,14 +247,21 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="garageSpaces"
                 label="Garage Spaces"
-                required={formConfig?.specifications?.garageSpaces?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "garageSpaces"
+                )}
               />
               <FormInput
                 id="garageSpaces"
                 name="specifications.garageSpaces"
                 type="number"
                 value={form.values.specifications.garageSpaces.toString()}
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.garageSpaces", numValue);
+                }}
                 placeholder="Enter number of garage spaces"
                 min={
                   formConfig?.specifications?.garageSpaces?.min?.toString() ||
@@ -252,12 +285,19 @@ export function PropertyInfoTab({
               <FormLabel
                 htmlFor="maxOccupants"
                 label="Maximum Occupants"
-                required={formConfig?.specifications?.maxOccupants?.isRequired}
+                required={PropertyTypeManager.isFieldRequired(
+                  propertyType,
+                  "maxOccupants"
+                )}
               />
               <FormInput
                 type="number"
                 id="maxOccupants"
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.maxOccupants", numValue);
+                }}
                 name="specifications.maxOccupants"
                 placeholder="Enter maximum number of occupants"
                 value={form.values.specifications?.maxOccupants || 0}
@@ -293,33 +333,49 @@ export function PropertyInfoTab({
               value={form.values.occupancyStatus || ""}
             />
           </FormField>
-          {isFieldVisible("totalUnits") && (
-            <FormField
-              error={{
-                msg: (form.errors["totalUnits"] as string) || "",
-                touched: form.isTouched("totalUnits"),
-              }}
+          <FormField
+            error={{
+              msg: (form.errors["totalUnits"] as string) || "",
+              touched: form.isTouched("totalUnits"),
+            }}
+          >
+            <FormLabel
+              htmlFor="totalUnits"
+              label="Total Units"
+              required={PropertyTypeManager.isFieldRequired(
+                propertyType,
+                "totalUnits"
+              )}
+            />
+            <Tooltip
+              content={PropertyTypeManager.getHelpText(
+                propertyType,
+                "totalUnits",
+                numUnits
+              )}
+              placement="top"
             >
-              <FormLabel htmlFor="totalUnits" label="Total Units" />
               <FormInput
                 id="totalUnits"
                 name="totalUnits"
                 type="number"
-                value={form.values.totalUnits.toString()}
-                onChange={handleOnChange}
+                value={form.values.totalUnits?.toString() || "1"}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("totalUnits", numValue);
+                }}
                 placeholder="Enter total building units"
-                min="0"
-                max="250"
+                min={1}
+                max={250}
                 hasError={!!form.errors["totalUnits"]}
               />
-            </FormField>
-          )}
+            </Tooltip>
+          </FormField>
         </div>
       </FormSection>
 
-      {["house", "townhouse", "apartment", "condominium"].includes(
-        propertyType
-      ) && (
+      {isFieldVisible("utilities") && (
         <FormSection
           title="Utilities"
           description="Select utilities included with the property"

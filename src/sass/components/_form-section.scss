@@ -1,0 +1,110 @@
+@use "../abstract" as *;
+
+.form-section {
+  margin-bottom: $space-lg;
+  @include border-radius($border-radius-md);
+  @include box-shadow();
+
+  &_header {
+    padding: $space-md;
+    border-bottom: 1px solid hslaGen($grey-color, 0.1);
+    background-color: hslaGen($background-color, 0.5);
+    @include border-radius($border-radius-md $border-radius-md 0 0);
+
+    &-title {
+      margin: 0;
+      font-size: $fs-md;
+      font-weight: $fw-normal;
+      color: hslaGen($primary-color);
+    }
+
+    p {
+      margin: $space-sm 0 0 0;
+      font-size: $fs-sm;
+      color: hslaGen($secondary-color);
+    }
+  }
+
+  &_content {
+    padding: $space-lg;
+  }
+
+  &--collapsible {
+    .form-section_header {
+      cursor: pointer;
+      position: relative;
+      @include transition(background-color, 0.2s, ease);
+
+      &:hover {
+        background-color: hslaGen($grey-color, 0.05);
+      }
+    }
+  }
+
+  &--collapsed {
+    .form-section_content {
+      max-height: 0;
+      overflow: hidden;
+      padding-top: 0;
+      padding-bottom: 0;
+      @include transition(max-height, 0.4s, ease-in-out);
+    }
+
+    .form-section_chevron {
+      transform: rotate(-90deg);
+    }
+  }
+
+  &:not(.form-section--collapsed) {
+    .form-section_content {
+      max-height: auto; // Large enough to accommodate content
+      @include transition(max-height, 0.4s, ease-in-out);
+    }
+  }
+
+  &_toggle {
+    position: absolute;
+    top: 50%;
+    right: $space-md;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: $space-sm;
+    color: hslaGen($secondary-color);
+    @include transition(color, 0.2s, ease);
+
+    &:hover {
+      color: hslaGen($primary-color);
+    }
+
+    &:focus {
+      outline: none;
+      color: hslaGen($primary-color);
+    }
+  }
+
+  &_chevron {
+    @include transition(transform, 0.3s, ease-in-out);
+    display: block;
+  }
+}
+
+// Responsive adjustments
+@include breakpoint(768px, max) {
+  .form-section {
+    margin-bottom: $space-md;
+
+    &_header {
+      padding: $space-sm $space-md;
+    }
+
+    &_content {
+      padding: $space-md;
+    }
+
+    &_toggle {
+      right: $space-sm;
+    }
+  }
+}

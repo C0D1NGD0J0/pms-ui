@@ -1,0 +1,279 @@
+@use "../abstract/index" as *;
+
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  .select-trigger {
+    width: 100%;
+    padding: $base-padding;
+    padding-right: 2.5rem;
+    // border: $base-border-thickness solid hslaGen($grey-color, 0.3);
+    @include border-radius($base-border-radius);
+    background-color: hslaGen($white-color);
+    color: hslaGen($primary-color);
+    font-size: $fs-base;
+    font-family: inherit;
+    font-weight: $fw-normal;
+    line-height: $base-line-height;
+    cursor: pointer;
+    @include transition(all, 0.2s, ease-in-out);
+    @include flex(row, space-between, center);
+    text-align: left;
+
+    &:focus {
+      outline: none;
+      border-color: hslaGen($primary-color);
+      @include box-shadow(0 0 0 3px hslaGen($primary-color, 0.1));
+    }
+
+    &:hover:not(:disabled) {
+      border-color: hslaGen($primary-color);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: hslaGen($light-grey-color, 0.1);
+    }
+
+    .select-value {
+      flex: 1;
+      @include text-truncate;
+    }
+
+    .select-arrow {
+      margin-left: $space-sm;
+      @include transition(all, 0.2s, ease-in-out);
+      color: hslaGen($grey-color);
+
+      i {
+        font-size: $fs-lg;
+      }
+    }
+  }
+
+  &.no-value .select-trigger .select-value {
+    color: hslaGen($grey-color, 0.7);
+  }
+
+  &.open .select-trigger {
+    border-color: hslaGen($primary-color);
+    @include box-shadow(0 0 0 3px hslaGen($primary-color, 0.1));
+
+    .select-arrow {
+      color: hslaGen($primary-color);
+    }
+  }
+
+  &.invalid .select-trigger {
+    border-color: hslaGen($danger-color);
+    @include box-shadow(0 0 0 3px hslaGen($danger-color, 0.1));
+  }
+
+  .select-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: hslaGen($white-color);
+    border: $base-border-thickness solid hslaGen($primary-color);
+    @include border-radius($base-border-radius);
+    @include box-shadow($box-shadow);
+    margin-top: $space-xs;
+    max-height: 200px;
+    overflow-y: auto;
+    list-style: none;
+    padding: $space-xs 0;
+    margin: $space-xs 0 0;
+
+    .select-option {
+      padding: $space-sm;
+      cursor: pointer;
+      @include transition(all, 0.2s, ease-in-out);
+      font-size: $fs-base;
+      font-weight: $fw-normal;
+      color: hslaGen($primary-color);
+      border: none;
+      background: none;
+
+      &:hover:not(.disabled) {
+        background-color: hslaGen($primary-color, 0.1);
+      }
+
+      &.focused:not(.disabled) {
+        background-color: hslaGen($primary-color, 0.1);
+        outline: 2px solid hslaGen($primary-color);
+        outline-offset: -2px;
+      }
+
+      &.selected {
+        background-color: hslaGen($primary-color, 0.15);
+        color: hslaGen($primary-color);
+        font-weight: $fw-bold;
+
+        &::after {
+          content: " ✓";
+          float: right;
+          font-weight: $fw-bold;
+        }
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        color: hslaGen($grey-color, 0.5);
+      }
+    }
+  }
+}
+
+.panel {
+  .custom-select-wrapper {
+    .select-trigger {
+      font-size: $fs-sm;
+      min-width: 120px;
+      padding: $space-sm;
+      @include border-radius($border-radius-sm);
+    }
+
+    .select-options {
+      .select-option {
+        padding: $space-sm;
+        font-size: $fs-sm;
+      }
+    }
+  }
+
+  // Panel alt-2 specific styling
+  &.panel-alt-2 {
+    .custom-select-wrapper {
+      .select-trigger {
+        background-color: hslaGen($white-color);
+        border-color: hslaGen($grey-color, 0.5);
+        color: hslaGen($dark-grey-color);
+        padding: $space-xs $space-sm;
+        @include border-radius($border-radius-md);
+
+        &:hover:not(:disabled) {
+          border-color: hslaGen($grey-color);
+        }
+
+        &:focus {
+          border-color: hslaGen($primary-color);
+          @include box-shadow(0 0 0 3px hslaGen($primary-color, 0.1));
+        }
+
+        .select-value {
+          color: hslaGen($dark-grey-color);
+        }
+
+        .select-arrow {
+          color: hslaGen($grey-color);
+        }
+      }
+
+      &.no-value .select-trigger .select-value {
+        color: hslaGen($grey-color);
+      }
+
+      &.open .select-trigger {
+        border-color: hslaGen($primary-color);
+
+        .select-arrow {
+          color: hslaGen($primary-color);
+        }
+      }
+
+      .select-options {
+        background: hslaGen($white-color);
+        border: $base-border-thickness solid hslaGen($grey-color, 0.3);
+        @include box-shadow($box-shadow-alt);
+
+        .select-option {
+          color: hslaGen($dark-grey-color);
+
+          &:hover:not(.disabled) {
+            background-color: hslaGen($off-white-color);
+          }
+
+          &.focused:not(.disabled) {
+            background-color: hslaGen($off-white-color);
+            outline-color: hslaGen($primary-color);
+          }
+
+          &.selected {
+            background-color: hslaGen($primary-color, 0.1);
+            color: hslaGen($primary-color);
+          }
+        }
+      }
+    }
+  }
+}
+
+.resource-form {
+  .custom-select-wrapper {
+    .select-trigger {
+      background-color: $form-input-bg;
+      border-color: hslaGen($grey-color, 0.3);
+      padding: $space-md;
+      height: 3.5rem;
+    }
+  }
+}
+
+@include breakpoint(768px, max) {
+  .custom-select-wrapper {
+    .select-trigger {
+      font-size: 16px; // Prevent zoom on iOS
+      padding: $space-sm;
+    }
+  }
+}
+
+// Dark theme support
+@media (prefers-color-scheme: dark) {
+  .custom-select-wrapper {
+    .select-trigger {
+      background-color: hslaGen($dark-grey-color);
+      border-color: hslaGen($grey-color, 0.4);
+      color: hslaGen($white-color);
+    }
+
+    .select-options {
+      background: hslaGen($dark-grey-color);
+
+      .select-option {
+        color: hslaGen($white-color);
+      }
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .custom-select-wrapper {
+    .select-trigger {
+      border-color: hslaGen($black-color);
+      border-width: 2px;
+
+      &:focus {
+        border-color: hslaGen($primary-color);
+      }
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .custom-select-wrapper {
+    .select-trigger,
+    .select-arrow,
+    .select-option {
+      transition: none;
+    }
+  }
+}

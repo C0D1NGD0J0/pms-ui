@@ -12,14 +12,17 @@ import {
 } from "@components/FormElements";
 
 interface Props {
-  form: UseFormReturnType<PropertyFormValues>;
+  propertyForm: UseFormReturnType<PropertyFormValues>;
   documentTypeOptions: {
     value: "deed" | "tax" | "insurance" | "inspection" | "other" | "lease";
     label: string;
   }[];
 }
 
-export function DocumentsTab({ form, documentTypeOptions }: Props) {
+export function DocumentsTab({
+  propertyForm: form,
+  documentTypeOptions,
+}: Props) {
   const [currentDocType, setCurrentDocType] = useState<
     "deed" | "tax" | "insurance" | "inspection" | "other" | "lease" | undefined
   >(undefined);

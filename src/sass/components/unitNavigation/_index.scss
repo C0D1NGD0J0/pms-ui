@@ -1,0 +1,209 @@
+@use "../../abstract/index" as *;
+
+.unit-navigation {
+  margin-bottom: $space-lg;
+  padding: $space-md;
+  background-color: hslaGen($off-white-color);
+  border-radius: $base-border-radius;
+  border: 1px solid hslaGen($light-grey-color, 0.5);
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $space-md;
+    padding-bottom: $space-sm;
+    border-bottom: 1px solid hslaGen($light-grey-color, 0.3);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $fs-md;
+    font-weight: $fw-bold;
+    color: hslaGen($primary-color);
+  }
+
+  &__add-btn {
+    padding: $space-sm $space-md;
+    font-size: $fs-sm;
+    border: 1px solid hslaGen($primary-color);
+    background-color: transparent;
+    color: hslaGen($primary-color);
+    border-radius: $base-border-radius;
+    cursor: pointer;
+    transition: $transition;
+
+    &:hover {
+      background-color: hslaGen($primary-color);
+      color: hslaGen($white-color);
+    }
+  }
+
+  &__list {
+    display: flex;
+    gap: $space-sm;
+    overflow-x: auto;
+    padding: $space-sm;
+    border: 1px solid hslaGen($light-grey-color, 0.3);
+    border-radius: $base-border-radius;
+    background-color: hslaGen($white-color);
+
+    // Hide scrollbar for cleaner look but keep functionality
+    scrollbar-width: thin;
+    scrollbar-color: hslaGen($light-grey-color, 0.6) hslaGen($off-white-color);
+
+    // Custom scrollbar for webkit browsers
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: hslaGen($off-white-color);
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: hslaGen($light-grey-color, 0.6);
+      border-radius: 3px;
+
+      &:hover {
+        background: hslaGen($grey-color, 0.8);
+      }
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-sm $space-md;
+    min-width: max-content;
+    white-space: nowrap;
+    border: 1px solid hslaGen($light-grey-color, 0.3);
+    border-radius: $base-border-radius;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background-color: hslaGen($white-color);
+    position: relative;
+
+    &:hover {
+      background-color: hslaGen($alice-blue-color, 0.3);
+      border-color: hslaGen($primary-color, 0.3);
+    }
+
+    &--active {
+      background-color: hslaGen($primary-color, 0.1);
+      border-color: hslaGen($primary-color);
+      border-width: 2px;
+
+      .unit-navigation__item-text {
+        color: hslaGen($primary-color);
+        font-weight: $fw-bold;
+      }
+    }
+
+    &--invalid {
+      border-color: hslaGen($danger-color, 0.4);
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        width: 8px;
+        height: 8px;
+        background-color: hslaGen($danger-color);
+        border-radius: 50%;
+        border: 2px solid hslaGen($white-color);
+      }
+    }
+
+    &--valid {
+      &.unit-navigation__item--active {
+        border-color: hslaGen($primary-color);
+      }
+    }
+
+    &--unsaved {
+      border: 2px solid hslaGen($warning-color);
+      box-shadow: 0 0 8px hslaGen($warning-color, 0.3);
+      background: hslaGen($warning-color, 0.05);
+
+      &:hover {
+        background-color: hslaGen($warning-color, 0.1);
+        border-color: hslaGen($warning-color);
+        box-shadow: 0 0 12px hslaGen($warning-color, 0.4);
+      }
+
+      &.unit-navigation__item--active {
+        background-color: hslaGen($warning-color, 0.15);
+        border-color: hslaGen($warning-color);
+        box-shadow: 0 0 12px hslaGen($warning-color, 0.5);
+
+        .unit-navigation__item-text {
+          color: hslaGen($warning-color, 0.8);
+          font-weight: $fw-bold;
+        }
+      }
+
+      // Add a small indicator dot for unsaved units
+      &::before {
+        content: "";
+        position: absolute;
+        top: -$space-sm;
+        left: -$space-sm;
+        width: 8px;
+        height: 8px;
+        background-color: hslaGen($warning-color);
+        border-radius: 50%;
+        border: 2px solid hslaGen($white-color);
+      }
+    }
+  }
+
+  &__item-text {
+    font-size: $fs-sm;
+    font-weight: $fw-normal;
+    color: hslaGen($dark-grey-color);
+    margin: 0;
+  }
+
+  &__load-more {
+    display: flex;
+    gap: $space-sm;
+    padding: $space-sm;
+    margin-top: $space-sm;
+    justify-content: center;
+    border-top: 1px solid hslaGen($light-grey-color, 0.2);
+  }
+
+  &__load-more-btn {
+    padding: $space-sm $space-md;
+    font-size: $fs-sm;
+    border: 1px solid hslaGen($primary-color);
+    background-color: transparent;
+    color: hslaGen($primary-color);
+    border-radius: $base-border-radius;
+    cursor: pointer;
+    transition: $transition;
+    min-width: 100px;
+
+    &:hover:not(:disabled) {
+      background-color: hslaGen($primary-color);
+      color: hslaGen($white-color);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__empty-state {
+    padding: $space-xl;
+    text-align: center;
+    color: hslaGen($grey-color);
+    font-size: $fs-sm;
+    font-style: italic;
+  }
+}

@@ -3,6 +3,7 @@ import React, { ChangeEvent, ReactNode } from "react";
 interface PanelProps {
   children?: ReactNode;
   className?: string;
+  variant?: "default" | "alt-2";
   headerTitleComponent?: ReactNode;
   header?: {
     title?: string | ReactNode;
@@ -18,6 +19,11 @@ interface PanelProps {
   } | null;
 }
 
-export const Panel: React.FC<PanelProps> = ({ children, className = "" }) => {
-  return <div className={`panel ${className}`}>{children}</div>;
+export const Panel: React.FC<PanelProps> = ({ 
+  children, 
+  className = "",
+  variant = "default"
+}) => {
+  const panelClass = `panel ${variant === "alt-2" ? "panel-alt-2" : ""} ${className}`.trim();
+  return <div className={panelClass}>{children}</div>;
 };

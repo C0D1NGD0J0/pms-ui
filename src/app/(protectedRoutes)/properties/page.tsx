@@ -66,8 +66,9 @@ export default function Properties() {
 
       <div className="flex-row">
         <PanelsWrapper>
-          <Panel>
+          <Panel variant="alt-2">
             <Table
+              tableVariant="alt-2"
               columns={generatePropertyColumn()}
               dataSource={properties}
               searchOpts={{

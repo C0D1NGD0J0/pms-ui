@@ -1,14 +1,14 @@
 import axios from "@configs/axios";
+import { postTransformPropertiesData } from "@/src/models/property";
 import {
+  IServerResponseWithPagination,
   IPaginationQuery,
   IServerResponse,
-  IServerResponseWithPagination,
 } from "@interfaces/utils.interface";
 import {
   EditPropertyFormValues,
   IPropertyFilterParams,
   PropertyFormValues,
-  IProperty,
   IPropertyDocument,
 } from "@interfaces/property.interface";
 
@@ -90,19 +90,28 @@ class PropertyService {
         `${this.baseUrl}/${cid}/client_properties?${queryString}`,
         this.axiosConfig
       );
-      return result.data;
+      const transformedData = postTransformPropertiesData(result.data.items);
+      return {
+        ...result.data,
+        items: transformedData,
+      };
     } catch (error) {
       console.error("Error fetching client properties:", error);
       throw error;
     }
   }
 
-  async getClientProperty(cid: string, propertyPid: string) {
+  async getClientProperty(
+    cid: string,
+    propertyPid: string
+  ): Promise<IPropertyDocument> {
     try {
       const result = await axios.get<IServerResponse<IPropertyDocument>>(
-        `${this.baseUrl}/${cid}/client_property/${propertyPid}`,
+        `${this.baseUrl}/${cid}/client_properties/${propertyPid}?q`,
         this.axiosConfig
       );
+      // const transformedData = postTransformPropertyData(result.data);
+      // console.log("Transformed Property Data:", transformedData);
       return result.data;
     } catch (error) {
       console.error("Error fetching clientproperty:", error);
@@ -110,13 +119,13 @@ class PropertyService {
     }
   }
 
-  async getPropertyFormMetaData() {
+  async getPropertyFormMetaData(formType: string) {
     try {
       const result = await axios.get(
-        `${this.baseUrl}/property_form_metadata`,
+        `${this.baseUrl}/property_form_metadata?formType=${formType}`,
         this.axiosConfig
       );
-      return result;
+      return result.data;
     } catch (error) {
       console.error("Error fetching static property form config:", error);
       throw error;
@@ -130,7 +139,7 @@ class PropertyService {
   ) {
     try {
       const result = await axios.patch(
-        `${this.baseUrl}/${cid}/client_property/${pid}`,
+        `${this.baseUrl}/${cid}/client_properties/${pid}`,
         propertyData,
         this.axiosConfig
       );

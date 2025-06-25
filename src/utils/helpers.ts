@@ -140,6 +140,18 @@ export function extractChanges<T extends object, U extends object>(
     if (Array.isArray(currVal)) {
       diff[key] = currVal;
     } else if (isObject(currVal) && isObject(origVal)) {
+      if (key === "address") {
+        const origFullAddress = (origVal as any)?.fullAddress;
+        const currFullAddress = (currVal as any)?.fullAddress;
+        const objlength = Object.keys(origVal).length;
+        const currObjLength = Object.keys(currVal).length;
+
+        if (origFullAddress !== currFullAddress || currObjLength > objlength) {
+          diff[key] = currVal;
+          continue;
+        }
+      }
+
       const nested = extractChanges(origVal, currVal);
       if (nested) diff[key] = nested;
     } else {
@@ -148,4 +160,70 @@ export function extractChanges<T extends object, U extends object>(
   }
 
   return Object.keys(diff).length > 0 ? diff : null;
+}
+
+export function parseError(error: any): ParsedError {
+  const defaultResult: ParsedError = {
+    message: "An unexpected error occurred",
+    fieldErrors: {},
+    statusCode: undefined,
+  };
+
+  if (!error) {
+    return defaultResult;
+  }
+
+  if (error.response?.data) {
+    const data = error.response.data;
+    return {
+      message: data.message || "Request failed",
+      fieldErrors: data.errorInfo || {},
+      statusCode: data.statusCode || error.response.status,
+    };
+  }
+  if (error.success === false && error.errorInfo) {
+    return {
+      message: error.message || "Validation failed",
+      fieldErrors: error.errorInfo || {},
+      statusCode: error.statusCode,
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      fieldErrors: {},
+      statusCode: undefined,
+    };
+  }
+
+  if (typeof error === "string") {
+    return {
+      message: error,
+      fieldErrors: {},
+      statusCode: undefined,
+    };
+  }
+
+  if (error.code === "NETWORK_ERROR" || error.code === "TIMEOUT") {
+    return {
+      message: "Connection problem. Please try again.",
+      fieldErrors: {},
+      statusCode: undefined,
+    };
+  }
+
+  if (error.code === "ECONNABORTED") {
+    return {
+      message: "Request timeout. Please try again.",
+      fieldErrors: {},
+      statusCode: undefined,
+    };
+  }
+
+  return {
+    message: error.message || error.toString() || "Something went wrong",
+    fieldErrors: {},
+    statusCode: error.status || error.statusCode,
+  };
 }
