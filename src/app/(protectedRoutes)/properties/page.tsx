@@ -68,6 +68,7 @@ export default function Properties() {
         <PanelsWrapper>
           <Panel>
             <Table
+              tableVariant="default"
               columns={generatePropertyColumn()}
               dataSource={properties}
               searchOpts={{

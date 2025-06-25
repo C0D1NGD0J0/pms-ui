@@ -31,6 +31,7 @@ export interface TableProps<T> {
   antTableProps?: AntTableProps<T>;
   withHeader?: boolean;
   pagination?: boolean | Partial<TablePaginationConfig>;
+  tableVariant?: "default" | "alt-2";
   rowSelection?: {
     type?: "checkbox" | "radio";
     selectedRowKeys?: React.Key[];
@@ -52,6 +53,7 @@ export function Table<T extends object>({
   searchOpts,
   filterOpts,
   rowSelection,
+  tableVariant = "default",
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
 
@@ -131,7 +133,12 @@ export function Table<T extends object>({
       className="panel-content-table custom-table-wrapper"
       {...antTableProps}
       components={{
-        table: (props) => <table {...props} className="custom-table"></table>,
+        table: (props) => (
+          <table
+            {...props}
+            className={`${tableVariant === "alt-2" ? "table-alt-2" : "custom-table"}`}
+          ></table>
+        ),
         header: {
           wrapper: (props) => (
             <thead {...props} className="custom-thead"></thead>

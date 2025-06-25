@@ -86,7 +86,7 @@ export function useBaseUnitForm({
   const hasUnsavedChanges = useMemo(() => {
     if (!currentUnit || !originalUnit) return false;
     if (!currentUnit.propertyId || !currentUnit.id) return false; // only perform this for saved units
-    console.log(currentUnit, "Checking for unsaved changes...", originalUnit);
+
     const changes = extractChanges(originalUnit, currentUnit);
     return changes !== null;
   }, [currentUnit, originalUnit]);
