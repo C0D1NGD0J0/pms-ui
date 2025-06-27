@@ -1,8 +1,7 @@
 import React from "react";
-import { Table } from "@components/Table";
-import { Button } from "@components/FormElements";
+import { MaintenanceRecord, MaintenanceTable } from "@components/Property";
 
-const maintenanceData = [
+const maintenanceData: MaintenanceRecord[] = [
   {
     id: "1",
     date: "June 20, 2025",
@@ -50,38 +49,21 @@ const maintenanceData = [
   },
 ];
 
-const maintenanceColumns = [
-  { title: "Date", dataIndex: "date" },
-  { title: "Issue", dataIndex: "issue" },
-  { title: "Priority", dataIndex: "priority", isStatus: true },
-  { title: "Status", dataIndex: "status", isStatus: true },
-  { title: "Cost", dataIndex: "cost" },
-  { title: "Contractor", dataIndex: "contractor" },
-  {
-    title: "Actions",
-    dataIndex: "actions",
-    render: () => <Button className="btn btn-sm btn-outline" label="Details" />,
-  },
-];
-
 export function MaintenanceLogTab() {
+  const handleAddRequest = () => {
+    console.log("Add maintenance request");
+  };
+
+  const handleViewDetails = (id: string) => {
+    console.log("View details for:", id);
+  };
+
   return (
-    <div className="maintenance-log">
-      <Table
-        dataSource={maintenanceData}
-        columns={maintenanceColumns}
-        pagination={true}
-      />
-      <div
-        className="form-actions"
-        style={{ marginTop: "1rem", justifyContent: "flex-end" }}
-      >
-        <Button
-          className="btn btn-primary"
-          label="Add Maintenance Request"
-          icon={<i className="bx bx-plus"></i>}
-        />
-      </div>
-    </div>
+    <MaintenanceTable
+      viewType="landlord"
+      data={maintenanceData}
+      onAddRequest={handleAddRequest}
+      onViewDetails={handleViewDetails}
+    />
   );
 }

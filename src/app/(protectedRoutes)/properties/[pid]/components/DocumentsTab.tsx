@@ -1,7 +1,7 @@
 import React from "react";
-import { Button } from "@components/FormElements";
+import { DocumentsList, Document } from "@components/Property";
 
-const documentsData = [
+const documentsData: Document[] = [
   {
     id: "1",
     title: "Lease Agreement",
@@ -35,31 +35,20 @@ const documentsData = [
 ];
 
 export function DocumentsTab() {
+  const handleDownload = (documentId: string) => {
+    console.log("Download document:", documentId);
+  };
+
+  const handleUpload = () => {
+    console.log("Upload new document");
+  };
+
   return (
-    <div className="documents-tab">
-      <div className="document-list">
-        {documentsData.map((document) => (
-          <div key={document.id} className="document-item">
-            <div className="document-icon">
-              <i className={`bx ${document.icon}`}></i>
-            </div>
-            <div>
-              <h4>{document.title}</h4>
-              <p>{document.description}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div
-        className="form-actions"
-        style={{ marginTop: "1rem", justifyContent: "flex-end" }}
-      >
-        <Button
-          className="btn btn-primary"
-          label="Upload Document"
-          icon={<i className="bx bx-plus"></i>}
-        />
-      </div>
-    </div>
+    <DocumentsList
+      viewType="landlord"
+      documents={documentsData}
+      onDownload={handleDownload}
+      onUpload={handleUpload}
+    />
   );
 }

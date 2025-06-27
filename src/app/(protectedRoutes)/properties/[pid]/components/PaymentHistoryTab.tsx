@@ -1,8 +1,7 @@
 import React from "react";
-import { Table } from "@components/Table";
-import { Button } from "@components/FormElements";
+import { PaymentRecord, PaymentTable } from "@components/Property";
 
-const paymentData = [
+const paymentData: PaymentRecord[] = [
   {
     id: "1",
     date: "June 1, 2025",
@@ -50,38 +49,21 @@ const paymentData = [
   },
 ];
 
-const paymentColumns = [
-  { title: "Date", dataIndex: "date" },
-  { title: "Amount", dataIndex: "amount" },
-  { title: "Type", dataIndex: "type" },
-  { title: "Method", dataIndex: "method" },
-  { title: "Status", dataIndex: "status", isStatus: true },
-  { title: "Late Fees", dataIndex: "lateFees" },
-  {
-    title: "Actions",
-    dataIndex: "actions",
-    render: () => <Button className="btn btn-sm btn-outline" label="Receipt" />,
-  },
-];
-
 export function PaymentHistoryTab() {
+  const handleRecordPayment = () => {
+    console.log("Record new payment");
+  };
+
+  const handleDownloadReceipt = (paymentId: string) => {
+    console.log("Download receipt for:", paymentId);
+  };
+
   return (
-    <div className="payment-log">
-      <Table
-        dataSource={paymentData}
-        columns={paymentColumns}
-        pagination={true}
-      />
-      <div
-        className="form-actions"
-        style={{ marginTop: "1rem", justifyContent: "flex-end" }}
-      >
-        <Button
-          className="btn btn-primary"
-          label="Record Payment"
-          icon={<i className="bx bx-plus"></i>}
-        />
-      </div>
-    </div>
+    <PaymentTable
+      viewType="landlord"
+      data={paymentData}
+      onRecordPayment={handleRecordPayment}
+      onDownloadReceipt={handleDownloadReceipt}
+    />
   );
 }
