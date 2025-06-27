@@ -6,6 +6,7 @@ import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
 import {
   PanelsWrapper,
   PanelContent,
@@ -20,8 +21,6 @@ import {
   FinancialTab,
   UnitsTab,
 } from "@properties/components";
-
-import { usePropertyEditForm } from "../hook";
 
 export default function EditProperty() {
   const params = useParams();

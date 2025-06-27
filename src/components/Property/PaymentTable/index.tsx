@@ -29,7 +29,6 @@ export function PaymentTable({
   onDownloadReceipt,
   className = "",
 }: PaymentTableProps) {
-  // Define columns based on view type
   const getColumns = (): TableColumn<PaymentRecord>[] => {
     const baseColumns: TableColumn<PaymentRecord>[] = [
       { title: "Date", dataIndex: "date" },
@@ -39,18 +38,16 @@ export function PaymentTable({
       { title: "Status", dataIndex: "status", isStatus: true },
     ];
 
-    // Add landlord-specific columns
     if (viewType === "landlord") {
       baseColumns.push({ title: "Late Fees", dataIndex: "lateFees" });
 
-      // Add landlord actions column
       baseColumns.push({
         title: "Actions",
         dataIndex: "actions",
         key: "actions",
         render: (_, record: PaymentRecord) => (
           <Button
-            key={`action-${record.id}`}
+            key={`action-${record.date}`}
             className="btn btn-sm btn-outline"
             label="Receipt"
             onClick={() => onDownloadReceipt?.(record.id)}
@@ -58,7 +55,6 @@ export function PaymentTable({
         ),
       });
     } else {
-      // Add tenant receipt column
       baseColumns.push({
         title: "Receipt",
         dataIndex: "actions",
