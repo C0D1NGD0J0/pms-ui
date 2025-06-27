@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { Button } from "@components/FormElements";
 import { PageHeader } from "@components/PageElements";
+import { ImageGallery } from "@components/ImageGallery";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import {
   PanelsWrapper,
@@ -11,7 +12,6 @@ import {
   Panel,
 } from "@components/Panel";
 import {
-  PropertyGallery,
   PropertyManager,
   PropertyMetrics,
   PropertySidebar,
@@ -25,7 +25,6 @@ import {
   DocumentsTab,
 } from "./components";
 
-// Dummy data
 const propertyData = {
   id: "BRK001",
   name: "Brooks Bungalows",
@@ -53,6 +52,7 @@ const propertyData = {
     },
   ],
   tenant: {
+    id: "tenant-001",
     name: "John Doe",
     avatar: "JD",
     lease: "Jan 2024 - Dec 2024",
@@ -137,6 +137,7 @@ const reportsData = [
     employee: "Sarah Johnson",
     issue: "Tenant Complaint - Noise",
     unit: "Unit A",
+    id: "report-001",
     priority: "Medium",
     status: "In Progress",
   },
@@ -144,6 +145,7 @@ const reportsData = [
     date: "June 24, 2025",
     employee: "Mike Torres",
     issue: "Lease Violation - Pet Policy",
+    id: "report-002",
     unit: "Unit C",
     priority: "High",
     status: "Under Review",
@@ -154,6 +156,7 @@ const reportsData = [
     issue: "Late Rent Payment",
     unit: "Unit B",
     priority: "High",
+    id: "report-003",
     status: "Overdue",
   },
 ];
@@ -219,15 +222,17 @@ export default function PropertyShow() {
 
       <div className="property-layout">
         <div className="property-main-content">
-          {/* Property Metrics */}
           <PropertyMetrics metrics={propertyData.metrics} />
 
-          {/* Tabbed Content */}
           <PanelsWrapper>
             <Panel>
               <PanelHeader
                 headerTitleComponent={
-                  <TabContainer onChange={setActiveTab} defaultTab={activeTab}>
+                  <TabContainer
+                    onChange={setActiveTab}
+                    defaultTab={activeTab}
+                    scrollOnChange={false}
+                  >
                     <TabList>
                       {tabs.map((tab) => (
                         <TabListItem
@@ -251,8 +256,9 @@ export default function PropertyShow() {
                 </PanelContent>
               ))}
             </Panel>
+          </PanelsWrapper>
 
-            {/* Reports Panel */}
+          <PanelsWrapper>
             <Panel>
               <PanelHeader
                 header={{ title: "Notes/Reports" }}
@@ -264,18 +270,18 @@ export default function PropertyShow() {
                 }}
               />
               <PanelContent>
-                <Table dataSource={reportsData} columns={reportColumns} />
+                <Table
+                  dataSource={reportsData}
+                  columns={reportColumns}
+                  key={`${new Date()}`}
+                />
               </PanelContent>
             </Panel>
           </PanelsWrapper>
         </div>
 
-        {/* Property Sidebar */}
         <PropertySidebar>
-          <PropertyGallery
-            images={propertyData.images}
-            title="Property Gallery"
-          />
+          <ImageGallery images={propertyData.images} title="Property Gallery" />
           <UnitsList units={propertyData.units} />
           <PropertyManager manager={propertyData.manager} />
         </PropertySidebar>

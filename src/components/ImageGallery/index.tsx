@@ -10,7 +10,7 @@ export interface PropertyGalleryProps {
   title?: string;
 }
 
-export function PropertyGallery({ images, title }: PropertyGalleryProps) {
+export function ImageGallery({ images, title }: PropertyGalleryProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   if (!images || images.length === 0) {

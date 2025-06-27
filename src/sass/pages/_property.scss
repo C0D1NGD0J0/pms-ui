@@ -3,12 +3,10 @@
 // Property Show Page Specific Styles
 .property-show {
   .property-layout {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 1.5rem;
+    @include grid(1fr 320px, auto, $space-lg);
 
-    @media (max-width: 1200px) {
-      grid-template-columns: 1fr;
+    @include breakpoint(75rem, max) {
+      @include grid(1fr, auto, $space-lg);
 
       .property-sidebar {
         display: none;
@@ -20,260 +18,192 @@
     min-width: 0;
   }
 
-  // Property Metrics
-  .property-metrics {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .metric-card {
-    background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1.25rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-
-    &:hover {
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-      transform: translateY(-2px);
-    }
-  }
-
-  .metric-value {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-
-  .metric-label {
-    font-size: 0.875rem;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 0.25rem;
-  }
-
-  .metric-change {
-    font-size: 0.75rem;
-    margin-top: 0.25rem;
-
-    &.positive {
-      color: #10b981;
-    }
-
-    &.negative {
-      color: #ef4444;
-    }
-
-    &.neutral {
-      color: #6b7280;
-    }
-  }
+  // Metric cards now handled by components/_metric-card.scss
 
   // Property Features
   .property-features {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1rem;
+    @include grid(repeat(4, 1fr), auto, $space-md);
+    margin-bottom: $space-md;
 
-    @media (max-width: 768px) {
-      grid-template-columns: repeat(2, 1fr);
+    @include breakpoint(76.8rem, max) {
+      @include grid(repeat(2, 1fr), auto, $space-md);
     }
 
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
     }
   }
 
   .feature-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    @include flex(row, flex-start, center, $space-sm);
+    padding: $space-sm;
+    background: hslaGen($off-white-color);
+    @include border-radius($border-radius-lg);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
 
     i {
-      font-size: 1.5rem;
-      color: #3b82f6;
+      font-size: $fs-lg;
+      color: hslaGen($primary-color);
     }
 
     h5 {
       margin: 0;
-      font-size: 0.875rem;
-      color: #6b7280;
+      font-size: $fs-sm;
+      color: hslaGen($grey-color);
     }
 
     span {
-      font-weight: 600;
-      color: #111827;
+      font-weight: $fw-bold;
+      color: hslaGen($black-color);
 
       &.badge {
         display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
+        padding: $space-xs $space-sm;
+        @include border-radius(9999px);
+        font-size: $fs-xsm;
+        font-weight: $fw-normal;
         text-transform: uppercase;
 
         &.success {
-          background-color: #d1fae5;
-          color: #065f46;
+          background-color: hslaGen($success-color, 0.2);
+          color: hslaGen($success-color);
         }
 
         &.warning {
-          background-color: #fef3c7;
-          color: #92400e;
+          background-color: hslaGen($warning-color, 0.2);
+          color: hslaGen($warning-color);
         }
 
         &.danger {
-          background-color: #fee2e2;
-          color: #b91c1c;
+          background-color: hslaGen($danger-color, 0.2);
+          color: hslaGen($danger-color);
         }
       }
     }
   }
 
-  // Tenant Info
   .tenant-info {
     .user-info {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
+      @include flex(row, flex-start, center, $space-md);
+      margin-bottom: $space-lg;
     }
 
     .tenant-avatar {
-      background-color: #124e66;
-      color: white;
+      background-color: hslaGen($primary-color);
+      color: hslaGen($white-color);
       width: 50px;
       height: 50px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 600;
+      @include border-radius(50%);
+      @include flex-center;
+      font-size: $fs-lg;
+      font-weight: $fw-bold;
     }
 
     .tenant-details {
       h4 {
         margin: 0;
-        font-size: 1.1rem;
+        font-size: $fs-md;
       }
 
       p {
-        margin: 0.25rem 0 0;
-        font-size: 0.875rem;
-        color: #6b7280;
+        margin: $space-xs 0 0;
+        font-size: $fs-sm;
+        color: hslaGen($grey-color);
       }
     }
   }
 
-  // Form Actions
   .form-actions {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    @include flex(row, flex-start, center, $space-sm);
+    margin-top: $space-md;
   }
 
-  // Document List
   .document-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    @include flex(column, flex-start, stretch, $space-sm);
+    max-height: 25rem;
+    overflow-y: auto;
   }
 
   .document-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f9fafb;
-    border-radius: 8px;
-    border: 1px solid #e5e7eb;
+    @include flex(row, space-between, center, $space-md);
+    padding: $space-md;
+    background: hslaGen($off-white-color);
+    @include border-radius($border-radius-lg);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
     text-decoration: none;
     color: inherit;
-    transition: all 0.2s ease;
+    @include transition();
 
     &:hover {
-      background: #f3f4f6;
-      border-color: #d1d5db;
+      background: hslaGen($off-white-color, 0.8);
+      border-color: hslaGen($grey-color, 0.4);
+    }
+
+    // Content container for icon and text
+    .document-content {
+      @include flex(row, flex-start, center, $space-md);
+      flex: 1;
     }
   }
 
   .document-icon {
-    font-size: 2rem;
-    color: #3b82f6;
+    font-size: $fs-lg;
+    color: hslaGen($primary-color);
   }
 
   .document-item h4 {
     margin: 0;
-    font-size: 1rem;
+    font-size: $fs-md;
   }
 
   .document-item p {
-    margin: 0.25rem 0 0;
-    font-size: 0.875rem;
-    color: #6b7280;
+    margin: $space-xs 0 0;
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
   }
 }
 
 // Property Sidebar
 .property-sidebar {
-  background: #ffffff;
-  border-left: 1px solid #e5e7eb;
+  background: hslaGen($white-color);
+  border-left: 1px solid hslaGen($light-grey-color, 0.6);
   overflow-y: auto;
   padding: 0;
 
   .sidebar-section {
-    border-bottom: 1px solid #e5e7eb;
-    padding: 1.5rem;
+    border-bottom: 1px solid hslaGen($light-grey-color, 0.6);
+    padding: $space-lg;
 
     &:last-child {
       border-bottom: none;
     }
 
     h4 {
-      margin: 0 0 1rem 0;
-      font-size: 1.1rem;
-      color: #374151;
-      font-weight: 600;
+      margin: 0 0 $space-md 0;
+      font-size: $fs-md;
+      color: hslaGen($dark-grey-color);
+      font-weight: $fw-bold;
     }
   }
 
   // Gallery
   .sidebar-gallery {
-    margin-bottom: 1rem;
+    margin-bottom: $space-md;
   }
 
   .sidebar-gallery-main {
     width: 100%;
     height: 160px;
     overflow: hidden;
-    border-radius: 8px;
+    @include border-radius($border-radius-lg);
     position: relative;
-    margin-bottom: 0.75rem;
+    margin-bottom: $space-sm;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
+      @include transition(transform);
     }
 
     &:hover img {
@@ -282,21 +212,19 @@
   }
 
   .sidebar-gallery-thumbnails {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.375rem;
+    @include grid(repeat(4, 1fr), auto, 0.375rem);
   }
 
   .sidebar-thumbnail {
     height: 45px;
-    border-radius: 4px;
+    @include border-radius($border-radius-sm);
     overflow: hidden;
     cursor: pointer;
     border: 2px solid transparent;
-    transition: all 0.2s ease;
+    @include transition();
 
     &.active {
-      border-color: #3b82f6;
+      border-color: hslaGen($primary-color);
     }
 
     img {
@@ -308,212 +236,184 @@
 
   // Units List
   .units-header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    @include flex(column, flex-start, stretch, $space-md);
+    margin-bottom: $space-md;
   }
 
   .units-search {
     position: relative;
-    display: flex;
-    align-items: center;
+    @include flex(row, flex-start, center);
 
     &__input {
       width: 100%;
-      padding: 0.75rem 2.5rem 0.75rem 1rem;
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      background-color: #f9fafb;
-      transition: all 0.2s ease;
+      padding: $space-sm 2.5rem $space-sm $space-md;
+      border: 1px solid hslaGen($light-grey-color, 0.6);
+      @include border-radius($border-radius-lg);
+      font-size: $fs-sm;
+      background-color: hslaGen($off-white-color);
+      @include transition();
 
       &:focus {
         outline: none;
-        border-color: #3b82f6;
-        background-color: #ffffff;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: hslaGen($primary-color);
+        background-color: hslaGen($white-color);
+        box-shadow: 0 0 0 3px hslaGen($primary-color, 0.1);
       }
 
       &::placeholder {
-        color: #9ca3af;
+        color: hslaGen($grey-color, 0.7);
       }
     }
 
     &__icon {
       position: absolute;
-      right: 1rem;
-      color: #6b7280;
-      font-size: 1rem;
+      right: $space-md;
+      color: hslaGen($grey-color);
+      font-size: $fs-md;
       pointer-events: none;
     }
   }
 
   .units-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
+    @include flex(column, flex-start, stretch, $space-sm);
     max-height: 25rem;
     overflow-y: auto;
-    padding-right: 0.25rem;
-
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: #f1f5f9;
-      border-radius: 3px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: #cbd5e1;
-      border-radius: 3px;
-
-      &:hover {
-        background: #94a3b8;
-      }
-    }
+    padding-right: $space-xs;
+    @include custom-scrollbar(
+      6px,
+      hslaGen($off-white-color),
+      hslaGen($grey-color, 0.6)
+    );
   }
 
   .unit-card {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1rem;
-    transition: all 0.2s ease;
+    background: hslaGen($off-white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    @include transition();
     cursor: pointer;
 
     &:hover {
-      background: #f3f4f6;
-      border-color: #3b82f6;
+      background: hslaGen($off-white-color, 0.8);
+      border-color: hslaGen($primary-color);
     }
 
     &.occupied {
-      border-left: 4px solid #10b981;
+      border-left: 4px solid hslaGen($success-color);
     }
 
     &.vacant {
-      border-left: 4px solid #ef4444;
+      border-left: 4px solid hslaGen($danger-color);
     }
 
     &.maintenance {
-      border-left: 4px solid #f59e0b;
+      border-left: 4px solid hslaGen($warning-color);
     }
   }
 
   .unit-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+    @include flex(row, space-between, center);
+    margin-bottom: $space-sm;
   }
 
   .unit-number {
-    font-weight: 600;
-    color: #111827;
-    font-size: 1rem;
+    font-weight: $fw-bold;
+    color: hslaGen($black-color);
+    font-size: $fs-md;
   }
 
   .unit-status {
-    font-size: 0.75rem;
-    padding: 0.125rem 0.5rem;
-    border-radius: 9999px;
-    font-weight: 500;
+    font-size: $fs-xsm;
+    padding: $space-xs $space-sm;
+    @include border-radius(9999px);
+    font-weight: $fw-normal;
     text-transform: uppercase;
 
     &.occupied {
-      background-color: #d1fae5;
-      color: #065f46;
+      background-color: hslaGen($success-color, 0.2);
+      color: hslaGen($success-color);
     }
 
     &.vacant {
-      background-color: #fee2e2;
-      color: #b91c1c;
+      background-color: hslaGen($danger-color, 0.2);
+      color: hslaGen($danger-color);
     }
 
     &.maintenance {
-      background-color: #fef3c7;
-      color: #92400e;
+      background-color: hslaGen($warning-color, 0.2);
+      color: hslaGen($warning-color);
     }
   }
 
   .unit-details {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-bottom: 0.25rem;
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    margin-bottom: $space-xs;
   }
 
   .unit-rent {
-    font-weight: 600;
-    color: #111827;
-    font-size: 0.9rem;
+    font-weight: $fw-bold;
+    color: hslaGen($black-color);
+    font-size: $fs-sm;
   }
 
   // Manager Card
   .manager-card {
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    border-radius: 8px;
-    padding: 1rem;
+    background: hslaGen($off-white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
   }
 
   .manager-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
+    @include flex(row, flex-start, center, $space-sm);
+    margin-bottom: $space-md;
   }
 
   .manager-avatar {
-    background-color: #3b82f6;
-    color: white;
+    background-color: hslaGen($primary-color);
+    color: hslaGen($white-color);
     width: 45px;
     height: 45px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 600;
+    @include border-radius(50%);
+    @include flex-center;
+    font-size: $fs-md;
+    font-weight: $fw-bold;
   }
 
   .manager-details {
     h5 {
       margin: 0;
-      font-size: 1rem;
-      color: #111827;
-      font-weight: 600;
+      font-size: $fs-md;
+      color: hslaGen($black-color);
+      font-weight: $fw-bold;
     }
 
     p {
-      margin: 0.25rem 0 0;
-      font-size: 0.8rem;
-      color: #6b7280;
+      margin: $space-xs 0 0;
+      font-size: $fs-xsm;
+      color: hslaGen($grey-color);
     }
   }
 
   .manager-contact {
-    display: flex;
-    align-items: center;
-    gap: 0.375rem;
-    font-size: 0.75rem !important;
+    @include flex(row, flex-start, center, 0.375rem);
+    font-size: $fs-xsm !important;
 
     i {
-      font-size: 0.8rem;
-      color: #3b82f6;
+      font-size: $fs-sm;
+      color: hslaGen($primary-color);
     }
   }
 
   .manager-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-    padding: 0.75rem;
-    background: white;
-    border-radius: 6px;
-    border: 1px solid #e5e7eb;
+    @include grid(repeat(3, 1fr), auto, $space-sm);
+    margin-bottom: $space-md;
+    padding: $space-sm;
+    background: hslaGen($white-color);
+    @include border-radius($border-radius-md);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
   }
 
   .stat-item {
@@ -522,26 +422,25 @@
 
   .stat-value {
     display: block;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #111827;
+    font-size: $fs-md;
+    font-weight: $fw-extra-bold;
+    color: hslaGen($black-color);
   }
 
   .stat-label {
-    font-size: 0.7rem;
-    color: #6b7280;
+    font-size: $fs-xsm;
+    color: hslaGen($grey-color);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: $base-letter-spacing;
   }
 
   .manager-actions {
-    display: flex;
-    gap: 0.5rem;
+    @include flex(row, flex-start, center, $space-sm);
 
     .btn {
       flex: 1;
-      font-size: 0.8rem;
-      padding: 0.5rem;
+      font-size: $fs-xsm;
+      padding: $space-sm;
     }
   }
 }
@@ -552,5 +451,317 @@
 
   &.active {
     display: block;
+  }
+}
+
+// Tenant View Specific Styles
+.tenant-view {
+  // Tenant Summary
+  .tenant-summary {
+    @include grid(repeat(4, 1fr), auto, $space-md);
+    margin-bottom: $space-lg;
+
+    @include breakpoint(76.8rem, max) {
+      @include grid(repeat(2, 1fr), auto, $space-md);
+    }
+
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
+
+  .summary-card {
+    background: hslaGen($white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-lg;
+    text-align: center;
+    @include transition();
+
+    &:hover {
+      @include box-shadow(0 4px 12px hslaGen($black-color, 0.1));
+    }
+  }
+
+  .summary-value {
+    font-size: $fs-lg;
+    font-weight: $fw-extra-bold;
+    margin-bottom: $space-sm;
+    color: hslaGen($black-color);
+  }
+
+  .summary-label {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    text-transform: uppercase;
+    letter-spacing: $base-letter-spacing;
+  }
+
+  // Notice Board
+  .notice-board {
+    background: hslaGen($warning-color, 0.1);
+    border: 1px solid hslaGen($warning-color);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    margin-bottom: $space-lg;
+
+    &.warning {
+      background: hslaGen($warning-color, 0.1);
+      border-color: hslaGen($warning-color);
+
+      h5 {
+        color: hslaGen($warning-color);
+      }
+
+      ul {
+        color: hslaGen($warning-color, 0.8);
+      }
+    }
+
+    &.info {
+      background: hslaGen($primary-color, 0.1);
+      border-color: hslaGen($primary-color);
+
+      h5 {
+        color: hslaGen($primary-color);
+      }
+
+      ul {
+        color: hslaGen($primary-color, 0.8);
+      }
+    }
+
+    &.success {
+      background: hslaGen($success-color, 0.1);
+      border-color: hslaGen($success-color);
+
+      h5 {
+        color: hslaGen($success-color);
+      }
+
+      ul {
+        color: hslaGen($success-color, 0.8);
+      }
+    }
+
+    h5 {
+      margin: 0 0 $space-sm 0;
+      font-size: $fs-md;
+      @include flex(row, flex-start, center, $space-sm);
+    }
+
+    ul {
+      margin: 0;
+      padding-left: $space-lg;
+      font-size: $fs-sm;
+    }
+
+    li {
+      margin-bottom: $space-xs;
+    }
+  }
+
+  // Quick Actions
+  .quick-actions {
+    @include grid(repeat(2, 1fr), auto, $space-md);
+    margin-bottom: $space-lg;
+
+    @include breakpoint(76.8rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
+
+  .action-button {
+    @include flex(row, flex-start, center, $space-sm);
+    padding: $space-md;
+    background: hslaGen($white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    text-decoration: none;
+    color: hslaGen($dark-grey-color);
+    @include transition();
+    cursor: pointer;
+
+    &:hover {
+      background: hslaGen($off-white-color);
+      border-color: hslaGen($primary-color);
+      color: hslaGen($primary-color);
+    }
+
+    i {
+      font-size: $fs-lg;
+      color: hslaGen($primary-color);
+    }
+
+    span {
+      font-weight: $fw-normal;
+    }
+  }
+
+  // Lease Information
+  .lease-info {
+    background: hslaGen($alice-blue-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-lg;
+    margin-bottom: $space-lg;
+  }
+
+  .lease-header {
+    @include flex(row, flex-start, center, $space-md);
+    margin-bottom: $space-md;
+  }
+
+  .lease-details {
+    h3 {
+      margin: 0;
+      font-size: $fs-xlg;
+      color: hslaGen($black-color);
+    }
+
+    p {
+      margin: $space-xs 0 0;
+      font-size: $fs-sm;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  .lease-stats {
+    @include grid(repeat(3, 1fr), auto, $space-md);
+    margin-top: $space-md;
+  }
+
+  .lease-stat {
+    text-align: center;
+    padding: $space-sm;
+    background: hslaGen($white-color);
+    @include border-radius($border-radius-md);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+  }
+
+  // Contact Cards
+  .contact-card {
+    background: hslaGen($off-white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    margin-bottom: $space-md;
+  }
+
+  .contact-info {
+    @include flex(row, flex-start, center, $space-sm);
+    margin-bottom: $space-md;
+  }
+
+  .contact-avatar {
+    background-color: hslaGen($success-color);
+    color: hslaGen($white-color);
+    width: 45px;
+    height: 45px;
+    @include border-radius(50%);
+    @include flex-center;
+    font-size: $fs-md;
+    font-weight: $fw-bold;
+  }
+
+  .contact-details {
+    h5 {
+      margin: 0;
+      font-size: $fs-md;
+      color: hslaGen($black-color);
+      font-weight: $fw-bold;
+    }
+
+    p {
+      margin: $space-xs 0 0;
+      font-size: $fs-xsm;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  .contact-methods {
+    @include flex(row, flex-start, center, $space-sm);
+
+    .btn {
+      flex: 1;
+      font-size: $fs-xsm;
+      padding: $space-sm;
+    }
+  }
+
+  .emergency-info {
+    background: hslaGen($danger-color, 0.1);
+    border: 1px solid hslaGen($danger-color, 0.3);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    margin-top: $space-md;
+
+    h6 {
+      margin: 0 0 $space-sm 0;
+      color: hslaGen($danger-color);
+      font-size: $fs-sm;
+      font-weight: $fw-bold;
+      @include flex(row, flex-start, center, $space-sm);
+    }
+
+    p {
+      margin: 0;
+      font-size: $fs-xsm;
+      color: hslaGen($danger-color, 0.8);
+
+      &:last-child {
+        margin-top: $space-xs;
+      }
+    }
+  }
+
+  // Amenities List
+  .amenity-list {
+    @include grid(1fr, auto, $space-sm);
+  }
+
+  .amenity-item {
+    @include flex(row, flex-start, center, $space-sm);
+    padding: $space-sm;
+    background: hslaGen($off-white-color);
+    @include border-radius($border-radius-md);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+
+    i {
+      font-size: $fs-md;
+      color: hslaGen($success-color);
+    }
+
+    span {
+      font-size: $fs-sm;
+      color: hslaGen($dark-grey-color);
+    }
+  }
+
+  // Chart Grid for tenant view
+  .chart-grid {
+    @include grid(1fr, auto, $space-lg);
+    margin-bottom: $space-lg;
+  }
+
+  .chart-card {
+    background: hslaGen($white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-lg;
+    @include box-shadow(0 2px 5px hslaGen($black-color, 0.05));
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: $space-md;
+      font-size: $fs-md;
+      color: hslaGen($dark-grey-color);
+    }
+  }
+
+  .chart-container {
+    height: 250px;
+    margin-bottom: $space-lg;
+    position: relative;
   }
 }
