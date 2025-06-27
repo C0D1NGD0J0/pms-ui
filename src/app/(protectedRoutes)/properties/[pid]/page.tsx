@@ -1,0 +1,285 @@
+"use client";
+import React, { useState } from "react";
+import { Table } from "@components/Table";
+import { Button } from "@components/FormElements";
+import { PageHeader } from "@components/PageElements";
+import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import {
+  PanelsWrapper,
+  PanelContent,
+  PanelHeader,
+  Panel,
+} from "@components/Panel";
+import {
+  PropertyGallery,
+  PropertyManager,
+  PropertyMetrics,
+  PropertySidebar,
+  UnitsList,
+} from "@components/Property";
+
+import {
+  MaintenanceLogTab,
+  PaymentHistoryTab,
+  CurrentTenantTab,
+  DocumentsTab,
+} from "./components";
+
+// Dummy data
+const propertyData = {
+  id: "BRK001",
+  name: "Brooks Bungalows",
+  address: "24 Brooks Avenue, New Jersey, USA",
+  metrics: [
+    {
+      value: "$2,500",
+      label: "Monthly Rent",
+      change: { value: "+5.2% vs last year", trend: "positive" as const },
+    },
+    {
+      value: "$30,000",
+      label: "Annual Revenue",
+      change: { value: "+8.7% vs last year", trend: "positive" as const },
+    },
+    {
+      value: "92%",
+      label: "Occupancy Rate",
+      change: { value: "+3.5% vs market avg", trend: "positive" as const },
+    },
+    {
+      value: "$1,300",
+      label: "Monthly Net Income",
+      change: { value: "+12.3% vs last year", trend: "positive" as const },
+    },
+  ],
+  tenant: {
+    name: "John Doe",
+    avatar: "JD",
+    lease: "Jan 2024 - Dec 2024",
+    rentDue: "1st of month",
+    contact: "(555) 123-4567 | john.doe@example.com",
+    details: {
+      tenantSince: "January 2024",
+      occupants: "3 (2 Adults, 1 Child)",
+      paymentMethod: "Bank Transfer",
+      paymentHistory: "Excellent",
+      securityDeposit: "$2,500",
+      leaseRenewal: "Due in 6 months",
+    },
+  },
+  images: [
+    { src: "/assets/imgs/villa-1.jpeg", alt: "Property Main Image" },
+    { src: "/assets/imgs/villa-3.jpeg", alt: "Property View 2" },
+    { src: "/assets/imgs/cover.jpeg", alt: "Property View 3" },
+    { src: "/assets/imgs/villa-1.jpeg", alt: "Property View 4" },
+  ],
+  units: [
+    {
+      id: "unit-a",
+      number: "Unit A",
+      status: "occupied" as const,
+      details: "2 bed, 1 bath • 850 sq ft",
+      tenant: "John Doe",
+      rent: "$2,500/month",
+    },
+    {
+      id: "unit-b",
+      number: "Unit B",
+      status: "vacant" as const,
+      details: "1 bed, 1 bath • 650 sq ft",
+      tenant: "Available since June 1",
+      rent: "$1,800/month",
+    },
+    {
+      id: "unit-c",
+      number: "Unit C",
+      status: "maintenance" as const,
+      details: "3 bed, 2 bath • 1,200 sq ft",
+      tenant: "Kitchen renovation",
+      rent: "$3,200/month",
+    },
+    {
+      id: "unit-d",
+      number: "Unit D",
+      status: "occupied" as const,
+      details: "2 bed, 2 bath • 950 sq ft",
+      tenant: "Sarah Smith",
+      rent: "$2,800/month",
+    },
+    {
+      id: "unit-e",
+      number: "Unit E",
+      status: "occupied" as const,
+      details: "1 bed, 1 bath • 600 sq ft",
+      tenant: "Mike Johnson",
+      rent: "$1,700/month",
+    },
+  ],
+  manager: {
+    name: "Sarah Johnson",
+    title: "Senior Property Manager",
+    avatar: "SJ",
+    contact: {
+      phone: "(555) 987-6543",
+      email: "sarah.j@property.com",
+    },
+    stats: [
+      { label: "Properties", value: "12" },
+      { label: "Rating", value: "4.8" },
+      { label: "Years", value: "3" },
+    ],
+  },
+};
+
+const reportsData = [
+  {
+    date: "June 25, 2025",
+    employee: "Sarah Johnson",
+    issue: "Tenant Complaint - Noise",
+    unit: "Unit A",
+    priority: "Medium",
+    status: "In Progress",
+  },
+  {
+    date: "June 24, 2025",
+    employee: "Mike Torres",
+    issue: "Lease Violation - Pet Policy",
+    unit: "Unit C",
+    priority: "High",
+    status: "Under Review",
+  },
+  {
+    date: "June 23, 2025",
+    employee: "Lisa Chen",
+    issue: "Late Rent Payment",
+    unit: "Unit B",
+    priority: "High",
+    status: "Overdue",
+  },
+];
+
+const reportColumns = [
+  { title: "Date Reported", dataIndex: "date" },
+  { title: "Employee", dataIndex: "employee" },
+  { title: "Issue Type", dataIndex: "issue" },
+  { title: "Unit/Area", dataIndex: "unit" },
+  { title: "Priority", dataIndex: "priority", isStatus: true },
+  { title: "Status", dataIndex: "status", isStatus: true },
+];
+
+export default function PropertyShow() {
+  const [activeTab, setActiveTab] = useState("tenant");
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const tabs = [
+    {
+      key: "tenant",
+      label: "Current Tenant",
+      content: <CurrentTenantTab tenant={propertyData.tenant} />,
+    },
+    {
+      key: "maintenance",
+      label: "Maintenance Log",
+      content: <MaintenanceLogTab />,
+    },
+    {
+      key: "payments",
+      label: "Payment History",
+      content: <PaymentHistoryTab />,
+    },
+    {
+      key: "documents",
+      label: "Documents",
+      content: <DocumentsTab />,
+    },
+  ];
+
+  return (
+    <div className="page property-show">
+      <PageHeader
+        title={propertyData.name}
+        subtitle={`Property ID: #${propertyData.id} • ${propertyData.address}`}
+        headerBtn={
+          <div className="flex-row">
+            <Button
+              type="button"
+              label="Edit Property"
+              className="btn-outline"
+              icon={<i className="bx bx-edit"></i>}
+            />
+            <Button
+              type="button"
+              label="Add Unit"
+              className="btn-primary"
+              icon={<i className="bx bx-plus"></i>}
+            />
+          </div>
+        }
+      />
+
+      <div className="property-layout">
+        <div className="property-main-content">
+          {/* Property Metrics */}
+          <PropertyMetrics metrics={propertyData.metrics} />
+
+          {/* Tabbed Content */}
+          <PanelsWrapper>
+            <Panel>
+              <PanelHeader
+                headerTitleComponent={
+                  <TabContainer onChange={setActiveTab} defaultTab={activeTab}>
+                    <TabList>
+                      {tabs.map((tab) => (
+                        <TabListItem
+                          key={tab.key}
+                          id={tab.key}
+                          label={tab.label}
+                        />
+                      ))}
+                    </TabList>
+                  </TabContainer>
+                }
+              />
+              {tabs.map((tab) => (
+                <PanelContent
+                  key={tab.key}
+                  className={`tab-content ${
+                    activeTab === tab.key ? "active" : ""
+                  }`}
+                >
+                  {activeTab === tab.key && tab.content}
+                </PanelContent>
+              ))}
+            </Panel>
+
+            {/* Reports Panel */}
+            <Panel>
+              <PanelHeader
+                header={{ title: "Notes/Reports" }}
+                searchOpts={{
+                  isVisible: true,
+                  value: searchTerm,
+                  placeholder: "Search reports...",
+                  onChange: (e) => setSearchTerm(e.target.value),
+                }}
+              />
+              <PanelContent>
+                <Table dataSource={reportsData} columns={reportColumns} />
+              </PanelContent>
+            </Panel>
+          </PanelsWrapper>
+        </div>
+
+        {/* Property Sidebar */}
+        <PropertySidebar>
+          <PropertyGallery
+            images={propertyData.images}
+            title="Property Gallery"
+          />
+          <UnitsList units={propertyData.units} />
+          <PropertyManager manager={propertyData.manager} />
+        </PropertySidebar>
+      </div>
+    </div>
+  );
+}
