@@ -6,12 +6,14 @@ import { UseFormReturnType } from "@mantine/form";
 import { propertyService } from "@services/property";
 import { PROPERTY_QUERY_KEYS } from "@utils/constants";
 import { useNotification } from "@hooks/useNotification";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   EditPropertyFormValues,
   PropertyFormValues,
   IPropertyDocument,
 } from "@interfaces/property.interface";
+
+import { usePropertyData } from "./usePropertyData";
 
 export function usePropertyEditForm({
   propertyForm,
@@ -27,19 +29,15 @@ export function usePropertyEditForm({
   const [originalValues, setOriginalValues] =
     useState<IPropertyDocument | null>(null);
 
-  const propertyData = useQuery<IPropertyDocument>({
-    enabled: !!pid && !!client?.csub,
-    queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client!.csub, pid),
-    queryFn: () => propertyService.getClientProperty(client!.csub, pid),
-  });
+  const { data: propertyData, isLoading: isDataLoading } = usePropertyData(pid);
 
   useEffect(() => {
-    if (propertyData.data) {
-      propertyForm.setValues(propertyData.data);
-      setOriginalValues(propertyData.data);
+    if (propertyData) {
+      propertyForm.setValues(propertyData);
+      setOriginalValues(propertyData);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [propertyData.data]);
+  }, [propertyData]);
 
   const updatePropertyMutation = useMutation({
     mutationFn: (data: Partial<EditPropertyFormValues>) =>
@@ -82,9 +80,9 @@ export function usePropertyEditForm({
   };
 
   return {
-    propertyData: propertyData.data,
+    propertyData,
     error: updatePropertyMutation.error,
-    isDataLoading: propertyData.isLoading,
+    isDataLoading,
     hasError: updatePropertyMutation.isError,
     isSuccess: updatePropertyMutation.isSuccess,
     successResponse: updatePropertyMutation.data,

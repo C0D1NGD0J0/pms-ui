@@ -5,7 +5,6 @@ import {
   UnitTypeEnum,
   UnitTypeRule,
 } from "@interfaces/unit.interface";
-import { get } from "lodash";
 
 export const SIGNUP_ACCOUNT_TYPE_OPTIONS = [
   { value: "personal", label: "Personal" },
@@ -60,7 +59,7 @@ const BASE_FIELDS = {
     "address",
     "description",
     "occupancyStatus",
-    "totalUnits",
+    "maxAllowedUnits",
   ],
   financial: [
     "purchasePrice",
@@ -149,10 +148,10 @@ export const propertyTypeRules: PropertyTypeRules = {
       documents: BASE_FIELDS.documents,
       unit: BASE_FIELDS.unitFields.residential,
     },
-    requiredFields: [...BASE_FIELDS.requiredBase, "totalUnits"],
+    requiredFields: [...BASE_FIELDS.requiredBase, "maxAllowedUnits"],
     helpText: {
       name: "Name of the apartment building or complex",
-      totalUnits:
+      maxAllowedUnits:
         "Number of apartment units in the building you manage (typically 2+)",
       floors: "Total number of floors in the apartment building",
       totalArea: "Total area of the entire apartment building",
@@ -178,10 +177,10 @@ export const propertyTypeRules: PropertyTypeRules = {
       documents: BASE_FIELDS.documents,
       unit: BASE_FIELDS.unitFields.residential,
     },
-    requiredFields: [...BASE_FIELDS.requiredBase, "totalUnits"],
+    requiredFields: [...BASE_FIELDS.requiredBase, "maxAllowedUnits"],
     helpText: {
       name: "Name of the condominium building or complex",
-      totalUnits:
+      maxAllowedUnits:
         "For condominium buildings, each unit's details will be managed separately",
       address: "Full address of the condominium building",
     },
@@ -204,10 +203,10 @@ export const propertyTypeRules: PropertyTypeRules = {
       documents: BASE_FIELDS.documents,
       unit: BASE_FIELDS.unitFields.commercial,
     },
-    requiredFields: [...BASE_FIELDS.requiredBase, "totalUnits"],
+    requiredFields: [...BASE_FIELDS.requiredBase, "maxAllowedUnits"],
     helpText: {
       name: "Name of the commercial property or building",
-      totalUnits:
+      maxAllowedUnits:
         "For commercial properties, each unit's details will be managed separately",
       address: "Full address of the commercial property",
     },
@@ -231,10 +230,10 @@ export const propertyTypeRules: PropertyTypeRules = {
       documents: BASE_FIELDS.documents,
       unit: BASE_FIELDS.unitFields.commercial,
     },
-    requiredFields: [...BASE_FIELDS.requiredBase, "totalUnits"],
+    requiredFields: [...BASE_FIELDS.requiredBase, "maxAllowedUnits"],
     helpText: {
       name: "Name of the industrial property or facility",
-      totalUnits:
+      maxAllowedUnits:
         "For industrial properties, each unit's details will be managed separately",
       address: "Full address of the industrial property",
     },
@@ -264,7 +263,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     ],
     helpText: {
       name: "Name or address identifier for the townhouse",
-      totalUnits:
+      maxAllowedUnits:
         "Typically 1 for a single townhouse, increase if property contains multiple units",
       bedrooms: "Number of bedrooms in the entire townhouse",
       bathrooms: "Number of bathrooms in the entire townhouse",
@@ -296,7 +295,7 @@ export const propertyTypeRules: PropertyTypeRules = {
     ],
     helpText: {
       name: "Name or address identifier for the house",
-      totalUnits: "For single-family homes, this is typically 1",
+      maxAllowedUnits: "For single-family homes, this is typically 1",
       bedrooms: "Number of bedrooms in the entire house",
       bathrooms: "Number of bathrooms in the entire house",
       address: "Full address of the house",
@@ -320,10 +319,11 @@ export const propertyTypeRules: PropertyTypeRules = {
       documents: BASE_FIELDS.documents,
       unit: BASE_FIELDS.unitFields.residential,
     },
-    requiredFields: [...BASE_FIELDS.requiredBase, "totalUnits"],
+    requiredFields: [...BASE_FIELDS.requiredBase, "maxAllowedUnits"],
     helpText: {
       name: "Name of the residential estate or gated community",
-      totalUnits: "Number of individual houses in the estate (typically 2+)",
+      maxAllowedUnits:
+        "Number of individual houses in the estate (typically 2+)",
       totalArea: "Total area of the entire estate including common areas",
       lotSize: "Total land size of the estate",
       address: "Main address or entrance of the estate",
@@ -348,10 +348,11 @@ export const propertyTypeRules: PropertyTypeRules = {
       documents: BASE_FIELDS.documents,
       unit: BASE_FIELDS.unitFields.mixed,
     },
-    requiredFields: [...BASE_FIELDS.requiredBase, "totalUnits"],
+    requiredFields: [...BASE_FIELDS.requiredBase, "maxAllowedUnits"],
     helpText: {
       name: "Name of the mixed-use building or development",
-      totalUnits: "Total number of residential and commercial units combined",
+      maxAllowedUnits:
+        "Total number of residential and commercial units combined",
       totalArea: "Total area of the entire mixed-use building",
       floors: "Number of floors in the mixed-use building",
       address: "Full address of the mixed-use property",
@@ -507,7 +508,7 @@ export const formFieldVisibilityMap = {
     "bathrooms",
     "floors",
     "maxOccupants",
-    "totalUnits",
+    "maxAllowedUnits",
   ],
   condominium: [
     "totalArea",
@@ -515,9 +516,9 @@ export const formFieldVisibilityMap = {
     "bathrooms",
     "floors",
     "maxOccupants",
-    "totalUnits",
+    "maxAllowedUnits",
   ],
-  commercial: ["totalArea", "floors", "totalUnits", "maxOccupants"],
+  commercial: ["totalArea", "floors", "maxAllowedUnits", "maxOccupants"],
   industrial: ["totalArea", "loadingDocks", "ceilingHeight"],
 };
 

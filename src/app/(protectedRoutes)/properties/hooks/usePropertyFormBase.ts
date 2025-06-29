@@ -86,33 +86,33 @@ export function usePropertyFormBase({
   );
 
   const currentPropertyType = propertyForm.values.propertyType || "house";
-  const currentTotalUnits = propertyForm.values.totalUnits || 1;
+  const currentmaxAllowedUnits = propertyForm.values.maxAllowedUnits || 1;
 
   const getTabFields = useCallback(() => {
     const coreFields = PropertyTypeManager.getVisibleFieldsForCategory(
       currentPropertyType,
       "core",
-      currentTotalUnits
+      currentmaxAllowedUnits
     );
     const specFields = PropertyTypeManager.getVisibleFieldsForCategory(
       currentPropertyType,
       "specifications",
-      currentTotalUnits
+      currentmaxAllowedUnits
     );
     const financialFields = PropertyTypeManager.getVisibleFieldsForCategory(
       currentPropertyType,
       "financial",
-      currentTotalUnits
+      currentmaxAllowedUnits
     );
     const amenityFields = PropertyTypeManager.getVisibleFieldsForCategory(
       currentPropertyType,
       "amenities",
-      currentTotalUnits
+      currentmaxAllowedUnits
     );
     const documentFields = PropertyTypeManager.getVisibleFieldsForCategory(
       currentPropertyType,
       "documents",
-      currentTotalUnits
+      currentmaxAllowedUnits
     );
 
     return {
@@ -178,7 +178,7 @@ export function usePropertyFormBase({
           })
           .flat(),
         "occupancyStatus",
-        "totalUnits",
+        "maxAllowedUnits",
         "description.text",
         "description.html",
       ],
@@ -212,7 +212,7 @@ export function usePropertyFormBase({
       ],
       documents: documentFields,
     };
-  }, [currentPropertyType, currentTotalUnits]);
+  }, [currentPropertyType, currentmaxAllowedUnits]);
 
   const tabFields = useMemo(() => getTabFields(), [getTabFields]);
 
@@ -226,25 +226,25 @@ export function usePropertyFormBase({
           return PropertyTypeManager.isCategoryVisible(
             currentPropertyType,
             "financial",
-            currentTotalUnits
+            currentmaxAllowedUnits
           );
         case "property":
           return PropertyTypeManager.isCategoryVisible(
             currentPropertyType,
             "specifications",
-            currentTotalUnits
+            currentmaxAllowedUnits
           );
         case "amenities":
           return PropertyTypeManager.isCategoryVisible(
             currentPropertyType,
             "amenities",
-            currentTotalUnits
+            currentmaxAllowedUnits
           );
         case "documents":
           return PropertyTypeManager.isCategoryVisible(
             currentPropertyType,
             "documents",
-            currentTotalUnits
+            currentmaxAllowedUnits
           );
         case "units":
           return PropertyTypeManager.supportsMultipleUnits(currentPropertyType);
@@ -252,7 +252,7 @@ export function usePropertyFormBase({
           return true;
       }
     },
-    [currentPropertyType, currentTotalUnits]
+    [currentPropertyType, currentmaxAllowedUnits]
   );
 
   const hasTabErrors = useCallback(
@@ -302,10 +302,10 @@ export function usePropertyFormBase({
       return PropertyTypeManager.getHelpText(
         currentPropertyType,
         fieldName,
-        currentTotalUnits
+        currentmaxAllowedUnits
       );
     },
-    [currentPropertyType, currentTotalUnits]
+    [currentPropertyType, currentmaxAllowedUnits]
   );
 
   // check if field is required based on property type
@@ -325,11 +325,11 @@ export function usePropertyFormBase({
       return PropertyTypeManager.isFieldVisible(
         currentPropertyType,
         fieldName,
-        currentTotalUnits,
+        currentmaxAllowedUnits,
         category
       );
     },
-    [currentPropertyType, currentTotalUnits]
+    [currentPropertyType, currentmaxAllowedUnits]
   );
 
   // property type specific utilities
@@ -339,7 +339,7 @@ export function usePropertyFormBase({
         PropertyTypeManager.supportsMultipleUnits(currentPropertyType),
       shouldValidateBedBath: PropertyTypeManager.shouldValidateBedBath(
         currentPropertyType,
-        currentTotalUnits
+        currentmaxAllowedUnits
       ),
       getDefaultUnits: () =>
         PropertyTypeManager.getDefaultUnits(currentPropertyType),
@@ -347,7 +347,7 @@ export function usePropertyFormBase({
       getRequiredFields: () =>
         PropertyTypeManager.getRequiredFields(currentPropertyType),
     }),
-    [currentPropertyType, currentTotalUnits]
+    [currentPropertyType, currentmaxAllowedUnits]
   );
 
   const saveAddress = useCallback(
@@ -395,10 +395,10 @@ export function usePropertyFormBase({
           propertyForm.setFieldValue(field as any, e);
         }
 
-        // Auto-update totalUnits when propertyType changes
+        // Auto-update maxAllowedUnits when propertyType changes
         if (field === "propertyType") {
           const defaultUnits = PropertyTypeManager.getDefaultUnits(e);
-          propertyForm.setFieldValue("totalUnits", defaultUnits);
+          propertyForm.setFieldValue("maxAllowedUnits", defaultUnits);
         }
         return;
       } else if (typeof e !== "string") {
@@ -425,10 +425,10 @@ export function usePropertyFormBase({
             type === "checkbox" ? checked : value
           );
 
-          // Auto-update totalUnits when propertyType changes
+          // Auto-update maxAllowedUnits when propertyType changes
           if (name === "propertyType") {
             const defaultUnits = PropertyTypeManager.getDefaultUnits(value);
-            propertyForm.setFieldValue("totalUnits", defaultUnits);
+            propertyForm.setFieldValue("maxAllowedUnits", defaultUnits);
           }
         }
       }
@@ -451,7 +451,7 @@ export function usePropertyFormBase({
     getFieldHelpText,
     propertyTypeUtils,
     formConfigLoading,
-    currentTotalUnits,
+    currentmaxAllowedUnits,
     documentTypeOptions,
     currentPropertyType,
     propertyTypeOptions,

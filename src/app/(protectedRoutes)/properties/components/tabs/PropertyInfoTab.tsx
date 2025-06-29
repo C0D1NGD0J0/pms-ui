@@ -39,7 +39,7 @@ export function PropertyInfoTab({
   const { setTabValidation } = usePropertyFormActions();
 
   const propertyType = form.values.propertyType || "house";
-  const numUnits = parseInt(form.values.totalUnits?.toString() || "1", 10);
+  const numUnits = parseInt(form.values.maxAllowedUnits?.toString() || "1", 10);
 
   const isFieldVisible = (fieldName: string) => {
     return PropertyTypeManager.isFieldVisible(
@@ -62,7 +62,7 @@ export function PropertyInfoTab({
       value: status,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
     })) || [];
-
+  console.log(form.values);
   return (
     <>
       <FormSection
@@ -89,7 +89,7 @@ export function PropertyInfoTab({
                 id="totalArea"
                 name="specifications.totalArea"
                 type="number"
-                value={form.values.specifications.totalArea.toString()}
+                value={form.values.specifications?.totalArea?.toString() || 0}
                 onChange={(e) => {
                   const value = e.target.value;
                   const numValue = value === "" ? 0 : parseInt(value, 10);
@@ -335,40 +335,40 @@ export function PropertyInfoTab({
           </FormField>
           <FormField
             error={{
-              msg: (form.errors["totalUnits"] as string) || "",
-              touched: form.isTouched("totalUnits"),
+              msg: (form.errors["maxAllowedUnits"] as string) || "",
+              touched: form.isTouched("maxAllowedUnits"),
             }}
           >
             <FormLabel
-              htmlFor="totalUnits"
+              htmlFor="maxAllowedUnits"
               label="Total Units"
               required={PropertyTypeManager.isFieldRequired(
                 propertyType,
-                "totalUnits"
+                "maxAllowedUnits"
               )}
             />
             <Tooltip
               content={PropertyTypeManager.getHelpText(
                 propertyType,
-                "totalUnits",
+                "maxAllowedUnits",
                 numUnits
               )}
               placement="top"
             >
               <FormInput
-                id="totalUnits"
-                name="totalUnits"
+                id="maxAllowedUnits"
+                name="maxAllowedUnits"
                 type="number"
-                value={form.values.totalUnits?.toString() || "1"}
+                value={form.values.maxAllowedUnits?.toString() || "1"}
                 onChange={(e) => {
                   const value = e.target.value;
                   const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("totalUnits", numValue);
+                  form.setFieldValue("maxAllowedUnits", numValue);
                 }}
                 placeholder="Enter total building units"
                 min={1}
                 max={250}
-                hasError={!!form.errors["totalUnits"]}
+                hasError={!!form.errors["maxAllowedUnits"]}
               />
             </Tooltip>
           </FormField>

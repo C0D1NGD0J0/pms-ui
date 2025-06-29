@@ -8,14 +8,14 @@ export class PropertyTypeManager {
    *
    * @param propertyType The type of property (e.g., 'house', 'apartment')
    * @param fieldName The name of the field to check visibility for
-   * @param totalUnits The number of units in the property
+   * @param maxAllowedUnits The number of units in the property
    * @param category Optional category to check (core, specifications, financial, amenities, documents)
    * @returns Boolean indicating if the field should be visible
    */
   static isFieldVisible(
     propertyType: string,
     fieldName: string,
-    totalUnits: number,
+    maxAllowedUnits: number,
     category?: string
   ): boolean {
     const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
@@ -45,7 +45,7 @@ export class PropertyTypeManager {
     // for multi-unit properties or properties with multiple units,
     // hide unit-level fields (they should be managed per unit)
     if (
-      (rules.isMultiUnit || totalUnits > 1) &&
+      (rules.isMultiUnit || maxAllowedUnits > 1) &&
       rules.visibleFields.unit.includes(fieldName)
     ) {
       return false;
@@ -59,13 +59,13 @@ export class PropertyTypeManager {
    *
    * @param propertyType The type of property
    * @param category The category of fields (core, specifications, financial, amenities, documents, unit)
-   * @param totalUnits The number of units in the property
+   * @param maxAllowedUnits The number of units in the property
    * @returns Array of visible field names for the category
    */
   static getVisibleFieldsForCategory(
     propertyType: string,
     category: string,
-    totalUnits: number
+    maxAllowedUnits: number
   ): string[] {
     const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
 
@@ -78,7 +78,7 @@ export class PropertyTypeManager {
 
     // for unit-level fields, only show them if it's not a multi-unit property
     if (category === "unit") {
-      return rules.isMultiUnit || totalUnits > 1 ? [] : categoryFields;
+      return rules.isMultiUnit || maxAllowedUnits > 1 ? [] : categoryFields;
     }
 
     return categoryFields;
@@ -89,18 +89,18 @@ export class PropertyTypeManager {
    *
    * @param propertyType The type of property
    * @param category The category to check
-   * @param totalUnits The number of units in the property
+   * @param maxAllowedUnits The number of units in the property
    * @returns Boolean indicating if the category should be visible
    */
   static isCategoryVisible(
     propertyType: string,
     category: string,
-    totalUnits: number
+    maxAllowedUnits: number
   ): boolean {
     const visibleFields = this.getVisibleFieldsForCategory(
       propertyType,
       category,
-      totalUnits
+      maxAllowedUnits
     );
     return visibleFields.length > 0;
   }
@@ -110,13 +110,13 @@ export class PropertyTypeManager {
    *
    * @param propertyType The type of property
    * @param fieldName The field to get help text for
-   * @param totalUnits The number of units in the property
+   * @param maxAllowedUnits The number of units in the property
    * @returns Help text string
    */
   static getHelpText(
     propertyType: string,
     fieldName: string,
-    totalUnits: number
+    maxAllowedUnits: number
   ): string {
     const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
 
@@ -126,10 +126,10 @@ export class PropertyTypeManager {
     }
 
     // generate dynamic help text based on rules
-    if (fieldName === "totalUnits") {
+    if (fieldName === "maxAllowedUnits") {
       if (rules.isMultiUnit) {
         return `For ${propertyType} properties, each unit's details will be managed separately`;
-      } else if (totalUnits > 1) {
+      } else if (maxAllowedUnits > 1) {
         return `When a ${propertyType} has multiple units, details should be specified per unit`;
       } else {
         return `For single-family ${propertyType}s, this is typically 1`;
@@ -176,19 +176,19 @@ export class PropertyTypeManager {
    * Determines if a property should validate bedroom/bathroom at property level
    *
    * @param propertyType The type of property
-   * @param totalUnits The number of units in the property
+   * @param maxAllowedUnits The number of units in the property
    * @returns Boolean indicating if bedroom/bathroom fields should be validated
    */
   static shouldValidateBedBath(
     propertyType: string,
-    totalUnits: number
+    maxAllowedUnits: number
   ): boolean {
     const rules = propertyTypeRules[propertyType] || propertyTypeRules.house;
 
     // Don't validate bed/bath at property level for:
     // 1. Multi-unit property types (like apartments)
     // 2. Single-family homes that have been converted to multiple units
-    if ((rules.isMultiUnit || totalUnits > 1) && !rules.validateBedBath) {
+    if ((rules.isMultiUnit || maxAllowedUnits > 1) && !rules.validateBedBath) {
       return false;
     }
 

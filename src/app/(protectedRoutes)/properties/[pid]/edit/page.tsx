@@ -48,6 +48,7 @@ export default function EditProperty() {
   const tabs = [
     {
       key: "basic",
+      isVisible: true,
       tabLabel: "Basic information",
       content: (
         <BasicInfoTab
@@ -62,6 +63,7 @@ export default function EditProperty() {
     {
       key: "financial",
       tabLabel: "Financial",
+      isVisible: true,
       content: (
         <FinancialTab
           form={propertyForm}
@@ -72,6 +74,7 @@ export default function EditProperty() {
     },
     {
       key: "property",
+      isVisible: true,
       tabLabel: "Property Details",
       content: (
         <PropertyInfoTab
@@ -85,6 +88,7 @@ export default function EditProperty() {
     },
     {
       key: "amenities",
+      isVisible: true,
       tabLabel: "Amenities",
       content: (
         <AmenitiesTab
@@ -94,6 +98,7 @@ export default function EditProperty() {
       ),
     },
     {
+      isVisible: true,
       key: "documents",
       tabLabel: "Photos & Documents",
       content: (
@@ -117,6 +122,7 @@ export default function EditProperty() {
     {
       key: "units",
       tabLabel: "Units",
+      isVisible: propertyData?.unitInfo?.canAddUnit,
       content: <UnitsTab property={propertyForm.values} />,
     },
   ].filter((tab) => isTabVisible(tab.key));
@@ -128,7 +134,7 @@ export default function EditProperty() {
   if (!propertyData) {
     return <Loading size="regular" description="Property data not found." />;
   }
-
+  console.log(propertyData);
   return (
     <div className="page edit-property">
       <PageHeader

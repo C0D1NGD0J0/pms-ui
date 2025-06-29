@@ -102,7 +102,7 @@ export function UnitActions({
         title="Copy Unit"
         className="btn-text"
         onClick={onCopyUnit}
-        disabled={!canAddUnit || isFormSubmitting}
+        disabled={canAddUnit || isFormSubmitting}
         icon={<i className="bx bx-copy success"></i>}
       />
       <Button

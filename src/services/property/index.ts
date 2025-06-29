@@ -168,8 +168,11 @@ class PropertyService {
     const formData = new FormData();
 
     if (propertyData.name) formData.append("name", propertyData.name);
-    if (propertyData.totalUnits)
-      formData.append("totalUnits", propertyData.totalUnits.toString());
+    if (propertyData.maxAllowedUnits)
+      formData.append(
+        "maxAllowedUnits",
+        propertyData.maxAllowedUnits.toString()
+      );
     if (propertyData.propertyType)
       formData.append("propertyType", propertyData.propertyType);
     if (propertyData.status) formData.append("status", propertyData.status);
