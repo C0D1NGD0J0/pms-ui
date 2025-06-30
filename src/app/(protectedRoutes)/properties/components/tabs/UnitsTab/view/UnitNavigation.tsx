@@ -55,7 +55,7 @@ export function UnitNavigation({
           <Button
             label="Add Unit"
             onClick={addNewUnit}
-            disabled={canAddUnit}
+            disabled={!canAddUnit}
             className="btn-success btn-rounded"
           />
           {hasNextPage && (
