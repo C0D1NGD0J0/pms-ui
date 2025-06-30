@@ -1,11 +1,28 @@
 import APIError from "@utils/errorHandler";
 import CookieManager from "@utils/cookieManager";
+import { EventTypes, events } from "@services/events";
 import axios, {
   AxiosRequestConfig,
   AxiosResponse,
   AxiosInstance,
   AxiosError,
 } from "axios";
+
+const handleAuthFailure = () => {
+  sessionStorage.removeItem("auth-storage");
+  events.publish(EventTypes.AUTH_FAILURE, { reason: "token_refresh_failed" });
+  if (typeof window !== "undefined") {
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 100);
+  }
+};
+
+const triggerUserRefresh = () => {
+  events.publish(EventTypes.TOKEN_REFRESHED, {
+    timestamp: new Date().toISOString(),
+  });
+};
 
 interface IAxiosService {
   axios: AxiosInstance;
@@ -73,49 +90,71 @@ class AxiosService implements IAxiosService {
         };
 
         if (!originalRequest) {
-          console.log("Refresh token expired", error);
+          console.error(
+            "No original request found during error handling:",
+            error
+          );
           return Promise.reject(new APIError().init(error));
         }
 
         if (error.response?.status === 419 && !originalRequest._retry) {
+          // prevent refresh token endpoint from retrying itself
           if (originalRequest.url !== "/api/v1/auth/refresh_token") {
             originalRequest._retry = true;
 
-            // Ensure we only have one refresh token call at a time
+            // makes sure we only have one refresh token call at a time
             if (!this.refreshTokenPromise) {
+              console.log("Token expired, attempting refresh...");
+
               this.refreshTokenPromise = this.axios
                 .post("/api/v1/auth/refresh_token")
                 .then((response) => {
-                  // Handle successful token refresh
+                  console.log("Token refresh successful");
+                  triggerUserRefresh();
                   return response;
                 })
                 .catch((refreshError) => {
-                  // If refresh fails, log user out
-                  if (refreshError.response?.status === 401) {
-                    // redirect to login page here
+                  console.error("Token refresh failed:", refreshError);
+
+                  // If refresh fails due to invalid refresh token, handle auth failure
+                  if (
+                    refreshError.response?.status === 401 ||
+                    refreshError.response?.status === 403
+                  ) {
+                    console.log("Refresh token expired, logging out user");
+                    handleAuthFailure();
                   }
-                  console.log("Refresh token expired", error);
+
                   return Promise.reject(refreshError);
+                })
+                .finally(() => {
+                  // Clear the promise after completion
+                  this.refreshTokenPromise = null;
                 });
-              // .finally(() => {
-              //   this.refreshTokenPromise = null;
-              // });
             }
 
             try {
               await this.refreshTokenPromise;
+              console.log("Retrying original request after token refresh");
               return this.axios(originalRequest);
-            } catch (error) {
-              return Promise.reject(error);
+            } catch (refreshError) {
+              console.error(
+                "Failed to retry request after token refresh:",
+                refreshError
+              );
+              return Promise.reject(
+                new APIError().init(refreshError as AxiosError)
+              );
             }
           }
         } else if (
           originalRequest.url === "/api/v1/auth/refresh_token" &&
-          error.response?.status === 401
+          (error.response?.status === 401 || error.response?.status === 403)
         ) {
-          // Refresh token is invalid, log user out
-          // redirect to login page here
-          console.log("Refresh token expired", error);
+          console.log(
+            "Refresh token endpoint returned auth error, logging out user"
+          );
+          handleAuthFailure();
         }
 
         // Handle and standardize other errors

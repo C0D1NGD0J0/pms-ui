@@ -15,12 +15,6 @@ export const useCurrentUser = () => {
   const queryClient = useQueryClient();
   const { isLoggedIn, client } = useAuth();
 
-  useEvent(EventTypes.GET_CURRENT_USER, () => {
-    if (client?.csub) {
-      refetch();
-    }
-  });
-
   const {
     data: userData,
     isLoading: isFetchingUser,
@@ -63,6 +57,21 @@ export const useCurrentUser = () => {
 
       return failureCount < 2;
     },
+  });
+
+  // Event listener for GET_CURRENT_USER events
+  useEvent(EventTypes.GET_CURRENT_USER, () => {
+    if (client?.csub) {
+      refetch();
+    }
+  });
+
+  // Listen for token refresh events to refetch user data
+  useEvent(EventTypes.TOKEN_REFRESHED, () => {
+    console.log("Token refreshed, refetching user data...");
+    if (client?.csub) {
+      refetch();
+    }
   });
 
   useEffect(() => {
