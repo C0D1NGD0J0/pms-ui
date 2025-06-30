@@ -1,0 +1,191 @@
+@use "../abstract/index" as *;
+
+.metric-card {
+  background: hslaGen($white-color);
+  border: 1px solid hslaGen($light-grey-color, 0.6);
+  @include border-radius($border-radius-lg);
+  padding: $space-lg;
+  @include transition();
+  text-align: center;
+
+  &__clickable {
+    cursor: pointer;
+
+    &:hover {
+      @include box-shadow(0 6px 20px hslaGen($black-color, 0.12));
+      transform: translateY(-2px);
+    }
+  }
+
+  &__basic {
+    .metric-card__content {
+      display: flex;
+      flex-direction: column;
+      gap: $space-xs;
+    }
+  }
+
+  &__icon {
+    @include flex(column, center, center, $space-sm);
+    text-align: center;
+
+    .metric-card__icon {
+      font-size: $fs-xlg;
+      color: hslaGen($primary-color);
+      margin-bottom: $space-xs;
+
+      i {
+        font-size: inherit;
+        color: inherit;
+      }
+    }
+
+    .metric-card__content {
+      width: 100%;
+    }
+  }
+
+  &__detailed {
+    @include flex(row, flex-start, center, $space-md);
+    text-align: left;
+    padding: $space-lg;
+
+    .metric-card__icon {
+      font-size: $fs-xlg;
+      color: hslaGen($primary-color);
+      min-width: 3rem;
+
+      i {
+        font-size: inherit;
+        color: inherit;
+      }
+    }
+
+    .metric-card__content {
+      flex: 1;
+    }
+
+    .metric-card__value {
+      font-size: $fs-xlg;
+    }
+  }
+
+  &__value {
+    font-size: $fs-xlg;
+    font-weight: $fw-extra-bold;
+    color: hslaGen($black-color);
+    margin-bottom: $space-xs;
+
+    .metric-card__detailed & {
+      margin-bottom: $space-xs;
+    }
+  }
+
+  &__label {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    text-transform: uppercase;
+    letter-spacing: $base-letter-spacing;
+    font-weight: $fw-normal;
+    margin-bottom: $space-xs;
+
+    .metric-card__detailed & {
+      margin-bottom: $space-sm;
+    }
+  }
+
+  &__trend {
+    @include flex(column, center, center, $space-xs);
+    margin-top: $space-xs;
+
+    .metric-card__detailed & {
+      @include flex(row, flex-start, center, $space-sm);
+      margin-top: 0;
+    }
+  }
+
+  &__trend-value {
+    @include flex(row, center, center, $space-xs);
+    font-size: $fs-xsm;
+    font-weight: $fw-normal;
+
+    &__positive {
+      color: hslaGen($success-color);
+    }
+
+    &__negative {
+      color: hslaGen($danger-color);
+    }
+
+    &__neutral {
+      color: hslaGen($grey-color);
+    }
+
+    i {
+      font-size: $fs-sm;
+    }
+  }
+
+  &__trend-period {
+    font-size: $fs-xsm;
+    color: hslaGen($grey-color, 0.8);
+
+    .metric-card__detailed & {
+      margin-left: $space-sm;
+    }
+  }
+
+  &__description {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    margin-top: $space-sm;
+    line-height: 1.4;
+  }
+}
+
+.metric-cards-grid {
+  @include grid(repeat(4, 1fr), auto, $space-md);
+  margin-bottom: $space-lg;
+
+  @include breakpoint(76.8rem, max) {
+    @include grid(repeat(2, 1fr), auto, $space-md);
+  }
+
+  @include breakpoint(57.6rem, max) {
+    @include grid(1fr, auto, $space-md);
+  }
+
+  &__2-col {
+    @include grid(repeat(2, 1fr), auto, $space-md);
+
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
+
+  &__3-col {
+    @include grid(repeat(3, 1fr), auto, $space-md);
+
+    @include breakpoint(76.8rem, max) {
+      @include grid(repeat(2, 1fr), auto, $space-md);
+    }
+
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
+}
+
+// Legacy support - maintain existing property-metrics and tenant-summary classes
+.property-metrics {
+  @extend .metric-cards-grid;
+}
+
+.tenant-summary {
+  @extend .metric-cards-grid;
+}
+
+// Backward compatibility for existing metric-card usage
+.metric-card:not([class*="__"]) {
+  @extend .metric-card__basic;
+}

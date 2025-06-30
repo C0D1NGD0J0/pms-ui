@@ -17,7 +17,7 @@ export const PageHeader = ({
   <div className="page-header">
     <div className="page-header__title">
       <h2>{title}</h2>
-      {/* {subtitle && <small>{subtitle}</small>} */}
+      {subtitle && <small>{subtitle}</small>}
       {showBreadcrumb && <Breadcrumb items={breadcrumbItems} />}
     </div>
     {headerBtn && <div className="page-header__actions">{headerBtn}</div>}

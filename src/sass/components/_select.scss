@@ -9,7 +9,6 @@
     width: 100%;
     padding: $base-padding;
     padding-right: 2.5rem;
-    // border: $base-border-thickness solid hslaGen($grey-color, 0.3);
     @include border-radius($base-border-radius);
     background-color: hslaGen($white-color);
     color: hslaGen($primary-color);
@@ -41,6 +40,8 @@
     .select-value {
       flex: 1;
       @include text-truncate;
+      color: inherit;
+      font-size: inherit;
     }
 
     .select-arrow {
@@ -56,6 +57,11 @@
 
   &.no-value .select-trigger .select-value {
     color: hslaGen($grey-color, 0.7);
+  }
+
+  &.has-value .select-trigger .select-value {
+    color: hslaGen($primary-color);
+    font-style: normal;
   }
 
   &.open .select-trigger {
@@ -79,8 +85,8 @@
     right: 0;
     z-index: 1000;
     background: hslaGen($white-color);
-    border: $base-border-thickness solid hslaGen($primary-color);
-    @include border-radius($base-border-radius);
+    border: $base-border-thickness solid hslaGen($grey-color, 0.4);
+    // @include border-radius($base-border-radius);
     @include box-shadow($box-shadow);
     margin-top: $space-xs;
     max-height: 200px;
@@ -177,6 +183,12 @@
 
       &.no-value .select-trigger .select-value {
         color: hslaGen($grey-color);
+        font-style: italic;
+      }
+
+      &.has-value .select-trigger .select-value {
+        color: hslaGen($dark-grey-color);
+        font-style: normal;
       }
 
       &.open .select-trigger {
@@ -244,10 +256,8 @@
     }
 
     .select-options {
-      background: hslaGen($dark-grey-color);
-
       .select-option {
-        color: hslaGen($white-color);
+        color: hslaGen($primary-color);
       }
     }
   }

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { stat } from "fs";
 import React, { ReactNode, useState } from "react";
 import { PanelHeaderProps, PanelContent, PanelHeader } from "@components/Panel";
 import {
@@ -57,10 +56,10 @@ export function Table<T extends object>({
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
 
-  const tableColumns = columns.map((column) => ({
+  const tableColumns = columns.map((column, index) => ({
     title: column.title,
     dataIndex: column.dataIndex as string,
-    key: column.key || (column.dataIndex as string),
+    key: `${new Date()}-${index}`,
     sorter: column.sorter,
     width: column.width,
     render:

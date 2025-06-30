@@ -5,10 +5,10 @@ import {
 } from "@interfaces/property.interface";
 
 export interface IPropertyTypeStrategy {
-  isMultiUnit(propertyType: string, totalUnits: number): boolean;
+  isMultiUnit(propertyType: string, maxAllowedUnits: number): boolean;
   getMinUnits(propertyType: string): number;
   getDefaultUnits(propertyType: string): number;
-  shouldValidateBedBath(propertyType: string, totalUnits: number): boolean;
+  shouldValidateBedBath(propertyType: string, maxAllowedUnits: number): boolean;
 }
 
 export class DefaultPropertyTypeStrategy implements IPropertyTypeStrategy {
@@ -21,8 +21,8 @@ export class DefaultPropertyTypeStrategy implements IPropertyTypeStrategy {
     "mixed-use",
   ]);
 
-  isMultiUnit(propertyType: string, totalUnits: number): boolean {
-    return this.multiUnitTypes.has(propertyType) || totalUnits > 1;
+  isMultiUnit(propertyType: string, maxAllowedUnits: number): boolean {
+    return this.multiUnitTypes.has(propertyType) || maxAllowedUnits > 1;
   }
 
   getMinUnits(propertyType: string): number {
@@ -53,9 +53,12 @@ export class DefaultPropertyTypeStrategy implements IPropertyTypeStrategy {
     return defaultUnitsMap[propertyType] ?? 1;
   }
 
-  shouldValidateBedBath(propertyType: string, totalUnits: number): boolean {
+  shouldValidateBedBath(
+    propertyType: string,
+    maxAllowedUnits: number
+  ): boolean {
     const singleFamilyTypes = new Set(["house", "townhouse"]);
-    return singleFamilyTypes.has(propertyType) && totalUnits === 1;
+    return singleFamilyTypes.has(propertyType) && maxAllowedUnits === 1;
   }
 }
 
@@ -95,7 +98,7 @@ export class PropertyModel implements IPropertyModelMethods {
   isMultiUnit(): boolean {
     return this.typeStrategy.isMultiUnit(
       this.data.propertyType,
-      this.data.totalUnits
+      this.data.maxAllowedUnits
     );
   }
 
@@ -114,12 +117,12 @@ export class PropertyModel implements IPropertyModelMethods {
   shouldValidateBedBath(): boolean {
     return this.typeStrategy.shouldValidateBedBath(
       this.data.propertyType,
-      this.data.totalUnits
+      this.data.maxAllowedUnits
     );
   }
 
   isValidUnitCount(): boolean {
-    return this.data.totalUnits >= this.getMinUnits();
+    return this.data.maxAllowedUnits >= this.getMinUnits();
   }
 
   hasFinancialInfo(): boolean {

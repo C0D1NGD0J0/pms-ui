@@ -238,7 +238,7 @@ export const leaseStatuses: LeaseStatus[] = [
 ];
 export const occupancyColumns = [
   { title: "Property", dataIndex: "property" },
-  { title: "Units", dataIndex: "totalUnits" },
+  { title: "Units", dataIndex: "maxAllowedUnits" },
   { title: "Occupied", dataIndex: "occupiedUnits" },
   {
     title: "Occupancy Rate",
@@ -282,7 +282,7 @@ export const filterOptions = [
 export interface OccupancyData {
   id: string;
   property: string;
-  totalUnits: number;
+  maxAllowedUnits: number;
   occupiedUnits: number;
   occupancyRate: number;
   change: {
@@ -296,7 +296,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "1",
     property: "Wellington Apartments",
-    totalUnits: 24,
+    maxAllowedUnits: 24,
     occupiedUnits: 22,
     occupancyRate: 92,
     change: {
@@ -308,7 +308,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "2",
     property: "Brookside Residences",
-    totalUnits: 36,
+    maxAllowedUnits: 36,
     occupiedUnits: 34,
     occupancyRate: 94,
     change: {
@@ -320,7 +320,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "3",
     property: "Highland Towers",
-    totalUnits: 18,
+    maxAllowedUnits: 18,
     occupiedUnits: 15,
     occupancyRate: 83,
     change: {
@@ -332,7 +332,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "4",
     property: "Cedar Park Homes",
-    totalUnits: 12,
+    maxAllowedUnits: 12,
     occupiedUnits: 11,
     occupancyRate: 92,
     change: {
@@ -344,7 +344,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "5",
     property: "Riverview Condos",
-    totalUnits: 20,
+    maxAllowedUnits: 20,
     occupiedUnits: 19,
     occupancyRate: 95,
     change: {
@@ -356,7 +356,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "6",
     property: "Parkside Apartments",
-    totalUnits: 40,
+    maxAllowedUnits: 40,
     occupiedUnits: 35,
     occupancyRate: 88,
     change: {
@@ -368,7 +368,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "7",
     property: "Maple Grove Residences",
-    totalUnits: 16,
+    maxAllowedUnits: 16,
     occupiedUnits: 13,
     occupancyRate: 81,
     change: {
@@ -380,7 +380,7 @@ export const occupancyData: OccupancyData[] = [
   {
     id: "8",
     property: "Oakwood Estates",
-    totalUnits: 28,
+    maxAllowedUnits: 28,
     occupiedUnits: 26,
     occupancyRate: 93,
     change: {

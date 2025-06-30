@@ -10,6 +10,7 @@ interface Props {
     isValid: boolean;
     errors: string[];
   };
+  canAddUnit: boolean;
   addNewUnit: () => void;
   onLoadMore?: () => void;
   hasNextPage?: boolean;
@@ -24,6 +25,7 @@ export function UnitNavigation({
   setCurrentUnit,
   onLoadMore,
   hasNextPage,
+  canAddUnit,
   addNewUnit,
   isLoadingMore,
   hasUnsavedChanges,
@@ -53,6 +55,7 @@ export function UnitNavigation({
           <Button
             label="Add Unit"
             onClick={addNewUnit}
+            disabled={!canAddUnit}
             className="btn-success btn-rounded"
           />
           {hasNextPage && (
