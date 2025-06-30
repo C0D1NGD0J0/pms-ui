@@ -81,7 +81,7 @@ export const propertySchema = z
     maxAllowedUnits: z
       .union([z.string().transform((val) => Number(val)), z.number()])
       .refine((val) => !isNaN(val), {
-        message: "Total units must be a valid number",
+        message: "Max allowed units must be a valid number",
       })
       .transform((val) => Number(val))
       .pipe(z.number().min(0).max(MAX_TOTAL_UNITS).default(1)),
