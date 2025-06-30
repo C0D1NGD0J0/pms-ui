@@ -1,12 +1,13 @@
 import React, { useState } from "react";
+import { Loading } from "@components/Loading";
 import { UnitStatus, IUnit } from "@interfaces/unit.interface";
 import { IPropertyDocument } from "@interfaces/property.interface";
-import { Loading } from "@components/Loading";
 
 export interface UnitsListProps {
   units: IUnit[];
   isLoading: boolean;
   searchable?: boolean;
+  errors: Error | null;
   onUnitClick?: (unit: IUnit) => void;
   unitsStats: IPropertyDocument["unitInfo"];
 }
@@ -59,6 +60,7 @@ export function UnitsList({
   units,
   searchable = true,
   onUnitClick,
+  errors,
   isLoading = false,
   unitsStats,
 }: UnitsListProps) {
@@ -77,6 +79,14 @@ export function UnitsList({
 
   if (isLoading) {
     return <Loading description="Fetching property units" />;
+  }
+
+  if (errors) {
+    return (
+      <div className="error-message">
+        <p>Error loading units: {errors.message}</p>
+      </div>
+    );
   }
 
   return (

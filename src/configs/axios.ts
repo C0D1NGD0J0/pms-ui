@@ -97,7 +97,11 @@ class AxiosService implements IAxiosService {
           return Promise.reject(new APIError().init(error));
         }
 
-        if (error.response?.status === 419 && !originalRequest._retry) {
+        // Handle token expiration (401 or 419 status codes)
+        if (
+          (error.response?.status === 401 || error.response?.status === 419) &&
+          !originalRequest._retry
+        ) {
           // prevent refresh token endpoint from retrying itself
           if (originalRequest.url !== "/api/v1/auth/refresh_token") {
             originalRequest._retry = true;

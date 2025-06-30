@@ -230,7 +230,13 @@ export default function PropertyShow() {
     {
       key: "tenant",
       label: "Current Tenant",
-      content: <CurrentTenantTab tenant={null} property={property} />,
+      content: (
+        <CurrentTenantTab
+          tenant={null}
+          property={property}
+          isMultiUnit={isMultiUnit}
+        />
+      ),
     },
     {
       key: "maintenance",
@@ -349,8 +355,9 @@ export default function PropertyShow() {
           {(property.unitInfo?.currentUnits ?? 0) > 0 && isMultiUnit && (
             <UnitsList
               units={savedUnits}
-              unitsStats={property.unitInfo}
+              errors={unitsError}
               isLoading={isUnitsLoading}
+              unitsStats={property.unitInfo}
             />
           )}
           <PropertyManager manager={propertyData.manager} />
