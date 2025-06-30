@@ -7,3 +7,4 @@ export * from "./useCurrentUser";
 export * from "./useScrollToTop";
 export * from "./useNotification";
 export * from "./useConditionalRender";
+export * from "./useTokenRefresh";

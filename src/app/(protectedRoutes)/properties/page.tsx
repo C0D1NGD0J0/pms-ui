@@ -66,16 +66,16 @@ export default function Properties() {
 
       <div className="flex-row">
         <PanelsWrapper>
-          <Panel>
+          <Panel variant="alt-2">
             <Table
+              tableVariant="alt-2"
               columns={generatePropertyColumn()}
               dataSource={properties}
               searchOpts={{
                 isVisible: true,
                 value: "",
-                onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                  console.log("Search value:", e.target.value);
-                },
+                onChange: (e: ChangeEvent<HTMLInputElement>) => void e,
+                placeholder: "Search by name, city, or property type",
               }}
               filterOpts={{
                 value: "all",

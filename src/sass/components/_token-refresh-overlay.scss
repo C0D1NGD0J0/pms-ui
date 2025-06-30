@@ -1,0 +1,139 @@
+@use "../abstract/index" as *;
+
+.token_refresh_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9998; // Just below loading modal but above everything else
+  pointer-events: none; // Allow user to still interact with content behind
+
+  .token_refresh_overlay_backdrop {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto; // Only the backdrop should block interactions
+  }
+
+  .token_refresh_overlay_content {
+    background-color: hslaGen($white-color);
+    border-radius: 0.75rem;
+    padding: 2rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    border: 1px solid hslaGen($grey-color, 0.2);
+    text-align: center;
+    max-width: 400px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .spinner_container {
+    position: relative;
+    width: 4rem;
+    height: 4rem;
+
+    .spinner_ring {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: absolute;
+      border: 3px solid transparent;
+      animation: spin 1.5s linear infinite;
+      border-top-color: hslaGen($primary-color);
+
+      &:nth-child(2) {
+        width: 75%;
+        height: 75%;
+        top: 12.5%;
+        left: 12.5%;
+        animation-duration: 1.8s;
+        animation-direction: reverse;
+        border-top-color: hslaGen($secondary-color);
+      }
+
+      &:nth-child(3) {
+        top: 25%;
+        left: 25%;
+        width: 50%;
+        height: 50%;
+        animation-duration: 2.2s;
+        border-top-color: hslaGen($primary-color);
+      }
+    }
+  }
+
+  .refresh_message {
+    h3 {
+      margin: 0 0 0.5rem 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: hslaGen($black-color);
+    }
+
+    p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: hslaGen($grey-color);
+      line-height: 1.4;
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .token_refresh_overlay {
+    .token_refresh_overlay_backdrop {
+      background-color: rgba(51, 51, 51, 0.9);
+    }
+
+    .token_refresh_overlay_content {
+      background-color: hslaGen($dark-grey-color);
+      border-color: hslaGen($grey-color, 0.3);
+    }
+
+    .refresh_message {
+      h3 {
+        color: hslaGen($white-color);
+      }
+
+      p {
+        color: hslaGen($grey-color, 0.8);
+      }
+    }
+  }
+}
+
+// Mobile responsiveness
+@media (max-width: 480px) {
+  .token_refresh_overlay {
+    .token_refresh_overlay_content {
+      margin: 1rem;
+      padding: 1.5rem;
+      min-width: auto;
+      max-width: calc(100vw - 2rem);
+    }
+
+    .spinner_container {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    .refresh_message {
+      h3 {
+        font-size: 1rem;
+      }
+
+      p {
+        font-size: 0.8125rem;
+      }
+    }
+  }
+}

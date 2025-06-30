@@ -6,6 +6,7 @@ import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
 import {
   PanelsWrapper,
   PanelContent,
@@ -20,8 +21,6 @@ import {
   FinancialTab,
   UnitsTab,
 } from "@properties/components";
-
-import { usePropertyEditForm } from "../hook";
 
 export default function EditProperty() {
   const params = useParams();
@@ -49,6 +48,7 @@ export default function EditProperty() {
   const tabs = [
     {
       key: "basic",
+      isVisible: true,
       tabLabel: "Basic information",
       content: (
         <BasicInfoTab
@@ -63,6 +63,7 @@ export default function EditProperty() {
     {
       key: "financial",
       tabLabel: "Financial",
+      isVisible: true,
       content: (
         <FinancialTab
           form={propertyForm}
@@ -73,6 +74,7 @@ export default function EditProperty() {
     },
     {
       key: "property",
+      isVisible: true,
       tabLabel: "Property Details",
       content: (
         <PropertyInfoTab
@@ -86,6 +88,7 @@ export default function EditProperty() {
     },
     {
       key: "amenities",
+      isVisible: true,
       tabLabel: "Amenities",
       content: (
         <AmenitiesTab
@@ -95,6 +98,7 @@ export default function EditProperty() {
       ),
     },
     {
+      isVisible: true,
       key: "documents",
       tabLabel: "Photos & Documents",
       content: (
@@ -118,6 +122,7 @@ export default function EditProperty() {
     {
       key: "units",
       tabLabel: "Units",
+      isVisible: propertyData?.unitInfo?.canAddUnit,
       content: <UnitsTab property={propertyForm.values} />,
     },
   ].filter((tab) => isTabVisible(tab.key));
@@ -129,7 +134,7 @@ export default function EditProperty() {
   if (!propertyData) {
     return <Loading size="regular" description="Property data not found." />;
   }
-  console.log(propertyForm.errors);
+  console.log(propertyData);
   return (
     <div className="page edit-property">
       <PageHeader

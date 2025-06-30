@@ -1,10 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useScrollToTop } from "@hooks/useScrollToTop";
 
 import { TabsContext } from "../hook";
 import { TabListProps, TabsProps } from "../interface";
 
+const validTabs = [
+  "basic",
+  "amenities",
+  "documents",
+  "financial",
+  "units",
+  "info",
+  "maintenance",
+  "payments",
+];
 export const TabContainer: React.FC<TabsProps> = ({
   children,
   defaultTab,
@@ -15,13 +26,17 @@ export const TabContainer: React.FC<TabsProps> = ({
   scrollOnChange = true,
 }) => {
   const { scrollToTop } = useScrollToTop();
+  const searchParams = useSearchParams();
+  const activeTabFromParams = searchParams.get("activeTab");
   const [availableTabs, setAvailableTabs] = useState<{
     [key: string]: boolean;
   }>({});
   const [activeTabId, setActiveTabId] = useState<string>(() => {
     if (mode === "edit" && typeof window !== "undefined") {
-      const saved = localStorage.getItem("activeTab");
-      return saved || defaultTab || "";
+      const saved = activeTabFromParams || localStorage.getItem("activeTab");
+      if (validTabs.includes(saved || "")) {
+        return saved || "";
+      }
     }
     return defaultTab || "";
   });

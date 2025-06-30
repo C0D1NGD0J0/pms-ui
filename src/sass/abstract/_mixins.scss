@@ -70,7 +70,7 @@
 }
 
 // GRID
-@mixin grid($columns: 1fr, $rows: auto, $gap: $spacing-sm) {
+@mixin grid($columns: 1fr, $rows: auto, $gap: $space-sm) {
   display: grid;
   grid-template-columns: $columns;
   grid-template-rows: $rows;

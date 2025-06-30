@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { useAuth } from "@store/auth.store";
 import { authService, EventTypes } from "@services/index";
 import { CURRENT_USER_QUERY_KEY } from "@utils/constants";
+import { useAuthActions, useAuth } from "@store/auth.store";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 import { usePublish, useEvent } from "./event";
@@ -13,13 +13,8 @@ const TWO_MINUTES_IN_MS = 2 * 60 * 1000;
 export const useCurrentUser = () => {
   const publish = usePublish();
   const queryClient = useQueryClient();
-  const { isLoggedIn, client } = useAuth();
-
-  useEvent(EventTypes.GET_CURRENT_USER, () => {
-    if (client?.csub) {
-      refetch();
-    }
-  });
+  const { isLoggedIn, client, isRefreshingToken } = useAuth();
+  const { setUser } = useAuthActions();
 
   const {
     data: userData,
@@ -65,6 +60,36 @@ export const useCurrentUser = () => {
     },
   });
 
+  // Event listener for GET_CURRENT_USER events
+  useEvent(EventTypes.GET_CURRENT_USER, () => {
+    if (client?.csub) {
+      refetch();
+    }
+  });
+
+  // Listen for token refresh events to refetch user data
+  useEvent(EventTypes.TOKEN_REFRESHED, () => {
+    console.log("Token refreshed, refetching user data...");
+    if (client?.csub) {
+      refetch().catch((err) => {
+        console.error("Failed to refetch user data after token refresh:", err);
+        // If user fetch fails after successful token refresh, clear user data
+        setUser(null);
+        publish(EventTypes.CURRENT_USER_UPDATED, null);
+        queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
+      });
+    }
+  });
+
+  // CRITICAL: Handle auth failures by immediately clearing user data
+  useEvent(EventTypes.AUTH_FAILURE, (data) => {
+    console.log("Auth failure detected, clearing user data:", data);
+    setUser(null);
+    publish(EventTypes.CURRENT_USER_UPDATED, null);
+    queryClient.setQueryData(CURRENT_USER_QUERY_KEY, null);
+    queryClient.removeQueries({ queryKey: CURRENT_USER_QUERY_KEY });
+  });
+
   useEffect(() => {
     if (isSuccess) {
       publish(EventTypes.CURRENT_USER_UPDATED, userData);
@@ -84,9 +109,14 @@ export const useCurrentUser = () => {
     }
   }, [isSuccess, isError, userData, error, queryClient, publish]);
 
+  // Enhanced loading state that considers both user fetching and token refresh
+  const isLoading = isFetchingUser || isRefreshingToken;
+
   return {
     user: userData,
     isFetchingUser,
+    isRefreshingToken,
+    isLoading, // Combined loading state
     isError,
     error,
     isLoggedIn,

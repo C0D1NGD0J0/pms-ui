@@ -21,6 +21,7 @@ $off-white-color: 204, 8%, 98%; //#f7f7f7;  - Off-White
 $alice-blue-color: 208, 100%, 97%; // #f0f8ff
 
 // SPACING
+$space-xs: 0.2rem !default;
 $space-sm: 0.5rem;
 $space-md: 1rem;
 $space-lg: 1.5rem;
@@ -35,8 +36,8 @@ $base-border-thickness: 0.2rem !default;
 $base-border-radius: 0.5rem !default;
 $border-radius-sm: 0.2rem !default;
 $border-radius-md: 0.4rem !default;
-$border-radius-lg: 0.6rem !default;
-$border-radius-xl: 0.8rem !default;
+$border-radius-lg: 0.8rem !default;
+$border-radius-xl: 1.2rem !default;
 // BOX-SHADOW
 $transition: all 0.5s ease-in-out;
 $box-shadow-alt: 0px 5px 4px -5px rgba(0, 0, 0, 0.3);
@@ -149,7 +150,8 @@ $fs-base: 1.4rem;
 $fw-thin: 100;
 $fw-light: 200;
 $fw-normal: 400;
-$fw-bold: 700;
+$fw-bold: 600;
+$fw-extra-bold: 800;
 
 $base-font-weight: 400 !default;
 $base-line-height: 1.7 !default;

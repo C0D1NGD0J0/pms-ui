@@ -8,12 +8,17 @@ type AuthState = {
   user: ICurrentUser | null;
   client: UserClient | null;
   isAuthLoading: boolean;
+  isRefreshingToken: boolean;
+  refreshTokenError: string | null;
   actions: {
     logout: () => void;
     setUser: (user: ICurrentUser | null) => void;
     setAuthLoading: (isLoading: boolean) => void;
     setClient: (client: UserClient | null) => void;
     setPermissions: (permissions: string[]) => void;
+    setRefreshingToken: (isRefreshing: boolean) => void;
+    setRefreshTokenError: (error: string | null) => void;
+    clearAuthState: () => void;
   };
 };
 
@@ -24,6 +29,8 @@ const useAuthStore = create<AuthState>()(
       permissions: [],
       user: null,
       isAuthLoading: false,
+      isRefreshingToken: false,
+      refreshTokenError: null,
       actions: {
         logout: async () => {
           const csub = get().client?.csub;
@@ -33,6 +40,8 @@ const useAuthStore = create<AuthState>()(
             user: null,
             permissions: [],
             isAuthLoading: false,
+            isRefreshingToken: false,
+            refreshTokenError: null,
             client: { csub: "", displayName: "" },
           });
         },
@@ -48,6 +57,23 @@ const useAuthStore = create<AuthState>()(
         setAuthLoading: (isAuthLoading: boolean) => {
           return set({ isAuthLoading });
         },
+        setRefreshingToken: (isRefreshingToken: boolean) => {
+          return set({ isRefreshingToken });
+        },
+        setRefreshTokenError: (refreshTokenError: string | null) => {
+          return set({ refreshTokenError });
+        },
+        clearAuthState: () => {
+          sessionStorage.removeItem("auth-storage");
+          return set({
+            user: null,
+            client: { csub: "", displayName: "" },
+            permissions: [],
+            isAuthLoading: false,
+            isRefreshingToken: false,
+            refreshTokenError: null,
+          });
+        },
       },
     }),
     {
@@ -61,7 +87,14 @@ const useAuthStore = create<AuthState>()(
 );
 
 export const useAuth = () => {
-  const { client, permissions, user, isAuthLoading } = useAuthStore();
+  const {
+    client,
+    permissions,
+    user,
+    isAuthLoading,
+    isRefreshingToken,
+    refreshTokenError,
+  } = useAuthStore();
   const isLoggedIn = !!user?.sub && !!client?.csub;
   return {
     user,
@@ -69,6 +102,8 @@ export const useAuth = () => {
     isLoggedIn,
     permissions,
     isAuthLoading,
+    isRefreshingToken,
+    refreshTokenError,
   };
 };
 
@@ -80,5 +115,8 @@ export const useAuthActions = () => {
     setClient: actions.setClient,
     setAuthLoading: actions.setAuthLoading,
     setPermissions: actions.setPermissions,
+    setRefreshingToken: actions.setRefreshingToken,
+    setRefreshTokenError: actions.setRefreshTokenError,
+    clearAuthState: actions.clearAuthState,
   };
 };

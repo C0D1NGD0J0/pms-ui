@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { stat } from "fs";
 import React, { ReactNode, useState } from "react";
 import { PanelHeaderProps, PanelContent, PanelHeader } from "@components/Panel";
 import {
@@ -31,6 +30,7 @@ export interface TableProps<T> {
   antTableProps?: AntTableProps<T>;
   withHeader?: boolean;
   pagination?: boolean | Partial<TablePaginationConfig>;
+  tableVariant?: "default" | "alt-2";
   rowSelection?: {
     type?: "checkbox" | "radio";
     selectedRowKeys?: React.Key[];
@@ -52,13 +52,14 @@ export function Table<T extends object>({
   searchOpts,
   filterOpts,
   rowSelection,
+  tableVariant = "default",
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
 
-  const tableColumns = columns.map((column) => ({
+  const tableColumns = columns.map((column, index) => ({
     title: column.title,
     dataIndex: column.dataIndex as string,
-    key: column.key || (column.dataIndex as string),
+    key: `${new Date()}-${index}`,
     sorter: column.sorter,
     width: column.width,
     render:
@@ -101,7 +102,6 @@ export function Table<T extends object>({
     return <span className={`status ${statusClass}`}>{status}</span>;
   };
 
-  // Configure pagination - fixed to match Ant Design's expected types
   const paginationConfig: false | TablePaginationConfig =
     pagination === false
       ? false
@@ -131,7 +131,14 @@ export function Table<T extends object>({
       className="panel-content-table custom-table-wrapper"
       {...antTableProps}
       components={{
-        table: (props) => <table {...props} className="custom-table"></table>,
+        table: (props) => (
+          <table
+            {...props}
+            className={`${
+              tableVariant === "alt-2" ? "table-alt-2" : "custom-table"
+            }`}
+          ></table>
+        ),
         header: {
           wrapper: (props) => (
             <thead {...props} className="custom-thead"></thead>

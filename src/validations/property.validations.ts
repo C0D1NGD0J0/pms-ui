@@ -78,10 +78,10 @@ export const propertySchema = z
     }),
 
     occupancyStatus: z.nativeEnum(PropertyOccupancyStatusEnum).optional(),
-    totalUnits: z
+    maxAllowedUnits: z
       .union([z.string().transform((val) => Number(val)), z.number()])
       .refine((val) => !isNaN(val), {
-        message: "Total units must be a valid number",
+        message: "Max allowed units must be a valid number",
       })
       .transform((val) => Number(val))
       .pipe(z.number().min(0).max(MAX_TOTAL_UNITS).default(1)),
@@ -123,20 +123,20 @@ export const propertySchema = z
   })
   .superRefine((data, ctx) => {
     const propertyType = data.propertyType || "house";
-    const totalUnits = Number(data.totalUnits);
+    const maxAllowedUnits = Number(data.maxAllowedUnits);
     const rules = PropertyTypeManager.getRules(propertyType);
 
-    if (isNaN(totalUnits) || totalUnits < rules.minUnits) {
+    if (isNaN(maxAllowedUnits) || maxAllowedUnits < rules.minUnits) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: `This property type requires at least ${rules.minUnits} units.`,
-        path: ["totalUnits"],
+        path: ["maxAllowedUnits"],
       });
     }
 
     const shouldValidate = PropertyTypeManager.shouldValidateBedBath(
       propertyType,
-      totalUnits
+      maxAllowedUnits
     );
 
     // If bedrooms/bathrooms shouldn't be validated (multi-unit properties), return early
@@ -145,7 +145,7 @@ export const propertySchema = z
     }
 
     // For single-family homes with only one unit, validate bedroom/bathroom counts
-    if (totalUnits === 1 && rules.validateBedBath) {
+    if (maxAllowedUnits === 1 && rules.validateBedBath) {
       if (
         data.specifications.bedrooms === 0 &&
         rules.requiredFields.includes("bedrooms")

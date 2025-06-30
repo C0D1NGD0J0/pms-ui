@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Loading } from "@components/Loading";
 import { extractChanges } from "@utils/helpers";
 import { Button } from "@components/FormElements";
 import { FormSection } from "@components/FormLayout";
@@ -14,7 +15,6 @@ import {
   UnitUtilities,
   UnitActions,
 } from "./view";
-import { Loading } from "@components/Loading";
 
 interface Props {
   property: PropertyFormValues;
@@ -55,7 +55,7 @@ export function UnitsTab({ property }: Props) {
     newUnits,
     hasUnsavedChanges,
   } = useUnitForm({ property });
-
+  const canAddMoreUnits = property.unitInfo?.canAddUnit || canAddUnit;
   const pendingUnits = newUnits.filter(
     (unit) => !unit.id || !unit.propertyId
   ).length;
@@ -134,11 +134,12 @@ export function UnitsTab({ property }: Props) {
         units={allUnits}
         currentUnit={null}
         hasNextPage={hasNextPage}
-        validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        setCurrentUnit={handleProtectedUnitSelect}
-        isLoadingMore={isFetchingNextPage}
+        validateUnit={validateUnit}
+        canAddUnit={canAddMoreUnits}
         addNewUnit={handleAddAnotherUnit}
+        isLoadingMore={isFetchingNextPage}
+        setCurrentUnit={handleProtectedUnitSelect}
         hasUnsavedChanges={checkUnitHasUnsavedChanges}
       />
     );
@@ -185,13 +186,14 @@ export function UnitsTab({ property }: Props) {
 
       <UnitNavigation
         units={allUnits}
-        currentUnit={currentUnit}
         hasNextPage={hasNextPage}
+        currentUnit={currentUnit}
         validateUnit={validateUnit}
         onLoadMore={handleLoadMore}
-        setCurrentUnit={handleProtectedUnitSelect}
-        isLoadingMore={isFetchingNextPage}
+        canAddUnit={canAddMoreUnits}
         addNewUnit={handleAddAnotherUnit}
+        isLoadingMore={isFetchingNextPage}
+        setCurrentUnit={handleProtectedUnitSelect}
         hasUnsavedChanges={checkUnitHasUnsavedChanges}
       />
 
@@ -268,9 +270,9 @@ export function UnitsTab({ property }: Props) {
       <div className="form-header">
         <div className="form-actions">
           <UnitActions
-            canAddUnit={canAddUnit}
             currentUnit={currentUnit}
             onCopyUnit={handleCopyUnit}
+            canAddUnit={canAddMoreUnits}
             onRemoveUnit={handleDeleteRequest}
             unitNumberingScheme={unitNumberingScheme}
             onNumberingSchemeChange={setUnitNumberingScheme}
@@ -325,9 +327,9 @@ export function UnitsTab({ property }: Props) {
         <Button
           form="units-form"
           onClick={handleSubmit}
-          label={isEditMode ? "Update Unit" : "Save Unit Changes"}
           className="btn btn-primary btn-grow"
           disabled={!unitForm.isValid || isSubmitting}
+          label={isEditMode ? "Update Unit" : "Save Unit Changes"}
         />
       </div>
     </div>

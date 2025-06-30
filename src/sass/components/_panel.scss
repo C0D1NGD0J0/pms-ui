@@ -43,6 +43,14 @@
             font-size: $fs-sm;
             border-radius: 0.3rem;
             text-transform: lowercase;
+          }
+
+          .select-wrapper .modern-select {
+            padding: 0.3rem;
+            min-width: 120px;
+            font-size: $fs-sm;
+            border-radius: 0.3rem;
+            text-transform: lowercase;
             border: 1px solid hslaGen($grey-color);
           }
 
@@ -119,6 +127,119 @@
     }
 
     &-content {
+    }
+
+    // Panel variant for dashboard-style tables (alt-2)
+    &.panel-alt-2 {
+      border: 1px solid hslaGen($grey-color, 0.2);
+      background: hslaGen($white-color);
+      border-radius: $border-radius-lg;
+      overflow: hidden !important;
+      box-shadow: $box-shadow;
+
+      .panel-header {
+        border-bottom: 1px solid hslaGen($off-white-color, 0.4);
+        background-color: hslaGen($off-white-color);
+        padding: $space-md;
+        border-radius: 0;
+
+        &__title h4 {
+          color: hslaGen($primary-color);
+          font-weight: $fw-bold;
+          font-size: $fs-sm;
+          margin: 0;
+        }
+      }
+
+      .panel-content {
+        padding: 0;
+      }
+
+      .panel-header__menu {
+        .filter-options {
+          .select-wrapper {
+            min-width: 120px;
+          }
+
+          .sort-direction-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            @include flex-center;
+            color: hslaGen($grey-color);
+            background: hslaGen($white-color);
+            @include transition(all, 0.2s, ease);
+            @include border-radius($border-radius-md);
+            border: 1px solid hslaGen($grey-color, 0.5);
+
+            &:hover {
+              background-color: hslaGen($off-white-color);
+              border-color: hslaGen($primary-color);
+              color: hslaGen($primary-color);
+              transform: translateY(0);
+            }
+
+            &:active {
+              transform: translateY(0);
+              background-color: hslaGen($light-grey-color, 0.3);
+            }
+
+            i {
+              font-size: $fs-lg;
+            }
+          }
+        }
+
+        .search-bar {
+          .search-input {
+            border: 1px solid hslaGen($grey-color, 0.5);
+            @include border-radius($border-radius-md);
+            background-color: hslaGen($white-color);
+            @include transition(all, 0.3s, ease);
+            color: hslaGen($dark-grey-color);
+            padding: 0.5rem 0.75rem;
+            font-size: $fs-sm;
+
+            &:focus {
+              outline: none;
+              border-color: hslaGen($primary-color);
+              box-shadow: 0 0 0 3px hslaGen($primary-color, 0.1);
+            }
+
+            &::placeholder {
+              color: hslaGen($grey-color);
+            }
+          }
+
+          .search-btn {
+            width: 2.5rem;
+            height: 2.5rem;
+            font-size: $fs-lg;
+            @include flex-center;
+            color: hslaGen($grey-color);
+            background: hslaGen($white-color);
+            @include transition(all, 0.2s, ease);
+            @include border-radius($border-radius-md);
+            border: 1px solid hslaGen($grey-color, 0.5);
+
+            &:hover {
+              background-color: hslaGen($off-white-color);
+              border-color: hslaGen($primary-color);
+              color: hslaGen($primary-color);
+            }
+          }
+
+          &:hover .search-input {
+            width: 25rem;
+            border-color: hslaGen($primary-color);
+          }
+        }
+      }
+
+      .table-alt-2 {
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+      }
     }
   }
 }

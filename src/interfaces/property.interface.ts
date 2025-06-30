@@ -119,7 +119,7 @@ export interface IPropertyDocument {
   managedBy: string;
   yearBuilt: number;
   occupancyStatus: PropertyOccupancyStatusEnum;
-  totalUnits: number;
+  maxAllowedUnits: number;
   createdBy: string;
   deletedAt: string | null;
   pid: string;
@@ -265,7 +265,7 @@ interface IUnitInfo {
   unitStats: IUnitStats;
   currentUnits: number;
   canAddUnit: boolean;
-  totalUnits: number;
+  maxAllowedUnits: number;
 }
 interface IUnitStats {
   maintenance: number;
@@ -349,7 +349,7 @@ export const defaultPropertyValues: PropertyFormValues = {
     laundryFacility: false,
     doorman: false,
   },
-  totalUnits: 0,
+  maxAllowedUnits: 0,
   documents: [],
   propertyImages: [],
 };

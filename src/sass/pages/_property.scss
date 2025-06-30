@@ -1,322 +1,767 @@
 @use "../abstract/index" as *;
 
-/* Property Gallery */
-.property-gallery {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: $space-md;
-  margin-bottom: $space-xl;
-  border-radius: $base-border-radius + 0.3rem;
-  overflow: hidden;
+// Property Show Page Specific Styles
+.property-show {
+  .property-layout {
+    @include grid(1fr 320px, auto, $space-lg);
 
-  .gallery-main {
+    @include breakpoint(75rem, max) {
+      @include grid(1fr, auto, $space-lg);
+
+      .property-sidebar {
+        display: none;
+      }
+    }
+  }
+
+  .property-main-content {
+    min-width: 0;
+  }
+
+  // Metric cards now handled by components/_metric-card.scss
+
+  // Property Features
+  .property-features {
+    @include grid(repeat(4, 1fr), auto, $space-md);
+    margin-bottom: $space-md;
+
+    @include breakpoint(76.8rem, max) {
+      @include grid(repeat(2, 1fr), auto, $space-md);
+    }
+
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
+
+  .feature-item {
+    @include flex(row, flex-start, center, $space-sm);
+    padding: $space-sm;
+    background: hslaGen($off-white-color);
+    @include border-radius($border-radius-lg);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+
+    i {
+      font-size: $fs-lg;
+      color: hslaGen($primary-color);
+    }
+
+    h5 {
+      margin: 0;
+      font-size: $fs-sm;
+      color: hslaGen($grey-color);
+    }
+
+    span {
+      font-weight: $fw-bold;
+      color: hslaGen($black-color);
+
+      &.badge {
+        display: inline-block;
+        padding: $space-xs $space-sm;
+        @include border-radius(9999px);
+        font-size: $fs-xsm;
+        font-weight: $fw-normal;
+        text-transform: uppercase;
+
+        &.success {
+          background-color: hslaGen($success-color, 0.2);
+          color: hslaGen($success-color);
+        }
+
+        &.warning {
+          background-color: hslaGen($warning-color, 0.2);
+          color: hslaGen($warning-color);
+        }
+
+        &.danger {
+          background-color: hslaGen($danger-color, 0.2);
+          color: hslaGen($danger-color);
+        }
+      }
+    }
+  }
+
+  .tenant-info {
+    .user-info {
+      @include flex(row, flex-start, center, $space-md);
+      margin-bottom: $space-lg;
+    }
+
+    .tenant-avatar {
+      background-color: hslaGen($primary-color);
+      color: hslaGen($white-color);
+      width: 50px;
+      height: 50px;
+      @include border-radius(50%);
+      @include flex-center;
+      font-size: $fs-lg;
+      font-weight: $fw-bold;
+    }
+
+    .tenant-details {
+      h4 {
+        margin: 0;
+        font-size: $fs-md;
+      }
+
+      p {
+        margin: $space-xs 0 0;
+        font-size: $fs-sm;
+        color: hslaGen($grey-color);
+      }
+    }
+  }
+
+  .form-actions {
+    @include flex(row, flex-start, center, $space-sm);
+    margin-top: $space-md;
+  }
+
+  .document-list {
+    @include flex(column, flex-start, stretch, $space-sm);
+    max-height: 25rem;
+    overflow-y: auto;
+  }
+
+  .document-item {
+    @include flex(row, space-between, center, $space-md);
+    padding: $space-md;
+    background: hslaGen($off-white-color);
+    @include border-radius($border-radius-lg);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    text-decoration: none;
+    color: inherit;
+    @include transition();
+
+    &:hover {
+      background: hslaGen($off-white-color, 0.8);
+      border-color: hslaGen($grey-color, 0.4);
+    }
+
+    // Content container for icon and text
+    .document-content {
+      @include flex(row, flex-start, center, $space-md);
+      flex: 1;
+    }
+  }
+
+  .document-icon {
+    font-size: $fs-lg;
+    color: hslaGen($primary-color);
+  }
+
+  .document-item h4 {
+    margin: 0;
+    font-size: $fs-md;
+  }
+
+  .document-item p {
+    margin: $space-xs 0 0;
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+  }
+}
+
+// Property Sidebar
+.property-sidebar {
+  background: hslaGen($white-color);
+  border-left: 1px solid hslaGen($light-grey-color, 0.6);
+  overflow-y: auto;
+  padding: 0;
+
+  .sidebar-section {
+    border-bottom: 1px solid hslaGen($light-grey-color, 0.6);
+    padding: $space-lg;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    h4 {
+      margin: 0 0 $space-md 0;
+      font-size: $fs-md;
+      color: hslaGen($dark-grey-color);
+      font-weight: $fw-bold;
+    }
+  }
+
+  // Gallery
+  .sidebar-gallery {
+    margin-bottom: $space-md;
+  }
+
+  .sidebar-gallery-main {
     width: 100%;
-    height: 35rem;
+    height: 160px;
     overflow: hidden;
-    border-radius: $base-border-radius + 0.3rem;
+    @include border-radius($border-radius-lg);
+    position: relative;
+    margin-bottom: $space-sm;
 
     img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: $base-border-radius + 0.3rem;
+      @include transition(transform);
+    }
+
+    &:hover img {
+      transform: scale(1.02);
     }
   }
 
-  .gallery-thumbnails {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: $space-md;
+  .sidebar-gallery-thumbnails {
+    @include grid(repeat(4, 1fr), auto, 0.375rem);
+  }
 
-    .thumbnail {
-      height: 12rem;
-      overflow: hidden;
-      border-radius: $base-border-radius;
-      cursor: pointer;
-      transition: $transition;
-      border: 2px solid transparent;
+  .sidebar-thumbnail {
+    height: 45px;
+    @include border-radius($border-radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    @include transition();
 
-      &.active {
-        border: 2px solid hslaGen($primary-color, 1);
-      }
+    &.active {
+      border-color: hslaGen($primary-color);
+    }
 
-      &:hover {
-        opacity: 0.8;
-      }
-
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   }
-}
 
-/* Property Content Layout */
-.property-content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: $space-xl;
-  align-items: start;
-
-  .property-main {
-    display: flex;
-    flex-direction: column;
-    gap: $space-xl;
+  // Units List
+  .units-header {
+    @include flex(column, flex-start, stretch, $space-md);
+    margin-bottom: $space-md;
   }
 
-  .property-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: $space-xl;
+  .units-search {
+    position: relative;
+    @include flex(row, flex-start, center);
+
+    &__input {
+      width: 100%;
+      padding: $space-sm 2.5rem $space-sm $space-md;
+      border: 1px solid hslaGen($light-grey-color, 0.6);
+      @include border-radius($border-radius-lg);
+      font-size: $fs-sm;
+      background-color: hslaGen($off-white-color);
+      @include transition();
+
+      &:focus {
+        outline: none;
+        border-color: hslaGen($primary-color);
+        background-color: hslaGen($white-color);
+        box-shadow: 0 0 0 3px hslaGen($primary-color, 0.1);
+      }
+
+      &::placeholder {
+        color: hslaGen($grey-color, 0.7);
+      }
+    }
+
+    &__icon {
+      position: absolute;
+      right: $space-md;
+      color: hslaGen($grey-color);
+      font-size: $fs-md;
+      pointer-events: none;
+    }
   }
-}
 
-/* Property Features */
-.property-features {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-  gap: $space-lg;
-  margin-bottom: $space-xl;
+  .units-list {
+    @include flex(column, flex-start, stretch, $space-sm);
+    max-height: 25rem;
+    overflow-y: auto;
+    padding-right: $space-xs;
+    @include custom-scrollbar(
+      6px,
+      hslaGen($off-white-color),
+      hslaGen($grey-color, 0.6)
+    );
+  }
 
-  .feature-item {
-    display: flex;
-    align-items: center;
-    gap: $space-md;
+  .unit-card {
+    background: hslaGen($off-white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    @include transition();
+    cursor: pointer;
+
+    &:hover {
+      background: hslaGen($off-white-color, 0.8);
+      border-color: hslaGen($primary-color);
+    }
+
+    &.occupied {
+      border-left: 4px solid hslaGen($success-color);
+    }
+
+    &.vacant {
+      border-left: 4px solid hslaGen($danger-color);
+    }
+
+    &.maintenance {
+      border-left: 4px solid hslaGen($warning-color);
+    }
+  }
+
+  .unit-header {
+    @include flex(row, space-between, center);
+    margin-bottom: $space-sm;
+  }
+
+  .unit-number {
+    font-weight: $fw-bold;
+    color: hslaGen($black-color);
+    font-size: $fs-md;
+  }
+
+  .unit-status {
+    font-size: $fs-xsm;
+    padding: $space-xs $space-sm;
+    @include border-radius(9999px);
+    font-weight: $fw-normal;
+    text-transform: uppercase;
+
+    &.occupied {
+      background-color: hslaGen($success-color, 0.2);
+      color: hslaGen($success-color);
+    }
+
+    &.vacant {
+      background-color: hslaGen($danger-color, 0.2);
+      color: hslaGen($danger-color);
+    }
+
+    &.maintenance {
+      background-color: hslaGen($warning-color, 0.2);
+      color: hslaGen($warning-color);
+    }
+  }
+
+  .unit-details {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    margin-bottom: $space-xs;
+  }
+
+  .unit-rent {
+    font-weight: $fw-bold;
+    color: hslaGen($black-color);
+    font-size: $fs-sm;
+  }
+
+  // Manager Card
+  .manager-card {
+    background: hslaGen($off-white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+  }
+
+  .manager-info {
+    @include flex(row, flex-start, center, $space-sm);
+    margin-bottom: $space-md;
+  }
+
+  .manager-avatar {
+    background-color: hslaGen($primary-color);
+    color: hslaGen($white-color);
+    width: 45px;
+    height: 45px;
+    @include border-radius(50%);
+    @include flex-center;
+    font-size: $fs-md;
+    font-weight: $fw-bold;
+  }
+
+  .manager-details {
+    h5 {
+      margin: 0;
+      font-size: $fs-md;
+      color: hslaGen($black-color);
+      font-weight: $fw-bold;
+    }
+
+    p {
+      margin: $space-xs 0 0;
+      font-size: $fs-xsm;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  .manager-contact {
+    @include flex(row, flex-start, center, 0.375rem);
+    font-size: $fs-xsm !important;
 
     i {
-      font-size: $fs-xlg;
-      color: hslaGen($primary-color, 1);
+      font-size: $fs-sm;
+      color: hslaGen($primary-color);
+    }
+  }
+
+  .manager-stats {
+    @include grid(repeat(3, 1fr), auto, $space-sm);
+    margin-bottom: $space-md;
+    padding: $space-sm;
+    background: hslaGen($white-color);
+    @include border-radius($border-radius-md);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-value {
+    display: block;
+    font-size: $fs-md;
+    font-weight: $fw-extra-bold;
+    color: hslaGen($black-color);
+  }
+
+  .stat-label {
+    font-size: $fs-xsm;
+    color: hslaGen($grey-color);
+    text-transform: uppercase;
+    letter-spacing: $base-letter-spacing;
+  }
+
+  .manager-actions {
+    @include flex(row, flex-start, center, $space-sm);
+
+    .btn {
+      flex: 1;
+      font-size: $fs-xsm;
+      padding: $space-sm;
+    }
+  }
+}
+
+// Tab Content Styling
+.tab-content {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+// Tenant View Specific Styles
+.tenant-view {
+  // Tenant Summary
+  .tenant-summary {
+    @include grid(repeat(4, 1fr), auto, $space-md);
+    margin-bottom: $space-lg;
+
+    @include breakpoint(76.8rem, max) {
+      @include grid(repeat(2, 1fr), auto, $space-md);
+    }
+
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
+
+  .summary-card {
+    background: hslaGen($white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-lg;
+    text-align: center;
+    @include transition();
+
+    &:hover {
+      @include box-shadow(0 4px 12px hslaGen($black-color, 0.1));
+    }
+  }
+
+  .summary-value {
+    font-size: $fs-lg;
+    font-weight: $fw-extra-bold;
+    margin-bottom: $space-sm;
+    color: hslaGen($black-color);
+  }
+
+  .summary-label {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    text-transform: uppercase;
+    letter-spacing: $base-letter-spacing;
+  }
+
+  // Notice Board
+  .notice-board {
+    background: hslaGen($warning-color, 0.1);
+    border: 1px solid hslaGen($warning-color);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    margin-bottom: $space-lg;
+
+    &.warning {
+      background: hslaGen($warning-color, 0.1);
+      border-color: hslaGen($warning-color);
+
+      h5 {
+        color: hslaGen($warning-color);
+      }
+
+      ul {
+        color: hslaGen($warning-color, 0.8);
+      }
+    }
+
+    &.info {
+      background: hslaGen($primary-color, 0.1);
+      border-color: hslaGen($primary-color);
+
+      h5 {
+        color: hslaGen($primary-color);
+      }
+
+      ul {
+        color: hslaGen($primary-color, 0.8);
+      }
+    }
+
+    &.success {
+      background: hslaGen($success-color, 0.1);
+      border-color: hslaGen($success-color);
+
+      h5 {
+        color: hslaGen($success-color);
+      }
+
+      ul {
+        color: hslaGen($success-color, 0.8);
+      }
     }
 
     h5 {
-      margin: 0;
-      font-size: $fs-base;
-      font-weight: $fw-bold;
+      margin: 0 0 $space-sm 0;
+      font-size: $fs-md;
+      @include flex(row, flex-start, center, $space-sm);
     }
 
-    span {
+    ul {
+      margin: 0;
+      padding-left: $space-lg;
       font-size: $fs-sm;
-      color: hslaGen($grey-color, 1);
+    }
+
+    li {
+      margin-bottom: $space-xs;
     }
   }
-}
 
-.property-description {
-  font-size: $fs-base;
-  line-height: $base-line-height;
-  color: hslaGen($dark-grey-color, 1);
-}
+  // Quick Actions
+  .quick-actions {
+    @include grid(repeat(2, 1fr), auto, $space-md);
+    margin-bottom: $space-lg;
 
-/* Amenities List */
-.amenities-list {
-  display: grid;
-  padding: 2rem 0;
-  gap: $space-md;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    @include breakpoint(76.8rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
+  }
 
-  .amenity-item {
-    display: flex;
-    gap: $space-sm;
-    align-items: center;
+  .action-button {
+    @include flex(row, flex-start, center, $space-sm);
+    padding: $space-md;
+    background: hslaGen($white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    text-decoration: none;
+    color: hslaGen($dark-grey-color);
+    @include transition();
+    cursor: pointer;
+
+    &:hover {
+      background: hslaGen($off-white-color);
+      border-color: hslaGen($primary-color);
+      color: hslaGen($primary-color);
+    }
 
     i {
       font-size: $fs-lg;
-      color: hslaGen($success-color, 1);
+      color: hslaGen($primary-color);
     }
 
     span {
-      font-size: $fs-base;
-    }
-  }
-}
-
-/* Location Details */
-.location-details {
-  display: grid;
-  padding: 2rem 0;
-  gap: $space-md;
-  margin-bottom: $space-xl;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
-
-  .location-item {
-    display: flex;
-    flex-direction: column;
-    gap: calc($space-sm / 2);
-
-    strong {
-      font-size: $fs-base;
-      font-weight: $fw-bold;
-    }
-
-    span {
-      font-size: $fs-sm;
-      color: hslaGen($grey-color, 1);
-    }
-  }
-}
-
-.map-container {
-  width: 100%;
-  height: 25rem;
-  margin-top: $space-lg;
-  border-radius: $base-border-radius;
-  overflow: hidden;
-
-  .map-placeholder {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: hslaGen($background-color, 1);
-    color: hslaGen($grey-color, 1);
-    font-size: $fs-base;
-  }
-}
-
-/* Property Price */
-.property-price {
-  background-color: white;
-  margin-bottom: $space-xl;
-  text-align: center;
-
-  h3 {
-    font-size: $fs-xlg + 0.4rem;
-    margin: 0;
-    color: hslaGen($primary-color, 1);
-
-    span {
-      font-size: $fs-base;
-      color: hslaGen($grey-color, 1);
       font-weight: $fw-normal;
     }
   }
 
-  .property-type {
-    font-size: $fs-base;
-    color: hslaGen($grey-color, 1);
+  // Lease Information
+  .lease-info {
+    background: hslaGen($alice-blue-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-lg;
+    margin-bottom: $space-lg;
   }
-}
 
-/* Booking Form */
-.booking-form {
-  display: flex;
-  gap: $space-lg;
-  background-color: hslaGen($off-white-color, 0.2);
-  flex-direction: column;
-}
+  .lease-header {
+    @include flex(row, flex-start, center, $space-md);
+    margin-bottom: $space-md;
+  }
 
-/* Apartment List */
-.apartment-list {
-  display: flex;
-  max-height: 30rem;
-  overflow-y: auto;
-  flex-direction: column;
+  .lease-details {
+    h3 {
+      margin: 0;
+      font-size: $fs-xlg;
+      color: hslaGen($black-color);
+    }
 
-  .apartment-item {
+    p {
+      margin: $space-xs 0 0;
+      font-size: $fs-sm;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  .lease-stats {
+    @include grid(repeat(3, 1fr), auto, $space-md);
+    margin-top: $space-md;
+  }
+
+  .lease-stat {
+    text-align: center;
+    padding: $space-sm;
+    background: hslaGen($white-color);
+    @include border-radius($border-radius-md);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+  }
+
+  // Contact Cards
+  .contact-card {
+    background: hslaGen($off-white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
     padding: $space-md;
-    position: relative;
-    transition: $transition;
-    border-radius: $base-border-radius;
-    background-color: hslaGen($off-white-color, 1);
-    border: 1px solid hslaGen($light-grey-color, 0.5);
+    margin-bottom: $space-md;
+  }
 
-    &::before {
-      top: 0;
-      right: 0;
-      content: "";
-      height: 100%;
-      width: 0.4rem;
-      position: absolute;
-      transition: $transition;
-      background-color: transparent;
-      border-top-right-radius: $base-border-radius;
-      border-bottom-right-radius: $base-border-radius;
+  .contact-info {
+    @include flex(row, flex-start, center, $space-sm);
+    margin-bottom: $space-md;
+  }
+
+  .contact-avatar {
+    background-color: hslaGen($success-color);
+    color: hslaGen($white-color);
+    width: 45px;
+    height: 45px;
+    @include border-radius(50%);
+    @include flex-center;
+    font-size: $fs-md;
+    font-weight: $fw-bold;
+  }
+
+  .contact-details {
+    h5 {
+      margin: 0;
+      font-size: $fs-md;
+      color: hslaGen($black-color);
+      font-weight: $fw-bold;
     }
 
-    &:hover::before {
-      background-color: hslaGen($primary-color, 1);
+    p {
+      margin: $space-xs 0 0;
+      font-size: $fs-xsm;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  .contact-methods {
+    @include flex(row, flex-start, center, $space-sm);
+
+    .btn {
+      flex: 1;
+      font-size: $fs-xsm;
+      padding: $space-sm;
+    }
+  }
+
+  .emergency-info {
+    background: hslaGen($danger-color, 0.1);
+    border: 1px solid hslaGen($danger-color, 0.3);
+    @include border-radius($border-radius-lg);
+    padding: $space-md;
+    margin-top: $space-md;
+
+    h6 {
+      margin: 0 0 $space-sm 0;
+      color: hslaGen($danger-color);
+      font-size: $fs-sm;
+      font-weight: $fw-bold;
+      @include flex(row, flex-start, center, $space-sm);
     }
 
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
+    p {
+      margin: 0;
+      font-size: $fs-xsm;
+      color: hslaGen($danger-color, 0.8);
 
-    .apartment-details {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      h5 {
-        margin: 0;
-        font-size: $fs-md;
+      &:last-child {
+        margin-top: $space-xs;
       }
     }
+  }
 
-    .text-muted {
+  // Amenities List
+  .amenity-list {
+    @include grid(1fr, auto, $space-sm);
+  }
+
+  .amenity-item {
+    @include flex(row, flex-start, center, $space-sm);
+    padding: $space-sm;
+    background: hslaGen($off-white-color);
+    @include border-radius($border-radius-md);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+
+    i {
+      font-size: $fs-md;
+      color: hslaGen($success-color);
+    }
+
+    span {
       font-size: $fs-sm;
-      color: hslaGen($grey-color, 1);
-      display: block;
-      margin-top: $space-sm;
+      color: hslaGen($dark-grey-color);
     }
   }
+
+  // Chart Grid for tenant view
+  .chart-grid {
+    @include grid(1fr, auto, $space-lg);
+    margin-bottom: $space-lg;
+  }
+
+  .chart-card {
+    background: hslaGen($white-color);
+    border: 1px solid hslaGen($light-grey-color, 0.6);
+    @include border-radius($border-radius-lg);
+    padding: $space-lg;
+    @include box-shadow(0 2px 5px hslaGen($black-color, 0.05));
+
+    h4 {
+      margin-top: 0;
+      margin-bottom: $space-md;
+      font-size: $fs-md;
+      color: hslaGen($dark-grey-color);
+    }
+  }
+
+  .chart-container {
+    height: 250px;
+    margin-bottom: $space-lg;
+    position: relative;
+  }
 }
-
-/* Responsive adjustments */
-// @media (max-width: map-get($breakpoints, "lg")) {
-//   .property-content {
-//     grid-template-columns: 1fr;
-
-//     .property-sidebar {
-//       order: -1;
-//     }
-//   }
-// }
-
-// @media (max-width: map-get($breakpoints, "md")) {
-//   .property-gallery {
-//     .gallery-main {
-//       height: 25rem;
-//     }
-
-//     .gallery-thumbnails {
-//       grid-template-columns: repeat(2, 1fr);
-
-//       .thumbnail {
-//         height: 10rem;
-//       }
-//     }
-//   }
-
-//   .property-features {
-//     grid-template-columns: repeat(2, 1fr);
-//   }
-
-//   .amenities-list {
-//     grid-template-columns: repeat(2, 1fr);
-//   }
-// }
-
-// @media (max-width: map-get($breakpoints, "xs") + 480px) {
-//   .property-gallery {
-//     .gallery-main {
-//       height: 20rem;
-//     }
-//   }
-
-//   .property-features {
-//     grid-template-columns: 1fr;
-//   }
-
-//   .amenities-list {
-//     grid-template-columns: 1fr;
-//   }
-
-//   .location-details {
-//     grid-template-columns: 1fr;
-//   }
-// }
