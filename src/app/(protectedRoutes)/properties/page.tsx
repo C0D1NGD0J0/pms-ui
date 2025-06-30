@@ -74,9 +74,8 @@ export default function Properties() {
               searchOpts={{
                 isVisible: true,
                 value: "",
-                onChange: (e: ChangeEvent<HTMLInputElement>) => {
-                  console.log("Search value:", e.target.value);
-                },
+                onChange: (e: ChangeEvent<HTMLInputElement>) => void e,
+                placeholder: "Search by name, city, or property type",
               }}
               filterOpts={{
                 value: "all",

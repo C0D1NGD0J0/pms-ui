@@ -140,12 +140,28 @@ class AxiosService implements IAxiosService {
             try {
               await this.refreshTokenPromise;
               console.log("Retrying original request after token refresh");
-              return this.axios(originalRequest);
+              console.log("Original request config:", {
+                url: originalRequest.url,
+                method: originalRequest.method,
+                baseURL: originalRequest.baseURL,
+              });
+
+              const retryConfig = {
+                ...originalRequest,
+                _retry: true,
+              };
+
+              return this.axios(retryConfig);
             } catch (refreshError) {
               console.error(
                 "Failed to retry request after token refresh:",
                 refreshError
               );
+              console.error("Refresh error details:", {
+                status: (refreshError as any)?.response?.status,
+                message: (refreshError as any)?.message,
+                data: (refreshError as any)?.response?.data,
+              });
               return Promise.reject(
                 new APIError().init(refreshError as AxiosError)
               );
