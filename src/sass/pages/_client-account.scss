@@ -1,0 +1,136 @@
+@use "../abstract/index" as *;
+
+.client-account {
+  &__subscription-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &__subscription-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    background: hslaGen($off-white-color);
+    border-radius: $border-radius-md;
+    border: 1px solid hslaGen($grey-color, 0.2);
+
+    @include breakpoint("768px", max) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .subscription-plan {
+      h4 {
+        font-size: $fs-lg;
+        color: hslaGen($primary-color);
+        margin-bottom: 0.5rem;
+
+        .plan-name {
+          color: hslaGen($secondary-color);
+          font-weight: $fw-bold;
+        }
+      }
+    }
+
+    .subscription-actions {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+
+  &__plan-features {
+    padding: 2rem;
+    background: hslaGen($alice-blue-color);
+    border-radius: $border-radius-md;
+
+    h4 {
+      font-size: $fs-md;
+      color: hslaGen($primary-color);
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      font-size: $fs-base;
+
+      i.success {
+        color: hslaGen($success-color);
+        margin-right: 1rem;
+        font-size: $fs-lg;
+      }
+    }
+  }
+
+  // Payment method styling
+  &__payment-methods {
+    padding: 2rem;
+    background: hslaGen($off-white-color);
+    border-radius: $border-radius-md;
+    border: 1px solid hslaGen($grey-color, 0.2);
+  }
+
+  &__current-payment-method {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    @include breakpoint("768px", max) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .card-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      i {
+        font-size: $fs-xlg;
+        color: hslaGen($primary-color);
+      }
+
+      span {
+        font-size: $fs-base;
+        color: hslaGen($dark-grey-color);
+      }
+    }
+
+    .payment-actions {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+}
+
+// Minor enhancement to existing metric card for account overview
+.metric-card {
+  &__account-overview {
+    position: relative;
+
+    &::after {
+      top: 0;
+      left: 0;
+      content: "";
+      height: 100%;
+      width: 0.4rem;
+      position: absolute;
+      background: hslaGen($primary-color);
+    }
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: $box-shadow-alt;
+    }
+  }
+}
