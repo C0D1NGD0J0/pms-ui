@@ -69,7 +69,7 @@ export const Sidebar = () => {
   ];
 
   const bottomMenuItems = [
-    { path: "/accounts", icon: "bx bx-cog", label: "Account" },
+    { path: "/client/:csub", icon: "bx bx-cog", label: "Account" },
     { path: "/wallet", icon: "bx bx-wallet", label: "Wallet" },
     { path: "/viewings", icon: "bx bx-street-view", label: "Viewings" },
     {
