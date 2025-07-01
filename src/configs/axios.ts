@@ -96,17 +96,14 @@ class AxiosService implements IAxiosService {
           );
           return Promise.reject(new APIError().init(error));
         }
-
-        // Handle token expiration (401 or 419 status codes)
+        console.error("Axios error occurred:", error);
         if (
           (error.response?.status === 401 || error.response?.status === 419) &&
           !originalRequest._retry
         ) {
-          // prevent refresh token endpoint from retrying itself
           if (originalRequest.url !== "/api/v1/auth/refresh_token") {
             originalRequest._retry = true;
 
-            // makes sure we only have one refresh token call at a time
             if (!this.refreshTokenPromise) {
               console.log("Token expired, attempting refresh...");
 
@@ -122,8 +119,8 @@ class AxiosService implements IAxiosService {
 
                   // If refresh fails due to invalid refresh token, handle auth failure
                   if (
-                    refreshError.response?.status === 401 ||
-                    refreshError.response?.status === 403
+                    refreshError.statusCode === 401 ||
+                    refreshError.statusCode === 403
                   ) {
                     console.log("Refresh token expired, logging out user");
                     handleAuthFailure();
@@ -157,11 +154,6 @@ class AxiosService implements IAxiosService {
                 "Failed to retry request after token refresh:",
                 refreshError
               );
-              console.error("Refresh error details:", {
-                status: (refreshError as any)?.response?.status,
-                message: (refreshError as any)?.message,
-                data: (refreshError as any)?.response?.data,
-              });
               return Promise.reject(
                 new APIError().init(refreshError as AxiosError)
               );
@@ -172,7 +164,8 @@ class AxiosService implements IAxiosService {
           (error.response?.status === 401 || error.response?.status === 403)
         ) {
           console.log(
-            "Refresh token endpoint returned auth error, logging out user"
+            "Refresh token endpoint returned auth error, logging out user",
+            error
           );
           handleAuthFailure();
         }
