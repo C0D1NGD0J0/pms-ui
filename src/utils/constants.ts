@@ -542,4 +542,12 @@ export const PROPERTY_QUERY_KEYS = {
     puid,
   ],
 };
+export const CLIENT_QUERY_KEYS = {
+  getClientByCsub: (csub: string) => ["/getClientDetails", csub],
+  getClientProperties: (csub: string, pagination: unknown) => [
+    "/getClientProperties",
+    csub,
+    pagination,
+  ],
+};
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

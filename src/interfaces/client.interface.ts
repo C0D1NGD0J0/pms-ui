@@ -59,15 +59,32 @@ export interface IClient {
   cid: string;
   accountType: IClientAccountType;
   identification: IClientIdentification;
-  subscription?: string; // ObjectId as string
+  subscription?: string;
   isVerified: boolean;
-  accountAdmin: string; // ObjectId as string
+  accountAdmin:
+    | string
+    | {
+        id: string;
+        email: string;
+        profile: {
+          firstName: string;
+          lastName: string;
+          displayName: string;
+          avatarUrl?: string;
+        };
+      };
   displayName?: string;
   companyProfile: IClientCompanyProfile;
   settings: IClientSettings;
   deletedAt?: Date | string | null;
   createdAt?: Date | string;
   updatedAt?: Date | string;
+  verifiedBy: string;
+  clientStats: {
+    totalUsers: number;
+    totalProperties: number;
+  };
+  id: string;
 }
 
 // Form-specific interfaces
