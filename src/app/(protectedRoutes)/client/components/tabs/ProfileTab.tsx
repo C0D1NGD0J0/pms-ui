@@ -1,8 +1,8 @@
 "use client";
 
 import React, { ChangeEvent, useState } from "react";
-import { IClientFormData } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
+import { IClientFormData, IClient } from "@interfaces/client.interface";
 import {
   FormField,
   FormInput,
@@ -11,19 +11,20 @@ import {
   Select,
 } from "@components/FormElements";
 
-// Mock initial data - replace with real data later
-const initialProfileData: Partial<IClientFormData> = {
-  displayName: "Property Solutions Inc.",
-  accountType: {
-    planId: "PLAN-PREMIUM-001",
-    planName: "premium",
-    isEnterpriseAccount: true,
-  },
-  isVerified: true,
-};
+interface ProfileTabProps {
+  clientInfo: IClient;
+}
 
-export const ProfileTab: React.FC = () => {
-  const [formData, setFormData] = useState(initialProfileData);
+export const ProfileTab: React.FC<ProfileTabProps> = ({ clientInfo }) => {
+  const [formData, setFormData] = useState<Partial<IClientFormData>>({
+    displayName: clientInfo.displayName || "",
+    accountType: {
+      planId: clientInfo.accountType.planId,
+      planName: clientInfo.accountType.planName,
+      isEnterpriseAccount: clientInfo.accountType.isEnterpriseAccount,
+    },
+    isVerified: clientInfo.isVerified,
+  });
 
   const handleInputChange = (name: string, value: string | boolean) => {
     if (name.includes(".")) {
@@ -62,7 +63,7 @@ export const ProfileTab: React.FC = () => {
             <FormInput
               id="clientId"
               name="clientId"
-              value="CLI-12345"
+              value={clientInfo.cid}
               disabled
               readOnly
               placeholder="Client ID"
@@ -91,7 +92,7 @@ export const ProfileTab: React.FC = () => {
                 handleInputChange("accountType.planName", e.target.value)
               }
               options={[
-                { value: "basic", label: "Basic" },
+                { value: "personal", label: "Basic" },
                 { value: "premium", label: "Premium" },
                 { value: "enterprise", label: "Enterprise" },
               ]}

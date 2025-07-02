@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
+import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
 import {
   FormField,
@@ -10,16 +11,22 @@ import {
   Toggle,
 } from "@components/FormElements";
 
-export const PreferencesTab: React.FC = () => {
+interface PreferencesTabProps {
+  clientInfo: IClient;
+}
+
+export const PreferencesTab: React.FC<PreferencesTabProps> = ({
+  clientInfo,
+}) => {
   const [notificationSettings, setNotificationSettings] = useState({
-    email: true,
-    sms: false,
-    inApp: true,
+    email: clientInfo.settings.notificationPreferences.email,
+    sms: clientInfo.settings.notificationPreferences.sms,
+    inApp: clientInfo.settings.notificationPreferences.inApp,
   });
 
   const [regionalSettings, setRegionalSettings] = useState({
-    timeZone: "UTC",
-    lang: "en",
+    timeZone: clientInfo.settings.timeZone,
+    lang: clientInfo.settings.lang,
   });
 
   const handleToggleChange = (setting: string, newState: boolean) => {
@@ -90,7 +97,9 @@ export const PreferencesTab: React.FC = () => {
               id="timeZone"
               name="timeZone"
               value={regionalSettings.timeZone}
-              onChange={(e) => handleRegionalChange("timeZone", e.target.value)}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                handleRegionalChange("timeZone", e.target.value)
+              }
               options={[
                 { value: "UTC", label: "UTC (Coordinated Universal Time)" },
                 { value: "America/New_York", label: "Eastern Time (ET)" },
@@ -109,7 +118,9 @@ export const PreferencesTab: React.FC = () => {
               id="language"
               name="language"
               value={regionalSettings.lang}
-              onChange={(e) => handleRegionalChange("lang", e.target.value)}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                handleRegionalChange("lang", e.target.value)
+              }
               options={[
                 { value: "en", label: "English" },
                 { value: "es", label: "Spanish" },

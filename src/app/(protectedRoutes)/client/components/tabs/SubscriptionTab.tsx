@@ -2,9 +2,16 @@
 
 import React from "react";
 import { Button } from "@components/FormElements";
+import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
 
-export const SubscriptionTab: React.FC = () => {
+interface SubscriptionTabProps {
+  clientInfo: IClient;
+}
+
+export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
+  clientInfo,
+}) => {
   return (
     <div className="resource-form">
       <FormSection
@@ -15,7 +22,10 @@ export const SubscriptionTab: React.FC = () => {
           <div className="client-account__subscription-details">
             <div className="subscription-plan">
               <h4>
-                Current Plan: <span className="plan-name">Premium</span>
+                Current Plan:{" "}
+                <span className="plan-name">
+                  {clientInfo.accountType.planName}
+                </span>
               </h4>
               <p>Your subscription renews on April 1, 2025</p>
             </div>

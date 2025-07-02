@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { ChangeEvent, useState } from "react";
+import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
 import {
   FormField,
@@ -10,17 +11,29 @@ import {
   Select,
 } from "@components/FormElements";
 
-export const IdentificationTab: React.FC = () => {
+interface IdentificationTabProps {
+  clientInfo: IClient;
+}
+
+export const IdentificationTab: React.FC<IdentificationTabProps> = ({
+  clientInfo,
+}) => {
   const [formData, setFormData] = useState({
-    idType: "passport",
-    idNumber: "P12345678",
-    issueDate: "2020-06-15",
-    expiryDate: "2030-06-14",
-    authority: "Department of State",
-    issuingState: "United States",
-    lastVerifiedAt: "2024-03-01T10:30",
-    retentionExpiryDate: "2031-03-01",
-    dataProcessingConsent: true,
+    idType: clientInfo.identification.idType || "",
+    idNumber: clientInfo.identification.idNumber || "",
+    issueDate: clientInfo.identification.issueDate
+      ? typeof clientInfo.identification.issueDate === "string"
+        ? clientInfo.identification.issueDate.split("T")[0]
+        : clientInfo.identification.issueDate.toISOString().split("T")[0]
+      : "",
+    expiryDate: clientInfo.identification.expiryDate
+      ? typeof clientInfo.identification.expiryDate === "string"
+        ? clientInfo.identification.expiryDate.split("T")[0]
+        : clientInfo.identification.expiryDate.toISOString().split("T")[0]
+      : "",
+    authority: clientInfo.identification.authority || "",
+    issuingState: clientInfo.identification.issuingState || "",
+    dataProcessingConsent: clientInfo.identification.dataProcessingConsent,
   });
 
   const handleInputChange = (name: string, value: string) => {
@@ -43,7 +56,9 @@ export const IdentificationTab: React.FC = () => {
               id="idType"
               name="idType"
               value={formData.idType}
-              onChange={(e) => handleInputChange("idType", e.target.value)}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                handleInputChange("idType", e.target.value)
+              }
               options={[
                 { value: "", label: "Select ID type" },
                 { value: "passport", label: "Passport" },
@@ -122,11 +137,11 @@ export const IdentificationTab: React.FC = () => {
               id="dataProcessingConsent"
               name="dataProcessingConsent"
               checked={formData.dataProcessingConsent}
-              onChange={(e) =>
-                handleInputChange(
-                  "dataProcessingConsent",
-                  e.target.checked.toString()
-                )
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  dataProcessingConsent: e.target.checked,
+                }))
               }
               label="Data Processing Consent"
             />

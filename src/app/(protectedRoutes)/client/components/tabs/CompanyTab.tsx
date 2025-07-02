@@ -1,20 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
+import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
 import { FormField, FormInput, FormLabel } from "@components/FormElements";
 
-export const CompanyTab: React.FC = () => {
+interface CompanyTabProps {
+  clientInfo: IClient;
+}
+
+export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
   const [formData, setFormData] = useState({
-    legalEntityName: "Property Solutions Inc.",
-    tradingName: "PropSolutions",
-    companyEmail: "info@propertysolutions.com",
-    companyPhone: "(212) 555-8765",
-    registrationNumber: "REG123456789",
-    website: "https://propertysolutions.com",
-    contactPerson: "Jonathan Smith",
-    contactEmail: "jonathan.smith@propertysolutions.com",
-    contactPhone: "(212) 555-1234",
+    legalEntityName: clientInfo.companyProfile.legalEntityName || "",
+    tradingName: clientInfo.companyProfile.tradingName || "",
+    companyEmail: clientInfo.companyProfile.companyEmail || "",
+    companyPhone: clientInfo.companyProfile.companyPhone || "",
+    registrationNumber: clientInfo.companyProfile.registrationNumber || "",
+    website: clientInfo.companyProfile.website || "",
+    contactPerson: clientInfo.companyProfile.contactInfo.contactPerson || "",
+    contactEmail: clientInfo.companyProfile.contactInfo.email || "",
+    contactPhone: clientInfo.companyProfile.contactInfo.phoneNumber || "",
   });
 
   const handleInputChange = (name: string, value: string) => {
