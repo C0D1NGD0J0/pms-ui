@@ -386,3 +386,153 @@
   justify-content: space-between;
   margin-bottom: 10px;
 }
+
+// Form input wrapper for disabled state with lock icon
+.form-input-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+
+  .form-input-lock,
+  .form-textarea-lock {
+    position: absolute;
+    right: 0.75rem;
+    top: 53%;
+    transform: translateY(-50%);
+    color: hslaGen($grey-color, 0.6);
+    pointer-events: none;
+    font-size: $fs-md;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transition: $transition;
+  }
+
+  .form-textarea-lock {
+    top: 1rem;
+    transform: none;
+  }
+
+  // Show lock icon when individual input is disabled
+  .form-input:disabled + .form-input-lock,
+  .form-input_textarea:disabled + .form-textarea-lock {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // Show lock icon when parent form is inert
+  form[inert] & .form-input-lock,
+  form[inert] & .form-textarea-lock {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // Add padding when lock icon is visible (individual disabled)
+  .form-input:disabled,
+  .form-input_textarea:disabled {
+    padding-right: 2.5rem;
+  }
+
+  // Add padding when lock icon is visible (parent form inert)
+  form[inert] & .form-input,
+  form[inert] & .form-input_textarea {
+    padding-right: 2.5rem;
+  }
+}
+
+// Checkbox lock icon styling
+.checkbox-input-wrapper {
+  position: relative;
+  display: inline-block;
+
+  .checkbox-lock-icon {
+    position: absolute;
+    top: 40%;
+    left: 40%;
+    transform: translate(-50%, -50%);
+    color: hslaGen($grey-color, 0.6);
+    pointer-events: none;
+    font-size: $fs-md;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transition: $transition;
+  }
+
+  // Show lock icon when checkbox is disabled
+  .form-input_checkbox:disabled + .checkbox-lock-icon {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // Show lock icon when parent form is inert
+  form[inert] & .checkbox-lock-icon {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // Hide the checkmark when lock is visible
+  .form-input_checkbox:disabled::after,
+  form[inert] & .form-input_checkbox::after {
+    display: none;
+  }
+}
+
+// Toggle lock icon styling
+.toggle-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  .toggle-lock-icon {
+    color: hslaGen($grey-color, 0.6);
+    pointer-events: none;
+    font-size: $fs-base;
+    opacity: 0;
+    visibility: hidden;
+    transition: $transition;
+  }
+
+  // Show lock icon when toggle is disabled
+  .toggle.disabled + .toggle-lock-icon {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // Show lock icon when parent form is inert
+  form[inert] & .toggle-lock-icon {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  // Disabled toggle styling
+  .toggle.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: hslaGen($grey-color, 0.3);
+
+    .toggle-handle {
+      background-color: hslaGen($grey-color, 0.6);
+    }
+
+    &:hover {
+      background-color: hslaGen($grey-color, 0.3);
+    }
+  }
+
+  // Inert form toggle styling
+  form[inert] & .toggle {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: hslaGen($grey-color, 0.3);
+
+    .toggle-handle {
+      background-color: hslaGen($grey-color, 0.6);
+    }
+
+    &:hover {
+      background-color: hslaGen($grey-color, 0.3);
+    }
+  }
+}

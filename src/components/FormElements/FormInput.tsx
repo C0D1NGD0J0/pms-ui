@@ -77,32 +77,36 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       .filter(Boolean)
       .join(" ");
 
+    // Always render with wrapper to support both individual disabled and form inert states
     return (
-      <input
-        ref={ref}
-        id={id}
-        name={name}
-        type={type}
-        value={value}
-        onChange={readOnly ? () => "" : onChange}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        className={inputClasses}
-        required={required}
-        disabled={disabled}
-        readOnly={readOnly}
-        onKeyDown={onkeydown}
-        min={min}
-        max={max}
-        step={step}
-        autoComplete={autoComplete}
-        maxLength={maxLength}
-        pattern={pattern}
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedBy}
-        aria-required={required}
-        aria-invalid={isTouched && required && !value}
-      />
+      <div className="form-input-wrapper">
+        <input
+          ref={ref}
+          id={id}
+          name={name}
+          type={type}
+          value={value}
+          onChange={readOnly ? () => "" : onChange}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          className={inputClasses}
+          required={required}
+          disabled={disabled}
+          readOnly={readOnly}
+          onKeyDown={onkeydown}
+          min={min}
+          max={max}
+          step={step}
+          autoComplete={autoComplete}
+          maxLength={maxLength}
+          pattern={pattern}
+          aria-label={ariaLabel}
+          aria-describedby={ariaDescribedBy}
+          aria-required={required}
+          aria-invalid={isTouched && required && !value}
+        />
+        <i className="bx bx-lock-alt form-input-lock" aria-hidden="true"></i>
+      </div>
     );
   }
 );

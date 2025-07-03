@@ -287,3 +287,24 @@
     }
   }
 }
+
+// Support for parent form inert state
+form[inert] .custom-select-wrapper {
+  .select-trigger {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: hslaGen($light-grey-color, 0.1);
+  }
+
+  // Hide dropdown arrow and show lock icon when form is inert
+  .select-arrow i:not(.bx-lock-alt) {
+    display: none;
+  }
+
+  .select-arrow::after {
+    content: "\ea12"; // Boxicons lock icon unicode
+    font-family: "boxicons" !important;
+    font-size: $fs-lg;
+    color: hslaGen($grey-color, 0.6);
+  }
+}

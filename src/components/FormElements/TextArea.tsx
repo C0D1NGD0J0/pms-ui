@@ -1,5 +1,5 @@
 "use client";
-import React, { ChangeEvent, forwardRef, FocusEvent,useState } from "react";
+import React, { ChangeEvent, forwardRef, FocusEvent, useState } from "react";
 
 interface FormTextareaProps {
   id: string;
@@ -54,26 +54,30 @@ export const Textarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
       .filter(Boolean)
       .join(" ");
 
+    // Always render with wrapper to support both individual disabled and form inert states
     return (
-      <textarea
-        ref={ref}
-        id={id}
-        name={name}
-        value={value}
-        onChange={onChange}
-        onBlur={handleBlur}
-        placeholder={placeholder}
-        className={textareaClasses}
-        required={required}
-        disabled={disabled}
-        readOnly={readOnly}
-        rows={rows}
-        maxLength={maxLength}
-        aria-label={ariaLabel}
-        aria-describedby={ariaDescribedBy}
-        aria-required={required}
-        aria-invalid={isTouched && required && !value}
-      />
+      <div className="form-input-wrapper">
+        <textarea
+          ref={ref}
+          id={id}
+          name={name}
+          value={value}
+          onChange={onChange}
+          onBlur={handleBlur}
+          placeholder={placeholder}
+          className={textareaClasses}
+          required={required}
+          disabled={disabled}
+          readOnly={readOnly}
+          rows={rows}
+          maxLength={maxLength}
+          aria-label={ariaLabel}
+          aria-describedby={ariaDescribedBy}
+          aria-required={required}
+          aria-invalid={isTouched && required && !value}
+        />
+        <i className="bx bx-lock-alt form-textarea-lock" aria-hidden="true"></i>
+      </div>
     );
   }
 );

@@ -40,19 +40,25 @@ export const Checkbox = forwardRef<HTMLInputElement, FormCheckboxProps>(
 
     return (
       <div className="checkbox-wrapper">
-        <input
-          ref={ref}
-          id={id}
-          name={name}
-          type="checkbox"
-          checked={checked}
-          onChange={onChange}
-          className={checkboxClasses}
-          disabled={disabled}
-          required={required}
-          aria-label={ariaLabel}
-          aria-required={required}
-        />
+        <div className="checkbox-input-wrapper">
+          <input
+            ref={ref}
+            id={id}
+            name={name}
+            type="checkbox"
+            checked={checked}
+            onChange={onChange}
+            className={checkboxClasses}
+            disabled={disabled}
+            required={required}
+            aria-label={ariaLabel}
+            aria-required={required}
+          />
+          <i
+            className="bx bx-lock-alt checkbox-lock-icon"
+            aria-hidden="true"
+          ></i>
+        </div>
         {label && (
           <div className="checkbox-label-wrapper">
             <label htmlFor={id} className="checkbox-label">
