@@ -4,8 +4,8 @@ import { extractChanges } from "@utils/helpers";
 import { Button } from "@components/FormElements";
 import { FormSection } from "@components/FormLayout";
 import { Modal } from "@components/FormElements/Modal";
-import { UnitFormValues } from "@interfaces/unit.interface";
 import { PropertyFormValues } from "@interfaces/property.interface";
+import { UnitsFormValues, UnitFormValues } from "@interfaces/unit.interface";
 
 import { useUnitForm } from "./hook";
 import {
@@ -85,7 +85,19 @@ export function UnitsTab({ property }: Props) {
   };
 
   const handleSaveAndSwitch = async () => {
-    handleSubmit();
+    try {
+      if (isEditMode) {
+        // in edit mode, handleSubmit expects UnitsFormValues
+        (handleSubmit as (values: UnitsFormValues) => void)(unitForm.values);
+      } else {
+        // in create mode, handleSubmit is wrapped with onSubmit and expects no args
+        (handleSubmit as () => void)();
+      }
+    } catch (error) {
+      console.error("Error saving unit:", error);
+      return;
+    }
+
     setShowUnsavedModal(false);
     if (navigationTarget) {
       handleUnitSelect(navigationTarget);
@@ -276,7 +288,12 @@ export function UnitsTab({ property }: Props) {
             onRemoveUnit={handleDeleteRequest}
             unitNumberingScheme={unitNumberingScheme}
             onNumberingSchemeChange={setUnitNumberingScheme}
-            prefixOptions={formConfig?.prefixOptions || []}
+            prefixOptions={
+              formConfig?.prefixOptions?.map((option) => ({
+                ...option,
+                example: option.example || "",
+              })) || []
+            }
           />
         </div>
       </div>
@@ -326,7 +343,15 @@ export function UnitsTab({ property }: Props) {
         />
         <Button
           form="units-form"
-          onClick={handleSubmit}
+          onClick={() => {
+            if (isEditMode) {
+              (handleSubmit as (values: UnitsFormValues) => void)(
+                unitForm.values
+              );
+            } else {
+              (handleSubmit as () => void)();
+            }
+          }}
           className="btn btn-primary btn-grow"
           disabled={!unitForm.isValid || isSubmitting}
           label={isEditMode ? "Update Unit" : "Save Unit Changes"}

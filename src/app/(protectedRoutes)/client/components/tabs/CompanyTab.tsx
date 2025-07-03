@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import React from "react";
 import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
 import { FormField, FormInput, FormLabel } from "@components/FormElements";
@@ -10,25 +9,6 @@ interface CompanyTabProps {
 }
 
 export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
-  const [formData, setFormData] = useState({
-    legalEntityName: clientInfo.companyProfile.legalEntityName || "",
-    tradingName: clientInfo.companyProfile.tradingName || "",
-    companyEmail: clientInfo.companyProfile.companyEmail || "",
-    companyPhone: clientInfo.companyProfile.companyPhone || "",
-    registrationNumber: clientInfo.companyProfile.registrationNumber || "",
-    website: clientInfo.companyProfile.website || "",
-    contactPerson: clientInfo.companyProfile.contactInfo.contactPerson || "",
-    contactEmail: clientInfo.companyProfile.contactInfo.email || "",
-    contactPhone: clientInfo.companyProfile.contactInfo.phoneNumber || "",
-  });
-
-  const handleInputChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
   return (
     <div className="resource-form">
       <FormSection
@@ -40,22 +20,20 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormLabel htmlFor="legalEntityName" label="Legal Entity Name" />
             <FormInput
               id="legalEntityName"
-              name="legalEntityName"
-              value={formData.legalEntityName}
-              onChange={(e) =>
-                handleInputChange("legalEntityName", e.target.value)
-              }
+              name="companyProfile.legalEntityName"
+              onChange={(e) => void e}
               placeholder="Enter legal company name"
+              value={clientInfo.companyProfile?.legalEntityName || ""}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="tradingName" label="Trading Name" />
             <FormInput
               id="tradingName"
-              name="tradingName"
-              value={formData.tradingName}
-              onChange={(e) => handleInputChange("tradingName", e.target.value)}
+              onChange={(e) => void e}
               placeholder="Enter trading name"
+              name="companyProfile.tradingName"
+              value={clientInfo.companyProfile.tradingName}
             />
           </FormField>
         </div>
@@ -64,27 +42,23 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
           <FormField>
             <FormLabel htmlFor="companyEmail" label="Company Email" />
             <FormInput
-              id="companyEmail"
-              name="companyEmail"
               type="email"
-              value={formData.companyEmail}
-              onChange={(e) =>
-                handleInputChange("companyEmail", e.target.value)
-              }
+              id="companyEmail"
+              onChange={(e) => void e}
               placeholder="Enter company email"
+              name="companyProfile.companyEmail"
+              value={clientInfo.companyProfile.companyEmail}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="companyPhone" label="Company Phone" />
             <FormInput
-              id="companyPhone"
-              name="companyPhone"
               type="tel"
-              value={formData.companyPhone}
-              onChange={(e) =>
-                handleInputChange("companyPhone", e.target.value)
-              }
+              id="companyPhone"
+              onChange={(e) => void e}
               placeholder="Enter company phone"
+              name="companyProfile.companyPhone"
+              value={clientInfo.companyProfile.companyPhone}
             />
           </FormField>
         </div>
@@ -97,23 +71,21 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             />
             <FormInput
               id="registrationNumber"
-              name="registrationNumber"
-              value={formData.registrationNumber}
-              onChange={(e) =>
-                handleInputChange("registrationNumber", e.target.value)
-              }
+              onChange={(e) => void e}
               placeholder="Enter registration number"
+              name="companyProfile.registrationNumber"
+              value={clientInfo.companyProfile.registrationNumber}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="website" label="Website" />
             <FormInput
-              id="website"
-              name="website"
               type="url"
-              value={formData.website}
-              onChange={(e) => handleInputChange("website", e.target.value)}
+              id="website"
+              onChange={(e) => void e}
+              name="companyProfile.website"
               placeholder="Enter website URL"
+              value={clientInfo.companyProfile.website}
             />
           </FormField>
         </div>
@@ -128,25 +100,21 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormLabel htmlFor="contactPerson" label="Contact Person" />
             <FormInput
               id="contactPerson"
-              name="contactPerson"
-              value={formData.contactPerson}
-              onChange={(e) =>
-                handleInputChange("contactPerson", e.target.value)
-              }
+              onChange={(e) => void e}
               placeholder="Enter contact person name"
+              name="companyProfile.contactInfo.contactPerson"
+              value={clientInfo.companyProfile.contactInfo.contactPerson}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="contactEmail" label="Contact Email" />
             <FormInput
-              id="contactEmail"
-              name="contactEmail"
               type="email"
-              value={formData.contactEmail}
-              onChange={(e) =>
-                handleInputChange("contactEmail", e.target.value)
-              }
+              id="contactEmail"
+              onChange={(e) => void e}
               placeholder="Enter contact email"
+              name="clientInfo.companyProfile.contactInfo.email"
+              value={clientInfo.companyProfile.contactInfo.email}
             />
           </FormField>
         </div>
@@ -155,14 +123,12 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
           <FormField>
             <FormLabel htmlFor="contactPhone" label="Contact Phone" />
             <FormInput
-              id="contactPhone"
-              name="contactPhone"
               type="tel"
-              value={formData.contactPhone}
-              onChange={(e) =>
-                handleInputChange("contactPhone", e.target.value)
-              }
+              id="contactPhone"
+              onChange={(e) => void e}
               placeholder="Enter contact phone"
+              name="clientInfo.companyProfile.contactInfo.phoneNumber"
+              value={clientInfo.companyProfile.contactInfo.phoneNumber}
             />
           </FormField>
         </div>

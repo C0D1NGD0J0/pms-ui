@@ -55,9 +55,9 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
             <p>Receive notifications via email</p>
           </div>
           <Toggle
-            initialState={notificationSettings.email}
+            initialState={clientInfo.settings.notificationPreferences.email}
             onChange={(newState) => handleToggleChange("email", newState)}
-            name="emailNotifications"
+            name="settings.notificationPreferences.email"
           />
         </div>
 
@@ -67,9 +67,9 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
             <p>Receive notifications via SMS</p>
           </div>
           <Toggle
-            initialState={notificationSettings.sms}
+            name="settings.notificationPreferences.sms"
             onChange={(newState) => handleToggleChange("sms", newState)}
-            name="smsNotifications"
+            initialState={clientInfo.settings.notificationPreferences.sms}
           />
         </div>
 
@@ -79,9 +79,9 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
             <p>Show notifications within the application</p>
           </div>
           <Toggle
-            initialState={notificationSettings.inApp}
+            initialState={clientInfo.settings.notificationPreferences.inApp}
             onChange={(newState) => handleToggleChange("inApp", newState)}
-            name="inAppNotifications"
+            name="settings.notificationPreferences.inApp"
           />
         </div>
       </FormSection>
@@ -95,20 +95,29 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
             <FormLabel htmlFor="timeZone" label="Timezone" />
             <Select
               id="timeZone"
-              name="timeZone"
-              value={regionalSettings.timeZone}
+              name="settings.timeZone"
+              value={clientInfo.settings.timeZone}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 handleRegionalChange("timeZone", e.target.value)
               }
               options={[
                 { value: "UTC", label: "UTC (Coordinated Universal Time)" },
-                { value: "America/New_York", label: "Eastern Time (ET)" },
-                { value: "America/Chicago", label: "Central Time (CT)" },
-                { value: "America/Denver", label: "Mountain Time (MT)" },
-                { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
-                { value: "Europe/London", label: "London (GMT)" },
-                { value: "Europe/Paris", label: "Paris (CET)" },
-                { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+                { value: "EST", label: "Eastern Time (ET)" },
+                { value: "CST", label: "Central Time (CT)" },
+                { value: "MT", label: "Mountain Time (MT)" },
+                { value: "PST", label: "Pacific Time (PT)" },
+                { value: "GMT", label: "London (GMT)" },
+                { value: "CET", label: "Paris (CET)" },
+                { value: "JST", label: "Tokyo (JST)" },
+                { value: "WAT", label: "West Africa Time (WAT)" },
+                { value: "EAT", label: "East Africa Time (EAT)" },
+                { value: "IST", label: "India Standard Time (IST)" },
+                { value: "CST", label: "China Standard Time (CST)" },
+                {
+                  value: "AEST",
+                  label: "Australian Eastern Standard Time (AEST)",
+                },
+                { value: "NZST", label: "New Zealand Standard Time (NZST)" },
               ]}
             />
           </FormField>
@@ -116,8 +125,8 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
             <FormLabel htmlFor="language" label="Language" />
             <Select
               id="language"
-              name="language"
-              value={regionalSettings.lang}
+              name="settings.language"
+              value={clientInfo.settings.lang}
               onChange={(e: ChangeEvent<HTMLSelectElement>) =>
                 handleRegionalChange("lang", e.target.value)
               }
@@ -125,9 +134,7 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
                 { value: "en", label: "English" },
                 { value: "es", label: "Spanish" },
                 { value: "fr", label: "French" },
-                { value: "de", label: "German" },
-                { value: "it", label: "Italian" },
-                { value: "pt", label: "Portuguese" },
+                { value: "en(NIG)", label: "Pidgin English" },
               ]}
             />
           </FormField>

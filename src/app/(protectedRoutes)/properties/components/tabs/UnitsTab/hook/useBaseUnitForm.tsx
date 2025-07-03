@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { v4 as uuidv4 } from "uuid";
-import { useAuth } from "@store/index";
+import { useAuth, useUnitFormStaticData } from "@store/index";
 import { useForm } from "@mantine/form";
 import { extractChanges } from "@utils/helpers";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
@@ -42,9 +42,8 @@ export function useBaseUnitForm({
   const [currentUnit, setCurrentUnit] = useState<UnitFormValues | null>(null);
   const [originalUnit, setOriginalUnit] = useState<UnitFormValues | null>(null);
 
-  const { data: formConfig, isLoading: formConfigLoading } =
-    usePropertyFormMetaData<StaticUnitFormConfig>("unitForm");
-
+  const { data: formConfig, loading: formConfigLoading } =
+    useUnitFormStaticData();
   const { isVisible } = useConditionalRender({
     unitType: currentUnit?.unitType,
   });

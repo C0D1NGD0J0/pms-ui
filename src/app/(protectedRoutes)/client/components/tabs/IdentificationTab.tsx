@@ -19,8 +19,6 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
   clientInfo,
 }) => {
   const [formData, setFormData] = useState({
-    idType: clientInfo.identification.idType || "",
-    idNumber: clientInfo.identification.idNumber || "",
     issueDate: clientInfo.identification.issueDate
       ? typeof clientInfo.identification.issueDate === "string"
         ? clientInfo.identification.issueDate.split("T")[0]
@@ -31,8 +29,6 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
         ? clientInfo.identification.expiryDate.split("T")[0]
         : clientInfo.identification.expiryDate.toISOString().split("T")[0]
       : "",
-    authority: clientInfo.identification.authority || "",
-    issuingState: clientInfo.identification.issuingState || "",
     dataProcessingConsent: clientInfo.identification.dataProcessingConsent,
   });
 
@@ -54,11 +50,9 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormLabel htmlFor="idType" label="ID Type" />
             <Select
               id="idType"
-              name="idType"
-              value={formData.idType}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange("idType", e.target.value)
-              }
+              name="identification.idType"
+              value={clientInfo.identification.idType}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => void e}
               options={[
                 { value: "", label: "Select ID type" },
                 { value: "passport", label: "Passport" },
@@ -75,10 +69,10 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormLabel htmlFor="idNumber" label="ID Number" />
             <FormInput
               id="idNumber"
-              name="idNumber"
-              value={formData.idNumber}
-              onChange={(e) => handleInputChange("idNumber", e.target.value)}
+              onChange={(e) => void e}
               placeholder="Enter ID number"
+              name="identification.idNumber"
+              value={clientInfo.identification.idNumber}
             />
           </FormField>
         </div>
@@ -87,21 +81,21 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
           <FormField>
             <FormLabel htmlFor="issueDate" label="Issue Date" />
             <FormInput
-              id="issueDate"
-              name="issueDate"
               type="date"
+              id="issueDate"
               value={formData.issueDate}
+              name="identification.issueDate"
               onChange={(e) => handleInputChange("issueDate", e.target.value)}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="expiryDate" label="Expiry Date" />
             <FormInput
-              id="expiryDate"
-              name="expiryDate"
               type="date"
+              id="expiryDate"
+              onChange={(e) => void e}
               value={formData.expiryDate}
-              onChange={(e) => handleInputChange("expiryDate", e.target.value)}
+              name="identification.expiryDate"
             />
           </FormField>
         </div>
@@ -111,22 +105,20 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormLabel htmlFor="authority" label="Issuing Authority" />
             <FormInput
               id="authority"
-              name="authority"
-              value={formData.authority}
-              onChange={(e) => handleInputChange("authority", e.target.value)}
+              onChange={(e) => void e}
+              name="identification.authority"
               placeholder="Enter issuing authority"
+              value={clientInfo.identification.authority}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="issuingState" label="Issuing State/Country" />
             <FormInput
               id="issuingState"
-              name="issuingState"
-              value={formData.issuingState}
-              onChange={(e) =>
-                handleInputChange("issuingState", e.target.value)
-              }
+              onChange={(e) => void e}
+              name="identification.issuingState"
               placeholder="Enter issuing state or country"
+              value={clientInfo.identification.issuingState}
             />
           </FormField>
         </div>
@@ -135,8 +127,8 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
           <FormField>
             <Checkbox
               id="dataProcessingConsent"
-              name="dataProcessingConsent"
-              checked={formData.dataProcessingConsent}
+              name="identificationdataProcessingConsent"
+              checked={clientInfo.identification.dataProcessingConsent}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
                 setFormData((prev) => ({
                   ...prev,

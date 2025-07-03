@@ -3,8 +3,8 @@ import React, { useEffect } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
-import { usePropertyFormActions } from "@store/propertyform.store";
 import { PropertyFormValues } from "@interfaces/property.interface";
+import { usePropertyFormActions } from "@src/store/propertyform.store";
 import {
   FormField,
   FormInput,

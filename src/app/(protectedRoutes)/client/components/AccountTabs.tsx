@@ -23,27 +23,27 @@ export function AccountTabs({ clientInfo }: { clientInfo: IClient }) {
       {
         key: "profile",
         tabLabel: "Profile",
-        isVisi: true,
-      },
-      {
-        key: "company",
-        tabLabel: "Company",
-        isVisi: true,
-      },
-      {
-        key: "preferences",
-        tabLabel: "Preferences",
-        isVisi: true,
-      },
-      {
-        key: "subscription",
-        tabLabel: "Subscription",
-        isVisi: true,
+        isVisible: true,
       },
       {
         key: "identification",
         tabLabel: "Identification",
-        isVisi: true,
+        isVisible: true,
+      },
+      {
+        key: "company",
+        tabLabel: "Company",
+        isVisible: clientInfo.accountType.isEnterpriseAccount,
+      },
+      {
+        key: "preferences",
+        tabLabel: "Preferences",
+        isVisible: true,
+      },
+      {
+        key: "subscription",
+        tabLabel: "Subscription",
+        isVisible: true,
       },
     ],
     []
@@ -72,16 +72,23 @@ export function AccountTabs({ clientInfo }: { clientInfo: IClient }) {
         <Panel>
           <PanelHeader
             headerTitleComponent={
-              <TabContainer onChange={setActiveTab} defaultTab={activeTab}>
+              <TabContainer
+                onChange={setActiveTab}
+                defaultTab={activeTab}
+                scrollOnChange={false}
+              >
                 <TabList>
-                  {tabs.map((tab) => (
-                    <TabListItem
-                      id={tab.key}
-                      key={tab.key}
-                      label={tab.tabLabel}
-                      hasError={undefined}
-                    />
-                  ))}
+                  {tabs.map((tab) => {
+                    if (!tab.isVisible) return null;
+                    return (
+                      <TabListItem
+                        id={tab.key}
+                        key={tab.key}
+                        label={tab.tabLabel}
+                        hasError={undefined}
+                      />
+                    );
+                  })}
                 </TabList>
               </TabContainer>
             }

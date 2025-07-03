@@ -306,8 +306,8 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
     isEditMode,
     isSubmitting,
     isDeleting,
-    handleAddAnotherUnit,
     handleDeleteUnit,
+    handleAddAnotherUnit,
     handleSubmit: isEditMode ? handleSubmit : unitForm.onSubmit(handleSubmit),
   };
 }
