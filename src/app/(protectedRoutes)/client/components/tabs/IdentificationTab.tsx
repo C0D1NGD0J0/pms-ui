@@ -1,9 +1,12 @@
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
+import { UpdateClientDetailsFormData } from "@src/validations/client.validations";
 import {
+  FileInput,
   FormField,
   FormInput,
   FormLabel,
@@ -13,30 +16,40 @@ import {
 
 interface IdentificationTabProps {
   clientInfo: IClient;
+  clientForm?: UseFormReturnType<UpdateClientDetailsFormData>;
 }
 
 export const IdentificationTab: React.FC<IdentificationTabProps> = ({
   clientInfo,
+  clientForm,
 }) => {
-  const [formData, setFormData] = useState({
-    issueDate: clientInfo.identification.issueDate
-      ? typeof clientInfo.identification.issueDate === "string"
-        ? clientInfo.identification.issueDate.split("T")[0]
-        : clientInfo.identification.issueDate.toISOString().split("T")[0]
-      : "",
-    expiryDate: clientInfo.identification.expiryDate
-      ? typeof clientInfo.identification.expiryDate === "string"
-        ? clientInfo.identification.expiryDate.split("T")[0]
-        : clientInfo.identification.expiryDate.toISOString().split("T")[0]
-      : "",
-    dataProcessingConsent: clientInfo.identification.dataProcessingConsent,
-  });
+  const form = clientForm;
+  const isEditMode = !!clientForm;
 
-  const handleInputChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  // Helper to format dates for display
+  const formatDateForInput = (date: string | Date | null) => {
+    if (!date) return "";
+    if (typeof date === "string") {
+      return date.split("T")[0];
+    }
+    return date.toISOString().split("T")[0];
+  };
+
+  // Get current values from form or fallback to clientInfo
+  const currentIdentification = isEditMode
+    ? form?.values.identification || clientInfo.identification
+    : clientInfo.identification;
+
+  const handleIdentificationChange = (
+    field: string,
+    value: string | boolean | File | null
+  ) => {
+    if (form) {
+      form.setFieldValue("identification", {
+        ...form.values.identification,
+        [field]: value,
+      });
+    }
   };
 
   return (
@@ -51,8 +64,13 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <Select
               id="idType"
               name="identification.idType"
-              value={clientInfo.identification.idType}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) => void e}
+              value={currentIdentification.idType || ""}
+              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                isEditMode
+                  ? handleIdentificationChange("idType", e.target.value)
+                  : void 0
+              }
+              disabled={!isEditMode}
               options={[
                 { value: "", label: "Select ID type" },
                 { value: "passport", label: "Passport" },
@@ -69,10 +87,15 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormLabel htmlFor="idNumber" label="ID Number" />
             <FormInput
               id="idNumber"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleIdentificationChange("idNumber", e.target.value)
+                  : void 0
+              }
               placeholder="Enter ID number"
               name="identification.idNumber"
-              value={clientInfo.identification.idNumber}
+              value={currentIdentification.idNumber || ""}
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
@@ -83,9 +106,16 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormInput
               type="date"
               id="issueDate"
-              value={formData.issueDate}
+              value={formatDateForInput(
+                currentIdentification.issueDate || null
+              )}
               name="identification.issueDate"
-              onChange={(e) => handleInputChange("issueDate", e.target.value)}
+              onChange={(e) =>
+                isEditMode
+                  ? handleIdentificationChange("issueDate", e.target.value)
+                  : void 0
+              }
+              disabled={!isEditMode}
             />
           </FormField>
           <FormField>
@@ -93,9 +123,16 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormInput
               type="date"
               id="expiryDate"
-              onChange={(e) => void e}
-              value={formData.expiryDate}
+              onChange={(e) =>
+                isEditMode
+                  ? handleIdentificationChange("expiryDate", e.target.value)
+                  : void 0
+              }
+              value={formatDateForInput(
+                currentIdentification.expiryDate || null
+              )}
               name="identification.expiryDate"
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
@@ -105,20 +142,45 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormLabel htmlFor="authority" label="Issuing Authority" />
             <FormInput
               id="authority"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleIdentificationChange("authority", e.target.value)
+                  : void 0
+              }
               name="identification.authority"
               placeholder="Enter issuing authority"
-              value={clientInfo.identification.authority}
+              value={currentIdentification.authority}
+              disabled={!isEditMode}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="issuingState" label="Issuing State/Country" />
             <FormInput
               id="issuingState"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleIdentificationChange("issuingState", e.target.value)
+                  : void 0
+              }
               name="identification.issuingState"
               placeholder="Enter issuing state or country"
-              value={clientInfo.identification.issuingState}
+              value={currentIdentification.issuingState}
+              disabled={!isEditMode}
+            />
+          </FormField>
+        </div>
+
+        <div className="form-fields">
+          <FormField>
+            <FormLabel htmlFor="idimage" label="ID Document Image" />
+            <FileInput
+              accept="image/*,.pdf"
+              onChange={(file) =>
+                isEditMode
+                  ? handleIdentificationChange("idimage", file)
+                  : void 0
+              }
+              instructionText="Upload a clear photo or scan of your ID document (JPG, PNG, PDF)"
             />
           </FormField>
         </div>
@@ -127,15 +189,18 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
           <FormField>
             <Checkbox
               id="dataProcessingConsent"
-              name="identificationdataProcessingConsent"
-              checked={clientInfo.identification.dataProcessingConsent}
+              name="identification.dataProcessingConsent"
+              checked={currentIdentification.dataProcessingConsent || false}
               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  dataProcessingConsent: e.target.checked,
-                }))
+                isEditMode
+                  ? handleIdentificationChange(
+                      "dataProcessingConsent",
+                      e.target.checked
+                    )
+                  : void 0
               }
               label="Data Processing Consent"
+              disabled={!isEditMode}
             />
           </FormField>
         </div>

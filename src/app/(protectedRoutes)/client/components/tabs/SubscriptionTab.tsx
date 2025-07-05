@@ -7,10 +7,12 @@ import { FormSection } from "@components/FormLayout/formSection";
 
 interface SubscriptionTabProps {
   clientInfo: IClient;
+  inEditmode: boolean;
 }
 
 export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
   clientInfo,
+  inEditmode = false,
 }) => {
   return (
     <div className="resource-form">

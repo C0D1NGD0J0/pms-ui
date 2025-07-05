@@ -72,13 +72,11 @@ export const Select = forwardRef<
   const selectedOption = options.find((option) => option.value === value);
   const selectedLabel = selectedOption?.label || placeholder;
 
-  // Handle value change
   const handleValueChange = useCallback(
     (newValue: string) => {
       if (isModernOnChange(onChange)) {
         onChange(newValue);
       } else {
-        // Create synthetic event for legacy compatibility
         const syntheticEvent = {
           target: { value: newValue, name },
           currentTarget: { value: newValue, name },
@@ -89,7 +87,6 @@ export const Select = forwardRef<
     [onChange, name]
   );
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: Event) => {
       if (
@@ -169,7 +166,6 @@ export const Select = forwardRef<
           break;
 
         default:
-          // Type-ahead functionality
           if (e.key.length === 1 && isOpen) {
             const typedChar = e.key.toLowerCase();
             const matchingIndex = options.findIndex(

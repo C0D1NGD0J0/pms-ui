@@ -1,21 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
+import { Button } from "@src/components/FormElements";
 import { PageHeader } from "@components/PageElements/Header";
 
 import { useGetClientDetails } from "../hook";
+import { useClientForm } from "../hook/useClientForm";
 import { AccountTabs } from "../components/AccountTabs";
 import { AccountOverview } from "../components/AccountOverview";
 
 const AccountPage: React.FC = () => {
+  const [isEditMode, setIsEditMode] = useState(false);
   const params = useParams<{ csub: string }>();
   const {
     data: clientInfo,
     isLoading,
     isError,
   } = useGetClientDetails(params.csub || "");
+
+  const {
+    saveStatus,
+    triggerManualSave,
+    isManuallySaving,
+    form: clientForm,
+    hasUnsavedChanges,
+    revertChanges,
+  } = useClientForm({
+    clientData: clientInfo ?? ({} as any),
+    csub: params.csub || "",
+  });
 
   if (isLoading) {
     return <Loading description="Loading client details..." size="regular" />;
@@ -26,7 +41,22 @@ const AccountPage: React.FC = () => {
       <Loading description="Unable to fetch client details" size="regular" />
     );
   }
-  console.log("Client Info:", clientInfo);
+
+  const handleSave = async () => {
+    try {
+      await triggerManualSave();
+      setIsEditMode(false);
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
+  };
+
+  const handleCancel = () => {
+    if (hasUnsavedChanges) {
+      revertChanges();
+    }
+    setIsEditMode(false);
+  };
 
   return (
     <div className="page client-account">
@@ -34,12 +64,70 @@ const AccountPage: React.FC = () => {
         title="Account Settings"
         subtitle="dashboard / account"
         headerBtn={
-          <button type="button" className="btn btn-primary">
-            <i className="bx bx-save"></i>
-            Save Changes
-          </button>
+          <div className="flex-row">
+            {isEditMode ? (
+              <>
+                <Button
+                  label="Cancel"
+                  onClick={handleCancel}
+                  className="btn-outline"
+                  icon={<i className="bx bx-x"></i>}
+                  disabled={isManuallySaving}
+                />
+                <Button
+                  label={
+                    isManuallySaving
+                      ? "Saving..."
+                      : saveStatus.hasUnsavedChanges
+                      ? "Save Changes"
+                      : "Save"
+                  }
+                  onClick={handleSave}
+                  className="btn-primary"
+                  icon={
+                    isManuallySaving ? (
+                      <i className="bx bx-loader-alt bx-spin"></i>
+                    ) : (
+                      <i className="bx bx-save"></i>
+                    )
+                  }
+                  disabled={isManuallySaving || !saveStatus.hasUnsavedChanges}
+                />
+              </>
+            ) : (
+              <Button
+                label="Edit"
+                onClick={() => setIsEditMode(true)}
+                className="btn-grow btn-primary"
+                icon={<i className="bx bx-pencil"></i>}
+              />
+            )}
+          </div>
         }
       />
+
+      {isEditMode && (
+        <div className="save-status-bar">
+          {saveStatus.isAutoSaving && (
+            <span className="save-status auto-saving">
+              <i className="bx bx-loader-alt bx-spin"></i>
+              Auto-saving...
+            </span>
+          )}
+          {saveStatus.lastAutoSave && !saveStatus.isAutoSaving && (
+            <span className="save-status auto-saved">
+              <i className="bx bx-check"></i>
+              Auto-saved at {saveStatus.lastAutoSave.toLocaleTimeString()}
+            </span>
+          )}
+          {saveStatus.hasUnsavedChanges && (
+            <span className="save-status pending">
+              <i className="bx bx-time"></i>
+              Unsaved changes
+            </span>
+          )}
+        </div>
+      )}
 
       <AccountOverview
         accountStats={{
@@ -50,7 +138,11 @@ const AccountPage: React.FC = () => {
           totalProperties: clientInfo.clientStats.totalProperties,
         }}
       />
-      <AccountTabs clientInfo={clientInfo} />
+      <AccountTabs
+        inEditMode={!isEditMode}
+        clientForm={clientForm}
+        clientInfo={clientInfo}
+      />
     </div>
   );
 };

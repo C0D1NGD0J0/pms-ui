@@ -1,8 +1,10 @@
 "use client";
 
-import React, { ChangeEvent, useState } from "react";
+import React from "react";
+import { UseFormReturnType } from "@mantine/form";
+import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
-import { IClientFormData, IClient } from "@interfaces/client.interface";
+import { UpdateClientDetailsFormData } from "@src/validations/client.validations";
 import {
   FormField,
   FormInput,
@@ -12,44 +14,21 @@ import {
 } from "@components/FormElements";
 
 interface ProfileTabProps {
+  inEditMode: boolean;
   clientInfo: IClient;
+  clientForm: UseFormReturnType<UpdateClientDetailsFormData> | undefined;
 }
 
-export const ProfileTab: React.FC<ProfileTabProps> = ({ clientInfo }) => {
-  const [formData, setFormData] = useState<Partial<IClientFormData>>({
-    displayName: clientInfo.displayName || "",
-    accountType: {
-      planId: clientInfo.accountType.planId,
-      planName: clientInfo.accountType.planName,
-      isEnterpriseAccount: clientInfo.accountType.isEnterpriseAccount,
-    },
-    isVerified: clientInfo.isVerified,
-  });
-
-  const handleInputChange = (name: string, value: string | boolean) => {
-    if (name.includes(".")) {
-      const [parent, child] = name.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...(prev[parent as keyof IClientFormData] as any),
-          [child]: value,
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
-  const handleCheckboxChange = (
-    name: string,
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
-    handleInputChange(name, e.target.checked);
-  };
+export const ProfileTab: React.FC<ProfileTabProps> = ({
+  clientForm,
+  clientInfo,
+  inEditMode = false,
+}) => {
+  const form = clientForm;
+  if (!form) {
+    console.error("ProfileTab: clientForm is undefined");
+    return null;
+  }
 
   return (
     <div className="resource-form">
@@ -61,22 +40,31 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({ clientInfo }) => {
           <FormField>
             <FormLabel htmlFor="clientId" label="Client ID" />
             <FormInput
+              disabled
+              readOnly
               id="clientId"
               name="clientId"
               value={clientInfo.cid}
-              disabled
-              readOnly
               placeholder="Client ID"
             />
           </FormField>
-          <FormField>
+          <FormField
+            error={{
+              msg: (form.errors["displayName"] as string) || "",
+              touched: form.isTouched("displayName"),
+            }}
+          >
             <FormLabel htmlFor="displayName" label="Display Name" />
             <FormInput
               id="displayName"
               name="displayName"
-              value={formData.displayName || ""}
-              onChange={(e) => handleInputChange("displayName", e.target.value)}
               placeholder="Enter display name"
+              value={form.values.displayName}
+              onChange={(e) =>
+                form.setFieldValue("displayName", e.target.value)
+              }
+              disabled={inEditMode}
+              hasError={!!form.errors.displayName}
             />
           </FormField>
         </div>
@@ -86,11 +74,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({ clientInfo }) => {
             <FormLabel htmlFor="accountType" label="Account Type" />
             <Select
               id="accountType"
+              disabled
               name="accountType"
-              value={formData.accountType?.planName || ""}
-              onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange("accountType.planName", e.target.value)
-              }
+              value={(clientInfo as IClient).accountType.planName || ""}
+              onChange={() => {}}
               options={[
                 { value: "personal", label: "Basic" },
                 { value: "premium", label: "Premium" },
@@ -103,11 +90,10 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({ clientInfo }) => {
             <FormInput
               id="planId"
               name="planId"
-              value={formData.accountType?.planId || ""}
-              onChange={(e) =>
-                handleInputChange("accountType.planId", e.target.value)
-              }
+              disabled
+              readOnly
               placeholder="Plan identifier"
+              value={clientInfo.accountType.planId}
             />
           </FormField>
         </div>
@@ -115,22 +101,22 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({ clientInfo }) => {
         <div className="form-fields checkbox-fields">
           <FormField>
             <Checkbox
+              disabled
+              onChange={() => {}}
               id="isEnterpriseAccount"
-              name="isEnterpriseAccount"
-              checked={formData.accountType?.isEnterpriseAccount || false}
-              onChange={(e) =>
-                handleCheckboxChange("accountType.isEnterpriseAccount", e)
-              }
               label="Enterprise Account"
+              name="isEnterpriseAccount"
+              checked={clientInfo.accountType.isEnterpriseAccount}
             />
           </FormField>
           <FormField>
             <Checkbox
+              disabled
               id="isVerified"
               name="isVerified"
-              checked={formData.isVerified || false}
-              onChange={(e) => handleCheckboxChange("isVerified", e)}
               label="Account Verified"
+              onChange={() => {}}
+              checked={(clientInfo as IClient).isVerified || false}
             />
           </FormField>
         </div>

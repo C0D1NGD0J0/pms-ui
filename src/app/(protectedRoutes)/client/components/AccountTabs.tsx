@@ -1,8 +1,10 @@
 "use client";
+import { IClient } from "@src/interfaces";
 import { Form } from "@components/FormElements";
 import React, { useState, useMemo } from "react";
-import { IClient } from "@interfaces/client.interface";
+import { UseFormReturnType } from "@mantine/form";
 import { TabContainer, TabListItem, TabList } from "@components/Tab/components";
+import { UpdateClientDetailsFormData } from "@src/validations/client.validations";
 import {
   PanelsWrapper,
   PanelContent,
@@ -16,8 +18,19 @@ import { PreferencesTab } from "./tabs/PreferencesTab";
 import { SubscriptionTab } from "./tabs/SubscriptionTab";
 import { IdentificationTab } from "./tabs/IdentificationTab";
 
-export function AccountTabs({ clientInfo }: { clientInfo: IClient }) {
+interface AccountTabsProps {
+  inEditMode: boolean;
+  clientInfo: IClient;
+  clientForm?: UseFormReturnType<UpdateClientDetailsFormData>;
+}
+
+export function AccountTabs({
+  inEditMode,
+  clientForm,
+  clientInfo,
+}: AccountTabsProps) {
   const [activeTab, setActiveTab] = useState("profile");
+
   const tabs = useMemo(
     () => [
       {
@@ -46,23 +59,32 @@ export function AccountTabs({ clientInfo }: { clientInfo: IClient }) {
         isVisible: true,
       },
     ],
-    []
+    [clientInfo.accountType.isEnterpriseAccount]
   );
 
+  const handleTabChange = async (newTab: string) => {
+    setActiveTab(newTab);
+  };
   const renderActiveTabContent = (tab: string) => {
+    const tabProps = {
+      inEditMode,
+      clientInfo,
+      clientForm,
+    };
+
     switch (tab) {
       case "profile":
-        return <ProfileTab clientInfo={clientInfo} />;
+        return <ProfileTab {...tabProps} />;
       case "company":
-        return <CompanyTab clientInfo={clientInfo} />;
+        return <CompanyTab {...tabProps} />;
       case "preferences":
-        return <PreferencesTab clientInfo={clientInfo} />;
+        return <PreferencesTab {...tabProps} />;
       case "subscription":
-        return <SubscriptionTab clientInfo={clientInfo} />;
+        return <SubscriptionTab inEditmode={false} {...tabProps} />;
       case "identification":
-        return <IdentificationTab clientInfo={clientInfo} />;
+        return <IdentificationTab {...tabProps} />;
       default:
-        return <ProfileTab clientInfo={clientInfo} />;
+        return <ProfileTab {...tabProps} />;
     }
   };
 
@@ -73,7 +95,7 @@ export function AccountTabs({ clientInfo }: { clientInfo: IClient }) {
           <PanelHeader
             headerTitleComponent={
               <TabContainer
-                onChange={setActiveTab}
+                onChange={handleTabChange}
                 defaultTab={activeTab}
                 scrollOnChange={false}
               >
@@ -93,7 +115,7 @@ export function AccountTabs({ clientInfo }: { clientInfo: IClient }) {
               </TabContainer>
             }
           />
-          <Form id="client-form" onSubmit={() => ""} disabled={true}>
+          <Form id="client-form" onSubmit={() => ""} disabled={inEditMode}>
             <PanelContent className="tab-content active">
               {renderActiveTabContent(activeTab)}
             </PanelContent>

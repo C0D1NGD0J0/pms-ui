@@ -1,14 +1,48 @@
 "use client";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
 import { FormField, FormInput, FormLabel } from "@components/FormElements";
+import { UpdateClientDetailsFormData } from "@src/validations/client.validations";
 
 interface CompanyTabProps {
+  inEditMode: boolean;
   clientInfo: IClient;
+  clientForm?: UseFormReturnType<UpdateClientDetailsFormData>;
 }
 
-export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
+export const CompanyTab: React.FC<CompanyTabProps> = ({
+  inEditMode = false,
+  clientInfo,
+  clientForm,
+}) => {
+  const isEditMode = !!clientForm;
+  const form = clientForm;
+  // Get current values from form or fallback to clientInfo
+  const currentCompanyProfile = isEditMode
+    ? form?.values.companyProfile || clientInfo.companyProfile
+    : clientInfo.companyProfile;
+
+  const handleCompanyChange = (field: string, value: string) => {
+    if (form) {
+      if (field.includes("contactInfo.")) {
+        const contactField = field.split("contactInfo.")[1];
+        form.setFieldValue("companyProfile", {
+          ...form.values.companyProfile,
+          contactInfo: {
+            ...form.values.companyProfile?.contactInfo,
+            [contactField]: value,
+          },
+        });
+      } else {
+        form.setFieldValue("companyProfile", {
+          ...form.values.companyProfile,
+          [field]: value,
+        });
+      }
+    }
+  };
   return (
     <div className="resource-form">
       <FormSection
@@ -21,19 +55,29 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormInput
               id="legalEntityName"
               name="companyProfile.legalEntityName"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("legalEntityName", e.target.value)
+                  : void 0
+              }
               placeholder="Enter legal company name"
-              value={clientInfo.companyProfile?.legalEntityName || ""}
+              value={currentCompanyProfile?.legalEntityName || ""}
+              disabled={!isEditMode}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="tradingName" label="Trading Name" />
             <FormInput
               id="tradingName"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("tradingName", e.target.value)
+                  : void 0
+              }
               placeholder="Enter trading name"
               name="companyProfile.tradingName"
-              value={clientInfo.companyProfile.tradingName}
+              value={currentCompanyProfile?.tradingName || ""}
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
@@ -44,10 +88,15 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormInput
               type="email"
               id="companyEmail"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("companyEmail", e.target.value)
+                  : void 0
+              }
               placeholder="Enter company email"
               name="companyProfile.companyEmail"
-              value={clientInfo.companyProfile.companyEmail}
+              value={currentCompanyProfile?.companyEmail || ""}
+              disabled={!isEditMode}
             />
           </FormField>
           <FormField>
@@ -55,10 +104,15 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormInput
               type="tel"
               id="companyPhone"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("companyPhone", e.target.value)
+                  : void 0
+              }
               placeholder="Enter company phone"
               name="companyProfile.companyPhone"
-              value={clientInfo.companyProfile.companyPhone}
+              value={currentCompanyProfile?.companyPhone || ""}
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
@@ -71,10 +125,15 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             />
             <FormInput
               id="registrationNumber"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("registrationNumber", e.target.value)
+                  : void 0
+              }
               placeholder="Enter registration number"
               name="companyProfile.registrationNumber"
-              value={clientInfo.companyProfile.registrationNumber}
+              value={currentCompanyProfile?.registrationNumber || ""}
+              disabled={!isEditMode}
             />
           </FormField>
           <FormField>
@@ -82,10 +141,15 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormInput
               type="url"
               id="website"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("website", e.target.value)
+                  : void 0
+              }
               name="companyProfile.website"
               placeholder="Enter website URL"
-              value={clientInfo.companyProfile.website}
+              value={currentCompanyProfile?.website || ""}
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
@@ -100,10 +164,18 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormLabel htmlFor="contactPerson" label="Contact Person" />
             <FormInput
               id="contactPerson"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange(
+                      "contactInfo.contactPerson",
+                      e.target.value
+                    )
+                  : void 0
+              }
               placeholder="Enter contact person name"
               name="companyProfile.contactInfo.contactPerson"
-              value={clientInfo.companyProfile.contactInfo.contactPerson}
+              value={currentCompanyProfile?.contactInfo?.contactPerson || ""}
+              disabled={!isEditMode}
             />
           </FormField>
           <FormField>
@@ -111,10 +183,15 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormInput
               type="email"
               id="contactEmail"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange("contactInfo.email", e.target.value)
+                  : void 0
+              }
               placeholder="Enter contact email"
-              name="clientInfo.companyProfile.contactInfo.email"
-              value={clientInfo.companyProfile.contactInfo.email}
+              name="companyProfile.contactInfo.email"
+              value={currentCompanyProfile?.contactInfo?.email || ""}
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
@@ -125,10 +202,18 @@ export const CompanyTab: React.FC<CompanyTabProps> = ({ clientInfo }) => {
             <FormInput
               type="tel"
               id="contactPhone"
-              onChange={(e) => void e}
+              onChange={(e) =>
+                isEditMode
+                  ? handleCompanyChange(
+                      "contactInfo.phoneNumber",
+                      e.target.value
+                    )
+                  : void 0
+              }
               placeholder="Enter contact phone"
-              name="clientInfo.companyProfile.contactInfo.phoneNumber"
-              value={clientInfo.companyProfile.contactInfo.phoneNumber}
+              name="companyProfile.contactInfo.phoneNumber"
+              value={currentCompanyProfile?.contactInfo?.phoneNumber || ""}
+              disabled={!isEditMode}
             />
           </FormField>
         </div>
