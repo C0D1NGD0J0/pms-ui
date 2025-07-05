@@ -1,13 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useAuth } from "@store/index";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
+import { usePropertyFormStaticData, useAuth } from "@store/index";
 import { propertySchema } from "@validations/property.validations";
 import { useCallback, ChangeEvent, useEffect, useState, useMemo } from "react";
-import { usePropertyFormMetaData } from "@app/(protectedRoutes)/properties/hooks/usePropertyFormMetaData";
 import {
-  StaticPropertyFormConfig,
   defaultPropertyValues,
   PropertyFormValues,
 } from "@interfaces/property.interface";
@@ -22,8 +20,8 @@ export function usePropertyFormBase({
   const { client } = useAuth();
   const [activeTab, setActiveTab] = useState("basic");
 
-  const { data: formConfig, isLoading: formConfigLoading } =
-    usePropertyFormMetaData<StaticPropertyFormConfig>("propertyForm");
+  const { data: formConfig, loading: formConfigLoading } =
+    usePropertyFormStaticData();
 
   const propertyForm = useForm<PropertyFormValues>({
     initialValues,

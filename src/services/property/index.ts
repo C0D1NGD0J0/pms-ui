@@ -132,6 +132,19 @@ class PropertyService {
     }
   }
 
+  async getAllStaticData() {
+    try {
+      const result = await axios.get(
+        `${this.baseUrl}/property_form_metadata`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching all static data:", error);
+      throw error;
+    }
+  }
+
   async updateClientProperty(
     cid: string,
     pid: string,

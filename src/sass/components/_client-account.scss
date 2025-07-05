@@ -1,0 +1,77 @@
+@use "../abstract/index" as *;
+
+// Client account page styles
+.client-account {
+  .save-status-bar {
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    background-color: hslaGen($off-white-color);
+    border-left: 4px solid hslaGen($primary-color, 0.3);
+    border-radius: 0 $border-radius-sm $border-radius-sm 0;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: $fs-sm;
+
+    .save-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: $fw-bold;
+
+      i {
+        font-size: $fs-base;
+      }
+
+      &.auto-saving {
+        color: hslaGen($warning-color);
+
+        i {
+          animation: spin 1s linear infinite;
+        }
+      }
+
+      &.auto-saved {
+        color: hslaGen($success-color);
+      }
+
+      &.pending {
+        color: hslaGen($grey-color);
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  }
+
+  // Hide save status bar in view mode
+  &:not(.edit-mode) .save-status-bar {
+    display: none;
+  }
+}
+
+// Form field status indicators (optional enhancement)
+.field-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.5rem;
+  font-size: $fs-xsm;
+
+  &.pending {
+    color: hslaGen($warning-color);
+  }
+
+  &.auto-saved {
+    color: hslaGen($success-color);
+  }
+
+  &.saved {
+    color: hslaGen($grey-color, 0.6);
+  }
+}

@@ -21,6 +21,7 @@
     ],
     "paths": {
       "@app/*": ["src/app/*"],
+      "@src/*": ["src/*"],
       "@components/*": ["src/components/*"],
       "@configs/*": ["src/configs/*"],
       "@hooks/*": ["src/hooks/*"],

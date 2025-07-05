@@ -1,2 +1,2 @@
-export * from "./propertyform.store";
 export * from "./auth.store";
+export * from "./staticData.store";

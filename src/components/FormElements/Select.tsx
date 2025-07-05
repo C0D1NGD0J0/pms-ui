@@ -1,14 +1,13 @@
 "use client";
 import React, {
+  KeyboardEvent,
+  ChangeEvent,
+  useCallback,
+  FocusEvent,
+  forwardRef,
+  useEffect,
   useState,
   useRef,
-  useEffect,
-  useCallback,
-  KeyboardEvent,
-  MouseEvent,
-  FocusEvent,
-  ChangeEvent,
-  forwardRef,
 } from "react";
 
 interface SelectOption {
@@ -33,7 +32,7 @@ interface SelectProps {
 }
 
 // Interface for the new modern select functionality
-interface ModernSelectProps extends Omit<SelectProps, 'onChange'> {
+interface ModernSelectProps extends Omit<SelectProps, "onChange"> {
   onChange: (value: string) => void;
 }
 
@@ -42,76 +41,79 @@ function isModernOnChange(onChange: any): onChange is (value: string) => void {
   return onChange.length === 1;
 }
 
-export const Select = forwardRef<HTMLSelectElement, SelectProps | ModernSelectProps>(
-  (props, ref) => {
-    const {
-      id,
-      name,
-      options,
-      value,
-      onChange,
-      onBlur,
-      className = "",
-      placeholder = "Select an option",
-      required = false,
-      disabled = false,
-      ariaLabel,
-      ariaDescribedBy,
-    } = props;
+export const Select = forwardRef<
+  HTMLSelectElement,
+  SelectProps | ModernSelectProps
+>((props, ref) => {
+  const {
+    id,
+    name,
+    options,
+    value,
+    onChange,
+    onBlur,
+    className = "",
+    placeholder = "Select an option",
+    required = false,
+    disabled = false,
+    ariaLabel,
+    ariaDescribedBy,
+  } = props;
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [focusedIndex, setFocusedIndex] = useState(-1);
-    const [isTouched, setIsTouched] = useState(false);
-    
-    const triggerRef = useRef<HTMLButtonElement>(null);
-    const listRef = useRef<HTMLUListElement>(null);
-    const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const [isTouched, setIsTouched] = useState(false);
 
-    // Find selected option
-    const selectedOption = options.find(option => option.value === value);
-    const selectedLabel = selectedOption?.label || placeholder;
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
-    // Handle value change
-    const handleValueChange = useCallback((newValue: string) => {
+  // Find selected option
+  const selectedOption = options.find((option) => option.value === value);
+  const selectedLabel = selectedOption?.label || placeholder;
+
+  const handleValueChange = useCallback(
+    (newValue: string) => {
       if (isModernOnChange(onChange)) {
         onChange(newValue);
       } else {
-        // Create synthetic event for legacy compatibility
         const syntheticEvent = {
           target: { value: newValue, name },
           currentTarget: { value: newValue, name },
         } as ChangeEvent<HTMLSelectElement>;
         onChange(syntheticEvent);
       }
-    }, [onChange, name]);
+    },
+    [onChange, name]
+  );
 
-    // Close dropdown when clicking outside
-    useEffect(() => {
-      const handleClickOutside = (event: Event) => {
-        if (
-          triggerRef.current &&
-          !triggerRef.current.contains(event.target as Node) &&
-          listRef.current &&
-          !listRef.current.contains(event.target as Node)
-        ) {
-          setIsOpen(false);
-          setFocusedIndex(-1);
-        }
-      };
-
-      if (isOpen) {
-        document.addEventListener("mousedown", handleClickOutside);
-        document.addEventListener("touchstart", handleClickOutside);
+  useEffect(() => {
+    const handleClickOutside = (event: Event) => {
+      if (
+        triggerRef.current &&
+        !triggerRef.current.contains(event.target as Node) &&
+        listRef.current &&
+        !listRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+        setFocusedIndex(-1);
       }
+    };
 
-      return () => {
-        document.removeEventListener("mousedown", handleClickOutside);
-        document.removeEventListener("touchstart", handleClickOutside);
-      };
-    }, [isOpen]);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
 
-    // Handle keyboard navigation
-    const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
+  // Handle keyboard navigation
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
       if (disabled) return;
 
       switch (e.key) {
@@ -164,143 +166,143 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps | ModernSelectPr
           break;
 
         default:
-          // Type-ahead functionality
           if (e.key.length === 1 && isOpen) {
             const typedChar = e.key.toLowerCase();
-            const matchingIndex = options.findIndex((option, index) =>
-              index > focusedIndex &&
-              option.label.toLowerCase().startsWith(typedChar) &&
-              !option.disabled
+            const matchingIndex = options.findIndex(
+              (option, index) =>
+                index > focusedIndex &&
+                option.label.toLowerCase().startsWith(typedChar) &&
+                !option.disabled
             );
-            
+
             if (matchingIndex >= 0) {
               setFocusedIndex(matchingIndex);
             }
           }
           break;
       }
-    }, [isOpen, focusedIndex, options, handleValueChange, disabled]);
+    },
+    [isOpen, focusedIndex, options, handleValueChange, disabled]
+  );
 
-    // Handle option click
-    const handleOptionClick = (option: SelectOption, index: number) => {
-      if (option.disabled) return;
-      
-      handleValueChange(option.value);
-      setIsOpen(false);
-      setFocusedIndex(-1);
-      triggerRef.current?.focus();
-    };
+  // Handle option click
+  const handleOptionClick = (option: SelectOption) => {
+    if (option.disabled) return;
 
-    // Handle trigger click
-    const handleTriggerClick = (e: MouseEvent) => {
-      e.preventDefault();
-      if (disabled) return;
-      
-      setIsOpen(!isOpen);
-      setFocusedIndex(isOpen ? -1 : 0);
-    };
+    handleValueChange(option.value);
+    setIsOpen(false);
+    setFocusedIndex(-1);
+    triggerRef.current?.focus();
+  };
 
-    // Handle blur
-    const handleBlur = (e: FocusEvent) => {
-      setIsTouched(true);
-      if (onBlur) {
-        // Create synthetic event for legacy compatibility
-        const syntheticEvent = {
-          target: { value, name },
-          currentTarget: { value, name },
-        } as FocusEvent<HTMLSelectElement>;
-        onBlur(syntheticEvent);
-      }
-    };
+  // Handle trigger click
+  const handleTriggerClick = () => {
+    if (disabled) return;
 
-    // Focus management for options
-    useEffect(() => {
-      if (isOpen && focusedIndex >= 0 && optionRefs.current[focusedIndex]) {
-        optionRefs.current[focusedIndex]?.scrollIntoView({
-          block: "nearest",
-        });
-      }
-    }, [focusedIndex, isOpen]);
+    setIsOpen(!isOpen);
+    setFocusedIndex(isOpen ? -1 : 0);
+  };
 
-    const selectClasses = [
-      "custom-select-wrapper",
-      isTouched ? "touched" : "untouched",
-      isOpen ? "open" : "closed",
-      disabled ? "disabled" : "",
-      value ? "has-value" : "no-value",
-      required && !value && isTouched ? "invalid" : "",
-      className,
-    ]
-      .filter(Boolean)
-      .join(" ");
+  // Handle blur
+  const handleBlur = () => {
+    setIsTouched(true);
+    if (onBlur) {
+      // Create synthetic event for legacy compatibility
+      const syntheticEvent = {
+        target: { value, name },
+        currentTarget: { value, name },
+      } as FocusEvent<HTMLSelectElement>;
+      onBlur(syntheticEvent);
+    }
+  };
 
-    return (
-      <div className={selectClasses}>
-        <button
-          ref={triggerRef}
-          id={id}
-          type="button"
-          className="select-trigger"
-          onClick={handleTriggerClick}
-          onKeyDown={handleKeyDown}
-          onBlur={handleBlur}
-          disabled={disabled}
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-labelledby={ariaLabel ? undefined : `${id}-label`}
-          aria-label={ariaLabel}
-          aria-describedby={ariaDescribedBy}
-          aria-required={required}
-          aria-invalid={required && !value && isTouched}
+  // Focus management for options
+  useEffect(() => {
+    if (isOpen && focusedIndex >= 0 && optionRefs.current[focusedIndex]) {
+      optionRefs.current[focusedIndex]?.scrollIntoView({
+        block: "nearest",
+      });
+    }
+  }, [focusedIndex, isOpen]);
+
+  const selectClasses = [
+    "custom-select-wrapper",
+    isTouched ? "touched" : "untouched",
+    isOpen ? "open" : "closed",
+    disabled ? "disabled" : "",
+    value ? "has-value" : "no-value",
+    required && !value && isTouched ? "invalid" : "",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return (
+    <div className={selectClasses}>
+      <button
+        ref={triggerRef}
+        id={id}
+        type="button"
+        className="select-trigger"
+        onClick={handleTriggerClick}
+        onKeyDown={handleKeyDown}
+        onBlur={handleBlur}
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-labelledby={ariaLabel ? undefined : `${id}-label`}
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-required={required}
+        aria-invalid={required && !value && isTouched}
+      >
+        <span className="select-value">{selectedLabel}</span>
+        <span className="select-arrow" aria-hidden="true">
+          {disabled ? (
+            <i className="bx bx-lock-alt"></i>
+          ) : (
+            <i
+              className={`bx ${isOpen ? "bx-chevron-up" : "bx-chevron-down"}`}
+            ></i>
+          )}
+        </span>
+      </button>
+
+      {isOpen && (
+        <ul
+          ref={listRef}
+          className="select-options"
+          role="listbox"
+          aria-labelledby={`${id}-label`}
+          tabIndex={-1}
         >
-          <span className="select-value">
-            {selectedLabel}
-          </span>
-          <span className="select-arrow" aria-hidden="true">
-            <i className={`bx ${isOpen ? 'bx-chevron-up' : 'bx-chevron-down'}`}></i>
-          </span>
-        </button>
+          {options.map((option, index) => (
+            <li
+              key={option.value}
+              ref={(el) => {
+                optionRefs.current[index] = el;
+              }}
+              className={`select-option ${
+                index === focusedIndex ? "focused" : ""
+              } ${option.value === value ? "selected" : ""} ${
+                option.disabled ? "disabled" : ""
+              }`}
+              role="option"
+              aria-selected={option.value === value}
+              aria-disabled={option.disabled}
+              onClick={() => handleOptionClick(option)}
+              onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
+            >
+              {option.label}
+            </li>
+          ))}
+        </ul>
+      )}
 
-        {isOpen && (
-          <ul
-            ref={listRef}
-            className="select-options"
-            role="listbox"
-            aria-labelledby={`${id}-label`}
-            tabIndex={-1}
-          >
-            {options.map((option, index) => (
-              <li
-                key={option.value}
-                ref={(el) => (optionRefs.current[index] = el)}
-                className={`select-option ${
-                  index === focusedIndex ? "focused" : ""
-                } ${option.value === value ? "selected" : ""} ${
-                  option.disabled ? "disabled" : ""
-                }`}
-                role="option"
-                aria-selected={option.value === value}
-                aria-disabled={option.disabled}
-                onClick={() => handleOptionClick(option, index)}
-                onMouseEnter={() => !option.disabled && setFocusedIndex(index)}
-              >
-                {option.label}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {/* Hidden input for form submission */}
-        <input
-          ref={ref}
-          type="hidden"
-          name={name}
-          value={value}
-          required={required}
-        />
-      </div>
-    );
-  }
-);
+      {/* Hidden input for form submission */}
+      <input type="hidden" name={name} value={value} required={required} />
+    </div>
+  );
+});
 
 Select.displayName = "Select";

@@ -1,10 +1,11 @@
 "use client";
 import Link from "next/link";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { IUnit } from "@interfaces/unit.interface";
+import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
 import { ImageGallery } from "@components/ImageGallery";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
@@ -28,7 +29,6 @@ import {
   CurrentTenantTab,
   DocumentsTab,
 } from "./components";
-import { propertyTypeRules } from "@utils/constants";
 
 const propertyData = {
   id: "BRK001",

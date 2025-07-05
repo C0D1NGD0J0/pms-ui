@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useTheme } from "@theme/index";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import { useMenuItems } from "@hooks/useMenuItems";
 import { useAuthActions, useAuth } from "@store/auth.store";
 
 export const Sidebar = () => {
@@ -11,6 +12,7 @@ export const Sidebar = () => {
   const [isUsersDropdownOpen, setIsUsersDropdownOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { menuSections, getResolvedPath } = useMenuItems();
   const pathname = usePathname();
 
   // Reference to the sidebar component
@@ -51,27 +53,20 @@ export const Sidebar = () => {
     updateMainElementClass(newState);
   };
 
-  const menuItems = [
-    { path: "/dashboard", icon: "bx bxs-dashboard", label: "Dashboard" },
-    { path: "/properties", icon: "bx bx-building-house", label: "Properties" },
-    { path: "/leases", icon: "bx bx-book-open", label: "Leases" },
-    {
-      path: "/service-requests",
-      icon: "bx bxs-briefcase-alt",
-      label: "Service Requests",
-    },
-  ];
+  // Get menu sections from the hook
+  const mainMenuSection = menuSections.find(
+    (section) => section.type === "main"
+  );
+  const dropdownSection = menuSections.find(
+    (section) => section.type === "dropdown"
+  );
+  const bottomMenuSection = menuSections.find(
+    (section) => section.type === "bottom"
+  );
 
-  const dropdownItems = [
-    { path: "/tenants", icon: "bx bx-user", label: "Tenants" },
-    { path: "/vendors", icon: "bx bx-building", label: "Vendors" },
-    { path: "/employees", icon: "bx bx-id-card", label: "Employees" },
-  ];
-
+  // Add logout functionality to bottom menu
   const bottomMenuItems = [
-    { path: "/accounts", icon: "bx bx-cog", label: "Account" },
-    { path: "/wallet", icon: "bx bx-wallet", label: "Wallet" },
-    { path: "/viewings", icon: "bx bx-street-view", label: "Viewings" },
+    ...(bottomMenuSection?.items || []),
     {
       path: "#",
       icon: "bx bx-log-out",
@@ -102,7 +97,10 @@ export const Sidebar = () => {
     }
   };
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string | ((user: any) => string)) => {
+    const resolvedPath = getResolvedPath(path);
+    return pathname === resolvedPath;
+  };
 
   // Close dropdown when sidebar is collapsed
   useEffect(() => {
@@ -128,78 +126,92 @@ export const Sidebar = () => {
         ></i>
       </div>
       <ul className="sidebar__navbar">
-        {menuItems.map((item) => (
-          <li
-            key={item.path}
-            className={`sidebar__navbar-item ${
-              isActive(item.path) ? "active" : ""
-            }`}
-          >
-            <span>
-              <i className={`${item.icon} icon`}></i>
-            </span>
-            <Link href={item.path}>{item.label}</Link>
-          </li>
-        ))}
-
-        <li
-          className={`sidebar__navbar-item sidebar__dropdown ${
-            isUsersDropdownOpen ? "open-dd" : ""
-          }`}
-        >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span>
-              <i className="bx bx-group icon"></i>
-            </span>
-            <a
-              href="#!"
-              className="dropdown-toggle"
-              onClick={toggleUsersDropdown}
+        {/* Main Menu Items */}
+        {mainMenuSection?.items.map((item) => {
+          const resolvedPath = getResolvedPath(item.path);
+          return (
+            <li
+              key={typeof item.path === "string" ? item.path : item.label}
+              className={`sidebar__navbar-item ${
+                isActive(item.path) ? "active" : ""
+              }`}
             >
-              Users
-              <i
-                className={`bx bx-chevron-down dropdown-icon ${
-                  isUsersDropdownOpen ? "rotate-180" : ""
-                }`}
-              ></i>
-            </a>
-          </div>
-          <ul className="sidebar__dropdown-menu">
-            {dropdownItems.map((item) => (
-              <li
-                key={item.path}
-                className={`sidebar__dropdown-item ${
-                  isActive(item.path) ? "active" : ""
-                }`}
-              >
-                <span>
-                  <i className={`${item.icon} icon`}></i>
-                </span>
-                <Link href={item.path}>{item.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </li>
+              <span>
+                <i className={`${item.icon} icon`}></i>
+              </span>
+              <Link href={resolvedPath}>{item.label}</Link>
+            </li>
+          );
+        })}
 
-        {bottomMenuItems.map((item) => (
+        {/* Dropdown Section */}
+        {dropdownSection && dropdownSection.items.length > 0 && (
           <li
-            key={item.path}
-            className={`sidebar__navbar-item ${
-              isActive(item.path) ? "active" : ""
+            className={`sidebar__navbar-item sidebar__dropdown ${
+              isUsersDropdownOpen ? "open-dd" : ""
             }`}
           >
-            <span>
-              <i className={`${item.icon} icon`}></i>
-            </span>
-            {item.onClick ? (
-              <a href={item.path} onClick={item.onClick}>
-                {item.label}
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <span>
+                <i className={`${dropdownSection.icon} icon`}></i>
+              </span>
+              <a
+                href="#!"
+                className="dropdown-toggle"
+                onClick={toggleUsersDropdown}
+              >
+                {dropdownSection.title}
+                <i
+                  className={`bx bx-chevron-down dropdown-icon ${
+                    isUsersDropdownOpen ? "rotate-180" : ""
+                  }`}
+                ></i>
               </a>
-            ) : (
-              <Link href={item.path}>{item.label}</Link>
-            )}
+            </div>
+            <ul className="sidebar__dropdown-menu">
+              {dropdownSection.items.map((item) => {
+                const resolvedPath = getResolvedPath(item.path);
+                return (
+                  <li
+                    key={typeof item.path === "string" ? item.path : item.label}
+                    className={`sidebar__dropdown-item ${
+                      isActive(item.path) ? "active" : ""
+                    }`}
+                  >
+                    <span>
+                      <i className={`${item.icon} icon`}></i>
+                    </span>
+                    <Link href={resolvedPath}>{item.label}</Link>
+                  </li>
+                );
+              })}
+            </ul>
           </li>
-        ))}
+        )}
+
+        {/* Bottom Menu Items */}
+        {bottomMenuItems.map((item) => {
+          const resolvedPath = getResolvedPath(item.path);
+          return (
+            <li
+              key={typeof item.path === "string" ? item.path : item.label}
+              className={`sidebar__navbar-item ${
+                isActive(item.path) ? "active" : ""
+              }`}
+            >
+              <span>
+                <i className={`${item.icon} icon`}></i>
+              </span>
+              {item.onClick ? (
+                <a href={resolvedPath} onClick={item.onClick}>
+                  {item.label}
+                </a>
+              ) : (
+                <Link href={resolvedPath}>{item.label}</Link>
+              )}
+            </li>
+          );
+        })}
       </ul>
 
       <div className="theme">

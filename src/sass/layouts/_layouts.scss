@@ -57,12 +57,12 @@
 
   /* apply collapsed sidebar grid directly to .main class */
   &.sidebar-collapsed {
-    grid-template-columns: 6.5rem auto !important;
+    grid-template-columns: 7.5rem auto !important;
   }
 
   &-content {
     min-width: 0;
-    padding: 1rem 2rem;
+    padding: 1rem 4rem;
     grid-area: dashboard-content;
 
     @include breakpoint("992px", max) {

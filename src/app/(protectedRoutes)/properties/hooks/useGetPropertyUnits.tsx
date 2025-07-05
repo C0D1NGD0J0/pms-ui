@@ -4,6 +4,7 @@ import { IPaginationQuery } from "@interfaces/utils.interface";
 import {
   UseInfiniteQueryOptions,
   useInfiniteQuery,
+  InfiniteData,
 } from "@tanstack/react-query";
 
 type PropertyUnitsResponse = Awaited<
@@ -18,7 +19,7 @@ export function useGetPropertyUnits(
     UseInfiniteQueryOptions<
       PropertyUnitsResponse,
       Error,
-      PropertyUnitsResponse,
+      InfiniteData<PropertyUnitsResponse>,
       PropertyUnitsResponse,
       any[],
       number

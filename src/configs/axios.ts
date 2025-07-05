@@ -51,7 +51,6 @@ interface IAxiosService {
 
 class AxiosService implements IAxiosService {
   public axios: AxiosInstance;
-  private refreshTokenPromise: Promise<any> | null = null;
 
   constructor() {
     this.axios = axios.create({
@@ -89,95 +88,37 @@ class AxiosService implements IAxiosService {
           _retry?: boolean;
         };
 
-        if (!originalRequest) {
-          console.error(
-            "No original request found during error handling:",
-            error
-          );
-          return Promise.reject(new APIError().init(error));
+        // Check for token expired specifically by message
+        if (
+          error.response?.status === 401 &&
+          (error.response?.data as any)?.message?.includes("token expired") &&
+          !originalRequest?._retry &&
+          originalRequest?.url !== "/api/v1/auth/refresh_token"
+        ) {
+          originalRequest._retry = true;
+
+          try {
+            // Use existing refresh logic instead of reimplementing
+            await this.axios.post("/api/v1/auth/refresh_token");
+            triggerUserRefresh();
+            return this.axios(originalRequest);
+          } catch (refreshError) {
+            // Let existing event system handle auth failure
+            handleAuthFailure();
+            return Promise.reject(
+              new APIError().init(refreshError as AxiosError)
+            );
+          }
         }
 
-        // Handle token expiration (401 or 419 status codes)
+        // Handle refresh token endpoint auth errors
         if (
-          (error.response?.status === 401 || error.response?.status === 419) &&
-          !originalRequest._retry
+          originalRequest?.url === "/api/v1/auth/refresh_token" &&
+          error.response?.status === 401
         ) {
-          // prevent refresh token endpoint from retrying itself
-          if (originalRequest.url !== "/api/v1/auth/refresh_token") {
-            originalRequest._retry = true;
-
-            // makes sure we only have one refresh token call at a time
-            if (!this.refreshTokenPromise) {
-              console.log("Token expired, attempting refresh...");
-
-              this.refreshTokenPromise = this.axios
-                .post("/api/v1/auth/refresh_token")
-                .then((response) => {
-                  console.log("Token refresh successful");
-                  triggerUserRefresh();
-                  return response;
-                })
-                .catch((refreshError) => {
-                  console.error("Token refresh failed:", refreshError);
-
-                  // If refresh fails due to invalid refresh token, handle auth failure
-                  if (
-                    refreshError.response?.status === 401 ||
-                    refreshError.response?.status === 403
-                  ) {
-                    console.log("Refresh token expired, logging out user");
-                    handleAuthFailure();
-                  }
-
-                  return Promise.reject(refreshError);
-                })
-                .finally(() => {
-                  // Clear the promise after completion
-                  this.refreshTokenPromise = null;
-                });
-            }
-
-            try {
-              await this.refreshTokenPromise;
-              console.log("Retrying original request after token refresh");
-              console.log("Original request config:", {
-                url: originalRequest.url,
-                method: originalRequest.method,
-                baseURL: originalRequest.baseURL,
-              });
-
-              const retryConfig = {
-                ...originalRequest,
-                _retry: true,
-              };
-
-              return this.axios(retryConfig);
-            } catch (refreshError) {
-              console.error(
-                "Failed to retry request after token refresh:",
-                refreshError
-              );
-              console.error("Refresh error details:", {
-                status: (refreshError as any)?.response?.status,
-                message: (refreshError as any)?.message,
-                data: (refreshError as any)?.response?.data,
-              });
-              return Promise.reject(
-                new APIError().init(refreshError as AxiosError)
-              );
-            }
-          }
-        } else if (
-          originalRequest.url === "/api/v1/auth/refresh_token" &&
-          (error.response?.status === 401 || error.response?.status === 403)
-        ) {
-          console.log(
-            "Refresh token endpoint returned auth error, logging out user"
-          );
           handleAuthFailure();
         }
 
-        // Handle and standardize other errors
         return Promise.reject(new APIError().init(error));
       }
     );
