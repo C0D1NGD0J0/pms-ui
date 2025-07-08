@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useAuth } from "@store/index";
-import { parseError } from "@utils/helpers";
+import { parseError } from "@utils/index";
 import { PROPERTY_QUERY_KEYS } from "@utils/constants";
 import { propertyUnitService } from "@services/propertyUnit";
 import { useQueryClient, useMutation } from "@tanstack/react-query";

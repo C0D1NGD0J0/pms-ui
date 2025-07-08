@@ -1,6 +1,6 @@
 import _ from "lodash";
 import axios, { AxiosError } from "axios";
-import { IErrorReturnData } from "@interfaces/index";
+import { IErrorReturnData, ParsedError } from "@interfaces/index";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
   const phoneRegex =
