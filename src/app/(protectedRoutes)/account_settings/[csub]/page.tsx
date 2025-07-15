@@ -62,7 +62,6 @@ const AccountPage: React.FC = () => {
     <div className="page client-account">
       <PageHeader
         title="Account Settings"
-        subtitle="dashboard / account"
         headerBtn={
           <div className="flex-row">
             {isEditMode ? (

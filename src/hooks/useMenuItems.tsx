@@ -54,27 +54,33 @@ export const useMenuItems = () => {
       ],
     },
     {
-      type: "dropdown",
       title: "Users",
+      type: "dropdown",
       icon: "bx bx-group",
       isDropdown: true,
       items: [
         {
-          path: "/tenants",
-          icon: "bx bx-user",
+          path: `/users/${currentUser?.client.csub}/tenants`,
+          icon: "bx bx-group",
           label: "Tenants",
           visible: true,
         },
         {
-          path: "/vendors",
+          path: `/users/${currentUser?.client.csub}/vendors`,
           icon: "bx bx-building",
           label: "Vendors",
           visible: true,
         },
         {
-          path: "/employees",
+          path: `/users/${currentUser?.client.csub}/employees`,
           icon: "bx bx-id-card",
           label: "Employees",
+          visible: true,
+        },
+        {
+          path: `/users/${currentUser?.client.csub}/add-users`,
+          icon: "bx bx-plus",
+          label: "Add Users",
           visible: true,
         },
       ],

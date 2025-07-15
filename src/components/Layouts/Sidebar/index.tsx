@@ -13,10 +13,8 @@ export const Sidebar = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { menuSections, getResolvedPath } = useMenuItems();
-  const pathname = usePathname();
-
-  // Reference to the sidebar component
   const sidebarRef = React.useRef<HTMLElement>(null);
+  const pathname = usePathname();
 
   // Update main element class and save state to localStorage
   const updateMainElementClass = (collapsed: boolean) => {
@@ -64,7 +62,6 @@ export const Sidebar = () => {
     (section) => section.type === "bottom"
   );
 
-  // Add logout functionality to bottom menu
   const bottomMenuItems = [
     ...(bottomMenuSection?.items || []),
     {
@@ -102,7 +99,6 @@ export const Sidebar = () => {
     return pathname === resolvedPath;
   };
 
-  // Close dropdown when sidebar is collapsed
   useEffect(() => {
     if (isSidebarCollapsed && isUsersDropdownOpen) {
       setIsUsersDropdownOpen(false);
@@ -126,7 +122,6 @@ export const Sidebar = () => {
         ></i>
       </div>
       <ul className="sidebar__navbar">
-        {/* Main Menu Items */}
         {mainMenuSection?.items.map((item) => {
           const resolvedPath = getResolvedPath(item.path);
           return (
@@ -144,7 +139,6 @@ export const Sidebar = () => {
           );
         })}
 
-        {/* Dropdown Section */}
         {dropdownSection && dropdownSection.items.length > 0 && (
           <li
             className={`sidebar__navbar-item sidebar__dropdown ${
