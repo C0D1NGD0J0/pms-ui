@@ -65,7 +65,7 @@ export function useBaseUnitForm({
   const unitForm = useForm<UnitsFormValues>({
     initialValues: {
       units: [],
-      cid: client?.csub || "",
+      cuid: client?.csub || "",
       pid: property.pid,
     },
   });

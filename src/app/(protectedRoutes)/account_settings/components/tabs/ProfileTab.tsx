@@ -44,7 +44,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
               readOnly
               id="clientId"
               name="clientId"
-              value={clientInfo.cid}
+              value={clientInfo.cuid}
               placeholder="Client ID"
             />
           </FormField>
