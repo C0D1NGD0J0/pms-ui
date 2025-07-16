@@ -47,7 +47,6 @@ export default function Properties() {
     <div className="page properties">
       <PageHeader
         title="Property portfolio"
-        subtitle="/properties/new"
         headerBtn={
           <>
             <Button

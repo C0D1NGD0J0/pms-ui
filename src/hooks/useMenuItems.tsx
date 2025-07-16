@@ -89,15 +89,13 @@ export const useMenuItems = () => {
       type: "bottom",
       items: [
         {
-          path: (user: ICurrentUser | null | undefined) =>
-            user?.client?.csub ? `/client/${user.client.csub}` : "#",
+          path: `/account_settings/${currentUser?.client.csub}`,
           icon: "bx bx-cog",
           label: "Account",
-          visible: (user: ICurrentUser | null | undefined) =>
-            !!user?.client?.csub,
+          visible: !!currentUser?.client.csub,
         },
         {
-          path: "/wallet",
+          path: `/wallet/${currentUser?.client.csub}`,
           icon: "bx bx-wallet",
           label: "Wallet",
           visible: true,
