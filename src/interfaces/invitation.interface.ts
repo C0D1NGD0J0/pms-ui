@@ -9,6 +9,15 @@ export interface IInvitationFormData {
   metadata?: {
     inviteMessage?: string;
     expectedStartDate?: Date;
+    attachments?: Record<
+      string,
+      {
+        name: string;
+        size: number;
+        type: string;
+        url: string;
+      } | null
+    >;
   };
   inviteeEmail: string;
   role: IUserRole;
@@ -24,6 +33,7 @@ export interface IInvitationFormData {
   vendorInfo?: {
     companyName?: string;
     businessType?: string;
+    primaryService?: string;
     taxId?: string;
     registrationNumber?: string;
     yearsInBusiness?: number;
