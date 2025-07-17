@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useRef } from "react";
+import { useNotification } from "@hooks/useNotification";
 import {
   FormInput,
   FormLabel,
@@ -39,6 +40,7 @@ export function FileUploader({
   const [inputMethod, setInputMethod] = useState<"file" | "url" | null>(null);
   const [externalUrl, setExternalUrl] = useState("");
   const [tempFile, setTempFile] = useState<File | null>(null);
+  const { message } = useNotification();
 
   const handleBrowseFiles = () => {
     if (fileInputRef.current) {
@@ -68,7 +70,7 @@ export function FileUploader({
 
   const handleUrlAdd = () => {
     if (!externalUrl) {
-      alert(`Please enter a ${fileType} URL`);
+      message.warning(`Please enter a ${fileType} URL`);
       return;
     }
 
