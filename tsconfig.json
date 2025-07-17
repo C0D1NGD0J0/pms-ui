@@ -37,6 +37,7 @@
 
       "@properties/*": ["src/app/(protectedRoutes)/properties/*"],
       "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/*"],
+      "@users/*": ["src/app/(protectedRoutes)/users/*"],
       "@auth/*": ["src/app/(auth)/*"],
 
       "@/*": ["./*"]

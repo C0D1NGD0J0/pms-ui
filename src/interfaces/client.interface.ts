@@ -56,7 +56,7 @@ export interface IClientSettings {
 }
 
 export interface IClient {
-  cuid: string;
+  csub: string;
   accountType: IClientAccountType;
   identification: IClientIdentification;
   subscription?: string;
@@ -90,7 +90,7 @@ export interface IClient {
 // Form-specific interfaces
 export type IClientFormData = Omit<
   IClient,
-  "cuid" | "accountAdmin" | "subscription" | "createdAt" | "updatedAt"
+  "csub" | "accountAdmin" | "subscription" | "createdAt" | "updatedAt"
 >;
 
 // Account overview metrics

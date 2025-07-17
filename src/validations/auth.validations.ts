@@ -8,7 +8,7 @@ export const AccountActivationSchema = z.object({
     .regex(/^[a-zA-Z0-9_-]+$/, {
       message: "Invalid verification code pattern detected.",
     }),
-  cuid: z.string().uuid({ message: "Invalid customer ID format" }),
+  csub: z.string().uuid({ message: "Invalid customer ID format" }),
 });
 
 export const SignupSchema = z

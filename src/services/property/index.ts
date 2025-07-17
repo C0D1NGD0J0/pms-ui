@@ -19,13 +19,13 @@ class PropertyService {
   constructor() {}
 
   async createProperty(
-    cuid: string,
+    csub: string,
     propertyData: Partial<PropertyFormValues>
   ) {
     const formData = this.preProcessPropertyData(propertyData);
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cuid}/add_property`,
+        `${this.baseUrl}/${csub}/add_property`,
         formData,
         {
           headers: {
@@ -40,12 +40,12 @@ class PropertyService {
     }
   }
 
-  async validatePropertiesCSV(cuid: string, file: File) {
+  async validatePropertiesCSV(csub: string, file: File) {
     const formData = new FormData();
     formData.append("csv_file", file);
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cuid}/validate_csv`,
+        `${this.baseUrl}/${csub}/validate_csv`,
         formData,
         {
           headers: {
@@ -60,12 +60,12 @@ class PropertyService {
     }
   }
 
-  async addMultipleProperties(cuid: string, file: File) {
+  async addMultipleProperties(csub: string, file: File) {
     const formData = new FormData();
     formData.append("csv_file", file);
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cuid}/import_properties_csv`,
+        `${this.baseUrl}/${csub}/import_properties_csv`,
         formData,
         {
           headers: {
@@ -81,7 +81,7 @@ class PropertyService {
   }
 
   async getClientProperties(
-    cuid: string,
+    csub: string,
     pagination: IPaginationQuery,
     filterQuery?: Partial<IPropertyFilterParams>
   ) {
@@ -90,7 +90,7 @@ class PropertyService {
       const result = await axios.get<
         IServerResponseWithPagination<IPropertyDocument[]>
       >(
-        `${this.baseUrl}/${cuid}/client_properties?${queryString}`,
+        `${this.baseUrl}/${csub}/client_properties?${queryString}`,
         this.axiosConfig
       );
       const transformedData = postTransformPropertiesData(result.data.items);
@@ -105,12 +105,12 @@ class PropertyService {
   }
 
   async getClientProperty(
-    cuid: string,
+    csub: string,
     propertyPid: string
   ): Promise<IPropertyDocument> {
     try {
       const result = await axios.get<IServerResponse<IPropertyDocument>>(
-        `${this.baseUrl}/${cuid}/client_properties/${propertyPid}?q`,
+        `${this.baseUrl}/${csub}/client_properties/${propertyPid}?q`,
         this.axiosConfig
       );
       // const transformedData = postTransformPropertyData(result.data);
@@ -149,13 +149,13 @@ class PropertyService {
   }
 
   async updateClientProperty(
-    cuid: string,
+    csub: string,
     pid: string,
     propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
       const result = await axios.patch(
-        `${this.baseUrl}/${cuid}/client_properties/${pid}`,
+        `${this.baseUrl}/${csub}/client_properties/${pid}`,
         propertyData,
         this.axiosConfig
       );
@@ -166,10 +166,10 @@ class PropertyService {
     }
   }
 
-  async deleteClientProperty(cuid: string, pids: string[]) {
+  async deleteClientProperty(csub: string, pids: string[]) {
     try {
       const result = await axios.patch(
-        `${this.baseUrl}/${cuid}/delete_properties`,
+        `${this.baseUrl}/${csub}/delete_properties`,
         { pids },
         this.axiosConfig
       );

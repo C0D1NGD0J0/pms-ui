@@ -6,10 +6,10 @@ class UtilityService {
 
   constructor() {}
 
-  async validateAddress(cuid: string, address: string) {
+  async validateAddress(csub: string, address: string) {
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cuid}/generate_address`,
+        `${this.baseUrl}/${csub}/generate_address`,
         { address }
       );
       return result;
