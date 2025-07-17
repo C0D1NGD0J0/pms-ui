@@ -1,335 +1,189 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@components/FormElements";
 import { PageHeader } from "@components/PageElements";
-import { TableColumn, Table } from "@components/Table";
-import { Button, Form } from "@components/FormElements";
-import { TabContainer, TabListItem, TabList } from "@components/Tab";
-import {
-  PanelsWrapper,
-  PanelContent,
-  PanelHeader,
-  Panel,
-} from "@components/Panel";
-import {
-  IInvitationTableData,
-  IInvitationFormData,
-  IUserRole,
-} from "@interfaces/invitation.interface";
+import { useNotification } from "@hooks/useNotification";
+import { IInvitationTableData } from "@interfaces/invitation.interface";
+import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
 
+import { useInvitationPreview, useInvitationForm } from "./hook";
+import { InvitationPreview } from "../../components/InvitationPreview";
 import {
-  EmployeeDetailsTab,
-  RoleSelectionTab,
-  VendorDetailsTab,
-  ReviewTab,
-} from "../../components";
+  InvitationPreviewModal,
+  InvitationTableView,
+  InvitationFormView,
+} from "./view";
 
 const InvitePage: React.FC = () => {
-  const [formData, setFormData] = useState<IInvitationFormData>({
-    personalInfo: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-    },
-    inviteeEmail: "",
-    role: "EMPLOYEE",
-    metadata: {
-      inviteMessage: "",
-      expectedStartDate: undefined,
-    },
-  });
-
-  const [selectedRole, setSelectedRole] = useState<IUserRole | null>(null);
-  const [activeTab, setActiveTab] = useState("role");
   const [invitations] = useState<IInvitationTableData[]>([]);
-  const [messageCount, setMessageCount] = useState(0);
+  const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
+  const [csvPreviewData, setCsvPreviewData] = useState<any[]>([]);
+  const router = useRouter();
+  const { confirm } = useNotification();
 
-  // Handle form field changes
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData((prev) => {
-      const keys = field.split(".");
-      const result = { ...prev };
-      let current: any = result;
+  const { handleSubmit, handleSaveDraft, isSubmitting, isSavingDraft } =
+    useInvitationForm();
+  const {
+    showPreview,
+    handleShowPreview,
+    handleClosePreview,
+    getTemplateVariables,
+  } = useInvitationPreview();
 
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {};
-        }
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = value;
-      return result;
+  const handleOpenCSVModal = () => {
+    setIsCSVModalOpen(true);
+  };
+
+  const handleCloseCSVModal = () => {
+    setIsCSVModalOpen(false);
+    setCsvPreviewData([]);
+  };
+
+  const handlePreviewData = (data: any[]) => {
+    setCsvPreviewData(data);
+  };
+
+  const csvUploadConfig: CsvUploadConfig = {
+    title: "Upload User Invitations via CSV",
+    description:
+      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid.",
+    templateUrl: "/templates/user-invitation.csv",
+    templateName: "Download CSV Template",
+    validateEndpoint: "/api/invitations/csv/validate",
+    processEndpoint: "/api/invitations/csv/process",
+    showPreview: true,
+    columns: [
+      {
+        name: "inviteeEmail",
+        description: "Valid email address",
+        required: true,
+      },
+      {
+        name: "role",
+        description: "EMPLOYEE, VENDOR, TENANT, LANDLORD, or ADMIN",
+        required: true,
+      },
+      {
+        name: "firstName",
+        description: "User's first name (2-50 characters)",
+        required: true,
+      },
+      {
+        name: "lastName",
+        description: "User's last name (2-50 characters)",
+        required: true,
+      },
+      {
+        name: "phoneNumber",
+        description: "Phone number (10-20 digits)",
+        required: false,
+      },
+      {
+        name: "inviteMessage",
+        description: "Custom message (max 500 chars)",
+        required: false,
+      },
+      {
+        name: "expectedStartDate",
+        description: "Date in YYYY-MM-DD or MM/DD/YYYY format",
+        required: false,
+      },
+      {
+        name: "cuid",
+        description: "Client unique identifier",
+        required: false,
+      },
+    ],
+  };
+
+  const onSubmit = (values: any) => {
+    handleSubmit(values);
+  };
+
+  const onSaveDraft = (values: any) => {
+    handleSaveDraft(values);
+  };
+
+  const onCancel = () => {
+    confirm({
+      title: "Are you sure?",
+      message: "Any unsaved changes will be lost.",
+      onConfirm: () => {
+        router.refresh();
+      },
+      confirmText: "Yes, Cancel",
+      cancelText: "Keep Editing",
+      type: "warning",
     });
   };
 
-  // Handle role selection
-  const handleRoleSelect = (role: IUserRole) => {
-    setSelectedRole(role);
-    setFormData((prev) => ({ ...prev, role }));
+  const onPreview = () => {
+    handleShowPreview();
   };
 
-  // Handle tab change
-  const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
+  const handleResend = (iuid: string) => {
+    console.log("Resend:", iuid);
   };
 
-  // Tab configuration
-  const tabs = [
-    {
-      key: "role",
-      tabLabel: "Role Selection",
-      isVisible: true,
-      content: (
-        <RoleSelectionTab
-          formData={formData}
-          selectedRole={selectedRole}
-          messageCount={messageCount}
-          onRoleSelect={handleRoleSelect}
-          onFieldChange={handleFieldChange}
-          onMessageCountChange={setMessageCount}
-        />
-      ),
-    },
-    {
-      key: "details",
-      tabLabel:
-        selectedRole === "EMPLOYEE"
-          ? "Employee Details"
-          : selectedRole === "VENDOR"
-          ? "Vendor Details"
-          : "Details",
-      isVisible: !!selectedRole,
-      content: (
-        <>
-          {selectedRole === "EMPLOYEE" && (
-            <EmployeeDetailsTab
-              formData={formData}
-              onFieldChange={handleFieldChange}
-            />
-          )}
-          {selectedRole === "VENDOR" && (
-            <VendorDetailsTab
-              formData={formData}
-              messageCount={messageCount}
-              onFieldChange={handleFieldChange}
-              onMessageCountChange={setMessageCount}
-            />
-          )}
-        </>
-      ),
-    },
-    {
-      key: "review",
-      tabLabel: "Review & Send",
-      isVisible: true,
-      content: <ReviewTab formData={formData} selectedRole={selectedRole} />,
-    },
-  ];
-
-  // Handle form submission
-  const handleSubmit = () => {
-    console.log("Form submitted:", formData);
-    // Add invitation logic here
+  const handleRevoke = (iuid: string) => {
+    console.log("Revoke:", iuid);
   };
-
-  // Handle save draft
-  const handleSaveDraft = () => {
-    console.log("Draft saved:", formData);
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    if (
-      confirm(
-        "Are you sure you want to cancel? Any unsaved changes will be lost."
-      )
-    ) {
-      // Reset form or navigate away
-      setFormData({
-        personalInfo: {
-          firstName: "",
-          lastName: "",
-          phoneNumber: "",
-        },
-        inviteeEmail: "",
-        role: "EMPLOYEE",
-        metadata: {
-          inviteMessage: "",
-          expectedStartDate: undefined,
-        },
-      });
-      setSelectedRole(null);
-      setActiveTab("basic");
-    }
-  };
-
-  // Table columns for invitations
-  const invitationColumns: TableColumn<IInvitationTableData>[] = [
-    {
-      title: "Recipient",
-      dataIndex: "inviteeFullName",
-      render: (_, record) => (
-        <div>
-          <div className="table-primary-text">{record.inviteeFullName}</div>
-          <div className="table-secondary-text">{record.inviteeEmail}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-      render: (role) => (
-        <span className={`role-badge ${role.toLowerCase()}`}>{role}</span>
-      ),
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      isStatus: true,
-    },
-    {
-      title: "Date Sent",
-      dataIndex: "createdAt",
-      render: (date) => new Date(date).toLocaleDateString(),
-    },
-    {
-      title: "Expires",
-      dataIndex: "expiresAt",
-      render: (date) => new Date(date).toLocaleDateString(),
-    },
-    {
-      title: "Actions",
-      dataIndex: "actions",
-      render: (_, record) => (
-        <div className="table-actions">
-          <Button
-            label="Resend"
-            className="btn-sm btn-outline"
-            onClick={() => console.log("Resend:", record.iuid)}
-          />
-          <Button
-            label="Revoke"
-            className="btn-sm btn-danger"
-            onClick={() => console.log("Revoke:", record.iuid)}
-          />
-        </div>
-      ),
-    },
-  ];
 
   return (
     <div className="page add-users-page">
       <PageHeader
-        title="Send Invitation"
-        subtitle="users / invite"
+        title="Add Users"
         headerBtn={
           <div className="flex-row">
             <Button
-              label="Save Draft"
+              label="Upload CSV"
               className="btn-outline"
-              icon={<i className="bx bx-save"></i>}
-              onClick={handleSaveDraft}
+              icon={<i className="bx bx-upload"></i>}
+              onClick={handleOpenCSVModal}
             />
             <Button
               label="Send Invitation"
               className="btn-primary"
               icon={<i className="bx bx-send"></i>}
-              onClick={handleSubmit}
+              onClick={() => onSubmit({})}
+              disabled={isSubmitting || isSavingDraft}
             />
           </div>
         }
       />
 
-      {/* Form Section */}
-      <div className="flex-row resource-form">
-        <PanelsWrapper>
-          <Panel>
-            <PanelHeader
-              headerTitleComponent={
-                <TabContainer
-                  defaultTab="role"
-                  onChange={handleTabChange}
-                  mode="new"
-                >
-                  <TabList>
-                    {tabs
-                      .filter((tab) => tab.isVisible)
-                      .map((tab) => (
-                        <TabListItem
-                          key={tab.key}
-                          id={tab.key}
-                          label={tab.tabLabel}
-                        />
-                      ))}
-                  </TabList>
-                </TabContainer>
-              }
-            />
+      <InvitationFormView
+        onSubmit={onSubmit}
+        onSaveDraft={onSaveDraft}
+        onCancel={onCancel}
+        onPreview={onPreview}
+        isSubmitting={isSubmitting}
+        isSavingDraft={isSavingDraft}
+      />
 
-            <Form className="resource-form">
-              {tabs.map((tab) => (
-                <PanelContent
-                  key={tab.key}
-                  className={`tab-content ${
-                    activeTab === tab.key ? "active" : ""
-                  }`}
-                >
-                  {activeTab === tab.key && tab.content}
-                </PanelContent>
-              ))}
-            </Form>
+      <InvitationTableView
+        invitations={invitations}
+        onResend={handleResend}
+        onRevoke={handleRevoke}
+      />
 
-            {/* Form Actions */}
-            <div className="form-actions">
-              <Button
-                label="Cancel"
-                className="btn-outline-ghost"
-                onClick={handleCancel}
-              />
-              <Button
-                label="Save as Draft"
-                className="btn-outline"
-                onClick={handleSaveDraft}
-              />
-              <Button
-                label="Send Invitation"
-                className="btn-primary"
-                onClick={handleSubmit}
-              />
-            </div>
-          </Panel>
-        </PanelsWrapper>
-      </div>
+      <InvitationPreviewModal
+        isOpen={showPreview}
+        onClose={handleClosePreview}
+        formData={{} as any}
+        selectedRole={null}
+        templateVariables={getTemplateVariables({} as any, null)}
+      />
 
-      {/* Invitations Table */}
-      <div className="flex-row">
-        <div className="panels">
-          <Panel variant="alt-2">
-            <Table
-              columns={invitationColumns}
-              dataSource={invitations}
-              withHeader={true}
-              headerTitle="Recent Invitations"
-              searchOpts={{
-                value: "",
-                placeholder: "Search by name or email...",
-                onChange: () => {},
-              }}
-              filterOpts={{
-                value: "all",
-                options: [
-                  { label: "All", value: "all" },
-                  { label: "Pending", value: "pending" },
-                  { label: "Accepted", value: "accepted" },
-                  { label: "Expired", value: "expired" },
-                  { label: "Revoked", value: "revoked" },
-                ],
-                onFilterChange: () => {},
-              }}
-              tableVariant="alt-2"
-            />
-          </Panel>
-        </div>
-      </div>
+      <CsvUploadModal
+        isOpen={isCSVModalOpen}
+        onClose={handleCloseCSVModal}
+        config={csvUploadConfig}
+        onPreviewData={handlePreviewData}
+      />
+
+      {csvPreviewData.length > 0 && <InvitationPreview data={csvPreviewData} />}
     </div>
   );
 };

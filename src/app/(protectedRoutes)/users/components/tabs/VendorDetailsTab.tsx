@@ -1,15 +1,15 @@
 "use client";
 import React from "react";
 import { FormSection } from "@components/FormLayout";
+import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { FormInput, FormLabel, FormField } from "@components/FormElements";
 import {
-  Checkbox,
-  Select,
   FormRadio,
   FileInput,
+  Checkbox,
   Textarea,
+  Select,
 } from "@components/FormElements";
-import { FormInput, FormLabel, FormField } from "@components/FormElements";
-import { IInvitationFormData } from "@interfaces/invitation.interface";
 
 interface VendorDetailsTabProps {
   formData: IInvitationFormData;

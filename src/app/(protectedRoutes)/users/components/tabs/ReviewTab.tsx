@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { FormSection } from "@components/FormLayout";
-import { FormInput, FormLabel, FormField } from "@components/FormElements";
+import { FormLabel, FormField } from "@components/FormElements";
 import {
   IInvitationFormData,
   IUserRole,
@@ -50,12 +50,26 @@ export const ReviewTab: React.FC<ReviewTabProps> = ({
               label="Expected Start Date"
             />
             <div className="summary-value" id="summary-start-date">
-              {formData.metadata.expectedStartDate.toLocaleDateString("en-US", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
+              {(() => {
+                const startDate = formData.metadata.expectedStartDate;
+                // Handle both string and Date formats
+                const dateObj =
+                  startDate instanceof Date ? startDate : new Date(startDate);
+
+                // Check if the date is valid
+                if (isNaN(dateObj.getTime())) {
+                  return typeof startDate === "string"
+                    ? startDate
+                    : String(startDate);
+                }
+
+                return dateObj.toLocaleDateString("en-US", {
+                  weekday: "long",
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                });
+              })()}
             </div>
           </FormField>
         </div>

@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { RoleTile } from "@components/RoleTile";
-import { Textarea } from "@components/FormElements";
 import { FormSection } from "@components/FormLayout";
+import { Textarea, Checkbox } from "@components/FormElements";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 import {
   IInvitationFormData,
@@ -13,18 +13,22 @@ interface RoleSelectionTabProps {
   formData: IInvitationFormData;
   selectedRole: IUserRole | null;
   messageCount: number;
+  showInviteMessage: boolean;
   onRoleSelect: (role: IUserRole) => void;
   onFieldChange: (field: string, value: any) => void;
   onMessageCountChange: (count: number) => void;
+  onShowInviteMessageToggle: (show: boolean) => void;
 }
 
 export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
   formData,
   selectedRole,
   messageCount,
+  showInviteMessage,
   onRoleSelect,
   onFieldChange,
   onMessageCountChange,
+  onShowInviteMessageToggle,
 }) => {
   const roles = [
     {
@@ -132,24 +136,38 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
 
           <div className="form-fields">
             <FormField>
-              <FormLabel htmlFor="inviteMessage" label="Personal Message" />
-              <Textarea
-                id="inviteMessage"
-                name="inviteMessage"
-                rows={5}
-                placeholder="Add a personal message to the invitation (optional)"
-                value={formData.metadata?.inviteMessage || ""}
-                onChange={(e: any) => {
-                  onFieldChange("metadata.inviteMessage", e.target.value);
-                  onMessageCountChange(e.target.value.length);
-                }}
-                maxLength={500}
+              <Checkbox
+                id="showInviteMessage"
+                name="showInviteMessage"
+                label="Add personal message to invitation"
+                checked={showInviteMessage}
+                onChange={(e) => onShowInviteMessageToggle(e.target.checked)}
               />
-              <small style={{ color: "#7d8da1", fontSize: "12px" }}>
-                {messageCount}/500 characters
-              </small>
             </FormField>
           </div>
+
+          {showInviteMessage && (
+            <div className="form-fields">
+              <FormField>
+                <FormLabel htmlFor="inviteMessage" label="Personal Message" />
+                <Textarea
+                  id="inviteMessage"
+                  name="inviteMessage"
+                  rows={5}
+                  placeholder="Add a personal message to the invitation (optional)"
+                  value={formData.metadata?.inviteMessage || ""}
+                  onChange={(e: any) => {
+                    onFieldChange("metadata.inviteMessage", e.target.value);
+                    onMessageCountChange(e.target.value.length);
+                  }}
+                  maxLength={500}
+                />
+                <small style={{ color: "#7d8da1", fontSize: "12px" }}>
+                  {messageCount}/500 characters
+                </small>
+              </FormField>
+            </div>
+          )}
         </FormSection>
       )}
     </>

@@ -2,8 +2,8 @@
 import React from "react";
 import { FormSection } from "@components/FormLayout";
 import { Checkbox, Select } from "@components/FormElements";
-import { FormInput, FormLabel, FormField } from "@components/FormElements";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { FormInput, FormLabel, FormField } from "@components/FormElements";
 
 interface EmployeeDetailsTabProps {
   formData: IInvitationFormData;
