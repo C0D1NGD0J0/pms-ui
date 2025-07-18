@@ -24,16 +24,16 @@ interface InvitationFormViewProps {
   onCancel: () => void;
   onPreview: () => void;
   isSubmitting?: boolean;
-  isSavingDraft?: boolean;
+  formBase: ReturnType<typeof useInvitationFormBase>;
 }
 
 export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
   onSubmit,
   onSaveDraft,
   onCancel,
+  formBase,
   onPreview,
   isSubmitting = false,
-  isSavingDraft = false,
 }) => {
   const {
     activeTab,
@@ -49,7 +49,7 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
     handleFieldChange,
     handleMessageCountChange,
     handleShowInviteMessageToggle,
-  } = useInvitationFormBase();
+  } = formBase;
 
   // Tab configuration
   const tabs = [
@@ -121,8 +121,8 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
           <PanelHeader
             headerTitleComponent={
               <TabContainer
-                defaultTab="role"
                 onChange={handleTabChange}
+                defaultTab="role"
                 mode="new"
               >
                 <TabList>
@@ -142,9 +142,9 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
           />
 
           <Form
+            disabled={isSubmitting}
             className="resource-form"
             onSubmit={invitationForm.onSubmit(handleFormSubmit)}
-            disabled={isSubmitting || isSavingDraft}
           >
             {tabs.map((tab) => (
               <PanelContent
@@ -157,13 +157,12 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
               </PanelContent>
             ))}
 
-            {/* Form Actions */}
             <div className="form-actions">
               <Button
                 label="Cancel"
                 className="btn-outline-ghost"
                 onClick={onCancel}
-                disabled={isSubmitting || isSavingDraft}
+                disabled={isSubmitting}
               />
               {invitationForm.isValid() && (
                 <Button
@@ -171,22 +170,21 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
                   className="btn-outline"
                   icon={<i className="bx bx-show"></i>}
                   onClick={onPreview}
-                  disabled={isSubmitting || isSavingDraft}
+                  disabled={isSubmitting}
                 />
               )}
               <Button
-                label={isSavingDraft ? "Saving..." : "Save as Draft"}
+                type="submit"
                 className="btn-outline"
-                onClick={handleSaveDraft}
-                disabled={isSubmitting || isSavingDraft}
+                disabled={isSubmitting}
+                onClick={invitationForm.onSubmit(handleSaveDraft)}
+                label={isSubmitting ? "Saving..." : "Save as Draft"}
               />
               <Button
                 type="submit"
                 label={isSubmitting ? "Sending..." : "Send Invitation"}
                 className="btn-primary"
-                disabled={
-                  !invitationForm.isValid() || isSubmitting || isSavingDraft
-                }
+                disabled={!invitationForm.isValid() || isSubmitting}
               />
             </div>
           </Form>

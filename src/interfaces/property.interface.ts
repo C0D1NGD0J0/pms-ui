@@ -113,7 +113,7 @@ export interface IPropertyDocument {
   address: IPropertyAddress;
   _id: string;
   name: string;
-  cuid: string | undefined;
+  csub: string | undefined;
   propertyType: PropertyTypesEnum;
   status: PropertyStatusEnum;
   managedBy: string;
@@ -190,7 +190,7 @@ export type PropertyFormValues = Omit<
   propertyImages: any[];
 };
 
-export type EditPropertyFormValues = PropertyFormValues & { cuid?: string };
+export type EditPropertyFormValues = PropertyFormValues & { csub?: string };
 
 export type CsvUploadValues = z.infer<typeof csvUploadSchema>;
 
@@ -278,7 +278,7 @@ interface IUnitStats {
 
 export const defaultPropertyValues: PropertyFormValues = {
   name: "",
-  cuid: "",
+  csub: "",
   pid: "",
   status: undefined as any,
   managedBy: "",

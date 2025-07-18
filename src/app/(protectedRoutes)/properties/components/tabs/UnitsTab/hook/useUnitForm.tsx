@@ -31,7 +31,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
   const createMutation = useMutation({
     mutationFn: async (data: {
       units: UnitFormValues[];
-      cuid: string;
+      csub: string;
       pid: string;
     }) => {
       if (!client?.csub) throw new Error("Client not authenticated");
@@ -295,7 +295,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
       createMutation.mutate({
         units: newUnits,
-        cuid: values.cuid,
+        csub: values.csub,
         pid: values.pid,
       });
     }

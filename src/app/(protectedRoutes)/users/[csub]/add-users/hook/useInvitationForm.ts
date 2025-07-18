@@ -1,16 +1,34 @@
 import { useAuth } from "@store/index";
 import { useMutation } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
+import { invitationService } from "@src/services/invite";
 import { InvitationFormValues } from "@validations/invitation.validations";
+import { IInvitationFormData } from "@src/interfaces/invitation.interface";
 
-// TODO: Replace with actual service when available
-const invitationService = {
-  sendInvitation: async (data: InvitationFormValues & { cuid: string }) => {
-    // Mock API call - replace with actual service
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    console.log("Sending invitation:", data);
-    return { success: true, message: "Invitation sent successfully" };
-  },
+// Type adapter to convert form values to API format
+const transformFormDataToAPIFormat = (
+  formData: InvitationFormValues
+): Partial<IInvitationFormData> => {
+  const transformed: Partial<IInvitationFormData> = {
+    personalInfo: formData.personalInfo,
+    inviteeEmail: formData.inviteeEmail,
+    role: formData.role,
+    metadata: formData.metadata,
+    employeeInfo: formData.employeeInfo,
+  };
+
+  // Handle vendor info with proper type transformation
+  if (formData.vendorInfo) {
+    transformed.vendorInfo = {
+      ...formData.vendorInfo,
+      // Only include serviceArea if maxDistance is defined
+      serviceArea: formData.vendorInfo.serviceArea?.maxDistance
+        ? { maxDistance: formData.vendorInfo.serviceArea.maxDistance }
+        : undefined,
+    };
+  }
+
+  return transformed;
 };
 
 export function useInvitationForm() {
@@ -19,33 +37,15 @@ export function useInvitationForm() {
 
   const sendInvitationMutation = useMutation({
     mutationFn: (data: InvitationFormValues) =>
-      invitationService.sendInvitation({
-        ...data,
-        cuid: client?.csub ?? "",
-      }),
+      invitationService.sendInvite(
+        client?.csub || "",
+        transformFormDataToAPIFormat(data)
+      ),
     onSuccess: (response) => {
       message.success(response.message || "Invitation sent successfully");
     },
     onError: (error: any) => {
       message.error(error.message || "Failed to send invitation");
-    },
-  });
-
-  const saveDraftMutation = useMutation({
-    mutationFn: (data: InvitationFormValues) => {
-      // Mock save draft - replace with actual service
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          console.log("Saving draft:", data);
-          resolve({ success: true, message: "Draft saved successfully" });
-        }, 500);
-      });
-    },
-    onSuccess: () => {
-      message.success("Draft saved successfully");
-    },
-    onError: (error: any) => {
-      message.error(error.message || "Failed to save draft");
     },
   });
 
@@ -57,22 +57,10 @@ export function useInvitationForm() {
     }
   };
 
-  const handleSaveDraft = async (values: InvitationFormValues) => {
-    try {
-      await saveDraftMutation.mutateAsync(values);
-    } catch (error) {
-      console.error("Error saving draft:", error);
-    }
-  };
-
   return {
     handleSubmit,
-    handleSaveDraft,
     isSubmitting: sendInvitationMutation.isPending,
-    isSavingDraft: saveDraftMutation.isPending,
     submitError: sendInvitationMutation.error,
-    draftError: saveDraftMutation.error,
     isSuccess: sendInvitationMutation.isSuccess,
-    isDraftSuccess: saveDraftMutation.isSuccess,
   };
 }

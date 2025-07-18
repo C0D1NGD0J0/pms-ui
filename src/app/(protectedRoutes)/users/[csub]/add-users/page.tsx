@@ -5,10 +5,15 @@ import { Button } from "@components/FormElements";
 import { PageHeader } from "@components/PageElements";
 import { useNotification } from "@hooks/useNotification";
 import { IInvitationTableData } from "@interfaces/invitation.interface";
+import { InvitationPreview } from "@users/components/InvitationPreview";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
+import { InvitationFormValues } from "@src/validations/invitation.validations";
 
-import { useInvitationPreview, useInvitationForm } from "./hook";
-import { InvitationPreview } from "../../components/InvitationPreview";
+import {
+  useInvitationFormBase,
+  useInvitationPreview,
+  useInvitationForm,
+} from "./hook";
 import {
   InvitationPreviewModal,
   InvitationTableView,
@@ -22,15 +27,14 @@ const InvitePage: React.FC = () => {
   const router = useRouter();
   const { confirm } = useNotification();
 
-  const { handleSubmit, handleSaveDraft, isSubmitting, isSavingDraft } =
-    useInvitationForm();
+  const { handleSubmit, isSubmitting } = useInvitationForm();
   const {
     showPreview,
     handleShowPreview,
     handleClosePreview,
     getTemplateVariables,
   } = useInvitationPreview();
-
+  const formBase = useInvitationFormBase();
   const handleOpenCSVModal = () => {
     setIsCSVModalOpen(true);
   };
@@ -47,7 +51,7 @@ const InvitePage: React.FC = () => {
   const csvUploadConfig: CsvUploadConfig = {
     title: "Upload User Invitations via CSV",
     description:
-      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid.",
+      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, csub.",
     templateUrl: "/templates/user-invitation.csv",
     templateName: "Download CSV Template",
     validateEndpoint: "/api/invitations/csv/validate",
@@ -90,19 +94,23 @@ const InvitePage: React.FC = () => {
         required: false,
       },
       {
-        name: "cuid",
+        name: "csub",
         description: "Client unique identifier",
         required: false,
       },
     ],
   };
 
-  const onSubmit = (values: any) => {
+  const onSubmit = (values: InvitationFormValues) => {
     handleSubmit(values);
   };
 
-  const onSaveDraft = (values: any) => {
-    handleSaveDraft(values);
+  const onSaveDraft = (values: InvitationFormValues) => {
+    values = {
+      ...values,
+      status: "draft",
+    };
+    handleSubmit(values);
   };
 
   const onCancel = () => {
@@ -129,7 +137,7 @@ const InvitePage: React.FC = () => {
   const handleRevoke = (iuid: string) => {
     console.log("Revoke:", iuid);
   };
-
+  console.log("----asa----", formBase.invitationForm.errors);
   return (
     <div className="page add-users-page">
       <PageHeader
@@ -137,17 +145,10 @@ const InvitePage: React.FC = () => {
         headerBtn={
           <div className="flex-row">
             <Button
-              label="Upload CSV"
+              label="Upload users list"
               className="btn-outline"
               icon={<i className="bx bx-upload"></i>}
               onClick={handleOpenCSVModal}
-            />
-            <Button
-              label="Send Invitation"
-              className="btn-primary"
-              icon={<i className="bx bx-send"></i>}
-              onClick={() => onSubmit({})}
-              disabled={isSubmitting || isSavingDraft}
             />
           </div>
         }
@@ -155,11 +156,11 @@ const InvitePage: React.FC = () => {
 
       <InvitationFormView
         onSubmit={onSubmit}
-        onSaveDraft={onSaveDraft}
+        formBase={formBase}
         onCancel={onCancel}
         onPreview={onPreview}
+        onSaveDraft={onSaveDraft}
         isSubmitting={isSubmitting}
-        isSavingDraft={isSavingDraft}
       />
 
       <InvitationTableView

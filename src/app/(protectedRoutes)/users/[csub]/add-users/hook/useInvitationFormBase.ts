@@ -1,4 +1,3 @@
-import { useAuth } from "@store/index";
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { IUserRole } from "@interfaces/invitation.interface";
@@ -59,6 +58,7 @@ const defaultInvitationValues: InvitationFormValues = {
       department: "",
     },
   },
+  status: "pending",
 };
 
 export type InvitationFormBaseProps = {
@@ -68,7 +68,6 @@ export type InvitationFormBaseProps = {
 export function useInvitationFormBase({
   initialValues = defaultInvitationValues,
 }: InvitationFormBaseProps = {}) {
-  const { client } = useAuth();
   const [activeTab, setActiveTab] = useState("role");
   const [selectedRole, setSelectedRole] = useState<IUserRole | null>(null);
   const [messageCount, setMessageCount] = useState(0);
@@ -332,7 +331,6 @@ export function useInvitationFormBase({
   );
 
   return {
-    client,
     activeTab,
     selectedRole,
     messageCount,

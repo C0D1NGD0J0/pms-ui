@@ -10,7 +10,7 @@ interface InvitationPreviewProps {
     phoneNumber?: string;
     inviteMessage?: string;
     expectedStartDate?: string;
-    cuid?: string;
+    csub?: string;
   }>;
 }
 

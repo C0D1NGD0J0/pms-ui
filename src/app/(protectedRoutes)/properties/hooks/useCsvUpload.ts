@@ -34,17 +34,17 @@ export function useCsvUpload() {
 
   const csvValidationMutation = useMutation({
     mutationFn: (data: CsvUploadValues) =>
-      propertyService.validatePropertiesCSV(data.cuid, data.csvFile!),
+      propertyService.validatePropertiesCSV(data.csub, data.csvFile!),
   });
   const importCsvMutation = useMutation({
     mutationFn: (data: CsvUploadValues) =>
-      propertyService.addMultipleProperties(data.cuid, data.csvFile!),
+      propertyService.addMultipleProperties(data.csub, data.csvFile!),
   });
 
   const form = useForm<CsvUploadValues>({
     initialValues: {
       csvFile: null,
-      cuid: user?.client.csub ?? (user?.client as any).id,
+      csub: user?.client.csub ?? (user?.client as any).id,
     },
     validateInputOnBlur: true,
     validate: zodResolver(csvUploadSchema),
@@ -60,7 +60,7 @@ export function useCsvUpload() {
       return;
     }
     const resp = await csvValidationMutation.mutateAsync({
-      cuid: form.values.cuid,
+      csub: form.values.csub,
       csvFile: form.values.csvFile,
     });
     if (resp.success) {
@@ -76,7 +76,7 @@ export function useCsvUpload() {
     }
 
     const resp = await importCsvMutation.mutateAsync({
-      cuid: form.values.cuid,
+      csub: form.values.csub,
       csvFile: form.values.csvFile,
     });
     return resp;

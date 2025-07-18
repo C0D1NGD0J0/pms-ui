@@ -57,10 +57,10 @@ export function usePropertyEditForm({
       return;
     }
     try {
-      values.cuid = client?.csub ?? "";
+      values.csub = client?.csub ?? "";
       const changedValues: Partial<EditPropertyFormValues | null> =
         extractChanges(originalValues, values, {
-          ignoreKeys: ["cuid"],
+          ignoreKeys: ["csub"],
         });
       if (changedValues) {
         await updatePropertyMutation.mutateAsync(changedValues);

@@ -20,7 +20,7 @@ export function useAccountActivationLogic() {
   const [showResendActivation, setShowResendActivation] = useState(false);
   const [email, setEmail] = useState("");
   const token = searchParams.get("t");
-  const cuid = params.cuid as string;
+  const csub = params.csub as string;
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (
@@ -29,7 +29,7 @@ export function useAccountActivationLogic() {
       if (values.type === "resendCode") {
         return authService.resendActivationLink(values.email);
       } else if (values.type === "verifyCode") {
-        return authService.accountActivation(cuid, values);
+        return authService.accountActivation(csub, values);
       }
       throw new Error("Unknown mutation type");
     },
@@ -38,7 +38,7 @@ export function useAccountActivationLogic() {
   const form = useForm<IAccountActivationForm>({
     initialValues: {
       token: "",
-      cuid: cuid,
+      csub: csub,
     },
     validateInputOnChange: true,
     validate: zodResolver(AccountActivationSchema) as any,
@@ -62,7 +62,7 @@ export function useAccountActivationLogic() {
 
     setEmailError("");
     try {
-      await mutateAsync({ type: "resendCode", cuid, token: "", email });
+      await mutateAsync({ type: "resendCode", csub, token: "", email });
       openNotification(
         "success",
         "Activation Link Sent",
@@ -80,7 +80,7 @@ export function useAccountActivationLogic() {
     try {
       const response = await mutateAsync({
         type: "verifyCode",
-        cuid,
+        csub,
         token: values.token,
         email: "",
       });

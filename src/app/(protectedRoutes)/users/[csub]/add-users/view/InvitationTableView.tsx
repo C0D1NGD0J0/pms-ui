@@ -19,7 +19,6 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
   const [searchValue, setSearchValue] = useState("");
   const [filterValue, setFilterValue] = useState("all");
 
-  // Table columns for invitations
   const invitationColumns: TableColumn<IInvitationTableData>[] = [
     {
       title: "Recipient",
@@ -92,11 +91,13 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
             headerTitle="Recent Invitations"
             searchOpts={{
               value: searchValue,
+              isVisible: !!invitations.length,
               placeholder: "Search by name or email...",
               onChange: handleSearchChange,
             }}
             filterOpts={{
               value: filterValue,
+              isVisible: !!invitations.length,
               options: [
                 { label: "All", value: "all" },
                 { label: "Pending", value: "pending" },

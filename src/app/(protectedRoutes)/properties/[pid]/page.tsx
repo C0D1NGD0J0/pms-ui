@@ -191,13 +191,13 @@ export default function PropertyShow() {
     isLoading: isUnitsLoading,
     error: unitsError,
   } = useGetPropertyUnits(
-    property?.cuid ?? "",
+    property?.csub ?? "",
     params.pid,
     {
       limit: 10,
     },
     {
-      enabled: isMultiUnit && !!property?.cuid && !!params.pid,
+      enabled: isMultiUnit && !!property?.csub && !!params.pid,
     }
   );
 

@@ -7,7 +7,7 @@ export interface FilterOption {
   value: string;
 }
 
-export const useGetAllProperties = (cuid: string) => {
+export const useGetAllProperties = (csub: string) => {
   const sortOptions: FilterOption[] = [
     { label: "All", value: "" },
     { label: "Status", value: "status" },
@@ -16,10 +16,10 @@ export const useGetAllProperties = (cuid: string) => {
   ];
 
   const fetchProperties = (pagination: IPaginationQuery) =>
-    propertyService.getClientProperties(cuid, pagination);
+    propertyService.getClientProperties(csub, pagination);
 
   const tableData = useTableData({
-    queryKeys: ["/properties", cuid],
+    queryKeys: ["/properties", csub],
     fetchFn: fetchProperties,
     paginationConfig: {
       initialLimit: 4,

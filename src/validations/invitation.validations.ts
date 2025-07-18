@@ -15,13 +15,18 @@ export const invitationSchema = z
     role: z.enum(["LANDLORD", "TENANT", "EMPLOYEE", "VENDOR", "ADMIN"], {
       required_error: "Please select a role",
     }),
+    status: z
+      .enum(["draft", "pending"], {
+        errorMap: () => ({ message: "Status must be either draft or pending" }),
+      })
+      .optional()
+      .default("pending"),
     metadata: z
       .object({
         inviteMessage: z
           .string()
           .max(500, "Message must be less than 500 characters")
           .optional(),
-        expectedStartDate: z.date().optional(),
         attachments: z
           .record(
             z.string(),
@@ -92,7 +97,6 @@ export const invitationSchema = z
       .optional(),
   })
   .superRefine((data, ctx) => {
-    // Role-specific validation
     if (data.role === "EMPLOYEE" && data.employeeInfo) {
       if (!data.employeeInfo.jobTitle) {
         ctx.addIssue({
@@ -111,7 +115,6 @@ export const invitationSchema = z
     }
 
     if (data.role === "VENDOR" && data.vendorInfo) {
-      // For invitation flow, only contact person name and email are required
       if (!data.vendorInfo.contactPerson?.name) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -128,7 +131,6 @@ export const invitationSchema = z
       }
     }
 
-    // Email validation for vendor contact person
     if (
       data.role === "VENDOR" &&
       data.vendorInfo?.contactPerson?.email &&
@@ -141,7 +143,6 @@ export const invitationSchema = z
       });
     }
 
-    // Insurance validation
     if (
       data.role === "VENDOR" &&
       data.vendorInfo?.insuranceInfo?.hasInsurance
