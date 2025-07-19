@@ -10,3 +10,4 @@ export * from "./useConditionalRender";
 export * from "./useTokenRefresh";
 export * from "./useMenuItems";
 export * from "./useDefaultFormData";
+export * from "./useErrorHandler";

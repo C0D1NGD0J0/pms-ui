@@ -10,13 +10,13 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useInvitationFormBase } from "../hook";
+import { useInvitationFormBase } from "../../hooks";
 import {
   VendorInvitationTab,
   EmployeeDetailsTab,
   RoleSelectionTab,
   ReviewTab,
-} from "../../../components";
+} from "../../components";
 
 interface InvitationFormViewProps {
   onSubmit: (values: InvitationFormValues) => void;
@@ -51,7 +51,6 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
     handleShowInviteMessageToggle,
   } = formBase;
 
-  // Tab configuration
   const tabs = [
     {
       key: "role",
@@ -76,18 +75,18 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
       isVisible: isTabVisible("details"),
       content: (
         <>
-          {selectedRole === "EMPLOYEE" && (
-            <EmployeeDetailsTab
-              formData={invitationForm.values as any}
-              onFieldChange={handleFieldChange}
-            />
-          )}
-          {selectedRole === "VENDOR" && (
+          {selectedRole === "vendor" && (
             <VendorInvitationTab
               formData={invitationForm.values as any}
               messageCount={messageCount}
               onFieldChange={handleFieldChange}
               onMessageCountChange={handleMessageCountChange}
+            />
+          )}
+          {selectedRole && selectedRole !== "vendor" && (
+            <EmployeeDetailsTab
+              formData={invitationForm.values as any}
+              onFieldChange={handleFieldChange}
             />
           )}
         </>

@@ -5,20 +5,20 @@ import { Button } from "@components/FormElements";
 import { PageHeader } from "@components/PageElements";
 import { useNotification } from "@hooks/useNotification";
 import { IInvitationTableData } from "@interfaces/invitation.interface";
-import { InvitationPreview } from "@users/components/InvitationPreview";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
 import { InvitationFormValues } from "@src/validations/invitation.validations";
+import { InvitationPreview } from "@app/(protectedRoutes)/users/[csub]/components/InvitationPreview";
 
-import {
-  useInvitationFormBase,
-  useInvitationPreview,
-  useInvitationForm,
-} from "./hook";
 import {
   InvitationPreviewModal,
   InvitationTableView,
   InvitationFormView,
 } from "./view";
+import {
+  useInvitationFormBase,
+  useInvitationPreview,
+  useInvitationForm,
+} from "../hooks";
 
 const InvitePage: React.FC = () => {
   const [invitations] = useState<IInvitationTableData[]>([]);
@@ -35,6 +35,7 @@ const InvitePage: React.FC = () => {
     getTemplateVariables,
   } = useInvitationPreview();
   const formBase = useInvitationFormBase();
+
   const handleOpenCSVModal = () => {
     setIsCSVModalOpen(true);
   };
@@ -65,7 +66,7 @@ const InvitePage: React.FC = () => {
       },
       {
         name: "role",
-        description: "EMPLOYEE, VENDOR, TENANT, LANDLORD, or ADMIN",
+        description: "manager, vendor, tenant, staff, or admin",
         required: true,
       },
       {
@@ -103,6 +104,7 @@ const InvitePage: React.FC = () => {
 
   const onSubmit = (values: InvitationFormValues) => {
     handleSubmit(values);
+    formBase.resetForm();
   };
 
   const onSaveDraft = (values: InvitationFormValues) => {
@@ -137,7 +139,7 @@ const InvitePage: React.FC = () => {
   const handleRevoke = (iuid: string) => {
     console.log("Revoke:", iuid);
   };
-  console.log("----asa----", formBase.invitationForm.errors);
+
   return (
     <div className="page add-users-page">
       <PageHeader

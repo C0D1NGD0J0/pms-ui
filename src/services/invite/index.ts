@@ -1,4 +1,5 @@
 import axios from "@configs/axios";
+import { withErrorHandling } from "@utils/serviceHelper";
 import {
   IResendInvitationData,
   IInvitationListQuery,
@@ -18,17 +19,14 @@ class InvitationService {
    * Send an invitation to join a client
    */
   async sendInvite(cuid: string, inviteData: Partial<IInvitationFormData>) {
-    try {
+    return withErrorHandling(async () => {
       const response = await axios.post(
         `${this.baseUrl}/${cuid}/send_invite`,
         inviteData,
         this.axiosConfig
       );
       return response.data;
-    } catch (error) {
-      console.error("Error sending invite:", error);
-      throw error;
-    }
+    }, "sendInvite");
   }
 
   /**

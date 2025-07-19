@@ -1,4 +1,4 @@
-export type IUserRole = "LANDLORD" | "TENANT" | "EMPLOYEE" | "VENDOR" | "ADMIN";
+export type IUserRole = "manager" | "vendor" | "tenant" | "staff" | "admin";
 
 export interface IInvitationFormData {
   personalInfo: {
@@ -21,7 +21,6 @@ export interface IInvitationFormData {
   };
   inviteeEmail: string;
   role: IUserRole;
-  // Role-specific data
   employeeInfo?: {
     jobTitle?: string;
     department?: string;
@@ -58,6 +57,7 @@ export interface IInvitationFormData {
       department?: string;
     };
   };
+  status: "pending" | "accepted" | "expired" | "revoked" | "sent" | "draft";
 }
 
 export interface IInvitationTableData {
