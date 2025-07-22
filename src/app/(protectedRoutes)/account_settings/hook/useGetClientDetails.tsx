@@ -4,7 +4,7 @@ import { CLIENT_QUERY_KEYS } from "@utils/constants";
 import { IClient } from "@interfaces/client.interface";
 
 export function useGetClientDetails(csub: string, enabled: boolean = true) {
-  const isValidCsub = Boolean(csub && csub.length >= 36);
+  const isValidCsub = Boolean(csub && csub.length >= 10);
 
   const query = useQuery<IClient>({
     enabled: enabled && isValidCsub,
@@ -25,10 +25,10 @@ export function useGetClientDetails(csub: string, enabled: boolean = true) {
 
   return {
     data: query.data,
-    isLoading: query.isLoading,
     error: query.error,
+    refetch: query.refetch,
     isError: query.isError,
     isSuccess: query.isSuccess,
-    refetch: query.refetch,
+    isLoading: query.isLoading,
   };
 }

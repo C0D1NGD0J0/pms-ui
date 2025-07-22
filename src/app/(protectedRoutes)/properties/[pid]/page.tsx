@@ -182,7 +182,6 @@ export default function PropertyShow() {
   let savedUnits: IUnit[] = [];
   const { data: property, isLoading, error } = usePropertyData(params.pid);
 
-  // Check if property type is multi-unit based on property rules
   const isMultiUnit = property?.propertyType
     ? propertyTypeRules[property.propertyType]?.isMultiUnit ?? false
     : false;
@@ -192,13 +191,13 @@ export default function PropertyShow() {
     isLoading: isUnitsLoading,
     error: unitsError,
   } = useGetPropertyUnits(
-    property?.cid ?? "",
+    property?.csub ?? "",
     params.pid,
     {
       limit: 10,
     },
     {
-      enabled: isMultiUnit && !!property?.cid && !!params.pid,
+      enabled: isMultiUnit && !!property?.csub && !!params.pid,
     }
   );
 
@@ -211,6 +210,7 @@ export default function PropertyShow() {
       savedUnits = units.items;
     }
   }
+
   if (isLoading) {
     return <Loading description="Fetching property details" />;
   }
@@ -254,7 +254,7 @@ export default function PropertyShow() {
       content: <DocumentsTab />,
     },
   ];
-  console.log(units, "Property Data:", property);
+  console.log(isMultiUnit, units, "Property Data:", property);
   return (
     <div className="page property-show">
       <PageHeader

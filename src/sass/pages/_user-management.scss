@@ -1,0 +1,99 @@
+.user-management-container {
+  padding: 1rem 0;
+
+  .page-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+
+    h2 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+
+      i {
+        font-size: 1.75rem;
+        color: var(--primary-color);
+      }
+    }
+
+    p {
+      color: var(--text-secondary);
+      margin: 0;
+    }
+  }
+
+  .content-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+
+    .placeholder-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        font-size: 1.25rem;
+        font-weight: 600;
+      }
+
+      p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+
+        li {
+          padding: 0.5rem 0;
+          color: var(--text-secondary);
+          position: relative;
+          padding-left: 1.5rem;
+
+          &:before {
+            content: "•";
+            color: var(--primary-color);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Dark mode support
+[data-theme="dark"] {
+  .user-management-container {
+    .page-header {
+      border-bottom-color: var(--border-color-dark);
+    }
+
+    .content-placeholder {
+      .placeholder-card {
+        background: var(--card-bg-dark);
+        border-color: var(--border-color-dark);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+    }
+  }
+}

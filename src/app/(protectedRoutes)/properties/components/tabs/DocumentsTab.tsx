@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { useNotification } from "@hooks/useNotification";
 import { FileUploader, FileItem } from "@components/FileUploader";
 import { PropertyFormValues } from "@interfaces/property.interface";
 import {
@@ -27,6 +28,7 @@ export function DocumentsTab({
     "deed" | "tax" | "insurance" | "inspection" | "other" | "lease" | undefined
   >(undefined);
   const [currentDocDescription, setCurrentDocDescription] = useState("");
+  const { message } = useNotification();
 
   const handleRemoveImage = (index: number) => {
     const currentImages = [...form.values.propertyImages];
@@ -56,7 +58,7 @@ export function DocumentsTab({
 
   const handleDocumentAdded = (file: FileItem) => {
     if (!currentDocType) {
-      alert("Please select a document type first");
+      message.warning("Please select a document type first");
       return;
     }
 
@@ -90,7 +92,7 @@ export function DocumentsTab({
           id="documentType"
           name="documentType"
           value={currentDocType || ""}
-          onChange={(e) => {
+          onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
             const value = e.target.value as
               | "deed"
               | "tax"

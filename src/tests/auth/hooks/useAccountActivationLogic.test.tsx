@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { useAccountActivationLogic } from "@app/(auth)/account_activation/[cid]/hook/useAccountActivationLogic";
+import { useAccountActivationLogic } from "@app/(auth)/account_activation/[cuid]/hook/useAccountActivationLogic";
 import { authService } from "@services/auth";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NotificationProvider } from "@hooks/useNotification";
@@ -8,9 +8,9 @@ import { ReactNode } from "react";
 // Mock dependencies
 jest.mock("@services/auth");
 jest.mock("next/navigation", () => ({
-  useParams: () => ({ cid: "test-cid" }),
+  useParams: () => ({ cuid: "test-cuid" }),
   useSearchParams: () => ({
-    get: (key: string) => key === "t" ? "test-token" : null,
+    get: (key: string) => (key === "t" ? "test-token" : null),
   }),
   useRouter: () => ({
     push: jest.fn(),
@@ -28,9 +28,7 @@ function TestWrapper({ children }: { children: ReactNode }) {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </QueryClientProvider>
   );
 }
@@ -45,7 +43,7 @@ describe("useAccountActivationLogic Hook", () => {
       wrapper: TestWrapper,
     });
 
-    expect(result.current.form.values.cid).toBe("test-cid");
+    expect(result.current.form.values.cuid).toBe("test-cuid");
     expect(result.current.form.values.token).toBe("test-token");
     expect(result.current.token).toBe("test-token");
     expect(result.current.isPending).toBe(false);
@@ -63,18 +61,21 @@ describe("useAccountActivationLogic Hook", () => {
 
     await act(async () => {
       await result.current.handleSubmit({
-        cid: "test-cid",
+        cuid: "test-cuid",
         token: "test-token",
       });
     });
 
     await waitFor(() => {
-      expect(mockAuthService.accountActivation).toHaveBeenCalledWith("test-cid", {
-        type: "verifyCode",
-        cid: "test-cid",
-        token: "test-token",
-        email: "",
-      });
+      expect(mockAuthService.accountActivation).toHaveBeenCalledWith(
+        "test-cuid",
+        {
+          type: "verifyCode",
+          cuid: "test-cuid",
+          token: "test-token",
+          email: "",
+        }
+      );
       expect(result.current.isSuccess).toBe(true);
     });
   });
@@ -97,7 +98,9 @@ describe("useAccountActivationLogic Hook", () => {
     });
 
     await waitFor(() => {
-      expect(mockAuthService.resendActivationLink).toHaveBeenCalledWith("test@example.com");
+      expect(mockAuthService.resendActivationLink).toHaveBeenCalledWith(
+        "test@example.com"
+      );
     });
   });
 });

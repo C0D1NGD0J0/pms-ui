@@ -6,6 +6,7 @@ import { usePropertyFormStaticData, useAuth } from "@store/index";
 import { propertySchema } from "@validations/property.validations";
 import { useCallback, ChangeEvent, useEffect, useState, useMemo } from "react";
 import {
+  EditPropertyFormValues,
   defaultPropertyValues,
   PropertyFormValues,
 } from "@interfaces/property.interface";
@@ -23,7 +24,7 @@ export function usePropertyFormBase({
   const { data: formConfig, loading: formConfigLoading } =
     usePropertyFormStaticData();
 
-  const propertyForm = useForm<PropertyFormValues>({
+  const propertyForm = useForm<EditPropertyFormValues>({
     initialValues,
     validateInputOnBlur: true,
     validateInputOnChange: true,

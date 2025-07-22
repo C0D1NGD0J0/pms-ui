@@ -7,10 +7,10 @@ class ClientService {
 
   constructor() {}
 
-  async getClientDetails(cid: string) {
+  async getClientDetails(csub: string) {
     try {
       const result = await axios.get(
-        `${this.baseUrl}/${cid}/client_details`,
+        `${this.baseUrl}/${csub}/client_details`,
         undefined,
         this.axiosConfig
       );
@@ -21,10 +21,10 @@ class ClientService {
     }
   }
 
-  async updateClient(cid: string, data: UpdateClientDetailsFormData) {
+  async updateClient(csub: string, data: UpdateClientDetailsFormData) {
     try {
       const result = await axios.patch(
-        `${this.baseUrl}/${cid}/client_details`,
+        `${this.baseUrl}/${csub}/client_details`,
         data,
         this.axiosConfig
       );

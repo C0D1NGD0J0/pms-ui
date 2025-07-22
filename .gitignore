@@ -137,3 +137,6 @@ dist
 CLAUDE.md
 .claude
 random.txt
+*.csv
+src/test-data/
+docs/

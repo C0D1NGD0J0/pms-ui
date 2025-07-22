@@ -68,7 +68,7 @@ class AxiosService implements IAxiosService {
   private setupInterceptors() {
     this.axios.interceptors.request.use(
       (config) => {
-        const token = CookieManager.getCookie("cid");
+        const token = CookieManager.getCookie("csub");
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }

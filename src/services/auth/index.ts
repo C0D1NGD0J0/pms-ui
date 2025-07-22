@@ -39,11 +39,11 @@ class AuthService {
       throw error;
     }
   };
-  currentuser = async (cid: string) => {
+  currentuser = async (csub: string) => {
     try {
-      if (!cid) return;
+      if (!csub) return;
       const res = await axios.get<{ success: boolean; data: ICurrentUser }>(
-        `${this.baseUrl}/${cid}/me`
+        `${this.baseUrl}/${csub}/me`
       );
 
       return res;
@@ -51,19 +51,19 @@ class AuthService {
       throw error;
     }
   };
-  logout = async (cid: string | undefined) => {
+  logout = async (csub: string | undefined) => {
     try {
-      if (!cid) return;
-      const res = await axios.delete(`${this.baseUrl}/${cid}/logout`);
+      if (!csub) return;
+      const res = await axios.delete(`${this.baseUrl}/${csub}/logout`);
       return res;
     } catch (error) {
       throw error;
     }
   };
-  accountActivation = async (cid: string, data: { token: string }) => {
+  accountActivation = async (csub: string, data: { token: string }) => {
     try {
       const res = await axios.put(
-        `${this.baseUrl}/account_activation/${cid}?t=${data.token}`
+        `${this.baseUrl}/account_activation/${csub}?t=${data.token}`
       );
       return res;
     } catch (error) {

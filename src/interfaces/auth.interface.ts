@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { UserClient } from "@store/auth.store";
 import { GDPRSettings } from "@store/interface";
 import {
   AccountActivationSchema,
@@ -7,6 +6,8 @@ import {
   SignupSchema,
   LoginSchema,
 } from "@validations/auth.validations";
+
+import { UserClient } from "./client.interface";
 
 export type ISignupForm = z.infer<typeof SignupSchema>;
 export type IResetPasswordForm = z.infer<typeof ResetPasswordSchema>;
@@ -18,7 +19,7 @@ export interface ICurrentUser {
     lang?: string;
     timezone?: string;
   };
-  client: { csub: string; displayName: string };
+  client: { csub: string; displayName: string; role: string };
   clients: UserClient[];
   fullname: string | null;
   permissions: string[];

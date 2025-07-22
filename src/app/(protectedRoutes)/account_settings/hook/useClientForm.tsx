@@ -4,10 +4,10 @@ import { useForm } from "@mantine/form";
 import { parseError } from "@utils/helpers";
 import { CLIENT_QUERY_KEYS } from "@src/utils";
 import { clientService } from "@services/client";
-import { useCallback, useState, useRef } from "react";
 import { IClient } from "@interfaces/client.interface";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   UpdateClientDetailsFormData,
@@ -29,7 +29,7 @@ export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
   const form = useForm<UpdateClientDetailsFormData>({
     validate: zodResolver(updateClientDetailsSchema),
     initialValues: {
-      displayName: clientData.displayName,
+      displayName: clientData.displayName || "",
       identification: clientData.identification,
       companyProfile: clientData.companyProfile,
       settings: clientData.settings,
@@ -38,6 +38,12 @@ export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
     validateInputOnChange: true,
   });
 
+  useEffect(() => {
+    if (clientData.displayName) {
+      form.setFieldValue("displayName", clientData.displayName);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientData.displayName]);
   const hasUnsavedChanges = form.isDirty();
 
   const autoSaveMutation = useMutation({
