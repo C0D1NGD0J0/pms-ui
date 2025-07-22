@@ -75,16 +75,21 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     if (type === "open" && opts) {
       const key = `open${Date.now()}`;
-      const btn = (
-        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+      const actions = [
+        <Button
+          key="close"
+          type="primary"
+          size="small"
+          onClick={() => api.destroy(key)}
+        >
           {opts?.btnText}
-        </Button>
-      );
+        </Button>,
+      ];
 
       api[type]({
         message: title,
         placement: "topRight",
-        btn,
+        actions,
         key,
         duration: 0,
         style: { whiteSpace: "pre-line" },
@@ -145,27 +150,26 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       onCancel?.();
     };
 
-    const btn = (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <Button size="small" onClick={handleCancel}>
-          {cancelText}
-        </Button>
-        <Button
-          type="primary"
-          size="small"
-          danger={type === "error"}
-          onClick={handleConfirm}
-        >
-          {confirmText}
-        </Button>
-      </div>
-    );
+    const actions = [
+      <Button key="cancel" size="small" onClick={handleCancel}>
+        {cancelText}
+      </Button>,
+      <Button
+        key="confirm"
+        type="primary"
+        size="small"
+        danger={type === "error"}
+        onClick={handleConfirm}
+      >
+        {confirmText}
+      </Button>,
+    ];
 
     api[type]({
       message: title,
       description: content,
       placement: "topRight",
-      btn,
+      actions,
       key,
       duration: 0,
       style: { whiteSpace: "pre-line" },

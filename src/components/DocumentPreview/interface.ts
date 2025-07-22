@@ -1,23 +1,18 @@
-export type DocumentType = "html" | "pdf" | "url" | "template" | "image";
+export type DocumentType = "html" | "pdf" | "url" | "image";
 export type RenderMode = "iframe" | "direct" | "embed" | "object";
 
 export interface DocumentPreviewProps {
-  // Content source
+  // Content source - only one should be provided
   content?: string;
   url?: string;
-  templateId?: string;
 
   // Content type and rendering
   type: DocumentType;
   renderMode: RenderMode;
 
-  // Template variables (for dynamic templates)
-  variables?: Record<string, any>;
-
   // URL configuration
   isExternalUrl?: boolean;
   allowExternalContent?: boolean;
-  corsProxy?: string;
 
   // Display options
   title?: string;
@@ -32,7 +27,6 @@ export interface DocumentPreviewProps {
   // Error handling
   fallbackContent?: string;
   onLoad?: () => void;
-  onError?: (error: Error) => void;
   onLoadError?: (error: Error) => void;
 }
 
@@ -42,6 +36,7 @@ export interface PreviewModalProps {
   title?: string;
   previewProps: DocumentPreviewProps;
   size?: "small" | "medium" | "large";
+  destroyOnHidden?: boolean;
 }
 
 export interface TemplateData {

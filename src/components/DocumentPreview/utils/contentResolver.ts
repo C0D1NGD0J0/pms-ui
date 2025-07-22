@@ -25,25 +25,15 @@ export function createBlobUrl(
 
 /**
  * Resolves content based on the document type and source
+ * This is now a pure function with no side effects
  */
-export async function resolveContent(
+export function resolveContent(
   type: DocumentType,
   content?: string,
-  url?: string,
-  templateId?: string,
-  variables?: Record<string, any>
-): Promise<string> {
+  url?: string
+): string {
   switch (type) {
     case "html":
-      return content || "";
-
-    case "template":
-      if (templateId) {
-        // This would be replaced with actual API call
-        const templateData = await fetchTemplate(templateId);
-        const { generateEmailPreview } = await import("./templateRenderer");
-        return generateEmailPreview(templateData, variables);
-      }
       return content || "";
 
     case "pdf":
@@ -53,20 +43,6 @@ export async function resolveContent(
 
     default:
       return content || url || "";
-  }
-}
-
-/**
- * Fetches template data from API (placeholder implementation)
- */
-async function fetchTemplate(templateId: string): Promise<any> {
-  try {
-    const response = await fetch(`/api/email-templates/${templateId}`);
-    const result = await response.json();
-    return result.data;
-  } catch (error) {
-    console.error("Error fetching template:", error);
-    throw new Error(`Failed to fetch template: ${templateId}`);
   }
 }
 
@@ -117,7 +93,6 @@ export function getSandboxAttributes(
 
   switch (type) {
     case "html":
-    case "template":
       return "allow-scripts allow-same-origin";
     case "pdf":
       return "allow-same-origin";

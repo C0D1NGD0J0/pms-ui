@@ -12,13 +12,10 @@ interface InvitationPreviewProps {
     expectedStartDate?: string;
     csub?: string;
   }>;
+  templateType?: string;
 }
 
 export function InvitationPreview({ data }: InvitationPreviewProps) {
-  if (!data || data.length === 0) {
-    return null;
-  }
-
   const formatDate = (dateStr?: string) => {
     if (!dateStr) return "Not specified";
     try {
@@ -31,6 +28,10 @@ export function InvitationPreview({ data }: InvitationPreviewProps) {
       return dateStr;
     }
   };
+
+  if (!data || data.length === 0) {
+    return null;
+  }
 
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
@@ -119,17 +120,15 @@ export function InvitationPreview({ data }: InvitationPreviewProps) {
 
       <div className="preview-summary">
         <div className="summary-stats">
-          <div className="stat-group">
-            <div className="stat-item">
-              <span className="stat-label">Total Invitations:</span>
-              <span className="stat-value">{data.length}</span>
-            </div>
-            <div className="stat-item">
-              <span className="stat-label">Roles:</span>
-              <span className="stat-value">
-                {[...new Set(data.map((d) => d.role))].join(", ")}
-              </span>
-            </div>
+          <div className="stat-item">
+            <span className="stat-label">Total Invitations:</span>
+            <span className="stat-value">{data.length}</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-label">Roles:</span>
+            <span className="stat-value">
+              {[...new Set(data.map((d) => d.role))].join(", ")}
+            </span>
           </div>
         </div>
       </div>

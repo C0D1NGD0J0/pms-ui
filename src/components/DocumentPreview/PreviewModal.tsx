@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-
 import { Button, Modal } from "@components/FormElements";
 
 import { PreviewModalProps } from "./interface";
@@ -12,14 +11,20 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
   title = "Document Preview",
   previewProps,
   size = "large",
+  destroyOnHidden = false,
 }) => {
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={size}>
+    <Modal
+      size={size}
+      isOpen={isOpen}
+      onClose={onClose}
+      destroyOnHidden={destroyOnHidden}
+    >
       <Modal.Header title={title} onClose={onClose} />
       <Modal.Content className="preview-modal-content">
         <DocumentPreview
           {...previewProps}
-          height="70vh"
+          height="100%"
           width="100%"
           className="modal-document-preview"
         />

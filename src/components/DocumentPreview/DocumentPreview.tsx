@@ -15,8 +15,6 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   renderMode,
   content,
   url,
-  templateId,
-  variables = {},
   isExternalUrl: forceExternal,
   allowExternalContent = true,
   sandbox,
@@ -27,12 +25,8 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   title,
   fallbackContent,
   onLoad,
-  onError,
   onLoadError,
 }) => {
-  const [resolvedContent, setResolvedContent] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
 
   // Determine if URL is external
@@ -47,58 +41,17 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     return validateUrl(url, allowExternalContent);
   }, [url, allowExternalContent]);
 
-  // Resolve content based on type
-  useEffect(() => {
-    let isCancelled = false;
-
-    const loadContent = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        if (!urlValid) {
-          throw new Error("Invalid or unauthorized URL");
-        }
-
-        const resolved = await resolveContent(
-          type,
-          content,
-          url,
-          templateId,
-          variables
-        );
-
-        if (!isCancelled) {
-          setResolvedContent(resolved);
-        }
-      } catch (err) {
-        if (!isCancelled) {
-          const errorMessage =
-            err instanceof Error ? err.message : "Unknown error";
-          setError(errorMessage);
-          onError?.(new Error(errorMessage));
-        }
-      } finally {
-        if (!isCancelled) {
-          setLoading(false);
-        }
-      }
-    };
-
-    loadContent();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [type, content, url, templateId, variables, urlValid, onError]);
+  // Resolve content synchronously
+  const resolvedContent = useMemo(() => {
+    if (!urlValid) {
+      return "";
+    }
+    return resolveContent(type, content, url);
+  }, [type, content, url, urlValid]);
 
   // Create blob URL for direct rendering
   useEffect(() => {
-    if (
-      renderMode === "iframe" &&
-      (type === "html" || type === "template") &&
-      resolvedContent
-    ) {
+    if (renderMode === "iframe" && type === "html" && resolvedContent) {
       const blob = createBlobUrl(resolvedContent);
       setBlobUrl(blob);
 
@@ -116,11 +69,9 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   };
 
   const handleLoadError = (err: Error) => {
-    setError(err.message);
     onLoadError?.(err);
   };
 
-  // Security check for external content
   if (external && !allowExternalContent) {
     return (
       <div
@@ -134,27 +85,12 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     );
   }
 
-  // Loading state
-  if (loading) {
-    return (
-      <div
-        className={`document-preview loading ${className}`}
-        style={{ height, width }}
-      >
-        <div className="loading-message">
-          <p>Loading {title || "document"}...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Error state
-  if (error) {
+  if (!resolvedContent) {
     const fallback = fallbackContent ? (
       <div dangerouslySetInnerHTML={{ __html: fallbackContent }} />
     ) : (
       <div className="error-message">
-        <p>Failed to load document: {error}</p>
+        <p>No content provided</p>
       </div>
     );
 
@@ -168,10 +104,8 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     );
   }
 
-  // Get sandbox attributes
   const sandboxAttr = getSandboxAttributes(type, external, sandbox);
 
-  // Render based on mode
   const renderContent = () => {
     switch (renderMode) {
       case "iframe":
@@ -181,7 +115,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
             src={src}
             title={title}
             width={width}
-            height={height}
+            height={"100%"}
             sandbox={sandboxAttr}
             referrerPolicy={referrerPolicy}
             onLoad={handleLoad}
@@ -241,7 +175,10 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   };
 
   return (
-    <div className={`document-preview ${className}`} style={{ height, width }}>
+    <div
+      className={`document-preview ${className}`}
+      style={{ height: "40rem", width }}
+    >
       {renderContent()}
     </div>
   );

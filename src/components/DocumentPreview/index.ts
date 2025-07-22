@@ -9,11 +9,6 @@ export type {
   EmailTemplateResponse,
 } from "./interface";
 export {
-  renderTemplate,
-  generateEmailPreview,
-  validateRequiredVariables,
-} from "./utils/templateRenderer";
-export {
   isExternalUrl,
   createBlobUrl,
   resolveContent,

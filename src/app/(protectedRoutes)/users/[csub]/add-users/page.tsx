@@ -20,19 +20,21 @@ import {
   useInvitationForm,
 } from "../hooks";
 
-const InvitePage: React.FC = () => {
+const InviteUsers: React.FC = () => {
   const [invitations] = useState<IInvitationTableData[]>([]);
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
   const [csvPreviewData, setCsvPreviewData] = useState<any[]>([]);
-  const router = useRouter();
   const { confirm } = useNotification();
+  const router = useRouter();
 
   const { handleSubmit, isSubmitting } = useInvitationForm();
   const {
     showPreview,
     handleShowPreview,
     handleClosePreview,
-    getTemplateVariables,
+    getRenderedEmailContent,
+    isTemplateLoading,
+    templateError,
   } = useInvitationPreview();
   const formBase = useInvitationFormBase();
 
@@ -129,7 +131,7 @@ const InvitePage: React.FC = () => {
   };
 
   const onPreview = () => {
-    handleShowPreview();
+    handleShowPreview(formBase.invitationForm.values, formBase.selectedRole);
   };
 
   const handleResend = (iuid: string) => {
@@ -173,10 +175,11 @@ const InvitePage: React.FC = () => {
 
       <InvitationPreviewModal
         isOpen={showPreview}
+        error={templateError}
         onClose={handleClosePreview}
-        formData={{} as any}
-        selectedRole={null}
-        templateVariables={getTemplateVariables({} as any, null)}
+        isLoading={isTemplateLoading}
+        formData={formBase.invitationForm.values}
+        renderContent={getRenderedEmailContent()}
       />
 
       <CsvUploadModal
@@ -191,4 +194,4 @@ const InvitePage: React.FC = () => {
   );
 };
 
-export default InvitePage;
+export default InviteUsers;
