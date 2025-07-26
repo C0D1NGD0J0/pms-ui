@@ -19,7 +19,7 @@ export interface ICurrentUser {
     lang?: string;
     timezone?: string;
   };
-  client: { csub: string; displayName: string; role: string };
+  client: { cuid: string; displayName: string; role: string };
   clients: UserClient[];
   fullname: string | null;
   permissions: string[];

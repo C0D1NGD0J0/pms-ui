@@ -31,22 +31,22 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
   const createMutation = useMutation({
     mutationFn: async (data: {
       units: UnitFormValues[];
-      csub: string;
+      cuid: string;
       pid: string;
     }) => {
-      if (!client?.csub) throw new Error("Client not authenticated");
+      if (!client?.cuid) throw new Error("Client not authenticated");
       return await propertyUnitService.createUnits(
-        client.csub,
+        client.cuid,
         property.pid,
         data
       );
     },
     onSuccess: (_response, variables) => {
-      if (!client?.csub) return;
+      if (!client?.cuid) return;
 
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
-          client.csub,
+          client.cuid,
           property.pid,
           {
             limit: 2,
@@ -57,7 +57,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(
           property.pid,
-          client.csub
+          client.cuid
         ),
       });
 
@@ -86,22 +86,22 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
   const updateMutation = useMutation({
     mutationFn: async (data: UnitFormValues) => {
-      if (!client?.csub) throw new Error("Client not authenticated");
+      if (!client?.cuid) throw new Error("Client not authenticated");
       if (!data.propertyId) {
         throw new Error("Property ID is required for updating units");
       }
       return await propertyUnitService.updateUnit(
-        client.csub,
+        client.cuid,
         property.pid,
         data
       );
     },
     onSuccess: () => {
-      if (!client?.csub) return;
+      if (!client?.cuid) return;
 
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
-          client.csub,
+          client.cuid,
           property.pid,
           {
             limit: 2,
@@ -132,19 +132,19 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
   const deleteMutation = useMutation({
     mutationFn: async (puid: string) => {
-      if (!client?.csub) throw new Error("Client not authenticated");
+      if (!client?.cuid) throw new Error("Client not authenticated");
       return await propertyUnitService.deleteUnit(
-        client.csub,
+        client.cuid,
         property.pid,
         puid
       );
     },
     onSuccess: (_, puid) => {
-      if (!client?.csub) return;
+      if (!client?.cuid) return;
 
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
-          client.csub,
+          client.cuid,
           property.pid,
           {
             limit: 2,
@@ -155,7 +155,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(
           property.pid,
-          client.csub
+          client.cuid
         ),
       });
 
@@ -295,7 +295,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
       createMutation.mutate({
         units: newUnits,
-        csub: values.csub,
+        cuid: values.cuid,
         pid: values.pid,
       });
     }

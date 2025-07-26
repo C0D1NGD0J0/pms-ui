@@ -8,9 +8,9 @@ export function usePropertyData(pid: string) {
   const { client } = useAuth();
 
   const query = useQuery<IPropertyDocument>({
-    enabled: !!pid && !!client?.csub,
-    queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client?.csub || "", pid),
-    queryFn: () => propertyService.getClientProperty(client!.csub, pid),
+    enabled: !!pid && !!client?.cuid,
+    queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client?.cuid || "", pid),
+    queryFn: () => propertyService.getClientProperty(client!.cuid, pid),
   });
 
   return {

@@ -523,30 +523,30 @@ export const formFieldVisibilityMap = {
 };
 
 export const PROPERTY_QUERY_KEYS = {
-  getAllProperties: (csub: string, pid: string, pagination: unknown) => [
+  getAllProperties: (cuid: string, pid: string, pagination: unknown) => [
     "/getProperties",
-    csub,
+    cuid,
     pagination,
     pid,
   ],
-  getPropertyByPid: (pid: string, csub: string) => ["/getProperty", csub, pid],
+  getPropertyByPid: (pid: string, cuid: string) => ["/getProperty", cuid, pid],
   getPropertyUnits: (
     pid: string,
-    csub: string,
+    cuid: string,
     pagination: Omit<IPaginationQuery, "page">
-  ) => ["/getPropertyUnits", csub, pid, pagination],
-  getPropertyUnitByPuid: (pid: string, csub: string, puid: string) => [
+  ) => ["/getPropertyUnits", cuid, pid, pagination],
+  getPropertyUnitByPuid: (pid: string, cuid: string, puid: string) => [
     "/getPropertyUnit",
-    csub,
+    cuid,
     pid,
     puid,
   ],
 };
 export const CLIENT_QUERY_KEYS = {
-  getClientByCsub: (csub: string) => ["/getClientDetails", csub],
-  getClientProperties: (csub: string, pagination: unknown) => [
+  getClientBycuid: (cuid: string) => ["/getClientDetails", cuid],
+  getClientProperties: (cuid: string, pagination: unknown) => [
     "/getClientProperties",
-    csub,
+    cuid,
     pagination,
   ],
 };

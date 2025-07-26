@@ -13,12 +13,12 @@ import { AccountOverview } from "../components/AccountOverview";
 
 const AccountPage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
-  const params = useParams<{ csub: string }>();
+  const params = useParams<{ cuid: string }>();
   const {
     data: clientInfo,
     isLoading,
     isError,
-  } = useGetClientDetails(params.csub || "");
+  } = useGetClientDetails(params.cuid || "");
 
   const {
     saveStatus,
@@ -29,7 +29,7 @@ const AccountPage: React.FC = () => {
     revertChanges,
   } = useClientForm({
     clientData: clientInfo ?? ({} as any),
-    csub: params.csub || "",
+    cuid: params.cuid || "",
   });
 
   if (isLoading) {

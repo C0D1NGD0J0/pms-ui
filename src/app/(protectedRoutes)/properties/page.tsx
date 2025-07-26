@@ -23,7 +23,7 @@ export default function Properties() {
     handleSortChange,
     handlePageChange,
     handleSortByChange,
-  } = useGetAllProperties(client?.csub || "");
+  } = useGetAllProperties(client?.cuid || "");
 
   const rowSelection = {
     selectedRowKeys,

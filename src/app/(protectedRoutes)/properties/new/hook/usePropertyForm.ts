@@ -7,12 +7,12 @@ export function usePropertyForm() {
   const { client } = useAuth();
   const createPropertyMutation = useMutation({
     mutationFn: (data: PropertyFormValues) =>
-      propertyService.createProperty(data.csub ?? "", data),
+      propertyService.createProperty(data.cuid ?? "", data),
   });
 
   const handleSubmit = async (values: PropertyFormValues) => {
     try {
-      values.csub = client?.csub ?? "";
+      values.cuid = client?.cuid ?? "";
       await createPropertyMutation.mutateAsync(values);
     } catch (error) {
       console.error("Error creating property:", error);

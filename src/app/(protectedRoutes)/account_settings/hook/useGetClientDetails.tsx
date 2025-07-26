@@ -3,16 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import { CLIENT_QUERY_KEYS } from "@utils/constants";
 import { IClient } from "@interfaces/client.interface";
 
-export function useGetClientDetails(csub: string, enabled: boolean = true) {
-  const isValidCsub = Boolean(csub && csub.length >= 10);
+export function useGetClientDetails(cuid: string, enabled: boolean = true) {
+  const isValidcuid = Boolean(cuid && cuid.length >= 10);
 
   const query = useQuery<IClient>({
-    enabled: enabled && isValidCsub,
-    queryKey: CLIENT_QUERY_KEYS.getClientByCsub(csub),
-    queryFn: () => clientService.getClientDetails(csub),
+    enabled: enabled && isValidcuid,
+    queryKey: CLIENT_QUERY_KEYS.getClientBycuid(cuid),
+    queryFn: () => clientService.getClientDetails(cuid),
   });
 
-  if (!isValidCsub) {
+  if (!isValidcuid) {
     return {
       data: undefined,
       isLoading: false,

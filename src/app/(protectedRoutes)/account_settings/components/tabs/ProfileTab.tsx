@@ -38,13 +38,13 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
       >
         <div className="form-fields">
           <FormField>
-            <FormLabel htmlFor="clientId" label="Client ID" />
+            <FormLabel htmlFor="cuid" label="Client ID" />
             <FormInput
               disabled
               readOnly
-              id="clientId"
-              name="clientId"
-              value={clientInfo.csub}
+              id="cuid"
+              name="cuid"
+              value={clientInfo.cuid}
               placeholder="Client ID"
             />
           </FormField>

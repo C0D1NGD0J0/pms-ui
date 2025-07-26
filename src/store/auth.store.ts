@@ -33,8 +33,8 @@ const useAuthStore = create<AuthState>()(
       refreshTokenError: null,
       actions: {
         logout: async () => {
-          const csub = get().client?.csub;
-          await authService.logout(csub);
+          const cuid = get().client?.cuid;
+          await authService.logout(cuid);
           sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
@@ -42,7 +42,7 @@ const useAuthStore = create<AuthState>()(
             isAuthLoading: false,
             isRefreshingToken: false,
             refreshTokenError: null,
-            client: { csub: "", displayName: "" },
+            client: { cuid: "", displayName: "" },
           });
         },
         setUser: (user: ICurrentUser | null) => {
@@ -67,7 +67,7 @@ const useAuthStore = create<AuthState>()(
           sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
-            client: { csub: "", displayName: "" },
+            client: { cuid: "", displayName: "" },
             permissions: [],
             isAuthLoading: false,
             isRefreshingToken: false,
@@ -95,12 +95,12 @@ export const useAuth = () => {
     isRefreshingToken,
     refreshTokenError,
   } = useAuthStore();
-  const isLoggedIn = !!user?.sub && !!client?.csub;
+  const isLoggedIn = !!user?.sub && !!client?.cuid;
   return {
     user,
-    client,
+    client: client || ({ cuid: "", displayName: "" } as UserClient),
     isLoggedIn,
-    permissions,
+    permissions: permissions || [],
     isAuthLoading,
     isRefreshingToken,
     refreshTokenError,

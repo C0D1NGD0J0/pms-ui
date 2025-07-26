@@ -1,5 +1,5 @@
 export type UserClient = {
-  csub: string;
+  cuid: string;
   displayName: string;
 };
 
@@ -9,7 +9,7 @@ export interface IClientAccountType {
   isEnterpriseAccount: boolean;
 }
 
-export interface IClientIdentification {
+export interface Icuidentification {
   idType:
     | "passport"
     | "driverLicense"
@@ -56,9 +56,9 @@ export interface IClientSettings {
 }
 
 export interface IClient {
-  csub: string;
+  cuid: string;
   accountType: IClientAccountType;
-  identification: IClientIdentification;
+  identification: Icuidentification;
   subscription?: string;
   isVerified: boolean;
   accountAdmin:
@@ -90,7 +90,7 @@ export interface IClient {
 // Form-specific interfaces
 export type IClientFormData = Omit<
   IClient,
-  "csub" | "accountAdmin" | "subscription" | "createdAt" | "updatedAt"
+  "cuid" | "accountAdmin" | "subscription" | "createdAt" | "updatedAt"
 >;
 
 // Account overview metrics

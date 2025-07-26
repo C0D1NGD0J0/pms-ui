@@ -1,8 +1,8 @@
-import { screen } from "@testing-library/react";
-import { AccountActivationView } from "@app/(auth)/account_activation/[cuid]/view";
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
 import { IAccountActivationForm } from "@interfaces/auth.interface";
+import { AccountActivationView } from "@app/(auth)/account_activation/[cuid]/view";
 
 const mockProps = {
   isPending: false,
