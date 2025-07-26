@@ -1,14 +1,16 @@
 "use client";
+import { useAuth } from "@store/index";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@components/FormElements";
+import { invitationService } from "@services/invite";
 import { PageHeader } from "@components/PageElements";
 import { useNotification } from "@hooks/useNotification";
-import { IInvitationTableData } from "@interfaces/invitation.interface";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
 import { InvitationFormValues } from "@src/validations/invitation.validations";
-import { InvitationPreview } from "@app/(protectedRoutes)/users/[csub]/components/InvitationPreview";
 
+import { InvitationPreview } from "../components/InvitationPreview";
 import {
   InvitationPreviewModal,
   InvitationTableView,
@@ -18,14 +20,27 @@ import {
   useInvitationFormBase,
   useInvitationPreview,
   useInvitationForm,
-} from "../hooks";
+  useGetInvitations,
+} from "./hooks";
 
 const InviteUsers: React.FC = () => {
-  const [invitations] = useState<IInvitationTableData[]>([]);
   const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
   const [csvPreviewData, setCsvPreviewData] = useState<any[]>([]);
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
   const { confirm } = useNotification();
+  const { client } = useAuth();
   const router = useRouter();
+
+  const {
+    filterOptions,
+    invitations,
+    totalCount,
+    pagination,
+    handleSortChange,
+    handlePageChange,
+    handleSortByChange,
+  } = useGetInvitations(client.cuid);
 
   const { handleSubmit, isSubmitting } = useInvitationForm();
   const {
@@ -51,14 +66,16 @@ const InviteUsers: React.FC = () => {
     setCsvPreviewData(data);
   };
 
+  const toggleFormVisibility = () => {
+    setIsFormVisible(!isFormVisible);
+  };
+
   const csvUploadConfig: CsvUploadConfig = {
     title: "Upload User Invitations via CSV",
     description:
-      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, csub.",
+      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid.",
     templateUrl: "/templates/user-invitation.csv",
     templateName: "Download CSV Template",
-    validateEndpoint: "/api/invitations/csv/validate",
-    processEndpoint: "/api/invitations/csv/process",
     showPreview: true,
     columns: [
       {
@@ -97,11 +114,15 @@ const InviteUsers: React.FC = () => {
         required: false,
       },
       {
-        name: "csub",
+        name: "cuid",
         description: "Client unique identifier",
         required: false,
       },
     ],
+    serviceMethods: {
+      validateCsv: (file: File) => invitationService.validateInvitationCsv(client?.cuid || "", file),
+      processCsv: (processId: string) => invitationService.processValidatedCsv(client?.cuid || "", processId),
+    },
   };
 
   const onSubmit = (values: InvitationFormValues) => {
@@ -134,20 +155,90 @@ const InviteUsers: React.FC = () => {
     handleShowPreview(formBase.invitationForm.values, formBase.selectedRole);
   };
 
-  const handleResend = (iuid: string) => {
-    console.log("Resend:", iuid);
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  const resendMutation = useMutation({
+    mutationFn: ({
+      iuid,
+      cuid,
+      customMessage,
+    }: {
+      iuid: string;
+      cuid: string;
+      customMessage?: string;
+    }) => {
+      setLoadingItemId(iuid);
+      return invitationService.resendInvitation(cuid, iuid, { iuid, customMessage });
+    },
+    onSuccess: () => {
+      message.success("Invitation resent successfully");
+      setLoadingItemId(null);
+      queryClient.invalidateQueries({
+        queryKey: [`/invitations/${client?.cuid}`, client?.cuid],
+      });
+    },
+    onError: (error: any) => {
+      setLoadingItemId(null);
+      message.error(
+        error?.response?.data?.message || "Failed to resend invitation"
+      );
+    },
+  });
+
+  const revokeMutation = useMutation({
+    mutationFn: ({
+      cuid,
+      iuid,
+      reason,
+    }: {
+      iuid: string;
+      reason: string;
+      cuid: string;
+    }) => {
+      setLoadingItemId(iuid);
+      console.log("Revoke mutation called with:", { cuid, iuid, reason });
+      return invitationService.revokeInvitation(cuid, iuid, { reason });
+    },
+    onSuccess: () => {
+      message.success("Invitation revoked successfully");
+      setLoadingItemId(null);
+      queryClient.invalidateQueries({
+        queryKey: [`/invitations/${client?.cuid}`, client?.cuid],
+      });
+    },
+    onError: (error: any) => {
+      setLoadingItemId(null);
+      message.error(
+        error?.response?.data?.message || "Failed to revoke invitation"
+      );
+    },
+  });
+
+  const handleResend = (cuid: string, iuid: string, customMessage?: string) => {
+    resendMutation.mutate({ cuid, iuid, customMessage });
   };
 
-  const handleRevoke = (iuid: string) => {
-    console.log("Revoke:", iuid);
+  const handleRevoke = (cuid: string, iuid: string, reason: string) => {
+    revokeMutation.mutate({ cuid, iuid, reason });
   };
 
   return (
     <div className="page add-users-page">
       <PageHeader
-        title="Add Users"
+        title="Invite users"
         headerBtn={
           <div className="flex-row">
+            <Button
+              label={isFormVisible ? "Hide Form" : "Invite User"}
+              className="btn-outline"
+              icon={
+                <i
+                  className={`bx ${isFormVisible ? "bx-hide" : "bx-group"}`}
+                ></i>
+              }
+              onClick={toggleFormVisibility}
+            />
             <Button
               label="Upload users list"
               className="btn-outline"
@@ -158,19 +249,31 @@ const InviteUsers: React.FC = () => {
         }
       />
 
-      <InvitationFormView
-        onSubmit={onSubmit}
-        formBase={formBase}
-        onCancel={onCancel}
-        onPreview={onPreview}
-        onSaveDraft={onSaveDraft}
-        isSubmitting={isSubmitting}
-      />
+      {isFormVisible && (
+        <InvitationFormView
+          onSubmit={onSubmit}
+          formBase={formBase}
+          onCancel={onCancel}
+          onPreview={onPreview}
+          onSaveDraft={onSaveDraft}
+          isSubmitting={isSubmitting}
+        />
+      )}
 
       <InvitationTableView
+        cuid={client?.cuid || ""}
         invitations={invitations}
         onResend={handleResend}
         onRevoke={handleRevoke}
+        filterOptions={filterOptions}
+        totalCount={totalCount}
+        pagination={pagination}
+        handleSortChange={handleSortChange}
+        handlePageChange={handlePageChange}
+        handleSortByChange={handleSortByChange}
+        isResending={resendMutation.isPending}
+        isRevoking={revokeMutation.isPending}
+        loadingItemId={loadingItemId || undefined}
       />
 
       <InvitationPreviewModal

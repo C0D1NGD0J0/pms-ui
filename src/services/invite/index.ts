@@ -2,9 +2,9 @@ import axios from "@configs/axios";
 import { withErrorHandling } from "@utils/serviceHelper";
 import {
   IResendInvitationData,
-  IInvitationListQuery,
   IInvitationTableData,
   IInvitationFormData,
+  IInvitationQuery,
   IInvitationStats,
   IUserRole,
 } from "@src/interfaces/invitation.interface";
@@ -15,9 +15,6 @@ class InvitationService {
 
   constructor() {}
 
-  /**
-   * Send an invitation to join a client
-   */
   async sendInvite(cuid: string, inviteData: Partial<IInvitationFormData>) {
     return withErrorHandling(async () => {
       const response = await axios.post(
@@ -29,9 +26,6 @@ class InvitationService {
     }, "sendInvite");
   }
 
-  /**
-   * Validate an invitation token (public endpoint)
-   */
   async validateInvitation(token: string) {
     try {
       const response = await axios.get(
@@ -45,9 +39,6 @@ class InvitationService {
     }
   }
 
-  /**
-   * Accept an invitation and complete user registration (public endpoint)
-   */
   async acceptInvitation(token: string, acceptData: any) {
     try {
       const response = await axios.post(
@@ -62,25 +53,31 @@ class InvitationService {
     }
   }
 
-  /**
-   * Get invitations for a client with filtering and pagination
-   */
-  async getInvitations(cuid: string, query: IInvitationListQuery) {
+  async getInvitations(cuid: string, query: IInvitationQuery) {
     try {
-      const response = await axios.get(`${this.baseUrl}/clients/${cuid}`, {
-        ...this.axiosConfig,
-        params: query,
+      const params = new URLSearchParams({
+        page: query.page?.toString() || "1",
+        limit: query.limit?.toString() || "10",
+        ...(query.sort && { sort: query.sort }),
+        ...(query.sortBy && { sortBy: query.sortBy }),
+        ...(query.status && { status: query.status }),
+        ...(query.role && { role: query.role }),
       });
-      return response.data;
+
+      const response = await axios.get(
+        `${this.baseUrl}/clients/${cuid}?${params.toString()}`,
+        {
+          ...this.axiosConfig,
+        }
+      );
+
+      return response;
     } catch (error) {
       console.error("Error fetching invitations:", error);
       throw error;
     }
   }
 
-  /**
-   * Get invitation statistics for a client
-   */
   async getInvitationStats(cuid: string): Promise<IInvitationStats> {
     try {
       const response = await axios.get(
@@ -94,13 +91,13 @@ class InvitationService {
     }
   }
 
-  /**
-   * Get invitation details by ID
-   */
-  async getInvitationById(iuid: string): Promise<IInvitationTableData> {
+  async getInvitationById(
+    cuid: string,
+    iuid: string
+  ): Promise<IInvitationTableData> {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/${iuid}`,
+        `${this.baseUrl}/${cuid}/${iuid}`,
         this.axiosConfig
       );
       return response.data;
@@ -110,15 +107,18 @@ class InvitationService {
     }
   }
 
-  /**
-   * Revoke a pending invitation
-   */
-  async revokeInvitation(iuid: string, revokeData: { reason?: string }) {
+  async revokeInvitation(
+    cuid: string,
+    iuid: string,
+    revokeData: { reason?: string }
+  ) {
     try {
-      const response = await axios.delete(`${this.baseUrl}/${iuid}/revoke`, {
-        ...this.axiosConfig,
-        data: revokeData,
-      });
+      console.log("Revoking invitation:", { cuid, iuid, revokeData });
+      const response = await axios.patch(
+        `${this.baseUrl}/${cuid}/revoke/${iuid}`,
+        revokeData,
+        this.axiosConfig
+      );
       return response.data;
     } catch (error) {
       console.error("Error revoking invitation:", error);
@@ -126,13 +126,14 @@ class InvitationService {
     }
   }
 
-  /**
-   * Resend an invitation reminder
-   */
-  async resendInvitation(iuid: string, resendData: IResendInvitationData) {
+  async resendInvitation(
+    cuid: string,
+    iuid: string,
+    resendData: IResendInvitationData
+  ) {
     try {
-      const response = await axios.post(
-        `${this.baseUrl}/${iuid}/resend`,
+      const response = await axios.patch(
+        `${this.baseUrl}/${cuid}/resend/${iuid}`,
         resendData,
         this.axiosConfig
       );
@@ -143,9 +144,6 @@ class InvitationService {
     }
   }
 
-  /**
-   * Get invitations by email (for user's own invitations)
-   */
   async getInvitationsByEmail(email: string) {
     try {
       const response = await axios.get(
@@ -159,11 +157,8 @@ class InvitationService {
     }
   }
 
-  /**
-   * Validate a CSV file for bulk invitation import
-   */
   async validateInvitationCsv(cuid: string, csvFile: File) {
-    try {
+    return withErrorHandling(async () => {
       const formData = new FormData();
       formData.append("csv_file", csvFile);
 
@@ -178,17 +173,11 @@ class InvitationService {
         }
       );
       return response.data;
-    } catch (error) {
-      console.error("Error validating CSV:", error);
-      throw error;
-    }
+    }, "validateInvitationCsv");
   }
 
-  /**
-   * Import invitations from a CSV file
-   */
   async importInvitationsFromCsv(cuid: string, csvFile: File) {
-    try {
+    return withErrorHandling(async () => {
       const formData = new FormData();
       formData.append("csv_file", csvFile);
 
@@ -203,10 +192,18 @@ class InvitationService {
         }
       );
       return response.data;
-    } catch (error) {
-      console.error("Error importing CSV:", error);
-      throw error;
-    }
+    }, "importInvitationsFromCsv");
+  }
+
+  async processValidatedCsv(cuid: string, processId: string) {
+    return withErrorHandling(async () => {
+      const response = await axios.post(
+        `${this.baseUrl}/${cuid}/process_csv`,
+        { processId },
+        this.axiosConfig
+      );
+      return response.data;
+    }, "processValidatedCsv");
   }
 
   /**

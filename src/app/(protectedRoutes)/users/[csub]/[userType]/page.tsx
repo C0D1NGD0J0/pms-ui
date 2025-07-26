@@ -6,31 +6,28 @@ import { Breadcrumb } from "@components/Breadcrumb";
 
 interface UserPageProps {
   params: Promise<{
-    csub: string; // Client subscription ID
+    cuid: string;
     userType: string;
   }>;
 }
 
 // Define valid user types
-const VALID_USER_TYPES = ["tenants", "vendors", "employees"] as const;
+const VALID_USER_TYPES = ["tenants", "vendors", "staff"] as const;
 type UserType = (typeof VALID_USER_TYPES)[number];
 
-// Type guard to check if userType is valid
 function isValidUserType(userType: string): userType is UserType {
   return VALID_USER_TYPES.includes(userType as UserType);
 }
 
-// Get display name for user type
 function getUserTypeDisplayName(userType: UserType): string {
   const displayNames = {
     tenants: "Tenants",
     vendors: "Vendors",
-    employees: "Employees",
+    staff: "Staff",
   };
   return displayNames[userType];
 }
 
-// Placeholder components for different user types
 const TenantsView = () => (
   <div className="user-management-container">
     <div className="page-header">
@@ -110,28 +107,25 @@ const EmployeesView = () => (
 );
 
 export default function UsersPage({ params }: UserPageProps) {
-  const { csub, userType } = React.use(params);
+  const { cuid, userType } = React.use(params);
 
-  // Validate user type
   if (!isValidUserType(userType)) {
     notFound();
   }
 
-  // Generate breadcrumb items
   const breadcrumbItems = [
     { title: "Dashboard", href: "/dashboard" },
     { title: "Users", href: "#" },
     { title: getUserTypeDisplayName(userType), href: `/users/${userType}` },
   ];
 
-  // Render the appropriate component based on user type
   const renderUserTypeContent = () => {
     switch (userType) {
       case "tenants":
         return <TenantsView />;
       case "vendors":
         return <VendorsView />;
-      case "employees":
+      case "staff":
         return <EmployeesView />;
       default:
         return null;

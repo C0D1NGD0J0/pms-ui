@@ -3,21 +3,10 @@ import React, { useState } from "react";
 import { Modal } from "@components/FormElements/Modal";
 import { useNotification } from "@hooks/useNotification";
 import { FileInput, Button } from "@components/FormElements";
-
-export interface CsvUploadConfig {
-  title: string;
-  description: string;
-  templateUrl: string;
-  templateName: string;
-  validateEndpoint: string;
-  processEndpoint: string;
-  columns: Array<{
-    name: string;
-    description: string;
-    required?: boolean;
-  }>;
-  showPreview?: boolean;
-}
+import {
+  CsvValidationResult,
+  CsvUploadConfig,
+} from "@interfaces/csv.interface";
 
 interface CsvUploadModalProps {
   isOpen: boolean;
@@ -35,18 +24,9 @@ export function CsvUploadModal({
   const [csvFile, setCsvFile] = useState<File | null>(null);
   const [isValidating, setIsValidating] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [validationResult, setValidationResult] = useState<{
-    success: boolean;
-    data?: {
-      processId: string;
-      validRecords: number;
-      invalidRecords: number;
-      validData?: any[];
-    };
-    message: string;
-    errors?: Array<{ row: number; message: string }>;
-  } | null>(null);
-  const { openNotification } = useNotification();
+  const [validationResult, setValidationResult] =
+    useState<CsvValidationResult | null>(null);
+  const { message } = useNotification();
 
   const handleFileChange = (file: File | null) => {
     setCsvFile(file);
@@ -70,20 +50,7 @@ export function CsvUploadModal({
 
     setIsValidating(true);
     try {
-      const formData = new FormData();
-      formData.append("file", csvFile);
-
-      const response = await fetch(config.validateEndpoint, {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Validation failed");
-      }
-
+      const result = await config.serviceMethods.validateCsv(csvFile);
       setValidationResult(result);
 
       // If we have preview data and it's enabled, call the preview callback
@@ -91,19 +58,19 @@ export function CsvUploadModal({
         onPreviewData(result.data.validData);
       }
 
-      openNotification(
-        "success",
-        "CSV Validation Complete",
-        `${result.data.validRecords} valid records found. ${
-          result.data.invalidRecords > 0
-            ? `${result.data.invalidRecords} records have errors.`
+      message.success(
+        `CSV Validation Complete: ${
+          result.data?.validRecords || 0
+        } valid records found. ${
+          (result.data?.invalidRecords || 0) > 0
+            ? `${result?.data?.invalidRecords} records have errors.`
             : "All records are valid!"
         }`
       );
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error.message || "An error occurred during validation";
-      openNotification("error", "Validation Error", errorMessage);
+        (error as Error).message || "An error occurred during validation";
+      message.error(`Validation Error: ${errorMessage}`);
     } finally {
       setIsValidating(false);
     }
@@ -114,33 +81,19 @@ export function CsvUploadModal({
 
     setIsProcessing(true);
     try {
-      const response = await fetch(config.processEndpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          processId: validationResult.data.processId,
-        }),
-      });
+      const result = await config.serviceMethods.processCsv(
+        validationResult.data.processId
+      );
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Processing failed");
-      }
-
-      openNotification(
-        "success",
-        "Processing Completed Successfully",
-        `${result.data.processed} records have been processed successfully.`
+      message.success(
+        `Processing Completed Successfully: ${result.data.processed} records have been processed successfully.`
       );
 
       handleClose();
-    } catch (error: any) {
+    } catch (error) {
       const errorMessage =
-        error.message || "An error occurred during processing";
-      openNotification("error", "Processing Error", errorMessage);
+        (error as Error).message || "An error occurred during processing";
+      message.error(`Processing Error: ${errorMessage}`);
     } finally {
       setIsProcessing(false);
     }
