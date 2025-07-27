@@ -14,6 +14,7 @@ interface InvitationTableViewProps {
   invitations: IInvitationTableData[];
   onResend: (cuid: string, iuid: string, customMessage?: string) => void;
   onRevoke: (cuid: string, iuid: string, reason: string) => void;
+  onEdit: (invitation: IInvitationTableData) => void;
   filterOptions: FilterOption[];
   totalCount: number;
   cuid: string;
@@ -31,6 +32,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
   invitations,
   onResend,
   onRevoke,
+  onEdit,
   filterOptions,
   totalCount,
   pagination,
@@ -50,6 +52,10 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
     isOpen: boolean;
     invitation: IInvitationTableData | null;
   }>({ isOpen: false, invitation: null });
+
+  const canEditInvitation = (status: string) => {
+    return status === "draft";
+  };
 
   const canRevokeInvitation = (status: string) => {
     return status === "draft";
@@ -114,6 +120,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
       title: "Actions",
       dataIndex: "actions",
       render: (_, record) => {
+        const canEdit = canEditInvitation(record.status);
         const canResend = canResendInvitation(record.status);
         const canRevoke = canRevokeInvitation(record.status);
         const isResendingThis = isResending && loadingItemId === record.iuid;
@@ -121,6 +128,15 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
 
         return (
           <div className="table-actions">
+            <Button
+              label="Edit"
+              className={`btn-sm btn-primary ${!canEdit ? "btn-disabled" : ""}`}
+              onClick={() => onEdit(record)}
+              disabled={!canEdit || isResendingThis || isRevokingThis}
+              title={
+                !canEdit ? "Can only edit invitations with draft status" : ""
+              }
+            />
             <Button
               label="Resend"
               loading={isResendingThis}
@@ -161,9 +177,9 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
     setSearchValue(e.target.value);
   };
 
-  const _onRevoke = (reason: string) => {
+  const _onRevoke = (cuid: string, iuid: string, reason: string) => {
     if (revokeModal.invitation) {
-      onRevoke(cuid, revokeModal.invitation.iuid, reason);
+      onRevoke(cuid, iuid, reason);
     }
     closeRevokeModal();
   };

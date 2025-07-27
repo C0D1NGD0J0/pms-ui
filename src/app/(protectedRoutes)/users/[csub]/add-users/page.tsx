@@ -1,7 +1,6 @@
 "use client";
 import { useAuth } from "@store/index";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@components/FormElements";
 import { invitationService } from "@services/invite";
 import { PageHeader } from "@components/PageElements";
@@ -20,6 +19,7 @@ import {
   useInvitationFormBase,
   useInvitationPreview,
   useInvitationForm,
+  useInvitationEdit,
   useGetInvitations,
 } from "./hooks";
 
@@ -28,9 +28,11 @@ const InviteUsers: React.FC = () => {
   const [csvPreviewData, setCsvPreviewData] = useState<any[]>([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
-  const { confirm } = useNotification();
+  const [editingInvitation, setEditingInvitation] = useState<any>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const { confirm, message } = useNotification();
+  const queryClient = useQueryClient();
   const { client } = useAuth();
-  const router = useRouter();
 
   const {
     filterOptions,
@@ -43,6 +45,8 @@ const InviteUsers: React.FC = () => {
   } = useGetInvitations(client.cuid);
 
   const { handleSubmit, isSubmitting } = useInvitationForm();
+  const { handleUpdate, isUpdating } = useInvitationEdit();
+
   const {
     showPreview,
     handleShowPreview,
@@ -120,43 +124,78 @@ const InviteUsers: React.FC = () => {
       },
     ],
     serviceMethods: {
-      validateCsv: (file: File) => invitationService.validateInvitationCsv(client?.cuid || "", file),
-      processCsv: (processId: string) => invitationService.processValidatedCsv(client?.cuid || "", processId),
+      validateCsv: (file: File) =>
+        invitationService.validateInvitationCsv(client?.cuid || "", file),
+      processCsv: (processId: string) =>
+        invitationService.processValidatedCsv(client?.cuid || "", processId),
     },
   };
 
   const onSubmit = (values: InvitationFormValues) => {
-    handleSubmit(values);
-    formBase.resetForm();
+    if (isEditMode && editingInvitation) {
+      handleUpdate(editingInvitation.iuid, values).then(() => {
+        setIsEditMode(false);
+        setEditingInvitation(null);
+        setIsFormVisible(false);
+        formBase.resetForm();
+      });
+    } else {
+      handleSubmit(values);
+      formBase.resetForm();
+    }
   };
 
   const onSaveDraft = (values: InvitationFormValues) => {
-    values = {
+    const draftValues = {
       ...values,
-      status: "draft",
+      status: "draft" as const,
     };
-    handleSubmit(values);
+
+    if (isEditMode && editingInvitation) {
+      handleUpdate(editingInvitation.iuid, draftValues).then(() => {
+        setIsEditMode(false);
+        setEditingInvitation(null);
+        setIsFormVisible(false);
+        formBase.resetForm();
+      });
+    } else {
+      handleSubmit(draftValues);
+      formBase.resetForm();
+    }
   };
 
   const onCancel = () => {
-    confirm({
-      title: "Are you sure?",
-      message: "Any unsaved changes will be lost.",
-      onConfirm: () => {
-        router.refresh();
-      },
-      confirmText: "Yes, Cancel",
-      cancelText: "Keep Editing",
-      type: "warning",
-    });
+    const hasChanges = isEditMode || formBase.invitationForm.isDirty();
+
+    if (hasChanges) {
+      confirm({
+        title: "Are you sure?",
+        message: "Any unsaved changes will be lost.",
+        onConfirm: () => {
+          if (isEditMode) {
+            setIsEditMode(false);
+            setEditingInvitation(null);
+          }
+          setIsFormVisible(false);
+          formBase.resetForm();
+        },
+        confirmText: "Yes, Cancel",
+        cancelText: "Keep Editing",
+        type: "warning",
+      });
+    } else {
+      if (isEditMode) {
+        setIsEditMode(false);
+        setEditingInvitation(null);
+      }
+      setIsFormVisible(false);
+      formBase.resetForm();
+    }
   };
 
   const onPreview = () => {
     handleShowPreview(formBase.invitationForm.values, formBase.selectedRole);
   };
-
-  const queryClient = useQueryClient();
-  const { message } = useNotification();
 
   const resendMutation = useMutation({
     mutationFn: ({
@@ -169,7 +208,10 @@ const InviteUsers: React.FC = () => {
       customMessage?: string;
     }) => {
       setLoadingItemId(iuid);
-      return invitationService.resendInvitation(cuid, iuid, { iuid, customMessage });
+      return invitationService.resendInvitation(cuid, iuid, {
+        iuid,
+        customMessage,
+      });
     },
     onSuccess: () => {
       message.success("Invitation resent successfully");
@@ -223,6 +265,31 @@ const InviteUsers: React.FC = () => {
     revokeMutation.mutate({ cuid, iuid, reason });
   };
 
+  const handleEdit = (invitation: any) => {
+    setEditingInvitation(invitation);
+    setIsEditMode(true);
+    setIsFormVisible(true);
+
+    formBase.handleRoleSelect(invitation.role);
+    formBase.invitationForm.setValues({
+      inviteeEmail: invitation.inviteeEmail,
+      role: invitation.role,
+      status: invitation.status,
+      personalInfo: {
+        firstName: invitation.personalInfo?.firstName || "",
+        lastName: invitation.personalInfo?.lastName || "",
+        phoneNumber: invitation.personalInfo?.phoneNumber || "",
+      },
+      metadata: {
+        inviteMessage: invitation.metadata?.inviteMessage || "",
+      },
+      employeeInfo: invitation.employeeInfo || {},
+      vendorInfo: invitation.vendorInfo || {},
+    });
+
+    formBase.setActiveTab("details");
+  };
+
   return (
     <div className="page add-users-page">
       <PageHeader
@@ -256,7 +323,7 @@ const InviteUsers: React.FC = () => {
           onCancel={onCancel}
           onPreview={onPreview}
           onSaveDraft={onSaveDraft}
-          isSubmitting={isSubmitting}
+          isSubmitting={isEditMode ? isUpdating : isSubmitting}
         />
       )}
 
@@ -265,6 +332,7 @@ const InviteUsers: React.FC = () => {
         invitations={invitations}
         onResend={handleResend}
         onRevoke={handleRevoke}
+        onEdit={handleEdit}
         filterOptions={filterOptions}
         totalCount={totalCount}
         pagination={pagination}

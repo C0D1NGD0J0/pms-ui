@@ -26,6 +26,21 @@ class InvitationService {
     }, "sendInvite");
   }
 
+  async updateInvitation(
+    cuid: string,
+    iuid: string,
+    inviteData: Partial<IInvitationFormData>
+  ) {
+    return withErrorHandling(async () => {
+      const response = await axios.patch(
+        `${this.baseUrl}/${cuid}/update/${iuid}`,
+        inviteData,
+        this.axiosConfig
+      );
+      return response.data;
+    }, "updateInvitation");
+  }
+
   async validateInvitation(token: string) {
     try {
       const response = await axios.get(

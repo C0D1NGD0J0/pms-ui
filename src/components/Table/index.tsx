@@ -76,6 +76,7 @@ export function Table<T extends object>({
       statusLower.includes("active") ||
       statusLower.includes("available") ||
       statusLower.includes("vacant") ||
+      statusLower.includes("sent") ||
       statusLower.includes("success") ||
       statusLower.includes("resolved") ||
       statusLower.includes("confirmed")
@@ -85,7 +86,8 @@ export function Table<T extends object>({
       statusLower.includes("pending") ||
       statusLower.includes("maintenance") ||
       statusLower.includes("warning") ||
-      statusLower.includes("low")
+      statusLower.includes("low") ||
+      statusLower.includes("draft")
     ) {
       statusClass = "warning";
     } else if (
@@ -94,6 +96,7 @@ export function Table<T extends object>({
       statusLower.includes("urgent") ||
       statusLower.includes("danger") ||
       statusLower.includes("open") ||
+      statusLower.includes("revoked") ||
       statusLower.includes("not renewing")
     ) {
       statusClass = "danger";
