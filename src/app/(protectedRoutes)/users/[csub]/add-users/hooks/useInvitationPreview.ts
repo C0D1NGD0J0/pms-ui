@@ -129,9 +129,9 @@ export function useInvitationPreview() {
     isLoading: isTemplateLoading,
     error: templateError,
   } = useQuery({
-    queryKey: ["renderTemplate", client?.csub, selectedTemplateType],
+    queryKey: ["renderTemplate", client?.cuid, selectedTemplateType],
     queryFn: async () => {
-      if (!client?.csub || !selectedTemplateType || !currentFormData) {
+      if (!client?.cuid || !selectedTemplateType || !currentFormData) {
         throw new Error("Missing required data for template rendering");
       }
 
@@ -140,7 +140,7 @@ export function useInvitationPreview() {
         currentRole
       );
       const result = await emailTemplateService.renderTemplate(
-        client.csub,
+        client.cuid,
         selectedTemplateType,
         templateVariables
       );
@@ -148,7 +148,7 @@ export function useInvitationPreview() {
       return result;
     },
     enabled:
-      !!client?.csub &&
+      !!client?.cuid &&
       !!selectedTemplateType &&
       !!currentFormData &&
       showPreview,

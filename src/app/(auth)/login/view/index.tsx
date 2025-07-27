@@ -18,10 +18,10 @@ interface LoginViewProps {
   form: UseFormReturnType<ILoginForm>;
   isSubmitting: boolean;
   isModalOpen: boolean;
-  userAccounts: Array<{ csub: string; displayName: string }>;
+  userAccounts: Array<{ cuid: string; displayName: string }>;
   selectedClient: string;
   handleSubmit: (values: ILoginForm) => void;
-  handleSelect: (csub: string) => void;
+  handleSelect: (cuid: string) => void;
   toggleModal: (isOpen: boolean) => void;
 }
 
@@ -138,11 +138,11 @@ export function LoginView({
           <div className="">
             <ul className="account-list">
               {userAccounts.map((account) => (
-                <li key={account.csub}>
+                <li key={account.cuid}>
                   <Radio
-                    key={account.csub}
-                    value={account.csub}
-                    checked={selectedClient === account.csub}
+                    key={account.cuid}
+                    value={account.cuid}
+                    checked={selectedClient === account.cuid}
                     onChange={(e) => handleSelect(e.target.value)}
                   >
                     {account.displayName}

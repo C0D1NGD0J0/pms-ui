@@ -10,7 +10,7 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useInvitationFormBase } from "../../hooks";
+import { useInvitationFormBase } from "../hooks";
 import {
   VendorInvitationTab,
   EmployeeDetailsTab,

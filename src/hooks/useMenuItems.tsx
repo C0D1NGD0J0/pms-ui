@@ -60,25 +60,25 @@ export const useMenuItems = () => {
       isDropdown: true,
       items: [
         {
-          path: `/users/${currentUser?.client.csub}/tenants`,
+          path: `/users/${currentUser?.client.cuid}/tenants`,
           icon: "bx bx-group",
           label: "Tenants",
           visible: true,
         },
         {
-          path: `/users/${currentUser?.client.csub}/vendors`,
+          path: `/users/${currentUser?.client.cuid}/vendors`,
           icon: "bx bx-building",
           label: "Vendors",
           visible: true,
         },
         {
-          path: `/users/${currentUser?.client.csub}/employees`,
+          path: `/users/${currentUser?.client.cuid}/employees`,
           icon: "bx bx-id-card",
           label: "Employees",
           visible: true,
         },
         {
-          path: `/users/${currentUser?.client.csub}/add-users`,
+          path: `/users/${currentUser?.client.cuid}/add-users`,
           icon: "bx bx-plus",
           label: "Add Users",
           visible: true,
@@ -89,13 +89,13 @@ export const useMenuItems = () => {
       type: "bottom",
       items: [
         {
-          path: `/account_settings/${currentUser?.client.csub}`,
+          path: `/account_settings/${currentUser?.client.cuid}`,
           icon: "bx bx-cog",
           label: "Account",
-          visible: !!currentUser?.client.csub,
+          visible: !!currentUser?.client.cuid,
         },
         {
-          path: `/wallet/${currentUser?.client.csub}`,
+          path: `/wallet/${currentUser?.client.cuid}`,
           icon: "bx bx-wallet",
           label: "Wallet",
           visible: true,

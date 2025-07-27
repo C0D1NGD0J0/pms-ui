@@ -53,7 +53,7 @@ export function useBaseUnitForm({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetPropertyUnits(client?.csub || "", property.pid, {
+  } = useGetPropertyUnits(client?.cuid || "", property.pid, {
     limit: 2,
     sortBy: "floor",
   });
@@ -65,7 +65,7 @@ export function useBaseUnitForm({
   const unitForm = useForm<UnitsFormValues>({
     initialValues: {
       units: [],
-      csub: client?.csub || "",
+      cuid: client?.cuid || "",
       pid: property.pid,
     },
   });

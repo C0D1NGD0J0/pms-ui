@@ -24,9 +24,7 @@ function TestWrapper({ children }: { children: ReactNode }) {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </QueryClientProvider>
   );
 }
@@ -52,7 +50,7 @@ describe("useLoginLogic Hook", () => {
     const mockResponse = {
       msg: "Login successful",
       accounts: [],
-      activeAccount: { csub: "123", displayName: "Test User" },
+      activeAccount: { cuid: "123", displayName: "Test User" },
     };
     mockAuthService.login.mockResolvedValue(mockResponse);
 
@@ -83,8 +81,8 @@ describe("useLoginLogic Hook", () => {
     const mockResponse = {
       msg: "Login successful",
       accounts: [
-        { csub: "123", displayName: "Account 1" },
-        { csub: "456", displayName: "Account 2" },
+        { cuid: "123", displayName: "Account 1" },
+        { cuid: "456", displayName: "Account 2" },
       ],
       activeAccount: null,
     };

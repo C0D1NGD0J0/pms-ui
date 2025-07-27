@@ -9,7 +9,7 @@ import {
 
 export const propertySchema = z
   .object({
-    csub: z.string().optional(),
+    cuid: z.string().optional(),
     name: z.string().min(5, "Property name is required"),
     propertyType: z
       .nativeEnum(PropertyTypesEnum, {
@@ -193,7 +193,7 @@ export const propertySchema = z
   });
 
 export const csvUploadSchema = z.object({
-  csub: z.string().min(1, "csub is required").default(""),
+  cuid: z.string().min(1, "cuid is required").default(""),
   csvFile: z
     .instanceof(File)
     .refine((file) => file.name.endsWith(".csv"), {

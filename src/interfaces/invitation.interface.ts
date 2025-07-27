@@ -1,3 +1,5 @@
+import { IFilterQuery } from "./utils.interface";
+
 export type IUserRole = "manager" | "vendor" | "tenant" | "staff" | "admin";
 
 export interface IInvitationFormData {
@@ -89,14 +91,12 @@ export interface IInvitationStats {
   sent: number;
 }
 
-export interface IInvitationListQuery {
-  status?: "pending" | "accepted" | "expired" | "revoked" | "sent";
-  sortBy?: "createdAt" | "expiresAt" | "inviteeEmail";
-  sortOrder?: "asc" | "desc";
-  clientId: string;
+export interface IInvitationQuery
+  extends IFilterQuery<
+    "createdAt" | "inviteeEmail" | "status",
+    "draft" | "pending" | "accepted" | "expired" | "revoked" | "sent" | "all"
+  > {
   role?: IUserRole;
-  limit?: number;
-  page?: number;
 }
 
 export interface IResendInvitationData {

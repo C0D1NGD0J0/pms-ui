@@ -7,7 +7,7 @@ export interface FilterOption {
   value: string;
 }
 
-export const useGetAllProperties = (csub: string) => {
+export const useGetAllProperties = (cuid: string) => {
   const sortOptions: FilterOption[] = [
     { label: "All", value: "" },
     { label: "Status", value: "status" },
@@ -16,13 +16,13 @@ export const useGetAllProperties = (csub: string) => {
   ];
 
   const fetchProperties = (pagination: IPaginationQuery) =>
-    propertyService.getClientProperties(csub, pagination);
+    propertyService.getClientProperties(cuid, pagination);
 
   const tableData = useTableData({
-    queryKeys: ["/properties", csub],
+    queryKeys: ["/properties", cuid],
     fetchFn: fetchProperties,
     paginationConfig: {
-      initialLimit: 4,
+      initialLimit: 5,
     },
   });
 
@@ -30,6 +30,6 @@ export const useGetAllProperties = (csub: string) => {
     ...tableData,
     filterOptions: sortOptions,
     properties: tableData.data?.items || [],
-    totalCount: 15,
+    totalCount: tableData.data?.pagination.total || 0,
   };
 };

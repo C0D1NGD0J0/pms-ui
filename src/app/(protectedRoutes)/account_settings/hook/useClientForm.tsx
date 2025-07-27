@@ -16,10 +16,10 @@ import {
 
 interface UseClientFormProps {
   clientData: IClient;
-  csub: string;
+  cuid: string;
 }
 
-export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
+export const useClientForm = ({ clientData, cuid }: UseClientFormProps) => {
   const { openNotification } = useNotification();
   const queryClient = useQueryClient();
   const [lastManualSave, setLastManualSave] = useState<Date | null>(null);
@@ -48,7 +48,7 @@ export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
 
   const autoSaveMutation = useMutation({
     mutationFn: (data: UpdateClientDetailsFormData) =>
-      clientService.updateClient(csub, data),
+      clientService.updateClient(cuid, data),
     onSuccess: (data, variables) => {
       setLastAutoSave(new Date());
       lastSavedValues.current = variables;
@@ -61,7 +61,7 @@ export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
 
       // Invalidate queries to refresh data
       queryClient.invalidateQueries({
-        queryKey: CLIENT_QUERY_KEYS.getClientByCsub(csub),
+        queryKey: CLIENT_QUERY_KEYS.getClientBycuid(cuid),
       });
     },
     onError: (error: any) => {
@@ -73,7 +73,7 @@ export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
 
   const manualSaveMutation = useMutation({
     mutationFn: (data: UpdateClientDetailsFormData) =>
-      clientService.updateClient(csub, data),
+      clientService.updateClient(cuid, data),
     onSuccess: (data, variables) => {
       setLastManualSave(new Date());
       setLastAutoSave(null);
@@ -87,7 +87,7 @@ export const useClientForm = ({ clientData, csub }: UseClientFormProps) => {
       );
 
       queryClient.invalidateQueries({
-        queryKey: CLIENT_QUERY_KEYS.getClientByCsub(csub),
+        queryKey: CLIENT_QUERY_KEYS.getClientBycuid(cuid),
       });
     },
     onError: (error: any) => {

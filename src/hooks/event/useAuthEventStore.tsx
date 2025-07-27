@@ -12,7 +12,7 @@ export function useAuthEventStore() {
   const { setUser, setAuthLoading, setClient, logout } = useAuthActions();
 
   useEvent(EventTypes.LOGIN_SUCCESS, (loginData: UserClient | null) => {
-    if (loginData?.csub) {
+    if (loginData?.cuid) {
       setAuthLoading(true);
       setClient(loginData);
     }
@@ -21,8 +21,8 @@ export function useAuthEventStore() {
   useEvent(
     EventTypes.GET_CURRENT_USER,
     async (loginData: UserClient | null) => {
-      if (loginData?.csub) {
-        const resp = await authService.currentuser(loginData.csub);
+      if (loginData?.cuid) {
+        const resp = await authService.currentuser(loginData.cuid);
         if (resp) {
           setUser(resp.data);
           setClient(resp.data.client);

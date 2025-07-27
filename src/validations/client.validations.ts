@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Identification Schema
-const clientIdentificationSchema = z.object({
+const cuidentificationSchema = z.object({
   idType: z.enum([
     "passport",
     "driverLicense",
@@ -56,7 +56,7 @@ const clientSettingsSchema = z.object({
 // Main Update Schema - mirrors server validation exactly
 export const updateClientDetailsSchema = z
   .object({
-    identification: clientIdentificationSchema.partial().optional(),
+    identification: cuidentificationSchema.partial().optional(),
     companyProfile: companyProfileSchema.partial().optional(),
     displayName: z
       .string()

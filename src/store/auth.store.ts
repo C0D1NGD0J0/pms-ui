@@ -33,8 +33,8 @@ const useAuthStore = create<AuthState>()(
       refreshTokenError: null,
       actions: {
         logout: async () => {
-          const csub = get().client?.csub;
-          await authService.logout(csub);
+          const cuid = get().client?.cuid;
+          await authService.logout(cuid);
           sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
@@ -42,7 +42,7 @@ const useAuthStore = create<AuthState>()(
             isAuthLoading: false,
             isRefreshingToken: false,
             refreshTokenError: null,
-            client: { csub: "", displayName: "" },
+            client: { cuid: "", displayName: "" },
           });
         },
         setUser: (user: ICurrentUser | null) => {
@@ -67,7 +67,7 @@ const useAuthStore = create<AuthState>()(
           sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
-            client: { csub: "", displayName: "" },
+            client: { cuid: "", displayName: "" },
             permissions: [],
             isAuthLoading: false,
             isRefreshingToken: false,
@@ -95,15 +95,15 @@ export const useAuth = () => {
     isRefreshingToken,
     refreshTokenError,
   } = useAuthStore();
-  const isLoggedIn = !!user?.sub && !!client?.csub;
+  const isAuthenticated = !!client?.cuid && !isAuthLoading && !!user;
   return {
-    user,
-    client,
-    isLoggedIn,
-    permissions,
+    isLoggedIn: isAuthenticated,
     isAuthLoading,
     isRefreshingToken,
     refreshTokenError,
+    user: user,
+    permissions: permissions || [],
+    client: client,
   };
 };
 
@@ -114,9 +114,9 @@ export const useAuthActions = () => {
     setUser: actions.setUser,
     setClient: actions.setClient,
     setAuthLoading: actions.setAuthLoading,
+    clearAuthState: actions.clearAuthState,
     setPermissions: actions.setPermissions,
     setRefreshingToken: actions.setRefreshingToken,
     setRefreshTokenError: actions.setRefreshTokenError,
-    clearAuthState: actions.clearAuthState,
   };
 };

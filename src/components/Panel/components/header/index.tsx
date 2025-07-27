@@ -61,7 +61,7 @@ export function PanelHeader({
                 className="filter-select"
                 value={filterOpts.value}
                 options={filterOpts.options}
-                onChange={(value) => {
+                onChange={(value: string) => {
                   setSortBy(value);
                   filterOpts?.onFilterChange(value);
                 }}

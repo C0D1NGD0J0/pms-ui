@@ -1,8 +1,8 @@
 import { useAuth } from "@store/index";
-import { useMutation } from "@tanstack/react-query";
-import { useNotification } from "@hooks/useNotification";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useNotification } from "@hooks/useNotification";
 import { invitationService } from "@src/services/invite";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { IInvitationFormData } from "@src/interfaces/invitation.interface";
 import {
   sanitizeInvitationFormData,
@@ -35,38 +35,49 @@ const transformFormDataToAPIFormat = (
   return transformed;
 };
 
-export function useInvitationForm() {
+export function useInvitationEdit() {
   const { client } = useAuth();
   const { message } = useNotification();
   const { handleValidationError } = useErrorHandler();
+  const queryClient = useQueryClient();
 
-  const sendInvitationMutation = useMutation({
-    mutationFn: (data: InvitationFormValues) =>
-      invitationService.sendInvite(
-        client?.csub || "",
+  const updateInvitationMutation = useMutation({
+    mutationFn: ({
+      iuid,
+      data,
+    }: {
+      iuid: string;
+      data: InvitationFormValues;
+    }) =>
+      invitationService.updateInvitation(
+        client?.cuid || "",
+        iuid,
         transformFormDataToAPIFormat(data)
       ),
     onSuccess: (response) => {
-      message.success(response.message || "Invitation sent successfully");
+      message.success(response.message || "Invitation updated successfully");
+      queryClient.invalidateQueries({
+        queryKey: [`/invitations/${client?.cuid}`, client?.cuid],
+      });
     },
     onError: (error: any) => {
       handleValidationError(error);
     },
   });
 
-  const handleSubmit = async (values: InvitationFormValues) => {
+  const handleUpdate = async (iuid: string, values: InvitationFormValues) => {
     try {
       const sanitizedData = sanitizeInvitationFormData(values);
-      await sendInvitationMutation.mutateAsync(sanitizedData);
+      await updateInvitationMutation.mutateAsync({ iuid, data: sanitizedData });
     } catch (error) {
-      console.error("Error sending invitation:", error);
+      console.error("Error updating invitation:", error);
     }
   };
 
   return {
-    handleSubmit,
-    isSubmitting: sendInvitationMutation.isPending,
-    submitError: sendInvitationMutation.error,
-    isSuccess: sendInvitationMutation.isSuccess,
+    handleUpdate,
+    isUpdating: updateInvitationMutation.isPending,
+    updateError: updateInvitationMutation.error,
+    isSuccess: updateInvitationMutation.isSuccess,
   };
 }
