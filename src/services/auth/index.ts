@@ -41,6 +41,7 @@ class AuthService {
   };
   currentuser = async (cuid: string) => {
     try {
+      console.log("Fetching current user for cuid:", cuid);
       if (!cuid) return;
       const res = await axios.get<{ success: boolean; data: ICurrentUser }>(
         `${this.baseUrl}/${cuid}/me`

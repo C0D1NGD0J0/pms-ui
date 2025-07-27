@@ -60,7 +60,10 @@ export function ForgotPasswordView({
           </div>
         </Form>
       </AuthContentBody>
-      <AuthContentFooter footerLink="/login" footerLinkText="login" />
+      <AuthContentFooter
+        footerLink="/login"
+        footerLinkText="Already have an account? Log in"
+      />
     </>
   );
 }

@@ -20,16 +20,16 @@ export default function AuthTemplate({
 
     if (isIdle && !isLoggedIn) {
       timeoutId = setTimeout(() => {
-        setLoaderMessage("Logging out");
+        setLoaderMessage("Idle session detected");
         return push("/login");
-      }, 10000);
+      }, 5000);
     }
 
     if (!isLoggedIn) {
       timeoutId = setTimeout(() => {
-        setLoaderMessage("Logging out");
-        push("/login");
-      }, 15000);
+        setLoaderMessage("Login required to access this page.");
+        return push("/login");
+      }, 5000);
     }
 
     return () => {

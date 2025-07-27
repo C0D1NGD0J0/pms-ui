@@ -95,15 +95,15 @@ export const useAuth = () => {
     isRefreshingToken,
     refreshTokenError,
   } = useAuthStore();
-  const isLoggedIn = !!user?.sub && !!client?.cuid;
+  const isAuthenticated = !!client?.cuid && !isAuthLoading && !!user;
   return {
-    user,
-    client: client || ({ cuid: "", displayName: "" } as UserClient),
-    isLoggedIn,
-    permissions: permissions || [],
+    isLoggedIn: isAuthenticated,
     isAuthLoading,
     isRefreshingToken,
     refreshTokenError,
+    user: user,
+    permissions: permissions || [],
+    client: client,
   };
 };
 
@@ -114,9 +114,9 @@ export const useAuthActions = () => {
     setUser: actions.setUser,
     setClient: actions.setClient,
     setAuthLoading: actions.setAuthLoading,
+    clearAuthState: actions.clearAuthState,
     setPermissions: actions.setPermissions,
     setRefreshingToken: actions.setRefreshingToken,
     setRefreshTokenError: actions.setRefreshTokenError,
-    clearAuthState: actions.clearAuthState,
   };
 };

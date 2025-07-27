@@ -1,5 +1,6 @@
 import { ConfigProvider } from "antd";
 import { ThemeProvider } from "@theme/index";
+import { ClientBootstrap } from "@bootstrap/index";
 import { RectQueryProvider } from "@hooks/useReactQuery";
 import { EventProvider } from "@components/EventProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
@@ -37,7 +38,11 @@ export default function RootLayout({
               <ConfigProvider>
                 <RectQueryProvider>
                   <EventProvider>
-                    {children}
+                    <ClientBootstrap
+                      enableDebug={process.env.NODE_ENV === "development"}
+                    >
+                      {children}
+                    </ClientBootstrap>
                     <TokenRefreshOverlay />
                   </EventProvider>
                 </RectQueryProvider>

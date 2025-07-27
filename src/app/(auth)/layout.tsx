@@ -1,6 +1,8 @@
 "use client";
-import React from "react";
-import { usePathname } from "next/navigation";
+import { Loading } from "@components/Loading";
+import React, { useEffect, useState } from "react";
+import { useCurrentUser } from "@hooks/useCurrentUser";
+import { usePathname, useRouter } from "next/navigation";
 import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
 
 interface MetaInfo {
@@ -68,7 +70,29 @@ const routeToBoxOrder: BoxOrderMapping = {
 };
 
 const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
+  const { push } = useRouter();
   const pathname = usePathname();
+  const [loading, setLoading] = useState(true);
+  const { isLoggedIn, isLoading: isAuthLoading } = useCurrentUser();
+
+  useEffect(() => {
+    if (isLoggedIn && !isAuthLoading) {
+      setLoading(false);
+      push("/dashboard");
+    }
+
+    if (!isLoggedIn && !isAuthLoading) {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn, isAuthLoading]);
+
+  if (loading || isLoggedIn) {
+    return (
+      <Loading size="fullscreen" description="Checking authentication..." />
+    );
+  }
+
   const LeftBox: React.FC<LeftBoxProps> = ({ meta }) => (
     <AuthContentBox className="auth-page_left-box">
       <div className="copy-text">

@@ -62,7 +62,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
   };
 
   const canResendInvitation = (status: string) => {
-    return status === "draft";
+    return ["draft", "revoked"].includes(status);
   };
 
   const handleRevokeClick = (record: IInvitationTableData) => {
@@ -128,15 +128,20 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
 
         return (
           <div className="table-actions">
-            <Button
-              label="Edit"
-              className={`btn-sm btn-primary ${!canEdit ? "btn-disabled" : ""}`}
-              onClick={() => onEdit(record)}
-              disabled={!canEdit || isResendingThis || isRevokingThis}
-              title={
-                !canEdit ? "Can only edit invitations with draft status" : ""
-              }
-            />
+            {record.status !== "revoked" && (
+              <Button
+                label="Edit"
+                className={`btn-sm btn-primary ${
+                  !canEdit ? "btn-disabled" : ""
+                }`}
+                onClick={() => onEdit(record)}
+                disabled={!canEdit || isResendingThis || isRevokingThis}
+                title={
+                  !canEdit ? "Can only edit invitations with draft status" : ""
+                }
+              />
+            )}
+
             <Button
               label="Resend"
               loading={isResendingThis}
