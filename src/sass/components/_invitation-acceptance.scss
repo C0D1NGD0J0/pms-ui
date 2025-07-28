@@ -1,0 +1,185 @@
+// Invitation Acceptance Component Styles
+.invitation-details-card {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 24px;
+  margin-bottom: 32px;
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .detail-label {
+      font-weight: 600;
+      color: #124e66;
+    }
+
+    .detail-value {
+      color: #333;
+    }
+  }
+
+  .role-badge {
+    background: #e8f4f8;
+    color: #124e66;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+
+.personal-message {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #124e66;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 24px;
+
+  .message-header {
+    font-weight: 600;
+    color: #124e66;
+    margin-bottom: 8px;
+  }
+
+  .message-text {
+    color: #333;
+    line-height: 1.6;
+  }
+}
+
+.permissions-section {
+  background: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 24px;
+
+  .permissions-header {
+    font-weight: 600;
+    color: #124e66;
+    margin-bottom: 16px;
+  }
+
+  .permissions-list {
+    .permission-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .permission-icon {
+        color: #10b981;
+        margin-right: 12px;
+        font-size: 18px;
+      }
+
+      .permission-text {
+        color: #333;
+        flex: 1;
+      }
+    }
+  }
+}
+
+.success-state,
+.error-state {
+  text-align: center;
+  padding: 40px;
+
+  .success-icon,
+  .error-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+  }
+
+  .success-icon {
+    color: #10b981;
+  }
+
+  .error-icon {
+    color: #ef4444;
+  }
+
+  .success-title,
+  .error-title {
+    font-size: 20px;
+    color: #124e66;
+    margin-bottom: 8px;
+  }
+
+  .success-message,
+  .error-message {
+    color: #7d8da1;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  input[type="checkbox"] {
+    margin-top: 4px;
+  }
+
+  label {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+
+    a {
+      color: #124e66;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .invitation-details-card {
+    margin-bottom: 24px;
+    padding: 16px;
+
+    .detail-row {
+      flex-direction: column;
+      margin-bottom: 16px;
+
+      .detail-label {
+        margin-bottom: 4px;
+      }
+    }
+  }
+
+  .personal-message {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  .permissions-section {
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .success-state,
+  .error-state {
+    padding: 24px 16px;
+  }
+}

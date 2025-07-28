@@ -1,7 +1,10 @@
 import React from "react";
 
 interface AuthContentBoxProps {
-  className: "auth-page_right-box" | "auth-page_left-box";
+  className:
+    | "auth-page_right-box"
+    | "auth-page_left-box"
+    | "auth-page_full-box";
   children: React.ReactNode;
 }
 

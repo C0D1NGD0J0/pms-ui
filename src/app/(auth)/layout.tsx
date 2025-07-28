@@ -13,7 +13,7 @@ interface MetaInfo {
 
 interface BoxOrderMapping {
   [key: string]: {
-    position: ("left" | "right")[];
+    position: ("left" | "right" | "full")[];
     meta: MetaInfo;
   };
 }
@@ -67,6 +67,14 @@ const routeToBoxOrder: BoxOrderMapping = {
       icon: "",
     },
   },
+  "/invite": {
+    position: ["full"],
+    meta: {
+      title: "You're Invited!",
+      description: "Join our property management platform",
+      icon: "",
+    },
+  },
 };
 
 const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
@@ -106,6 +114,10 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     <AuthContentBox className="auth-page_right-box">{children}</AuthContentBox>
   );
 
+  const FullBox: React.FC<RightBoxProps> = ({ children }) => (
+    <AuthContentBox className="auth-page_full-box">{children}</AuthContentBox>
+  );
+
   const currentConfig = routeToBoxOrder[
     pathname.match(/^\/[^/]+/)?.[0] || ""
   ] || {
@@ -115,6 +127,7 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
   const boxes = {
     left: <LeftBox meta={currentConfig.meta} />,
     right: <RightBox>{children}</RightBox>,
+    full: <FullBox>{children}</FullBox>,
   };
 
   return (
