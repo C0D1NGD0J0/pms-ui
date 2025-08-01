@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   FloatingLabelInput,
+  CustomDropdown,
   FormField,
   Checkbox,
   Button,
@@ -8,6 +9,26 @@ import {
 } from "@components/FormElements";
 
 import { MockInvitationData } from "../../mockData";
+
+// Timezone options
+const TIMEZONE_OPTIONS = [
+  { value: "UTC", label: "UTC" },
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "Europe/London", label: "Greenwich Mean Time (GMT)" },
+  { value: "Europe/Paris", label: "Central European Time (CET)" },
+  { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
+];
+
+// Language options
+const LANGUAGE_OPTIONS = [
+  { value: "en", label: "English" },
+  { value: "es", label: "Spanish" },
+  { value: "fr", label: "French" },
+  { value: "en-ng", label: "English (Pidgin)" },
+];
 
 interface AccountSetupProps {
   invitationData: MockInvitationData;
@@ -26,6 +47,9 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
     phoneNumber: "",
     termsAccepted: false,
     newsletterOptIn: false,
+    location: "",
+    timeZone: "UTC",
+    lang: "en",
   });
 
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -38,6 +62,19 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
     }));
 
     // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  // Handle dropdown changes
+  const handleDropdownChange = (value: string, name: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear error when user makes a selection
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -146,6 +183,41 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
             onChange={(e) =>
               handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
             }
+          />
+        </FormField>
+
+        <FormField>
+          <FloatingLabelInput
+            id="location"
+            name="location"
+            type="text"
+            label="Location"
+            value={formData.location}
+            onChange={(e) =>
+              handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
+            }
+          />
+        </FormField>
+      </div>
+
+      <div className="form-fields">
+        <FormField>
+          <CustomDropdown
+            id="timeZone"
+            placeholder="Time Zone"
+            value={formData.timeZone}
+            onChange={(value) => handleDropdownChange(value, "timeZone")}
+            options={TIMEZONE_OPTIONS}
+          />
+        </FormField>
+
+        <FormField>
+          <CustomDropdown
+            id="lang"
+            placeholder="Language"
+            value={formData.lang}
+            onChange={(value) => handleDropdownChange(value, "lang")}
+            options={LANGUAGE_OPTIONS}
           />
         </FormField>
       </div>

@@ -164,9 +164,10 @@ export function extractChanges<T extends object, U extends object>(
 
 export function parseError(error: any): ParsedError {
   const defaultResult: ParsedError = {
-    message: "An unexpected error occurred",
     fieldErrors: {},
     statusCode: undefined,
+    hasValidationErrors: false,
+    message: "An unexpected error occurred",
   };
 
   if (!error) {
@@ -185,6 +186,23 @@ export function parseError(error: any): ParsedError {
     return {
       message: error.message || "Validation failed",
       fieldErrors: error.errorInfo || {},
+      statusCode: error.statusCode,
+    };
+  }
+
+  if (error.success === false && error.errors) {
+    const hasValidationErrors =
+      Array.isArray(error.errors) && error.errors.length > 0;
+    return {
+      message: error.message || "Validation failed",
+      fieldErrors: error.errors.reduce(
+        (acc: Record<string, string>, err: any) => {
+          acc[err.path] = err.message;
+          return acc;
+        },
+        {}
+      ),
+      hasValidationErrors,
       statusCode: error.statusCode,
     };
   }

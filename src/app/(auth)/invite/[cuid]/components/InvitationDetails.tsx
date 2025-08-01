@@ -1,20 +1,19 @@
 import React from "react";
 import { Button } from "@components/FormElements";
-
-import { MockInvitationData } from "../../mockData";
+import { IInvitationDocument } from "@src/interfaces";
 
 interface InvitationDetailsProps {
-  invitationData: MockInvitationData;
+  invitation: IInvitationDocument;
   onAccept: () => void;
   onDecline: () => void;
 }
 
 export const InvitationDetails: React.FC<InvitationDetailsProps> = ({
-  invitationData,
+  invitation,
   onAccept,
   onDecline,
 }) => {
-  const formatStartDate = (dateString?: string) => {
+  const formatStartDate = (dateString?: string | Date) => {
     if (!dateString) return null;
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -29,34 +28,39 @@ export const InvitationDetails: React.FC<InvitationDetailsProps> = ({
       <div className="invitation-details-card">
         <div className="detail-row">
           <span className="detail-label">Invited by:</span>
-          <span className="detail-value">{invitationData.inviterName}</span>
+          <span className="detail-value">{invitation.invitedBy.fullname}</span>
         </div>
         <div className="detail-row">
           <span className="detail-label">Role:</span>
           <span className="detail-value">
-            <span className="role-badge">{invitationData.roleName}</span>
+            <span className="role-badge">{invitation.role}</span>
           </span>
         </div>
         <div className="detail-row">
           <span className="detail-label">Organization:</span>
           <span className="detail-value">
-            {invitationData.organizationName}
+            {invitation.role === "vendor" &&
+            invitation.metadata?.vendorInfo?.companyName
+              ? invitation.metadata.vendorInfo.companyName
+              : invitation.clientId?.name || "Organization"}
           </span>
         </div>
-        {invitationData.startDate && (
+        {invitation.metadata?.expectedStartDate && (
           <div className="detail-row">
             <span className="detail-label">Expected Start:</span>
             <span className="detail-value">
-              {formatStartDate(invitationData.startDate)}
+              {formatStartDate(invitation.metadata.expectedStartDate)}
             </span>
           </div>
         )}
       </div>
 
-      {invitationData.personalMessage && (
+      {invitation.metadata?.inviteMessage && (
         <div className="personal-message">
           <div className="message-header">Personal Message:</div>
-          <div className="message-text">{invitationData.personalMessage}</div>
+          <div className="message-text">
+            {invitation.metadata.inviteMessage}
+          </div>
         </div>
       )}
 

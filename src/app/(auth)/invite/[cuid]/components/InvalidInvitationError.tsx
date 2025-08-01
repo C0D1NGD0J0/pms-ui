@@ -23,6 +23,7 @@ export const InvalidInvitationError: React.FC<InvalidInvitationErrorProps> = ({
   showSupportButton,
   showLoginButton,
 }) => {
+  console.log("Rendering InvalidInvitationError with type:", errorType);
   const router = useRouter();
   const getErrorContent = () => {
     switch (errorType) {

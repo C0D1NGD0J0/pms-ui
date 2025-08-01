@@ -34,7 +34,8 @@ export type IPaginationQuery = {
 };
 
 // Generic filter interface that extends pagination
-export interface IFilterQuery<TSortBy = string, TStatus = string> extends Omit<IPaginationQuery, 'sortBy'> {
+export interface IFilterQuery<TSortBy = string, TStatus = string>
+  extends Omit<IPaginationQuery, "sortBy"> {
   status?: TStatus;
   sortBy?: TSortBy;
 }
@@ -52,4 +53,5 @@ export interface ParsedError {
   message: string;
   fieldErrors: Record<string, string[]>;
   statusCode?: number;
+  hasValidationErrors?: boolean;
 }

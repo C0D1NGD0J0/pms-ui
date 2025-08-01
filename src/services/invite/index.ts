@@ -41,15 +41,14 @@ class InvitationService {
     }, "updateInvitation");
   }
 
-  async validateInvitation(token: string) {
+  async validateInvitationToken(cuid: string, token: string) {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/${token}/validate`,
+        `${this.baseUrl}/${cuid}/validate_token?token=${token}`,
         this.axiosConfig
       );
       return response.data;
     } catch (error) {
-      console.error("Error validating invitation:", error);
       throw error;
     }
   }

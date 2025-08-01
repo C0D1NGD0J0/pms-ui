@@ -1,185 +1,112 @@
-// Invitation Acceptance Component Styles
+@use "../abstract/index" as *;
+
+.invitation-loading {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  // Style the buttons container
+  > div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: $space-lg;
+  }
+}
+
 .invitation-details-card {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 24px;
-  margin-bottom: 32px;
+  background-color: hslaGen($white-color);
+  border-radius: $base-border-radius;
+  padding: $space-lg;
+  margin-bottom: $space-lg;
+  box-shadow: $box-shadow-alt;
 
   .detail-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: $space-md;
+    padding-bottom: $space-sm;
+    border-bottom: 1px solid hslaGen($light-grey-color, 0.2);
 
     &:last-child {
       margin-bottom: 0;
-    }
-
-    .detail-label {
-      font-weight: 600;
-      color: #124e66;
-    }
-
-    .detail-value {
-      color: #333;
+      padding-bottom: 0;
+      border-bottom: none;
     }
   }
 
+  .detail-label {
+    font-weight: $fw-bold;
+    color: hslaGen($grey-color);
+  }
+
+  .detail-value {
+    text-align: right;
+    font-weight: $fw-normal;
+  }
+
   .role-badge {
-    background: #e8f4f8;
-    color: #124e66;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 14px;
-    font-weight: 600;
+    background-color: hslaGen($primary-color, 0.1);
+    color: hslaGen($primary-color);
+    padding: $space-xs $space-sm;
+    border-radius: $border-radius-sm;
+    font-size: $fs-sm;
+    font-weight: $fw-bold;
   }
 }
 
 .personal-message {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-left: 4px solid #124e66;
-  border-radius: 6px;
-  padding: 16px;
-  margin-bottom: 24px;
+  background-color: hslaGen($alice-blue-color);
+  border-left: 4px solid hslaGen($blue-ink-color);
+  padding: $space-md;
+  margin-bottom: $space-lg;
+  border-radius: $base-border-radius;
 
   .message-header {
-    font-weight: 600;
-    color: #124e66;
-    margin-bottom: 8px;
+    font-weight: $fw-bold;
+    margin-bottom: $space-sm;
+    color: hslaGen($blue-ink-color);
   }
 
   .message-text {
-    color: #333;
-    line-height: 1.6;
+    font-style: italic;
+    color: hslaGen($dark-grey-color);
   }
 }
 
-.permissions-section {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 24px;
-
-  .permissions-header {
-    font-weight: 600;
-    color: #124e66;
-    margin-bottom: 16px;
-  }
-
-  .permissions-list {
-    .permission-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-
-      .permission-icon {
-        color: #10b981;
-        margin-right: 12px;
-        font-size: 18px;
-      }
-
-      .permission-text {
-        color: #333;
-        flex: 1;
-      }
-    }
-  }
-}
-
-.success-state,
+// Error state styling
 .error-state {
   text-align: center;
-  padding: 40px;
-
-  .success-icon,
-  .error-icon {
-    font-size: 48px;
-    margin-bottom: 16px;
-  }
-
-  .success-icon {
-    color: #10b981;
-  }
+  max-width: 500px;
+  margin: 0 auto;
+  padding: $space-lg;
 
   .error-icon {
-    color: #ef4444;
+    font-size: 5rem;
+    margin-bottom: $space-lg;
+    color: hslaGen($danger-color);
+
+    i {
+      padding: $space-md;
+      border-radius: 50%;
+      background-color: hslaGen($primary-color, 0.1);
+    }
   }
 
-  .success-title,
-  .error-title {
-    font-size: 20px;
-    color: #124e66;
-    margin-bottom: 8px;
-  }
-
-  .success-message,
   .error-message {
-    color: #7d8da1;
-    margin-bottom: 24px;
+    font-size: $fs-lg;
+    margin-bottom: $space-xl;
+    color: hslaGen($grey-color);
     line-height: 1.6;
   }
 }
 
-.checkbox-group {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 16px;
-
-  input[type="checkbox"] {
-    margin-top: 4px;
-  }
-
-  label {
-    font-size: 14px;
-    line-height: 1.5;
-    color: #333;
-
-    a {
-      color: #124e66;
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
-}
-
-// Responsive design
-@media (max-width: 768px) {
-  .invitation-details-card {
-    margin-bottom: 24px;
-    padding: 16px;
-
-    .detail-row {
-      flex-direction: column;
-      margin-bottom: 16px;
-
-      .detail-label {
-        margin-bottom: 4px;
-      }
-    }
-  }
-
-  .personal-message {
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-
-  .permissions-section {
-    padding: 16px;
-    margin-bottom: 16px;
-  }
-
-  .success-state,
-  .error-state {
-    padding: 24px 16px;
-  }
+.invitation-workflow {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
 }

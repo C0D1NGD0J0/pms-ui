@@ -1,0 +1,42 @@
+@use "../abstract/index" as *;
+
+.pms-skeleton {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  &--card {
+    padding: $space-lg 0;
+    box-shadow: $box-shadow-alt;
+    border-radius: $base-border-radius;
+    background-color: hslaGen($white-color);
+  }
+
+  &--list {
+    border-bottom: 1px solid hslaGen($light-grey-color, 0.5);
+    padding-bottom: $space-md;
+  }
+
+  &--form {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  // Theme variations
+  &--light {
+    .ant-skeleton-title,
+    .ant-skeleton-paragraph > li {
+      background-color: hslaGen($light-grey-color, 0.3);
+    }
+  }
+
+  &--dark {
+    .ant-skeleton-title,
+    .ant-skeleton-paragraph > li {
+      background-color: hslaGen($dark-grey-color, 0.5);
+    }
+
+    .ant-skeleton-avatar {
+      background-color: hslaGen($dark-grey-color, 0.5);
+    }
+  }
+}

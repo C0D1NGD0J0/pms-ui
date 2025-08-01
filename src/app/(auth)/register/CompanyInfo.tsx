@@ -5,13 +5,6 @@ import { UseFormReturnType } from "@mantine/form";
 import { ISignupForm } from "@interfaces/auth.interface";
 import { FloatingLabelInput } from "@components/FormElements";
 
-const dropdownOptions = [
-  { value: "apple", label: "Apple 🍎" },
-  { value: "banana", label: "Banana 🍌" },
-  { value: "orange", label: "Orange 🍊", disabled: true }, // Disabled option
-  { value: "grape", label: "Grape 🍇" },
-];
-
 export default function CompanyInfo({
   formContext,
   onChange,

@@ -1,6 +1,7 @@
 "use client";
 import { Loading } from "@components/Loading";
 import React, { useEffect, useState } from "react";
+import { Skeleton } from "@src/components/Skeleton";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { usePathname, useRouter } from "next/navigation";
 import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
@@ -95,12 +96,6 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn, isAuthLoading]);
 
-  if (loading || isLoggedIn) {
-    return (
-      <Loading size="fullscreen" description="Checking authentication..." />
-    );
-  }
-
   const LeftBox: React.FC<LeftBoxProps> = ({ meta }) => (
     <AuthContentBox className="auth-page_left-box">
       <div className="copy-text">
@@ -129,7 +124,21 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     right: <RightBox>{children}</RightBox>,
     full: <FullBox>{children}</FullBox>,
   };
+  if (loading || isLoggedIn) {
+    return (
+      <AuthLayoutWrapper>
+        <Loading description="Authenticating..." size="fullscreen" />
+      </AuthLayoutWrapper>
+    );
+  }
 
+  if (pathname === "/invite" && !isLoggedIn) {
+    return (
+      <AuthLayoutWrapper>
+        <Skeleton className="auth-page_skeleton" />
+      </AuthLayoutWrapper>
+    );
+  }
   return (
     <AuthLayoutWrapper>
       {boxOrder.map((boxKey, index) => (

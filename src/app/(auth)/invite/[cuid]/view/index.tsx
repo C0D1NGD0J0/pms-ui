@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Loading } from "@components/Loading";
+import { Skeleton } from "@components/Skeleton";
+import React, { useEffect, useState } from "react";
+import { IInvitationDocument } from "@src/interfaces/invitation.interface";
 import {
   AuthContentHeader,
   AuthContentFooter,
@@ -7,7 +8,6 @@ import {
 } from "@components/AuthLayout";
 
 import { mockInvitationData } from "../../mockData";
-import { ErrorStates } from "../components/ErrorStates";
 import { AccountSetup } from "../components/AccountSetup";
 import { SuccessState } from "../components/SuccessState";
 import { RoleConfirmation } from "../components/RoleConfirmation";
@@ -25,38 +25,26 @@ export type ErrorType = "expired" | "invalid" | "accepted";
 
 interface InvitationAcceptanceViewProps {
   cuid: string;
-  token: string;
+  token?: string;
+  invitation: IInvitationDocument;
 }
 
 export function InvitationAcceptanceView({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  cuid, // TODO: Use cuid for client-scoped API validation
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  token, // TODO: Use token for API validation in real implementation
+  cuid,
+  token,
+  invitation,
 }: InvitationAcceptanceViewProps) {
   const [currentStep, setCurrentStep] = useState<InvitationStep>("loading");
-  const [errorType, setErrorType] = useState<ErrorType>("expired");
 
-  // Simulate initial validation
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      // Mock validation logic - in real app this would call the API
-      if (mockInvitationData.status === "expired") {
-        setErrorType("expired");
-        setCurrentStep("error");
-      } else if (mockInvitationData.status === "invalid") {
-        setErrorType("invalid");
-        setCurrentStep("error");
-      } else if (mockInvitationData.status === "accepted") {
-        setErrorType("accepted");
-        setCurrentStep("error");
-      } else {
-        setCurrentStep("invitation-details");
-      }
-    }, 2000); // Standard 2-second validation timeout
+  useEffect(() => {
+    if (!invitation) {
+      setCurrentStep("loading");
+    }
 
-    return () => clearTimeout(timer);
-  }, []);
+    if (invitation) {
+      setCurrentStep("invitation-details");
+    }
+  }, [invitation]);
 
   const handleAcceptInvitation = () => {
     setCurrentStep("account-setup");
@@ -149,10 +137,35 @@ export function InvitationAcceptanceView({
 
   const renderContent = () => {
     switch (currentStep) {
+      case "loading":
+        return (
+          <div className="invitation-loading">
+            <Skeleton
+              type="card"
+              active
+              paragraph={{ rows: 4 }}
+              title={{ width: "60%" }}
+            />
+            <div className="mt-2">
+              <Skeleton.Button
+                active
+                size="small"
+                shape="square"
+                style={{ width: 120 }}
+              />
+              <Skeleton.Button
+                active
+                size="small"
+                shape="square"
+                style={{ width: 120, marginLeft: 12 }}
+              />
+            </div>
+          </div>
+        );
       case "invitation-details":
         return (
           <InvitationDetails
-            invitationData={mockInvitationData}
+            invitation={invitation}
             onAccept={handleAcceptInvitation}
             onDecline={handleDeclineInvitation}
           />
@@ -174,24 +187,12 @@ export function InvitationAcceptanceView({
         );
       case "success":
         return <SuccessState onRedirect={handleRedirectToDashboard} />;
-      case "error":
-        return (
-          <ErrorStates
-            errorType={errorType}
-            onContactSupport={handleContactSupport}
-            onRedirectToLogin={handleRedirectToLogin}
-          />
-        );
       default:
         return null;
     }
   };
 
   const headerContent = getHeaderContent();
-
-  if (currentStep === "loading") {
-    return <Loading description="Validating Invitation" size="fullscreen" />;
-  }
 
   return (
     <>
