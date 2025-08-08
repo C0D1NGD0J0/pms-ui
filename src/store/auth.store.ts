@@ -34,8 +34,8 @@ const useAuthStore = create<AuthState>()(
       actions: {
         logout: async () => {
           const cuid = get().client?.cuid;
-          await authService.logout(cuid);
           sessionStorage.removeItem("auth-storage");
+          await authService.logout(cuid);
           return set({
             user: null,
             permissions: [],

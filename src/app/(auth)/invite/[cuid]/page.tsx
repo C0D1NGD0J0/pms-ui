@@ -47,7 +47,8 @@ export default function InvitationPage({
         });
     }
     setIsLoading(false);
-  }, [cuid, token, validateToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cuid, token]);
 
   if (loading) {
     return (

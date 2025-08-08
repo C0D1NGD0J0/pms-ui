@@ -1,10 +1,16 @@
 "use client";
-import React from "react";
+
 import Link from "next/link";
+import { usePublish } from "@hooks/index";
 import { Table } from "@components/Table";
-import { InsightCard } from "@components/Cards";
-import { AnalyticCard } from "@components/Cards";
+import { Loading } from "@components/Loading";
+import { EventTypes } from "@services/events";
+import React, { useEffect, useState } from "react";
+import { useAuthActions } from "@store/auth.store";
 import { PageHeader } from "@components/PageElements";
+import { useCurrentUser } from "@hooks/useCurrentUser";
+import { useSearchParams, useRouter } from "next/navigation";
+import { AnalyticCard, InsightCard } from "@components/Cards";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
 import {
   PanelsWrapper,
@@ -27,6 +33,53 @@ import {
 } from "@src/test-data";
 
 export default function Dashboard() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const publish = usePublish();
+  const { setClient } = useAuthActions();
+  const { user, isLoading: isAuthLoading } = useCurrentUser();
+  const [isProcessingInvite, setIsProcessingInvite] = useState(false);
+
+  useEffect(() => {
+    const fromInvite = searchParams.get("fromInvite");
+    const accountCuid = searchParams.get("accountCuid");
+    const accountName = searchParams.get("accountName");
+
+    if (fromInvite === "true" && accountCuid && accountName) {
+      const setupAuthFromInvite = async () => {
+        try {
+          setIsProcessingInvite(true);
+          const selectedAccount = {
+            cuid: accountCuid,
+            displayName: accountName,
+          };
+          setClient(selectedAccount);
+          publish(EventTypes.LOGIN_SUCCESS, selectedAccount);
+          publish(EventTypes.GET_CURRENT_USER, selectedAccount);
+
+          router.replace("/dashboard");
+        } catch (error) {
+          console.error("Failed to set up account from invite:", error);
+          setIsProcessingInvite(false);
+          router.push("/login?error=invite-setup-failed");
+        }
+      };
+
+      setupAuthFromInvite();
+    }
+  }, [searchParams, setClient, publish, router]);
+
+  useEffect(() => {
+    if (isProcessingInvite && user && !isAuthLoading) {
+      setIsProcessingInvite(false);
+    }
+  }, [isProcessingInvite, user, isAuthLoading]);
+
+  if (isProcessingInvite) {
+    return (
+      <Loading description="Setting up your account..." size="fullscreen" />
+    );
+  }
   return (
     <div className="page admin-dashboard">
       <PageHeader

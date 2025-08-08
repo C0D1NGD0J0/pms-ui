@@ -54,7 +54,6 @@ export const useClientForm = ({ clientData, cuid }: UseClientFormProps) => {
       lastSavedValues.current = variables;
       form.resetDirty();
       openNotification("success", "Auto-saved", "Changes saved automatically");
-      a;
       queryClient.invalidateQueries({
         queryKey: CLIENT_QUERY_KEYS.getClientBycuid(cuid),
       });

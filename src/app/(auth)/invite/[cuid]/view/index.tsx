@@ -1,31 +1,31 @@
+import { useRouter } from "next/navigation";
 import { Skeleton } from "@components/Skeleton";
 import React, { useEffect, useState } from "react";
-import { IInvitationDocument } from "@src/interfaces/invitation.interface";
+import { SelectClientAccountModal } from "@components/SelectClientAccountModal";
 import {
   AuthContentHeader,
   AuthContentFooter,
   AuthContentBody,
 } from "@components/AuthLayout";
+import {
+  IInvitationAcceptResponse,
+  IInvitationDocument,
+} from "@src/interfaces/invitation.interface";
 
-import { mockInvitationData } from "../../mockData";
 import { AccountSetup } from "../components/AccountSetup";
-import { SuccessState } from "../components/SuccessState";
-import { RoleConfirmation } from "../components/RoleConfirmation";
 import { InvitationDetails } from "../components/InvitationDetails";
 
 export type InvitationStep =
   | "loading"
   | "invitation-details"
   | "account-setup"
-  | "role-confirmation"
-  | "success"
   | "error";
 
 export type ErrorType = "expired" | "invalid" | "accepted";
 
 interface InvitationAcceptanceViewProps {
   cuid: string;
-  token?: string;
+  token: string;
   invitation: IInvitationDocument;
 }
 
@@ -34,7 +34,13 @@ export function InvitationAcceptanceView({
   token,
   invitation,
 }: InvitationAcceptanceViewProps) {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<InvitationStep>("loading");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState("");
+  const [userAccounts, setUserAccounts] = useState<
+    Array<{ cuid: string; displayName: string }>
+  >([]);
 
   useEffect(() => {
     if (!invitation) {
@@ -62,47 +68,36 @@ export function InvitationAcceptanceView({
     setCurrentStep("invitation-details");
   };
 
-  const handleAccountSetupNext = () => {
-    setCurrentStep("role-confirmation");
+  const handleAccountSetupNext = (accountData: IInvitationAcceptResponse) => {
+    if (accountData.accounts && accountData.accounts.length >= 1) {
+      setUserAccounts(accountData.accounts);
+      setCurrentStep("loading");
+      setIsModalOpen(true);
+    }
   };
 
-  const handleRoleConfirmationComplete = () => {
-    setCurrentStep("success");
-
-    // Auto-redirect after 3 seconds
-    setTimeout(() => {
-      handleRedirectToDashboard();
-    }, 3000);
+  const handleSelectClient = (cuid: string) => {
+    setSelectedClient(cuid);
   };
 
-  const handleRedirectToDashboard = () => {
-    // Mock redirect based on role
-    const dashboardRoutes = {
-      admin: "/dashboard",
-      manager: "/dashboard",
-      staff: "/dashboard",
-      vendor: "/vendor-dashboard",
-      tenant: "/tenant-dashboard",
-    };
-
-    const route =
-      dashboardRoutes[
-        mockInvitationData.role as keyof typeof dashboardRoutes
-      ] || "/dashboard";
-    console.log(`Redirecting to: ${route}`);
-    // In real app: window.location.href = route;
+  const handleModalCancel = () => {
+    setIsModalOpen(false);
   };
 
-  const handleContactSupport = () => {
-    // Mock support contact
-    window.open(
-      "mailto:support@propertymanagement.com?subject=Invitation%20Issue"
+  const handleModalConfirm = () => {
+    const selectedAccount = userAccounts.find(
+      (account) => account.cuid === selectedClient
     );
-  };
+    if (selectedAccount) {
+      const params = new URLSearchParams({
+        fromInvite: "true",
+        accountCuid: selectedAccount.cuid,
+        accountName: selectedAccount.displayName,
+      });
 
-  const handleRedirectToLogin = () => {
-    console.log("Redirecting to login page");
-    // In real app: window.location.href = "/login";
+      router.push(`/dashboard?${params.toString()}`);
+    }
+    setIsModalOpen(false);
   };
 
   const getHeaderContent = () => {
@@ -119,14 +114,8 @@ export function InvitationAcceptanceView({
           title: "Create Your Account",
           subtitle: "Set up your account to get started",
         };
-      case "role-confirmation":
-        return {
-          title: "Welcome to the Team!",
-          subtitle: "Your account has been created successfully",
-        };
-      case "success":
       case "error":
-        return null; // These states have their own titles
+        return null; // Error state has its own title
       default:
         return {
           title: "Invitation",
@@ -173,20 +162,13 @@ export function InvitationAcceptanceView({
       case "account-setup":
         return (
           <AccountSetup
-            invitationData={mockInvitationData}
+            cuid={cuid}
+            token={token}
+            invitationData={invitation}
             onBack={handleBackToInvitation}
             onNext={handleAccountSetupNext}
           />
         );
-      case "role-confirmation":
-        return (
-          <RoleConfirmation
-            invitationData={mockInvitationData}
-            onComplete={handleRoleConfirmationComplete}
-          />
-        );
-      case "success":
-        return <SuccessState onRedirect={handleRedirectToDashboard} />;
       default:
         return null;
     }
@@ -204,6 +186,16 @@ export function InvitationAcceptanceView({
       )}
       <AuthContentBody>{renderContent()}</AuthContentBody>
       <AuthContentFooter />
+      {isModalOpen && userAccounts.length > 0 && (
+        <SelectClientAccountModal
+          isOpen={isModalOpen}
+          userAccounts={userAccounts}
+          selectedClient={selectedClient}
+          onSelect={handleSelectClient}
+          onCancel={handleModalCancel}
+          onConfirm={handleModalConfirm}
+        />
+      )}
     </>
   );
 }

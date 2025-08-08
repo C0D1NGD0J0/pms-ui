@@ -1,16 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
+import { IInvitationAcceptResponse, IInvitationData } from "@src/interfaces";
 import {
-  FloatingLabelInput,
   CustomDropdown,
   FormField,
+  FormInput,
+  FormLabel,
   Checkbox,
   Button,
   Form,
 } from "@components/FormElements";
 
-import { MockInvitationData } from "../../mockData";
+import { useAccountSetupForm } from "../hooks/useAccountSetupForm";
 
-// Timezone options
 const TIMEZONE_OPTIONS = [
   { value: "UTC", label: "UTC" },
   { value: "America/New_York", label: "Eastern Time (ET)" },
@@ -22,7 +23,6 @@ const TIMEZONE_OPTIONS = [
   { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
 ];
 
-// Language options
 const LANGUAGE_OPTIONS = [
   { value: "en", label: "English" },
   { value: "es", label: "Spanish" },
@@ -31,181 +31,144 @@ const LANGUAGE_OPTIONS = [
 ];
 
 interface AccountSetupProps {
-  invitationData: MockInvitationData;
+  invitationData: IInvitationData;
+  cuid: string;
+  token: string;
   onBack: () => void;
-  onNext: () => void;
+  onNext: (accountData: IInvitationAcceptResponse) => void;
 }
 
 export const AccountSetup: React.FC<AccountSetupProps> = ({
   invitationData,
   onBack,
   onNext,
+  cuid,
+  token,
 }) => {
-  const [formData, setFormData] = useState({
-    password: "",
-    confirmPassword: "",
-    phoneNumber: "",
-    termsAccepted: false,
-    newsletterOptIn: false,
-    location: "",
-    timeZone: "UTC",
-    lang: "en",
+  const {
+    handleSubmit,
+    handleFieldChange,
+    handleDropdownChange,
+    isSubmitting,
+    isValid,
+    values,
+    errors,
+    touched,
+  } = useAccountSetupForm({
+    cuid,
+    token,
+    inviteeEmail: invitationData.inviteeEmail,
+    onSuccess: onNext,
+    onError: (error) => {
+      console.error("Account setup failed:", error);
+    },
   });
 
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  // Handle dropdown changes
-  const handleDropdownChange = (value: string, name: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear error when user makes a selection
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const newErrors: { [key: string]: string } = {};
-
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters long";
-    }
-
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    if (!formData.termsAccepted) {
-      newErrors.termsAccepted =
-        "You must agree to the Terms of Service and Privacy Policy";
-    }
-
-    setErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0) {
-      onNext();
-    }
-  };
-
   return (
-    <Form
-      onSubmit={handleSubmit}
-      id="account-setup-form"
-      className="auth-form"
-      autoComplete="off"
-    >
-      <div className="form-fields">
+    <Form onSubmit={handleSubmit} id="account-setup-form" autoComplete="off">
+      <div className="form-fields mb-2">
         <FormField>
-          <FloatingLabelInput
+          <FormLabel htmlFor="email" label="Email Address" />
+          <FormInput
             id="email"
             name="email"
             type="email"
-            label="Email Address"
+            placeholder="Enter your email address"
             value={invitationData.inviteeEmail}
             disabled
-            onChange={() => {}} // Empty function since it's disabled
+            onChange={() => {}}
           />
         </FormField>
       </div>
 
-      <div className="form-fields">
+      <div className="form-fields mb-2">
         <FormField
           error={{
-            msg: errors.password || "",
-            touched: !!formData.password || !!errors.password,
+            msg: (errors.password as string) || "",
+            touched: touched("password"),
           }}
         >
-          <FloatingLabelInput
+          <FormLabel htmlFor="password" label="Password" required />
+          <FormInput
             required
             id="password"
             name="password"
             type="password"
-            label="Password"
-            value={formData.password}
-            errorMsg={errors.password}
-            onChange={(e) =>
-              handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
-            }
+            placeholder="Enter your password"
+            value={values.password}
+            hasError={!!errors.password}
+            onChange={handleFieldChange("password")}
           />
         </FormField>
 
         <FormField
           error={{
-            msg: errors.confirmPassword || "",
-            touched: !!formData.confirmPassword || !!errors.confirmPassword,
+            msg: (errors.confirmPassword as string) || "",
+            touched: touched("confirmPassword"),
           }}
         >
-          <FloatingLabelInput
+          <FormLabel
+            htmlFor="confirmPassword"
+            label="Confirm Password"
+            required
+          />
+          <FormInput
             required
             id="confirmPassword"
             name="confirmPassword"
             type="password"
-            label="Confirm Password"
-            value={formData.confirmPassword}
-            errorMsg={errors.confirmPassword}
-            onChange={(e) =>
-              handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
-            }
+            placeholder="Confirm your password"
+            value={values.confirmPassword}
+            hasError={!!errors.confirmPassword}
+            onChange={handleFieldChange("confirmPassword")}
           />
         </FormField>
       </div>
 
-      <div className="form-fields">
-        <FormField>
-          <FloatingLabelInput
+      <div className="form-fields mb-2">
+        <FormField
+          error={{
+            msg: (errors.phoneNumber as string) || "",
+            touched: touched("phoneNumber"),
+          }}
+        >
+          <FormLabel htmlFor="phoneNumber" label="Phone Number" />
+          <FormInput
             id="phoneNumber"
             name="phoneNumber"
             type="text"
-            label="Phone Number"
-            value={formData.phoneNumber}
-            onChange={(e) =>
-              handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
-            }
+            placeholder="Enter your phone number"
+            value={values.phoneNumber || ""}
+            hasError={!!errors.phoneNumber}
+            onChange={handleFieldChange("phoneNumber")}
           />
         </FormField>
 
-        <FormField>
-          <FloatingLabelInput
+        <FormField
+          error={{
+            msg: (errors.location as string) || "",
+            touched: touched("location"),
+          }}
+        >
+          <FormLabel htmlFor="location" label="Location" />
+          <FormInput
             id="location"
             name="location"
             type="text"
-            label="Location"
-            value={formData.location}
-            onChange={(e) =>
-              handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
-            }
+            placeholder="Enter your location"
+            value={values.location || ""}
+            hasError={!!errors.location}
+            onChange={handleFieldChange("location")}
           />
         </FormField>
       </div>
 
-      <div className="form-fields">
+      <div className="form-fields mb-2">
         <FormField>
           <CustomDropdown
             id="timeZone"
             placeholder="Time Zone"
-            value={formData.timeZone}
+            value={values.timeZone}
             onChange={(value) => handleDropdownChange(value, "timeZone")}
             options={TIMEZONE_OPTIONS}
           />
@@ -215,26 +178,20 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
           <CustomDropdown
             id="lang"
             placeholder="Language"
-            value={formData.lang}
+            value={values.lang}
             onChange={(value) => handleDropdownChange(value, "lang")}
             options={LANGUAGE_OPTIONS}
           />
         </FormField>
       </div>
 
-      <div className="form-fields m-2">
-        <FormField
-          error={{
-            msg: errors.termsAccepted || "",
-            touched: !!errors.termsAccepted,
-          }}
-        >
+      <div className="form-fields mb-2">
+        <FormField>
           <Checkbox
             id="terms-checkbox"
             name="termsAccepted"
-            required
-            checked={formData.termsAccepted}
-            onChange={handleInputChange}
+            checked={values.termsAccepted}
+            onChange={handleFieldChange("termsAccepted")}
             label={
               <>
                 I agree to the{" "}
@@ -257,12 +214,14 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
           className="btn btn-outline"
           onClick={onBack}
           icon={<i className="bx bx-arrow-back"></i>}
+          disabled={isValid || isSubmitting}
         />
         <Button
-          label="Create Account"
+          label={isSubmitting ? "Creating Account..." : "Create Account"}
           className="btn btn-primary"
           type="submit"
           icon={<i className="bx bx-user-plus"></i>}
+          disabled={!isValid || isSubmitting}
         />
       </div>
     </Form>

@@ -16,6 +16,7 @@ export default function Login() {
       selectedClient={logic.selectedClient}
       handleSubmit={logic.handleSubmit}
       handleSelect={logic.handleSelect}
+      handleModalConfirm={logic.handleModalConfirm}
       toggleModal={logic.toggleModal}
     />
   );

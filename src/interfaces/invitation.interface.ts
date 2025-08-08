@@ -164,7 +164,7 @@ export interface IInvitationTableData {
   inviteeFullName: string;
   inviteeEmail: string;
   role: IUserRole;
-  status: "pending" | "accepted" | "expired" | "revoked" | "sent";
+  status: IInvitationData["status"];
   createdAt: Date;
   expiresAt: Date;
   jobTitle?: string;
@@ -199,4 +199,25 @@ export interface IInvitationQuery
 export interface IResendInvitationData {
   customMessage?: string;
   iuid: string;
+}
+
+export interface AccountSetupFormData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber?: string;
+  location?: string;
+  timeZone: string;
+  token: string;
+  lang: string;
+  cuid: string;
+  termsAccepted: boolean;
+  newsletterOptIn: boolean;
+}
+
+export interface IInvitationAcceptResponse {
+  accounts: Array<{ cuid: string; displayName: string }>;
+  activeAccount: { cuid: string; displayName: string };
+  msg: string;
+  success: boolean;
 }

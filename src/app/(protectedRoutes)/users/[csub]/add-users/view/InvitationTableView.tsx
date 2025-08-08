@@ -143,7 +143,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
             )}
 
             <Button
-              label="Resend"
+              label={record.status === "draft" ? "Send" : "Resend"}
               loading={isResendingThis}
               loadingText="Resending..."
               className={`btn-sm btn-outline ${

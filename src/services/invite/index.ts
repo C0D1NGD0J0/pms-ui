@@ -1,6 +1,8 @@
 import axios from "@configs/axios";
 import { withErrorHandling } from "@utils/serviceHelper";
+import { AccountSetupFormValues } from "@src/validations/invitation.validations";
 import {
+  IInvitationAcceptResponse,
   IResendInvitationData,
   IInvitationTableData,
   IInvitationFormData,
@@ -53,13 +55,17 @@ class InvitationService {
     }
   }
 
-  async acceptInvitation(token: string, acceptData: any) {
+  async acceptInvitation(
+    cuid: string,
+    acceptData: AccountSetupFormValues
+  ): Promise<IInvitationAcceptResponse> {
     try {
       const response = await axios.post(
-        `${this.baseUrl}/${token}/accept`,
+        `${this.baseUrl}/${cuid}/accept_invite/${acceptData.token}`,
         acceptData,
         this.axiosConfig
       );
+
       return response.data;
     } catch (error) {
       console.error("Error accepting invitation:", error);
