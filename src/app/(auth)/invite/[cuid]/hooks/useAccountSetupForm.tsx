@@ -1,4 +1,5 @@
 import { useForm } from "@mantine/form";
+import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { invitationService } from "@src/services/invite";
@@ -26,8 +27,9 @@ export function useAccountSetupForm({
   cuid,
   token,
 }: UseAccountSetupFormProps) {
+  const router = useRouter();
   const { handleError } = useErrorHandler();
-  const { message } = useNotification();
+  const { message, openNotification } = useNotification();
 
   const initialValues: AccountSetupFormValues = {
     password: "Password1",
@@ -78,11 +80,22 @@ export function useAccountSetupForm({
           duration: 5,
         });
       }
-      // openNotification(
-      //   "error",
-      //   "Account creation failed.",
-      //   error.message || "Failed to create account. Please try again."
-      // );
+    },
+  });
+
+  const declineAccountMutation = useMutation({
+    mutationFn: async (data: { token: string; reason: string }) => {
+      return invitationService.declineInvitation(cuid, data);
+    },
+    onError: (error: any) => {
+      const errorResponse = handleError(error, { showFieldErrors: true });
+      console.error("Failed to decline invitation:", error);
+      openNotification(
+        "error",
+        "Failed to decline invitation.",
+        errorResponse.message ||
+          "Failed to decline invitation. Please try again."
+      );
     },
   });
 
@@ -134,8 +147,17 @@ export function useAccountSetupForm({
     }
   };
 
+  const declineInvitation = async (data: { token: string; reason: string }) => {
+    const resp = await declineAccountMutation.mutateAsync(data);
+    if (resp.success) {
+      message.success("Invitation declined successfully.");
+      router.push("/");
+    }
+  };
+
   return {
     isSubmitting: setupAccountMutation.isPending,
+    isDeclineSubmitting: declineAccountMutation.isPending,
     handleSubmit: form.onSubmit(handleSubmit),
     touched: form.isTouched,
     isValid: form.isValid(),
@@ -143,5 +165,6 @@ export function useAccountSetupForm({
     values: form.values,
     errors: form.errors,
     handleFieldChange,
+    declineInvitation,
   };
 }

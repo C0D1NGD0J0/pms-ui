@@ -1,5 +1,6 @@
 import React from "react";
-import { IInvitationAcceptResponse, IInvitationData } from "@src/interfaces";
+import { IInvitationData } from "@src/interfaces";
+import { AccountSetupFormValues } from "@src/validations/invitation.validations";
 import {
   CustomDropdown,
   FormField,
@@ -9,8 +10,6 @@ import {
   Button,
   Form,
 } from "@components/FormElements";
-
-import { useAccountSetupForm } from "../hooks/useAccountSetupForm";
 
 const TIMEZONE_OPTIONS = [
   { value: "UTC", label: "UTC" },
@@ -32,38 +31,34 @@ const LANGUAGE_OPTIONS = [
 
 interface AccountSetupProps {
   invitationData: IInvitationData;
-  cuid: string;
-  token: string;
   onBack: () => void;
-  onNext: (accountData: IInvitationAcceptResponse) => void;
+  handleSubmit: (event?: React.FormEvent<HTMLFormElement>) => void;
+  handleFieldChange: (
+    field: keyof AccountSetupFormValues
+  ) => (event: React.ChangeEvent<HTMLInputElement> | string) => void;
+  handleDropdownChange: (
+    value: string,
+    field: keyof AccountSetupFormValues
+  ) => void;
+  isSubmitting: boolean;
+  isValid: boolean;
+  values: AccountSetupFormValues;
+  errors: Record<string, React.ReactNode>;
+  touched: (field: string) => boolean;
 }
 
 export const AccountSetup: React.FC<AccountSetupProps> = ({
   invitationData,
   onBack,
-  onNext,
-  cuid,
-  token,
+  handleSubmit,
+  handleFieldChange,
+  handleDropdownChange,
+  isSubmitting,
+  isValid,
+  values,
+  errors,
+  touched,
 }) => {
-  const {
-    handleSubmit,
-    handleFieldChange,
-    handleDropdownChange,
-    isSubmitting,
-    isValid,
-    values,
-    errors,
-    touched,
-  } = useAccountSetupForm({
-    cuid,
-    token,
-    inviteeEmail: invitationData.inviteeEmail,
-    onSuccess: onNext,
-    onError: (error) => {
-      console.error("Account setup failed:", error);
-    },
-  });
-
   return (
     <Form onSubmit={handleSubmit} id="account-setup-form" autoComplete="off">
       <div className="form-fields mb-2">

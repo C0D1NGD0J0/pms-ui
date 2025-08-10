@@ -13,7 +13,9 @@ import {
 } from "@src/interfaces/invitation.interface";
 
 import { AccountSetup } from "../components/AccountSetup";
+import { useAccountSetupForm } from "../hooks/useAccountSetupForm";
 import { InvitationDetails } from "../components/InvitationDetails";
+import { DeclineInvitationModal } from "../components/DeclineInvitationModal";
 
 export type InvitationStep =
   | "loading"
@@ -37,10 +39,40 @@ export function InvitationAcceptanceView({
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<InvitationStep>("loading");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [userAccounts, setUserAccounts] = useState<
     Array<{ cuid: string; displayName: string }>
   >([]);
+
+  const handleAccountSetupNext = (accountData: IInvitationAcceptResponse) => {
+    if (accountData.accounts && accountData.accounts.length >= 1) {
+      setUserAccounts(accountData.accounts);
+      setCurrentStep("loading");
+      setIsModalOpen(true);
+    }
+  };
+
+  const {
+    handleSubmit,
+    handleFieldChange,
+    handleDropdownChange,
+    isSubmitting,
+    isValid,
+    values,
+    errors,
+    touched,
+    declineInvitation,
+    isDeclineSubmitting,
+  } = useAccountSetupForm({
+    cuid,
+    token,
+    inviteeEmail: invitation?.inviteeEmail || "",
+    onSuccess: handleAccountSetupNext,
+    onError: (error) => {
+      console.error("Account setup failed:", error);
+    },
+  });
 
   useEffect(() => {
     if (!invitation) {
@@ -56,24 +88,8 @@ export function InvitationAcceptanceView({
     setCurrentStep("account-setup");
   };
 
-  const handleDeclineInvitation = () => {
-    if (confirm("Are you sure you want to decline this invitation?")) {
-      alert(
-        "Invitation declined. You can contact support if you change your mind."
-      );
-    }
-  };
-
   const handleBackToInvitation = () => {
     setCurrentStep("invitation-details");
-  };
-
-  const handleAccountSetupNext = (accountData: IInvitationAcceptResponse) => {
-    if (accountData.accounts && accountData.accounts.length >= 1) {
-      setUserAccounts(accountData.accounts);
-      setCurrentStep("loading");
-      setIsModalOpen(true);
-    }
   };
 
   const handleSelectClient = (cuid: string) => {
@@ -98,6 +114,19 @@ export function InvitationAcceptanceView({
       router.push(`/dashboard?${params.toString()}`);
     }
     setIsModalOpen(false);
+  };
+
+  const handleDeclineClick = () => {
+    setIsDeclineModalOpen(true);
+  };
+
+  const handleDeclineModalClose = () => {
+    setIsDeclineModalOpen(false);
+  };
+
+  const handleDeclineConfirm = async (token: string, reason: string) => {
+    await declineInvitation({ token, reason });
+    setIsDeclineModalOpen(false);
   };
 
   const getHeaderContent = () => {
@@ -156,17 +185,22 @@ export function InvitationAcceptanceView({
           <InvitationDetails
             invitation={invitation}
             onAccept={handleAcceptInvitation}
-            onDecline={handleDeclineInvitation}
+            onDecline={handleDeclineClick}
           />
         );
       case "account-setup":
         return (
           <AccountSetup
-            cuid={cuid}
-            token={token}
             invitationData={invitation}
             onBack={handleBackToInvitation}
-            onNext={handleAccountSetupNext}
+            handleSubmit={handleSubmit}
+            handleFieldChange={handleFieldChange}
+            handleDropdownChange={handleDropdownChange}
+            isSubmitting={isSubmitting}
+            isValid={isValid}
+            values={values}
+            errors={errors}
+            touched={touched}
           />
         );
       default:
@@ -196,6 +230,13 @@ export function InvitationAcceptanceView({
           onConfirm={handleModalConfirm}
         />
       )}
+      <DeclineInvitationModal
+        isOpen={isDeclineModalOpen}
+        invitation={invitation}
+        onClose={handleDeclineModalClose}
+        onConfirm={handleDeclineConfirm}
+        isSubmitting={isDeclineSubmitting}
+      />
     </>
   );
 }
