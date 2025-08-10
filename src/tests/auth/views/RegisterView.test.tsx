@@ -1,7 +1,7 @@
-import { screen } from "@testing-library/react";
-import { RegisterView } from "@app/(auth)/register/view";
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
+import { RegisterView } from "@app/(auth)/register/view";
 import { ISignupForm } from "@interfaces/auth.interface";
 
 const mockProps = {

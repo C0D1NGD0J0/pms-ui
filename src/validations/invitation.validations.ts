@@ -302,3 +302,31 @@ export const invitationSchema = z
   });
 
 export type InvitationFormValues = z.infer<typeof invitationSchema>;
+
+export const accountSetupSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters long")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+        "Password must contain at least one uppercase letter, one lowercase letter, and one number"
+      ),
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+    phoneNumber: z.string().optional(),
+    location: z.string().optional(),
+    timeZone: z.string().min(1, "Please select a timezone"),
+    lang: z.string().min(1, "Please select a language"),
+    termsAccepted: z.boolean().refine((val) => val === true, {
+      message: "You must agree to the Terms of Service and Privacy Policy",
+    }),
+    newsletterOptIn: z.boolean().default(false),
+    cuid: z.string().optional(),
+    token: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type AccountSetupFormValues = z.infer<typeof accountSetupSchema>;

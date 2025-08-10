@@ -52,14 +52,8 @@ export const useClientForm = ({ clientData, cuid }: UseClientFormProps) => {
     onSuccess: (data, variables) => {
       setLastAutoSave(new Date());
       lastSavedValues.current = variables;
-
-      // Reset dirty state after auto-save
       form.resetDirty();
-
-      // Subtle success notification
       openNotification("success", "Auto-saved", "Changes saved automatically");
-
-      // Invalidate queries to refresh data
       queryClient.invalidateQueries({
         queryKey: CLIENT_QUERY_KEYS.getClientBycuid(cuid),
       });

@@ -143,7 +143,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
             )}
 
             <Button
-              label="Resend"
+              label={record.status === "draft" ? "Send" : "Resend"}
               loading={isResendingThis}
               loadingText="Resending..."
               className={`btn-sm btn-outline ${
@@ -189,6 +189,13 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
     closeRevokeModal();
   };
 
+  const _onResend = (cuid: string, iuid: string, customMessage?: string) => {
+    if (resendModal.invitation) {
+      onResend(cuid, iuid, customMessage);
+    }
+    closeResendModal();
+  };
+
   return (
     <>
       <div className="flex-row">
@@ -209,6 +216,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
                 value: pagination.sortBy ?? "",
                 isVisible: !!invitations.length,
                 options: filterOptions,
+                filterPlaceholder: "Sort by...",
                 onFilterChange: (value: string) => {
                   console.log("Filter changed:", value);
                   handleSortByChange(value);
@@ -246,7 +254,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
         isOpen={resendModal.isOpen}
         invitation={resendModal.invitation}
         onClose={closeResendModal}
-        onConfirm={onResend}
+        onConfirm={_onResend}
       />
     </>
   );

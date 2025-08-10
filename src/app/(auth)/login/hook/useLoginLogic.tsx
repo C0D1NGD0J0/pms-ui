@@ -63,14 +63,18 @@ export function useLoginLogic() {
 
   const handleSelect = (cuid: string) => {
     setSelectedClient(cuid);
+  };
+
+  const handleModalConfirm = () => {
     const selectedAccount = userAccounts.find(
-      (account) => account.cuid === cuid
+      (account) => account.cuid === selectedClient
     );
     if (selectedAccount) {
       setClient(selectedAccount);
       publish(EventTypes.ACCOUNT_SWITCHED, selectedAccount);
       router.push("/dashboard");
     }
+    setIsModalOpen(false);
   };
 
   return {
@@ -80,6 +84,7 @@ export function useLoginLogic() {
     userAccounts,
     selectedClient,
     handleSelect,
+    handleModalConfirm,
     toggleModal: setIsModalOpen,
     handleSubmit,
   };

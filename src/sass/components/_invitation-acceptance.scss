@@ -1,0 +1,112 @@
+@use "../abstract/index" as *;
+
+.invitation-loading {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: $space-md;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  // Style the buttons container
+  > div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: $space-lg;
+  }
+}
+
+.invitation-details-card {
+  background-color: hslaGen($white-color);
+  border-radius: $base-border-radius;
+  padding: $space-lg;
+  margin-bottom: $space-lg;
+  box-shadow: $box-shadow-alt;
+
+  .detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: $space-md;
+    padding-bottom: $space-sm;
+    border-bottom: 1px solid hslaGen($light-grey-color, 0.2);
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  .detail-label {
+    font-weight: $fw-bold;
+    color: hslaGen($grey-color);
+  }
+
+  .detail-value {
+    text-align: right;
+    font-weight: $fw-normal;
+  }
+
+  .role-badge {
+    background-color: hslaGen($primary-color, 0.1);
+    color: hslaGen($primary-color);
+    padding: $space-xs $space-sm;
+    border-radius: $border-radius-sm;
+    font-size: $fs-sm;
+    font-weight: $fw-bold;
+  }
+}
+
+.personal-message {
+  background-color: hslaGen($alice-blue-color);
+  border-left: 4px solid hslaGen($blue-ink-color);
+  padding: $space-md;
+  margin-bottom: $space-lg;
+  border-radius: $base-border-radius;
+
+  .message-header {
+    font-weight: $fw-bold;
+    margin-bottom: $space-sm;
+    color: hslaGen($blue-ink-color);
+  }
+
+  .message-text {
+    font-style: italic;
+    color: hslaGen($dark-grey-color);
+  }
+}
+
+// Error state styling
+.error-state {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: $space-lg;
+
+  .error-icon {
+    font-size: 5rem;
+    margin-bottom: $space-lg;
+    color: hslaGen($danger-color);
+
+    i {
+      padding: $space-md;
+      border-radius: 50%;
+      background-color: hslaGen($primary-color, 0.1);
+    }
+  }
+
+  .error-message {
+    font-size: $fs-lg;
+    margin-bottom: $space-xl;
+    color: hslaGen($grey-color);
+    line-height: 1.6;
+  }
+}
+
+.invitation-workflow {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+}

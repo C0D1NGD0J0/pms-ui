@@ -55,15 +55,10 @@ class EmailTemplateService {
     }
   }
 
-  async renderTemplate(
-    cuid: string,
-    templateType: string,
-    variables: Record<string, any>
-  ) {
+  async renderTemplate(cuid: string, templateType: string) {
     try {
-      const result = await axios.post(
-        `${this.baseUrl}/${cuid}/${templateType}/render`,
-        variables,
+      const result = await axios.get(
+        `${this.baseUrl}/${cuid}/${templateType}`,
         this.axiosConfig
       );
 

@@ -5,11 +5,7 @@ import { Loading } from "@components/Loading";
 import { AppBootstrapProps } from "./types";
 
 const DefaultFallback = () => (
-  <Loading
-    size="fullscreen"
-    description="Initializing application..."
-    showLogo={true}
-  />
+  <Loading size="fullscreen" description="Initializing application..." />
 );
 
 export const AppBootstrap: React.FC<AppBootstrapProps> = ({

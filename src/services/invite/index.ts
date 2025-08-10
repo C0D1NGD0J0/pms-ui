@@ -1,6 +1,8 @@
 import axios from "@configs/axios";
 import { withErrorHandling } from "@utils/serviceHelper";
+import { AccountSetupFormValues } from "@src/validations/invitation.validations";
 import {
+  IInvitationAcceptResponse,
   IResendInvitationData,
   IInvitationTableData,
   IInvitationFormData,
@@ -41,29 +43,50 @@ class InvitationService {
     }, "updateInvitation");
   }
 
-  async validateInvitation(token: string) {
+  async validateInvitationToken(cuid: string, token: string) {
     try {
       const response = await axios.get(
-        `${this.baseUrl}/${token}/validate`,
+        `${this.baseUrl}/${cuid}/validate_token?token=${token}`,
         this.axiosConfig
       );
       return response.data;
     } catch (error) {
-      console.error("Error validating invitation:", error);
       throw error;
     }
   }
 
-  async acceptInvitation(token: string, acceptData: any) {
+  async acceptInvitation(
+    cuid: string,
+    acceptData: AccountSetupFormValues
+  ): Promise<IInvitationAcceptResponse> {
     try {
       const response = await axios.post(
-        `${this.baseUrl}/${token}/accept`,
+        `${this.baseUrl}/${cuid}/accept_invite/${acceptData.token}`,
         acceptData,
         this.axiosConfig
       );
+
       return response.data;
     } catch (error) {
       console.error("Error accepting invitation:", error);
+      throw error;
+    }
+  }
+
+  async declineInvitation(
+    cuid: string,
+    data: { token: string; reason?: string }
+  ): Promise<IInvitationAcceptResponse> {
+    try {
+      const response = await axios.patch(
+        `${this.baseUrl}/${cuid}/decline_invite/${data.token}`,
+        data,
+        this.axiosConfig
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error declining invitation:", error);
       throw error;
     }
   }

@@ -1,7 +1,7 @@
 import React from "react";
+import Link from "next/link";
 import { Button } from "@components/FormElements";
 import { IPropertyDocument } from "@interfaces/property.interface";
-import Link from "next/link";
 
 export interface TenantData {
   name: string;

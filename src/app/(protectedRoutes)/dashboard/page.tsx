@@ -1,10 +1,10 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
 import { Table } from "@components/Table";
-import { InsightCard } from "@components/Cards";
-import { AnalyticCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
+import { AnalyticCard, InsightCard } from "@components/Cards";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
 import {
   PanelsWrapper,

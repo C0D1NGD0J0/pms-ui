@@ -550,4 +550,18 @@ export const CLIENT_QUERY_KEYS = {
     pagination,
   ],
 };
+export const INVITE_QUERY_KEYS = {
+  validateInviteToken: (cuid: string, token: string) => [
+    "/validateInviteToken",
+    cuid,
+    token,
+  ],
+  getInviteByToken: (token: string) => ["/getInviteByToken", token],
+  getInviteByCuid: (cuid: string) => ["/getInviteByCuid", cuid],
+  getInvites: (cuid: string, pagination: unknown) => [
+    "/getInvites",
+    cuid,
+    pagination,
+  ],
+};
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

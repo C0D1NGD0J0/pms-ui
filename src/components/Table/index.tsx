@@ -189,7 +189,9 @@ export function Table<T extends object>({
             options: filterOpts?.options || [],
             onFilterChange: handleFilterChange,
             sortDirection: filterOpts?.sortDirection || "desc",
+            filterPlaceholder: filterOpts?.filterPlaceholder || "Filter by...",
             onSortDirectionChange: filterOpts?.onSortDirectionChange,
+            ...filterOpts,
           }}
         />
       )}
