@@ -1,8 +1,8 @@
-import { screen } from "@testing-library/react";
-import { ResetPasswordView } from "@app/(auth)/reset_password/[token]/view";
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
 import { IResetPasswordForm } from "@interfaces/auth.interface";
+import { ResetPasswordView } from "@app/(auth)/reset_password/[token]/view";
 
 const mockProps = {
   isPending: false,

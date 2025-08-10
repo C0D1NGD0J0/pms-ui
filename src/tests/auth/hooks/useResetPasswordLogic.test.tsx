@@ -1,9 +1,9 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
-import { useResetPasswordLogic } from "@app/(auth)/reset_password/[token]/hook/useResetPasswordLogic";
-import { authService } from "@services/auth";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NotificationProvider } from "@hooks/useNotification";
 import { ReactNode } from "react";
+import { authService } from "@services/auth";
+import { NotificationProvider } from "@hooks/useNotification";
+import { renderHook, waitFor, act } from "@testing-library/react";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { useResetPasswordLogic } from "@app/(auth)/reset_password/[token]/hook/useResetPasswordLogic";
 
 // Mock dependencies
 jest.mock("@services/auth");

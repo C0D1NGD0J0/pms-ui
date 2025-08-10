@@ -1,7 +1,7 @@
-import { screen } from "@testing-library/react";
-import { ForgotPasswordView } from "@app/(auth)/forgot_password/view";
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
+import { ForgotPasswordView } from "@app/(auth)/forgot_password/view";
 import { ForgotPasswordForm } from "@app/(auth)/forgot_password/hook/useForgotPasswordLogic";
 
 const mockProps = {
