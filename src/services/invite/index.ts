@@ -73,6 +73,24 @@ class InvitationService {
     }
   }
 
+  async declineInvitation(
+    cuid: string,
+    data: { token: string; reason?: string }
+  ): Promise<IInvitationAcceptResponse> {
+    try {
+      const response = await axios.patch(
+        `${this.baseUrl}/${cuid}/decline_invite/${data.token}`,
+        data,
+        this.axiosConfig
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error declining invitation:", error);
+      throw error;
+    }
+  }
+
   async getInvitations(cuid: string, query: IInvitationQuery) {
     try {
       const params = new URLSearchParams({

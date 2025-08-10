@@ -19,13 +19,13 @@ export function useInvitationPreview() {
     (role: IUserRole | null): string => {
       switch (role) {
         case "vendor":
-          return "invitation-vendor";
+          return "invitation";
         case "tenant":
-          return "invitation-tenant";
+          return "invitation";
         case "staff":
         case "manager":
         case "admin":
-          return "invitation-staff";
+          return "invitation";
         default:
           return "invitation";
       }
