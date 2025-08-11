@@ -29,7 +29,7 @@ export const useCurrentUser = () => {
       try {
         console.log("Current user start fetchin...");
         const response = await authService.currentuser(client?.cuid ?? "");
-        return response?.data || null;
+        return response?.data;
       } catch (err: any) {
         console.info("Current user fetch failed:", err);
         const status = err.statusCode;
@@ -116,7 +116,7 @@ export const useCurrentUser = () => {
     user: userData,
     isFetchingUser,
     isRefreshingToken,
-    isLoading, // Combined loading state
+    isLoading,
     isError,
     error,
     isLoggedIn,
