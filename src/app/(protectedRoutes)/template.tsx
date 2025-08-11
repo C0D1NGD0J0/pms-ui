@@ -1,11 +1,10 @@
 "use client";
-import { usePublish } from "@hooks/index";
 import { useEffect, useState } from "react";
 import { Loading } from "@components/Loading";
 import { EventTypes } from "@services/events";
-import { useIdleDetector } from "@hooks/useActive";
 import { useAuthActions } from "@store/auth.store";
 import { useCurrentUser } from "@hooks/useCurrentUser";
+import { useIdleDetector, usePublish } from "@hooks/index";
 import { useSearchParams, useRouter } from "next/navigation";
 
 export default function AuthTemplate({
