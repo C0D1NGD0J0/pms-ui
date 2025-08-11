@@ -21,7 +21,6 @@ interface PreferencesTabProps {
 
 export const PreferencesTab: React.FC<PreferencesTabProps> = ({
   clientInfo,
-  inEditMode = false,
   clientForm,
 }) => {
   const form = clientForm;

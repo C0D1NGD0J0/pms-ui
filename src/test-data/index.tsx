@@ -98,7 +98,7 @@ export const serviceRequestColumns = [
   {
     title: "Action",
     dataIndex: "id",
-    render: (id: string) => (
+    render: () => (
       <div className="status primary">
         <i className="bx bx-glasses"></i>
       </div>
@@ -117,7 +117,7 @@ export const paymentColumns = [
   {
     title: "Action",
     dataIndex: "id",
-    render: (id: string) => (
+    render: () => (
       <div className="status primary">
         <i className="bx bx-glasses"></i>
       </div>
@@ -133,7 +133,7 @@ export const leaseStatusColumns = [
   {
     title: "Action",
     dataIndex: "id",
-    render: (id: string) => (
+    render: () => (
       <div className="status primary">
         <i className="bx bx-glasses"></i>
         <i className="bx bx-envelope"></i>
@@ -243,7 +243,7 @@ export const occupancyColumns = [
   {
     title: "Occupancy Rate",
     dataIndex: "occupancyRate",
-    render: (rate: number, record: any) => (
+    render: (rate: number) => (
       <div className="progress-bar">
         <div
           className={`progress ${rate < 85 ? "warning" : ""}`}

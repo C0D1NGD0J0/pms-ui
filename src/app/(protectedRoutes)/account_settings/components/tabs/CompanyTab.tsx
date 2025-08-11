@@ -13,7 +13,6 @@ interface CompanyTabProps {
 }
 
 export const CompanyTab: React.FC<CompanyTabProps> = ({
-  inEditMode = false,
   clientInfo,
   clientForm,
 }) => {

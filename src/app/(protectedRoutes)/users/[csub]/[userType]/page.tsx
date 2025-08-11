@@ -107,7 +107,7 @@ const EmployeesView = () => (
 );
 
 export default function UsersPage({ params }: UserPageProps) {
-  const { cuid, userType } = React.use(params);
+  const { userType } = React.use(params);
 
   if (!isValidUserType(userType)) {
     notFound();

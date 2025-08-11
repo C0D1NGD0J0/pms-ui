@@ -1,8 +1,8 @@
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
 import { LoginView } from "@app/(auth)/login/view";
 import { ILoginForm } from "@interfaces/auth.interface";
-import { fireEvent, screen } from "@testing-library/react";
 
 const mockProps = {
   isSubmitting: false,

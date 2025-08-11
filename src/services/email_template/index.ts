@@ -55,23 +55,31 @@ class EmailTemplateService {
     }
   }
 
-  async renderTemplate(cuid: string, templateType: string) {
+  async renderTemplate(
+    cuid: string,
+    templateType: string,
+    templateVariables: Record<string, any>
+  ) {
     try {
-      const result = await axios.get(
-        `${this.baseUrl}/${cuid}/${templateType}`,
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/${templateType}/render`,
+        templateVariables,
         this.axiosConfig
       );
 
       const responseData = result.data;
-      if (!responseData.renderedHtml) {
+      if (!responseData.success || !responseData.data?.renderedHtml) {
         throw new Error(
-          `Template rendering failed: missing renderedHtml in response. Got: ${JSON.stringify(
-            responseData
-          )}`
+          `Template rendering failed: ${
+            responseData.error || "missing renderedHtml in response"
+          }. Got: ${JSON.stringify(responseData)}`
         );
       }
 
-      return responseData;
+      return {
+        renderedHtml: responseData.data.renderedHtml,
+        renderedText: responseData.data.renderedText,
+      };
     } catch (error) {
       console.error("Error rendering template:", error);
       if (error instanceof Error) {

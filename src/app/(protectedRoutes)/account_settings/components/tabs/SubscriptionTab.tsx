@@ -12,7 +12,6 @@ interface SubscriptionTabProps {
 
 export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
   clientInfo,
-  inEditmode = false,
 }) => {
   return (
     <div className="resource-form">

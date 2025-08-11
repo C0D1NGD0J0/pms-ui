@@ -27,7 +27,6 @@ export function UnitBasicInfo({
   unit,
   errors,
   isTouched,
-  customPrefix,
   onFieldChange,
   unitTypeOptions,
   unitStatusOptions,

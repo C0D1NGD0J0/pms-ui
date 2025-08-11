@@ -25,15 +25,6 @@ export default function Properties() {
     handleSortByChange,
   } = useGetAllProperties(client?.cuid || "");
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (selected: React.Key[], selectedRows: IProperty[]) => {
-      console.log(`Selected row keys: ${selected}`);
-      console.log("Selected rows: ", selectedRows);
-      setSelectedRowKeys(selected);
-    },
-    type: "checkbox" as const,
-  };
 
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
@@ -95,6 +86,11 @@ export default function Properties() {
                 onChange: (page: number) => {
                   handlePageChange(page);
                 },
+              }}
+              rowSelection={{
+                selectedRowKeys,
+                onChange: (keys) => setSelectedRowKeys(keys),
+                type: "checkbox",
               }}
               rowKey="pid"
               withHeader
