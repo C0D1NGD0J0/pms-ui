@@ -14,7 +14,7 @@ import { generatePropertyColumn } from "./utils/index";
 export default function Properties() {
   const { client } = useAuth();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  // const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const {
     filterOptions,
     properties,
@@ -24,7 +24,6 @@ export default function Properties() {
     handlePageChange,
     handleSortByChange,
   } = useGetAllProperties(client?.cuid || "");
-
 
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
@@ -61,6 +60,7 @@ export default function Properties() {
               tableVariant="alt-2"
               columns={generatePropertyColumn()}
               dataSource={properties}
+              showRowNumbers={true} // Enable row numbering
               searchOpts={{
                 isVisible: true,
                 value: "",
@@ -86,11 +86,6 @@ export default function Properties() {
                 onChange: (page: number) => {
                   handlePageChange(page);
                 },
-              }}
-              rowSelection={{
-                selectedRowKeys,
-                onChange: (keys) => setSelectedRowKeys(keys),
-                type: "checkbox",
               }}
               rowKey="pid"
               withHeader

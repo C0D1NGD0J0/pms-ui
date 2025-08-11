@@ -31,6 +31,7 @@ export interface TableProps<T> {
   withHeader?: boolean;
   pagination?: boolean | Partial<TablePaginationConfig>;
   tableVariant?: "default" | "alt-2";
+  showRowNumbers?: boolean;
   rowSelection?: {
     type?: "checkbox" | "radio";
     selectedRowKeys?: React.Key[];
@@ -53,19 +54,9 @@ export function Table<T extends object>({
   filterOpts,
   rowSelection,
   tableVariant = "default",
+  showRowNumbers = false,
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
-
-  const tableColumns = columns.map((column, index) => ({
-    title: column.title,
-    dataIndex: column.dataIndex as string,
-    key: `${new Date()}-${index}`,
-    sorter: column.sorter,
-    width: column.width,
-    render:
-      column.render ||
-      (column.isStatus ? (value: any) => renderStatusBadge(value) : undefined),
-  }));
 
   const renderStatusBadge = (status: string) => {
     if (!status) return null;
@@ -104,6 +95,47 @@ export function Table<T extends object>({
 
     return <span className={`status ${statusClass}`}>{status}</span>;
   };
+
+  // Create table columns with optional row numbering
+  let tableColumns = columns.map((column, index) => ({
+    title: column.title,
+    dataIndex: column.dataIndex as string,
+    key: `${new Date()}-${index}`,
+    sorter: column.sorter,
+    width: column.width,
+    render:
+      column.render ||
+      (column.isStatus ? (value: any) => renderStatusBadge(value) : undefined),
+  }));
+
+  // Add row numbering column if showRowNumbers is true
+  if (showRowNumbers) {
+    tableColumns = [
+      {
+        title: "#",
+        dataIndex: "rowIndex",
+        key: "rowIndex",
+        width: 60,
+        sorter: undefined,
+        render: (value: unknown, record: T, index?: number) => {
+          let rowNum = index !== undefined ? index + 1 : 1;
+
+          if (
+            pagination &&
+            typeof pagination !== "boolean" &&
+            pagination.current &&
+            pagination.pageSize &&
+            index !== undefined
+          ) {
+            rowNum = (pagination.current - 1) * pagination.pageSize + index + 1;
+          }
+
+          return rowNum;
+        },
+      },
+      ...tableColumns,
+    ];
+  }
 
   const paginationConfig: false | TablePaginationConfig =
     pagination === false
