@@ -1,10 +1,10 @@
 import { useForm } from "@mantine/form";
 import { IUserRole } from "@interfaces/invitation.interface";
 import { useCallback, useEffect, useState, useMemo } from "react";
-import {
-  shouldUseDefaultData,
-  getRandomDefault,
-} from "@src/test-data/defaultFormData";
+// import {
+//   shouldUseDefaultData,
+//   getRandomDefault,
+// } from "@src/test-data/defaultFormData";
 import {
   sanitizeInvitationFormData,
   InvitationFormValues,
@@ -195,41 +195,41 @@ export function useInvitationFormBase({
     setActiveTab(tab);
   }, []);
 
-  const populateWithDefaultData = useCallback(
-    (role: IUserRole) => {
-      if (!shouldUseDefaultData()) return;
+  // const populateWithDefaultData = useCallback(
+  //   (role: IUserRole) => {
+  //     if (!shouldUseDefaultData()) return;
 
-      try {
-        const getDataPath = (role: IUserRole) => {
-          if (role === "vendor") {
-            return "invitation.vendors";
-          } else {
-            return "invitation.employees";
-          }
-        };
+  //     try {
+  //       const getDataPath = (role: IUserRole) => {
+  //         if (role === "vendor") {
+  //           return "invitation.vendors";
+  //         } else {
+  //           return "invitation.employees";
+  //         }
+  //       };
 
-        const defaultData = getRandomDefault(getDataPath(role));
-        if (defaultData) {
-          const transformedData = { ...defaultData };
+  //       const defaultData = getRandomDefault(getDataPath(role));
+  //       if (defaultData) {
+  //         const transformedData = { ...defaultData };
 
-          if (transformedData.employeeInfo?.startDate instanceof Date) {
-            transformedData.employeeInfo.startDate =
-              transformedData.employeeInfo.startDate
-                .toISOString()
-                .split("T")[0];
-          }
+  //         if (transformedData.employeeInfo?.startDate instanceof Date) {
+  //           transformedData.employeeInfo.startDate =
+  //             transformedData.employeeInfo.startDate
+  //               .toISOString()
+  //               .split("T")[0];
+  //         }
 
-          invitationForm.setValues(transformedData);
-          if (transformedData.metadata?.inviteMessage) {
-            setMessageCount(transformedData.metadata.inviteMessage.length);
-          }
-        }
-      } catch (error) {
-        console.warn("Failed to populate default data:", error);
-      }
-    },
-    [invitationForm]
-  );
+  //         invitationForm.setValues(transformedData);
+  //         if (transformedData.metadata?.inviteMessage) {
+  //           setMessageCount(transformedData.metadata.inviteMessage.length);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.warn("Failed to populate default data:", error);
+  //     }
+  //   },
+  //   [invitationForm]
+  // );
 
   const handleRoleSelect = useCallback(
     (role: IUserRole) => {
@@ -249,11 +249,11 @@ export function useInvitationFormBase({
       }
 
       // populate with default data for all roles
-      setTimeout(() => {
-        populateWithDefaultData(role);
-      }, 100);
+      // setTimeout(() => {
+      //   populateWithDefaultData(role);
+      // }, 100);
     },
-    [invitationForm, populateWithDefaultData]
+    [invitationForm]
   );
 
   const handleFieldChange = useCallback(

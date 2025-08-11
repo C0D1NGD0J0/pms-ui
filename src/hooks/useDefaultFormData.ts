@@ -4,7 +4,7 @@ import {
   shouldUseDefaultData,
   getRandomDefault,
   getDefaultData,
-} from "@src/test-data/defaultFormData";
+} from "@src/test-data/index";
 
 interface UseDefaultFormDataOptions {
   /**
