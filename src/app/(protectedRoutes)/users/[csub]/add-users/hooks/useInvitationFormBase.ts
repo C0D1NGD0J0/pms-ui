@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 import {
   shouldUseDefaultData,
   getRandomDefault,
-} from "@hooks/useDefaultFormData";
+} from "@src/test-data/defaultFormData";
 import {
   sanitizeInvitationFormData,
   InvitationFormValues,

@@ -1,17 +1,14 @@
 "use client";
-import { useEffect, useState } from "react";
 import { Loading } from "@components/Loading";
 import { EventTypes } from "@services/events";
+import { Skeleton } from "@components/Skeleton";
 import { useAuthActions } from "@store/auth.store";
+import { useEffect, useState, Suspense } from "react";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { useIdleDetector, usePublish } from "@hooks/index";
 import { useSearchParams, useRouter } from "next/navigation";
 
-export default function AuthTemplate({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AuthTemplateContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { push } = useRouter();
   const searchParams = useSearchParams();
@@ -110,4 +107,16 @@ export default function AuthTemplate({
   }
 
   return <>{children}</>;
+}
+
+export default function AuthTemplate({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <Suspense fallback={<Skeleton active paragraph={{ rows: 8 }} />}>
+      <AuthTemplateContent>{children}</AuthTemplateContent>
+    </Suspense>
+  );
 }
