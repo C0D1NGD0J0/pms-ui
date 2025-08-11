@@ -1,14 +1,10 @@
 import { useEffect } from "react";
 import { UseFormReturnType } from "@mantine/form";
-
 import {
   shouldUseDefaultData,
   getRandomDefault,
   getDefaultData,
-} from "../test-data/defaultFormData";
-
-// Re-export helper functions for direct use
-export { shouldUseDefaultData, getRandomDefault, getDefaultData };
+} from "@src/test-data/defaultFormData";
 
 interface UseDefaultFormDataOptions {
   /**
