@@ -96,7 +96,6 @@ export function Table<T extends object>({
     return <span className={`status ${statusClass}`}>{status}</span>;
   };
 
-  // Create table columns with optional row numbering
   let tableColumns = columns.map((column, index) => ({
     title: column.title,
     dataIndex: column.dataIndex as string,
@@ -108,33 +107,31 @@ export function Table<T extends object>({
       (column.isStatus ? (value: any) => renderStatusBadge(value) : undefined),
   }));
 
-  // Add row numbering column if showRowNumbers is true
   if (showRowNumbers) {
-    tableColumns = [
-      {
-        title: "#",
-        dataIndex: "rowIndex",
-        key: "rowIndex",
-        width: 60,
-        sorter: undefined,
-        render: (value: unknown, record: T, index?: number) => {
-          let rowNum = index !== undefined ? index + 1 : 1;
+    const rowNumberColumn: any = {
+      title: "#",
+      dataIndex: "rowIndex",
+      key: "rowIndex",
+      width: 60,
+      sorter: undefined,
+      render: (value: unknown, record: T, index?: number) => {
+        let rowNum = index !== undefined ? index + 1 : 1;
 
-          if (
-            pagination &&
-            typeof pagination !== "boolean" &&
-            pagination.current &&
-            pagination.pageSize &&
-            index !== undefined
-          ) {
-            rowNum = (pagination.current - 1) * pagination.pageSize + index + 1;
-          }
+        if (
+          pagination &&
+          typeof pagination !== "boolean" &&
+          pagination.current &&
+          pagination.pageSize &&
+          index !== undefined
+        ) {
+          rowNum = (pagination.current - 1) * pagination.pageSize + index + 1;
+        }
 
-          return rowNum;
-        },
+        return rowNum;
       },
-      ...tableColumns,
-    ];
+    };
+
+    tableColumns = [rowNumberColumn, ...tableColumns];
   }
 
   const paginationConfig: false | TablePaginationConfig =
@@ -154,6 +151,66 @@ export function Table<T extends object>({
           className: "pagination",
           ...pagination,
         };
+
+  const CustomTable = React.forwardRef<HTMLTableElement, any>(
+    function CustomTable(props, ref) {
+      return (
+        <table
+          {...props}
+          ref={ref}
+          className={`${
+            tableVariant === "alt-2" ? "table-alt-2" : "custom-table"
+          }`}
+        />
+      );
+    }
+  );
+
+  const HeaderWrapper = React.forwardRef<HTMLTableSectionElement, any>(
+    function HeaderWrapper(props, ref) {
+      return <thead {...props} ref={ref} className="custom-thead" />;
+    }
+  );
+
+  const HeaderRow = React.forwardRef<HTMLTableRowElement, any>(
+    function HeaderRow(props, ref) {
+      return <tr {...props} ref={ref} className="custom-tr" />;
+    }
+  );
+
+  const HeaderCell = React.forwardRef<HTMLTableCellElement, any>(
+    function HeaderCell(props, ref) {
+      return <th {...props} ref={ref} className="custom-th" />;
+    }
+  );
+
+  const BodyWrapper = React.forwardRef<HTMLTableSectionElement, any>(
+    function BodyWrapper(props, ref) {
+      return <tbody {...props} ref={ref} className="custom-tbody" />;
+    }
+  );
+
+  const BodyRow = React.forwardRef<HTMLTableRowElement, any>(function BodyRow(
+    props,
+    ref
+  ) {
+    return <tr {...props} ref={ref} className="custom-tr" />;
+  });
+
+  const BodyCell = React.forwardRef<HTMLTableCellElement, any>(
+    function BodyCell(props, ref) {
+      return <td {...props} ref={ref} className="custom-td" />;
+    }
+  );
+
+  CustomTable.displayName = "CustomTable";
+  HeaderWrapper.displayName = "HeaderWrapper";
+  HeaderRow.displayName = "HeaderRow";
+  HeaderCell.displayName = "HeaderCell";
+  BodyWrapper.displayName = "BodyWrapper";
+  BodyRow.displayName = "BodyRow";
+  BodyCell.displayName = "BodyCell";
+
   const tableComponent = (
     <AntTable
       columns={tableColumns}
@@ -166,27 +223,16 @@ export function Table<T extends object>({
       className="panel-content-table custom-table-wrapper"
       {...antTableProps}
       components={{
-        table: (props) => (
-          <table
-            {...props}
-            className={`${
-              tableVariant === "alt-2" ? "table-alt-2" : "custom-table"
-            }`}
-          ></table>
-        ),
+        table: CustomTable,
         header: {
-          wrapper: (props) => (
-            <thead {...props} className="custom-thead"></thead>
-          ),
-          row: (props) => <tr {...props} className="custom-tr"></tr>,
-          cell: (props) => <th {...props} className="custom-th"></th>,
+          wrapper: HeaderWrapper,
+          row: HeaderRow,
+          cell: HeaderCell,
         },
         body: {
-          wrapper: (props) => (
-            <tbody {...props} className="custom-tbody"></tbody>
-          ),
-          row: (props) => <tr {...props} className="custom-tr"></tr>,
-          cell: (props) => <td {...props} className="custom-td"></td>,
+          wrapper: BodyWrapper,
+          row: BodyRow,
+          cell: BodyCell,
         },
       }}
     />
@@ -231,5 +277,7 @@ export function Table<T extends object>({
     </>
   );
 }
+
+Table.displayName = "Table";
 
 export type PaginationType = false | TablePaginationConfig;

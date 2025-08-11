@@ -924,3 +924,693 @@ export const propertyColumns = [
     render: (_: string) => "View | Edit",
   },
 ];
+
+export const defaultFormData = {
+  // Authentication Forms
+  auth: {
+    login: {
+      email: "zlatan@example.com",
+      password: "password",
+      rememberMe: false,
+      otpCode: "",
+    },
+    register: {
+      firstName: "John",
+      lastName: "Doe",
+      email: "john.doe@example.com",
+      password: "password123",
+      cpassword: "password123",
+      phoneNumber: "+1234567890",
+      location: "New York, NY, United States",
+      displayName: "JohnDoe",
+      accountType: {
+        planId: "plan_basic",
+        planName: "Basic Plan",
+        isCorporate: false,
+      },
+      companyProfile: {
+        tradingName: "Doe Real Estate",
+        legalEntityName: "Doe Real Estate LLC",
+        website: "https://www.doerealestate.com",
+        companyEmail: "info@doerealestate.com",
+        companyPhone: "+1234567890",
+        companyAddress: "123 Business St, New York, NY 10001",
+      },
+    },
+    forgotPassword: {
+      email: "john.doe@example.com",
+    },
+    resetPassword: {
+      password: "newpassword123",
+      cpassword: "newpassword123",
+      token: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+    },
+    accountActivation: {
+      token: "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6a7b8c9d0e1f2",
+      cuid: "123e4567-e89b-12d3-a456-426614174000",
+    },
+  },
+
+  // Property Forms
+  property: {
+    basic: {
+      name: "Sunset Apartments",
+      propertyType: "apartment",
+      status: "active",
+      yearBuilt: 2015,
+      address: {
+        unitNumber: "Suite 100",
+        street: "456 Oak Avenue",
+        city: "Los Angeles",
+        state: "CA",
+        postCode: "90210",
+        country: "US",
+        coordinates: [-118.2437, 34.0522],
+        fullAddress:
+          "456 Oak Avenue, Suite 100, Los Angeles, CA 90210, United States",
+      },
+      financialDetails: {
+        purchasePrice: 850000,
+        purchaseDate: "2020-03-15",
+        marketValue: 950000,
+        propertyTax: 8500,
+        lastAssessmentDate: "2024-01-15",
+      },
+      fees: {
+        currency: "USD",
+        taxAmount: "8500.00",
+        rentalAmount: "2500.00",
+        managementFees: "250.00",
+        securityDeposit: "5000.00",
+      },
+      specifications: {
+        totalArea: 1200,
+        lotSize: 5000,
+        bedrooms: 2,
+        bathrooms: 2,
+        floors: 1,
+        garageSpaces: 1,
+        maxOccupants: 4,
+      },
+      utilities: {
+        water: true,
+        gas: true,
+        electricity: true,
+        internet: true,
+        trash: true,
+        cableTV: false,
+      },
+      description: {
+        text: "Beautiful apartment complex in prime location with modern amenities and excellent access to public transportation.",
+        html: "<p>Beautiful apartment complex in prime location with modern amenities and excellent access to public transportation.</p>",
+      },
+      occupancyStatus: "occupied",
+      maxAllowedUnits: 24,
+      interiorAmenities: {
+        airConditioning: true,
+        heating: true,
+        washerDryer: true,
+        dishwasher: true,
+        fridge: true,
+        furnished: false,
+        storageSpace: true,
+      },
+      communityAmenities: {
+        swimmingPool: true,
+        fitnessCenter: true,
+        elevator: true,
+        parking: true,
+        securitySystem: true,
+        petFriendly: true,
+        laundryFacility: true,
+        doorman: false,
+      },
+      documents: [],
+      propertyImages: [],
+    },
+    commercial: {
+      name: "Downtown Business Center",
+      propertyType: "commercial",
+      status: "active",
+      yearBuilt: 2010,
+      address: {
+        unitNumber: "Floor 5",
+        street: "789 Business Boulevard",
+        city: "San Francisco",
+        state: "CA",
+        postCode: "94102",
+        country: "US",
+        coordinates: [-122.4194, 37.7749],
+        fullAddress:
+          "789 Business Boulevard, Floor 5, San Francisco, CA 94102, United States",
+      },
+      financialDetails: {
+        purchasePrice: 2500000,
+        purchaseDate: "2018-06-01",
+        marketValue: 2800000,
+        propertyTax: 28000,
+        lastAssessmentDate: "2024-01-15",
+      },
+      fees: {
+        currency: "USD",
+        taxAmount: "28000.00",
+        rentalAmount: "8000.00",
+        managementFees: "800.00",
+        securityDeposit: "16000.00",
+      },
+      specifications: {
+        totalArea: 5000,
+        lotSize: 0,
+        bedrooms: 0,
+        bathrooms: 4,
+        floors: 2,
+        garageSpaces: 20,
+        maxOccupants: 100,
+      },
+      utilities: {
+        water: true,
+        gas: true,
+        electricity: true,
+        internet: true,
+        trash: true,
+        cableTV: false,
+      },
+      description: {
+        text: "Premium commercial space in the heart of downtown with modern facilities and excellent accessibility.",
+        html: "<p>Premium commercial space in the heart of downtown with modern facilities and excellent accessibility.</p>",
+      },
+      occupancyStatus: "occupied",
+      maxAllowedUnits: 1,
+      interiorAmenities: {
+        airConditioning: true,
+        heating: true,
+        washerDryer: false,
+        dishwasher: false,
+        fridge: false,
+        furnished: false,
+        storageSpace: true,
+      },
+      communityAmenities: {
+        swimmingPool: false,
+        fitnessCenter: false,
+        elevator: true,
+        parking: true,
+        securitySystem: true,
+        petFriendly: false,
+        laundryFacility: false,
+        doorman: true,
+      },
+      documents: [],
+      propertyImages: [],
+    },
+  },
+
+  // Unit Forms
+  unit: {
+    residential: {
+      unitNumber: "A101",
+      unitType: "residential",
+      status: "available",
+      floor: 1,
+      isActive: true,
+      puid: "prop_123456789012345678901234567890",
+      specifications: {
+        totalArea: 850,
+        rooms: 2,
+        bathrooms: 1,
+        maxOccupants: 3,
+      },
+      amenities: {
+        airConditioning: true,
+        heating: true,
+        washerDryer: true,
+        dishwasher: true,
+        parking: true,
+        storage: true,
+        cableTV: false,
+        internet: true,
+      },
+      utilities: {
+        gas: true,
+        trash: true,
+        water: true,
+        heating: true,
+        centralAC: true,
+      },
+      fees: {
+        currency: "USD",
+        rentAmount: 1800,
+        securityDeposit: 3600,
+      },
+      description:
+        "Modern residential unit with updated appliances and beautiful city views.",
+    },
+    commercial: {
+      unitNumber: "B201",
+      unitType: "commercial",
+      status: "available",
+      floor: 2,
+      isActive: true,
+      puid: "prop_123456789012345678901234567890",
+      specifications: {
+        totalArea: 1200,
+        rooms: 4,
+        bathrooms: 2,
+        maxOccupants: 20,
+      },
+      amenities: {
+        airConditioning: true,
+        heating: true,
+        washerDryer: false,
+        dishwasher: false,
+        parking: true,
+        storage: true,
+        cableTV: true,
+        internet: true,
+      },
+      utilities: {
+        gas: true,
+        trash: true,
+        water: true,
+        heating: true,
+        centralAC: true,
+      },
+      fees: {
+        currency: "USD",
+        rentAmount: 3500,
+        securityDeposit: 7000,
+      },
+      description: "Prime commercial space ideal for office or retail use.",
+    },
+    studio: {
+      unitNumber: "S305",
+      unitType: "studio",
+      status: "available",
+      floor: 3,
+      isActive: true,
+      puid: "prop_123456789012345678901234567890",
+      specifications: {
+        totalArea: 450,
+        rooms: 1,
+        bathrooms: 1,
+        maxOccupants: 2,
+      },
+      amenities: {
+        airConditioning: true,
+        heating: true,
+        washerDryer: false,
+        dishwasher: true,
+        parking: false,
+        storage: false,
+        cableTV: false,
+        internet: true,
+      },
+      utilities: {
+        gas: true,
+        trash: true,
+        water: true,
+        heating: true,
+        centralAC: true,
+      },
+      fees: {
+        currency: "USD",
+        rentAmount: 1200,
+        securityDeposit: 2400,
+      },
+      description:
+        "Cozy studio apartment perfect for single professionals or couples.",
+    },
+  },
+
+  // Client Forms
+  client: {
+    individual: {
+      displayName: "John Doe Properties",
+      identification: {
+        idType: "driverLicense",
+        idNumber: "DL123456789",
+        authority: "California DMV",
+        issuingState: "CA",
+        issueDate: "2020-01-15",
+        expiryDate: "2025-01-15",
+        dataProcessingConsent: true,
+        processingConsentDate: "2024-01-01",
+      },
+      settings: {
+        notificationPreferences: {
+          email: true,
+          sms: true,
+          inApp: true,
+        },
+        timeZone: "America/Los_Angeles",
+        lang: "en",
+      },
+    },
+    corporate: {
+      displayName: "Sunrise Properties Inc",
+      identification: {
+        idType: "businessRegistration",
+        idNumber: "BR987654321",
+        authority: "California Secretary of State",
+        issuingState: "CA",
+        issueDate: "2018-03-01",
+        expiryDate: "2028-03-01",
+        dataProcessingConsent: true,
+        processingConsentDate: "2024-01-01",
+      },
+      companyProfile: {
+        legalEntityName: "Sunrise Properties Incorporated",
+        tradingName: "Sunrise Properties",
+        companyEmail: "info@sunriseproperties.com",
+        registrationNumber: "C3456789",
+        website: "https://www.sunriseproperties.com",
+        companyPhone: "+1555123456",
+        contactInfo: {
+          email: "contact@sunriseproperties.com",
+          phoneNumber: "+1555123456",
+          contactPerson: "Sarah Johnson",
+        },
+      },
+      settings: {
+        notificationPreferences: {
+          email: true,
+          sms: false,
+          inApp: true,
+        },
+        timeZone: "America/Los_Angeles",
+        lang: "en",
+      },
+    },
+  },
+
+  // Invitation Forms
+  invitation: {
+    employees: [
+      {
+        personalInfo: {
+          firstName: "Michael",
+          lastName: "Johnson",
+          phoneNumber: "+1555234567",
+        },
+        inviteeEmail: "michael.johnson@example.com",
+        role: "staff",
+        employeeInfo: {
+          jobTitle: "Property Manager",
+          department: "Operations",
+          permissions: [
+            "view_properties",
+            "manage_tenants",
+            "generate_reports",
+          ],
+          employeeId: "EMP001",
+          reportsTo: "Sarah Wilson",
+          startDate: new Date("2024-02-01"),
+        },
+        status: "draft",
+        metadata: {
+          inviteMessage:
+            "Welcome to our property management team! We're excited to have you join us.",
+          expectedStartDate: new Date("2024-02-01"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Emily",
+          lastName: "Chen",
+          phoneNumber: "+1555345678",
+        },
+        inviteeEmail: "emily.chen@example.com",
+        role: "staff",
+        status: "draft",
+        employeeInfo: {
+          jobTitle: "Maintenance Coordinator",
+          department: "Maintenance",
+          permissions: [
+            "view_properties",
+            "manage_maintenance",
+            "schedule_repairs",
+          ],
+          employeeId: "EMP002",
+          reportsTo: "David Rodriguez",
+          startDate: new Date("2024-02-15"),
+        },
+        metadata: {
+          inviteMessage:
+            "Join our maintenance team and help keep our properties in top condition.",
+          expectedStartDate: new Date("2024-02-15"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "David",
+          lastName: "Rodriguez",
+          phoneNumber: "+1555456789",
+        },
+        inviteeEmail: "david.rodriguez@example.com",
+        role: "manager",
+        status: "pending",
+        employeeInfo: {
+          jobTitle: "Maintenance Supervisor",
+          department: "Maintenance",
+          permissions: [
+            "view_properties",
+            "manage_maintenance",
+            "approve_repairs",
+            "manage_vendors",
+          ],
+          employeeId: "EMP003",
+          reportsTo: "Sarah Wilson",
+          startDate: new Date("2024-01-15"),
+        },
+        metadata: {
+          inviteMessage:
+            "Lead our maintenance operations and ensure excellent service delivery.",
+          expectedStartDate: new Date("2024-01-15"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Lisa",
+          lastName: "Thompson",
+          phoneNumber: "+1555567890",
+        },
+        status: "pending",
+        inviteeEmail: "lisa.thompson@example.com",
+        role: "staff",
+        employeeInfo: {
+          jobTitle: "Leasing Agent",
+          department: "Leasing",
+          permissions: [
+            "view_properties",
+            "manage_tenants",
+            "process_applications",
+          ],
+          employeeId: "EMP004",
+          reportsTo: "Michael Johnson",
+          startDate: new Date("2024-03-01"),
+        },
+        metadata: {
+          inviteMessage:
+            "Help us find great tenants for our properties and provide excellent customer service.",
+          expectedStartDate: new Date("2024-03-01"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Robert",
+          lastName: "Kim",
+          phoneNumber: "+1555678901",
+        },
+        status: "draft",
+        inviteeEmail: "robert.kim@example.com",
+        role: "staff",
+        employeeInfo: {
+          jobTitle: "Financial Analyst",
+          department: "Finance",
+          permissions: [
+            "view_properties",
+            "manage_finances",
+            "generate_reports",
+          ],
+          employeeId: "EMP005",
+          reportsTo: "Sarah Wilson",
+          startDate: new Date("2024-02-20"),
+        },
+        metadata: {
+          inviteMessage:
+            "Analyze our property financials and help optimize our investment returns.",
+          expectedStartDate: new Date("2024-02-20"),
+        },
+      },
+    ],
+    vendors: [
+      {
+        personalInfo: {
+          firstName: "James",
+          lastName: "Miller",
+          phoneNumber: "+1555789012",
+        },
+        inviteeEmail: "james@reliableplumbing.com",
+        role: "vendor",
+        vendorInfo: {
+          companyName: "Reliable Plumbing Services",
+          businessType: "llc",
+          primaryService: "plumbing",
+          contactPerson: {
+            name: "James Miller",
+            jobTitle: "Owner",
+            email: "james@reliableplumbing.com",
+            phone: "+1555789012",
+          },
+        },
+        status: "draft",
+        metadata: {
+          inviteMessage:
+            "We'd like to add your plumbing services to our preferred vendor network.",
+          expectedStartDate: new Date("2024-02-01"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Maria",
+          lastName: "Garcia",
+          phoneNumber: "+1555890123",
+        },
+        inviteeEmail: "maria@sparklingclean.com",
+        role: "vendor",
+        vendorInfo: {
+          companyName: "Sparkling Clean Services",
+          businessType: "corporation",
+          primaryService: "cleaning",
+          contactPerson: {
+            name: "Maria Garcia",
+            jobTitle: "Operations Manager",
+            email: "maria@sparklingclean.com",
+            phone: "+1555890123",
+          },
+        },
+        status: "pending",
+        metadata: {
+          inviteMessage:
+            "Join our network of cleaning professionals and help maintain our properties.",
+          expectedStartDate: new Date("2024-02-10"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Thomas",
+          lastName: "Wilson",
+          phoneNumber: "+1555901234",
+        },
+        inviteeEmail: "tom@wilsonelectric.com",
+        role: "vendor",
+        vendorInfo: {
+          companyName: "Wilson Electrical Solutions",
+          businessType: "partnership",
+          primaryService: "electrical",
+          contactPerson: {
+            name: "Thomas Wilson",
+            jobTitle: "Lead Electrician",
+            email: "tom@wilsonelectric.com",
+            phone: "+1555901234",
+          },
+        },
+        status: "pending",
+        metadata: {
+          inviteMessage:
+            "We need reliable electrical services for our property portfolio.",
+          expectedStartDate: new Date("2024-02-05"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Jennifer",
+          lastName: "Brown",
+          phoneNumber: "+1555012345",
+        },
+        inviteeEmail: "jennifer@greenlawncare.com",
+        role: "vendor",
+        status: "draft",
+        vendorInfo: {
+          companyName: "Green Lawn Care & Landscaping",
+          businessType: "llc",
+          primaryService: "landscaping",
+          contactPerson: {
+            name: "Jennifer Brown",
+            jobTitle: "General Manager",
+            email: "jennifer@greenlawncare.com",
+            phone: "+1555012345",
+          },
+        },
+        metadata: {
+          inviteMessage:
+            "Help us maintain beautiful outdoor spaces at our properties.",
+          expectedStartDate: new Date("2024-03-01"),
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Carlos",
+          lastName: "Rodriguez",
+          phoneNumber: "+1555123456",
+        },
+        inviteeEmail: "carlos@hvacpros.com",
+        role: "vendor",
+        status: "draft",
+        vendorInfo: {
+          companyName: "HVAC Professionals Inc",
+          businessType: "corporation",
+          primaryService: "hvac",
+          contactPerson: {
+            name: "Carlos Rodriguez",
+            jobTitle: "Service Manager",
+            email: "carlos@hvacpros.com",
+            phone: "+1555123456",
+          },
+        },
+        metadata: {
+          inviteMessage:
+            "We need skilled HVAC technicians for our property maintenance needs.",
+          expectedStartDate: new Date("2024-02-12"),
+        },
+      },
+    ],
+  },
+
+  csvUpload: {
+    property: {
+      cuid: "123e4567-e89b-12d3-a456-426614174000",
+      csvFile: null,
+    },
+  },
+};
+
+// Helper function to get default data by path
+export const getDefaultData = (path: string): any => {
+  const keys = path.split(".");
+  let current: any = defaultFormData;
+
+  for (const key of keys) {
+    if (current && typeof current === "object" && key in current) {
+      current = current[key];
+    } else {
+      return null;
+    }
+  }
+
+  return current;
+};
+
+// Helper function to get random item from array (useful for multiple datasets)
+export const getRandomDefault = (path: string): any => {
+  const data = getDefaultData(path);
+  if (Array.isArray(data)) {
+    return data[Math.floor(Math.random() * data.length)];
+  }
+  return data;
+};
+
+// Environment check - only use in development
+export const shouldUseDefaultData = () => {
+  return process.env.NODE_ENV === "development";
+};
