@@ -24,7 +24,7 @@ import {
   occupancyData,
   priorityData,
   payments,
-} from "@src/test-data/index";
+} from "@test-data/index";
 
 export default function Dashboard() {
   return (

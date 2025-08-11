@@ -35,6 +35,7 @@
       "@models/*": ["src/models/*"],
       "@validations/*": ["src/validations/*"],
       "@bootstrap/*": ["src/bootstrap/*"],
+      "@test-data/*": ["src/test-data/*"],
 
       "@properties/*": ["src/app/(protectedRoutes)/properties/*"],
       "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/*"],

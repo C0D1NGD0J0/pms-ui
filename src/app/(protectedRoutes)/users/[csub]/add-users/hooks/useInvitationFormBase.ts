@@ -1,10 +1,7 @@
 import { useForm } from "@mantine/form";
 import { IUserRole } from "@interfaces/invitation.interface";
 import { useCallback, useEffect, useState, useMemo } from "react";
-import {
-  shouldUseDefaultData,
-  getRandomDefault,
-} from "@src/test-data/staticData";
+import { shouldUseDefaultData, getRandomDefault } from "@test-data/staticData";
 import {
   sanitizeInvitationFormData,
   InvitationFormValues,
