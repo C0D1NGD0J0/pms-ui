@@ -7,11 +7,12 @@ import { ILoginForm } from "@interfaces/auth.interface";
 const mockProps = {
   isSubmitting: false,
   isModalOpen: false,
-  userAccounts: [],
+  userAccounts: [] as { cuid: string; displayName: string }[],
   selectedClient: "",
   handleSubmit: jest.fn(),
   handleSelect: jest.fn(),
   toggleModal: jest.fn(),
+  handleModalConfirm: jest.fn(),
 };
 
 function LoginViewWrapper(props: Partial<typeof mockProps> = {}) {

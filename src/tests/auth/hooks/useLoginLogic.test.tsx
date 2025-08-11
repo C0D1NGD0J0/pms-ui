@@ -84,7 +84,7 @@ describe("useLoginLogic Hook", () => {
         { cuid: "123", displayName: "Account 1" },
         { cuid: "456", displayName: "Account 2" },
       ],
-      activeAccount: null,
+      activeAccount: { cuid: "123", displayName: "Account 1" },
     };
     mockAuthService.login.mockResolvedValue(mockResponse);
 

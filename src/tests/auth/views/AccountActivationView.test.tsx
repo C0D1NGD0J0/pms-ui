@@ -2,7 +2,7 @@ import { useForm } from "@mantine/form";
 import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
 import { IAccountActivationForm } from "@interfaces/auth.interface";
-import { AccountActivationView } from "@app/(auth)/account_activation/[cuid]/view";
+import { AccountActivationView } from "@app/(auth)/account_activation/[cid]/view";
 
 const mockProps = {
   isPending: false,
@@ -47,7 +47,7 @@ describe("AccountActivationView Component", () => {
   });
 
   it("should show loading when no token is provided", () => {
-    render(<AccountActivationViewWrapper token={null} />);
+    render(<AccountActivationViewWrapper token={undefined} />);
 
     expect(screen.getByText("Broken url...")).toBeInTheDocument();
   });
