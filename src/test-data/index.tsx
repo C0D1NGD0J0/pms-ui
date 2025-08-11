@@ -4,7 +4,7 @@ import { InsightCardData } from "@app/(protectedRoutes)/dashboard/interfaces";
 export * from "./properties";
 
 // Re-export default form data
-export * from "./defaultFormData";
+export * from "./staticData";
 
 export interface ServiceRequest {
   id: string;
