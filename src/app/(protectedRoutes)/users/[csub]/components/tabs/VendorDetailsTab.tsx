@@ -51,7 +51,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               id="businessType"
               name="businessType"
               value={formData.vendorInfo?.businessType || ""}
-              onChange={(value) =>
+              onChange={(value: string) =>
                 onFieldChange("vendorInfo.businessType", value)
               }
               options={[

@@ -92,7 +92,7 @@ export class PropertyModel implements IPropertyModelMethods {
   }
 
   isUnderMaintenance(): boolean {
-    return this.data.occupancyStatus === "maintenance";
+    return this.data.status === "maintenance";
   }
 
   isMultiUnit(): boolean {

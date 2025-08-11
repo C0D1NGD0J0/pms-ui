@@ -42,7 +42,7 @@ const InviteUsers: React.FC = () => {
     handleSortChange,
     handlePageChange,
     handleSortByChange,
-  } = useGetInvitations(client.cuid);
+  } = useGetInvitations(client?.cuid || "");
 
   const { handleSubmit, isSubmitting } = useInvitationForm();
   const { handleUpdate, isUpdating } = useInvitationEdit();

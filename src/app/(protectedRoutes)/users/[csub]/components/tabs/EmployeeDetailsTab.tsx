@@ -56,7 +56,7 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             id="department"
             name="department"
             value={formData.employeeInfo?.department || ""}
-            onChange={(value) =>
+            onChange={(value: string) =>
               onFieldChange("employeeInfo.department", value)
             }
             options={[
