@@ -104,11 +104,13 @@ export function Table<T extends object>({
     width: column.width,
     render:
       column.render ||
-      (column.isStatus ? (value: any) => renderStatusBadge(value) : undefined),
+      (column.isStatus
+        ? (value: string) => renderStatusBadge(value)
+        : undefined),
   }));
 
   if (showRowNumbers) {
-    const rowNumberColumn: any = {
+    const rowNumberColumn = {
       title: "#",
       dataIndex: "rowIndex",
       key: "rowIndex",
