@@ -1,5 +1,24 @@
 @use "../abstract/index" as *;
 
+// Table actions styling
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  
+  .btn {
+    flex-shrink: 0;
+    
+    &-sm {
+      height: 2rem; // Ensure consistent height
+      min-height: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
 /* Global reset for Ant Design table styles */
 .ant-table-wrapper,
 .custom-table-wrapper {

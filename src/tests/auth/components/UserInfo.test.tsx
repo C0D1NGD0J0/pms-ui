@@ -1,7 +1,7 @@
-import { screen } from "@testing-library/react";
-import UserInfo from "@app/(auth)/register/UserInfo";
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
+import UserInfo from "@app/(auth)/register/UserInfo";
 import { ISignupForm } from "@interfaces/auth.interface";
 
 function UserInfoWrapper() {

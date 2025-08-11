@@ -17,7 +17,7 @@ export const AuthContentFooter = ({
       <p>
         {footerText && footerText}
         {footerLink && (
-          <Link href="/">
+          <Link href={footerLink}>
             <strong>{footerLinkText}</strong>
           </Link>
         )}

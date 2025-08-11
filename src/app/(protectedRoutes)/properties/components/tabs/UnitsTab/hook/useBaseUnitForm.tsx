@@ -1,20 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { v4 as uuidv4 } from "uuid";
-import { useAuth, useUnitFormStaticData } from "@store/index";
 import { useForm } from "@mantine/form";
 import { extractChanges } from "@utils/helpers";
+import { useUnitFormStaticData, useAuth } from "@store/index";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { createUnitSchema } from "@validations/unit.validations";
+import { PropertyFormValues } from "@interfaces/property.interface";
 import { useConditionalRender, useNotification } from "@hooks/index";
+import { useGetPropertyUnits } from "@app/(protectedRoutes)/properties/hooks";
 import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
-import {
-  StaticUnitFormConfig,
-  PropertyFormValues,
-} from "@interfaces/property.interface";
-import {
-  usePropertyFormMetaData,
-  useGetPropertyUnits,
-} from "@app/(protectedRoutes)/properties/hooks";
 import {
   UnitsFormValues,
   UnitFormValues,
@@ -53,7 +47,7 @@ export function useBaseUnitForm({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = useGetPropertyUnits(client?.csub || "", property.pid, {
+  } = useGetPropertyUnits(client?.cuid || "", property.pid, {
     limit: 2,
     sortBy: "floor",
   });
@@ -65,7 +59,7 @@ export function useBaseUnitForm({
   const unitForm = useForm<UnitsFormValues>({
     initialValues: {
       units: [],
-      cid: client?.csub || "",
+      cuid: client?.cuid || "",
       pid: property.pid,
     },
   });

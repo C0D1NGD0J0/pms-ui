@@ -1,17 +1,18 @@
-import { screen, fireEvent } from "@testing-library/react";
-import { LoginView } from "@app/(auth)/login/view";
 import { useForm } from "@mantine/form";
+import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
+import { LoginView } from "@app/(auth)/login/view";
 import { ILoginForm } from "@interfaces/auth.interface";
 
 const mockProps = {
   isSubmitting: false,
   isModalOpen: false,
-  userAccounts: [],
+  userAccounts: [] as { cuid: string; displayName: string }[],
   selectedClient: "",
   handleSubmit: jest.fn(),
   handleSelect: jest.fn(),
   toggleModal: jest.fn(),
+  handleModalConfirm: jest.fn(),
 };
 
 function LoginViewWrapper(props: Partial<typeof mockProps> = {}) {
@@ -34,30 +35,34 @@ describe("LoginView Component", () => {
 
   it("should render login form with correct fields", () => {
     render(<LoginViewWrapper />);
-    
+
     expect(screen.getByPlaceholderText("Enter email...")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter password...")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter password...")
+    ).toBeInTheDocument();
     expect(screen.getByText("Remember me")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
   });
 
   it("should show processing state when submitting", () => {
     render(<LoginViewWrapper isSubmitting={true} />);
-    
+
     expect(screen.getByText("Processing...")).toBeInTheDocument();
     // Check if the button shows processing state
-    expect(screen.getByRole("button", { name: /processing/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /processing/i })
+    ).toBeInTheDocument();
   });
 
   it("should render account selection modal when accounts exist", () => {
     const userAccounts = [
-      { csub: "123", displayName: "Account 1" },
-      { csub: "456", displayName: "Account 2" },
+      { cuid: "123", displayName: "Account 1" },
+      { cuid: "456", displayName: "Account 2" },
     ];
 
     render(
-      <LoginViewWrapper 
-        isModalOpen={true} 
+      <LoginViewWrapper
+        isModalOpen={true}
         userAccounts={userAccounts}
         selectedClient="123"
       />

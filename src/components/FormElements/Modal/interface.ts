@@ -7,6 +7,7 @@ export interface ModalProps {
   children: ReactNode;
   title?: string;
   className?: string;
+  destroyOnHidden?: boolean;
 }
 
 export interface ModalHeaderProps {

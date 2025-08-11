@@ -54,8 +54,8 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
   const handleSortByChange = useCallback((sortBy: string) => {
     setPagination((prev) => ({
       ...prev,
-      ...(sortBy === "" ? { sortBy: "", sort: "" } : {}),
-      ...(sortBy !== "" && prev.sort === "" ? { sortBy, sort: "desc" } : {}),
+      sortBy,
+      sort: sortBy === "" ? "" : prev.sort || "desc",
     }));
   }, []);
 

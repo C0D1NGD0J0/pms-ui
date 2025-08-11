@@ -1,0 +1,80 @@
+@use "../abstract/index" as *;
+
+.role-tiles {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+
+  // Responsive behavior for smaller screens
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.role-tile {
+  background: hslaGen($white-color);
+  border: 1px solid hslaGen($grey-color, 0.3);
+  border-radius: $border-radius-md;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: $transition;
+  position: relative;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  &:hover {
+    border-color: hslaGen($primary-color);
+    box-shadow: $box-shadow;
+  }
+
+  &.selected {
+    border-color: hslaGen($primary-color);
+    background-color: hslaGen($off-white-color);
+    box-shadow: $box-shadow;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: hslaGen($primary-color);
+      border-radius: $border-radius-md $border-radius-md 0 0;
+    }
+  }
+
+  &-icon {
+    font-size: 2rem;
+    color: hslaGen($grey-color);
+    margin-bottom: 0.75rem;
+  }
+
+  &.selected &-icon {
+    color: hslaGen($primary-color);
+  }
+
+  &-title {
+    font-size: $fs-lg;
+    font-weight: $fw-bold;
+    color: hslaGen($primary-color);
+    margin-bottom: 0.25rem;
+  }
+
+  &-subtitle {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: $fw-bold;
+  }
+}

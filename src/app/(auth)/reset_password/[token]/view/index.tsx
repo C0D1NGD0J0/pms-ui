@@ -92,7 +92,10 @@ export function ResetPasswordView({
           </div>
         </Form>
       </AuthContentBody>
-      <AuthContentFooter footerLink="/login" footerLinkText="Login" />
+      <AuthContentFooter
+        footerLink="/login"
+        footerLinkText="Already have an account? Log in"
+      />
     </>
   );
 }

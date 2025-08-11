@@ -23,6 +23,16 @@ type MessageContextMetaType = {
   key?: string;
 };
 
+type ConfirmOptions = {
+  title: string;
+  message: string;
+  onConfirm: () => void;
+  onCancel?: () => void;
+  confirmText?: string;
+  cancelText?: string;
+  type?: "warning" | "error" | "info";
+};
+
 type NotificationContextType = {
   openNotification: (
     type: NotificationInstance,
@@ -35,6 +45,8 @@ type NotificationContextType = {
     MessageInstance,
     (content: string, opts?: MessageContextMetaType) => void
   >;
+
+  confirm: (options: ConfirmOptions) => void;
 };
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
@@ -63,16 +75,21 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   ) => {
     if (type === "open" && opts) {
       const key = `open${Date.now()}`;
-      const btn = (
-        <Button type="primary" size="small" onClick={() => api.destroy(key)}>
+      const actions = [
+        <Button
+          key="close"
+          type="primary"
+          size="small"
+          onClick={() => api.destroy(key)}
+        >
           {opts?.btnText}
-        </Button>
-      );
+        </Button>,
+      ];
 
       api[type]({
         message: title,
         placement: "topRight",
-        btn,
+        actions,
         key,
         duration: 0,
         style: { whiteSpace: "pre-line" },
@@ -110,11 +127,61 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
     loading: createMessageMethod("loading"),
   };
 
+  const confirm = (options: ConfirmOptions) => {
+    const {
+      title,
+      message: content,
+      onConfirm,
+      onCancel,
+      confirmText = "Yes",
+      cancelText = "Cancel",
+      type = "warning",
+    } = options;
+
+    const key = `confirm${Date.now()}`;
+
+    const handleConfirm = () => {
+      api.destroy(key);
+      onConfirm();
+    };
+
+    const handleCancel = () => {
+      api.destroy(key);
+      onCancel?.();
+    };
+
+    const actions = [
+      <Button key="cancel" size="small" onClick={handleCancel}>
+        {cancelText}
+      </Button>,
+      <Button
+        key="confirm"
+        type="primary"
+        size="small"
+        danger={type === "error"}
+        onClick={handleConfirm}
+      >
+        {confirmText}
+      </Button>,
+    ];
+
+    api[type]({
+      message: title,
+      description: content,
+      placement: "topRight",
+      actions,
+      key,
+      duration: 0,
+      style: { whiteSpace: "pre-line" },
+    });
+  };
+
   return (
     <NotificationContext.Provider
       value={{
         openNotification,
         message: messageHandler,
+        confirm,
       }}
     >
       {contextHolder}

@@ -15,6 +15,7 @@ export interface PanelHeaderProps {
   filterOpts?: {
     value: string;
     isVisible?: boolean;
+    filterPlaceholder?: string;
     sortDirection?: "asc" | "desc" | "";
     onFilterChange: (value: string) => void;
     options: { label: string; value: string }[];
@@ -31,7 +32,7 @@ export function PanelHeader({
   const isSeachVisible = (searchOpts && searchOpts?.isVisible) || false;
   const isFilterVisible = filterOpts?.isVisible || false;
   const [_sortBy, setSortBy] = React.useState<string>("");
-
+  console.log("Filter changed:", filterOpts);
   return (
     <div className="panel-header">
       <div className="panel-header__title">
@@ -61,11 +62,11 @@ export function PanelHeader({
                 className="filter-select"
                 value={filterOpts.value}
                 options={filterOpts.options}
-                onChange={(value) => {
+                onChange={(value: string) => {
                   setSortBy(value);
                   filterOpts?.onFilterChange(value);
                 }}
-                placeholder="Filter by..."
+                placeholder={filterOpts.filterPlaceholder || "Filter by..."}
               />
               {_sortBy && filterOpts.sortDirection && (
                 <button

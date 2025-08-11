@@ -12,7 +12,7 @@ type PropertyUnitsResponse = Awaited<
 >;
 
 export function useGetPropertyUnits(
-  cid: string,
+  cuid: string,
   pid: string,
   pagination: Omit<IPaginationQuery, "page">,
   options?: Partial<
@@ -27,9 +27,9 @@ export function useGetPropertyUnits(
   >
 ) {
   return useInfiniteQuery({
-    queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(cid, pid, pagination),
+    queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(cuid, pid, pagination),
     queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
-      const data = await propertyUnitService.getPropertyUnits(cid, pid, {
+      const data = await propertyUnitService.getPropertyUnits(cuid, pid, {
         ...pagination,
         page: pageParam,
       });
@@ -41,7 +41,7 @@ export function useGetPropertyUnits(
       return currentPage < totalPages ? currentPage + 1 : undefined;
     },
     initialPageParam: 1,
-    enabled: !!cid && !!pid,
+    enabled: !!cuid && !!pid,
     ...options,
   });
 }

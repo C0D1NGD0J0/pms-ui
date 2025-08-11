@@ -41,7 +41,7 @@ export function usePropertyEditForm({
 
   const updatePropertyMutation = useMutation({
     mutationFn: (data: Partial<EditPropertyFormValues>) =>
-      propertyService.updateClientProperty(client?.csub || "", pid, data),
+      propertyService.updateClientProperty(client?.cuid || "", pid, data),
     onError: (error: any) => {
       openNotification(
         "error",
@@ -57,10 +57,10 @@ export function usePropertyEditForm({
       return;
     }
     try {
-      values.cid = client?.csub ?? "";
+      values.cuid = client?.cuid ?? "";
       const changedValues: Partial<EditPropertyFormValues | null> =
         extractChanges(originalValues, values, {
-          ignoreKeys: ["cid"],
+          ignoreKeys: ["cuid"],
         });
       if (changedValues) {
         await updatePropertyMutation.mutateAsync(changedValues);
@@ -71,7 +71,7 @@ export function usePropertyEditForm({
         "Property has been successfully updated."
       );
       queryClient.invalidateQueries({
-        queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client?.csub || "", pid),
+        queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client?.cuid || "", pid),
       });
       router.push("/properties");
     } catch (error) {

@@ -1,10 +1,11 @@
 "use client";
+
 import React from "react";
 import Link from "next/link";
 import { Table } from "@components/Table";
-import { InsightCard } from "@components/Cards";
-import { AnalyticCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
+import { useCurrentUser } from "@hooks/useCurrentUser";
+import { AnalyticCard, InsightCard } from "@components/Cards";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
 import {
   PanelsWrapper,
@@ -24,14 +25,24 @@ import {
   occupancyData,
   priorityData,
   payments,
-} from "@src/test-data";
+} from "@test-data/index";
 
 export default function Dashboard() {
+  const { user } = useCurrentUser();
+
   return (
     <div className="page admin-dashboard">
       <PageHeader
         title="Dashboard"
-        subtitle={new Date().toLocaleDateString()}
+        subtitle={`Welcome ${user?.displayName}, it's ${new Intl.DateTimeFormat(
+          "en-US",
+          {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }
+        ).format(new Date())}`}
         headerBtn={
           <Link className="btn btn-success" href={"/properties/new"}>
             <i className="bx bx-plus-circle"></i>
@@ -61,6 +72,7 @@ export default function Dashboard() {
               headerTitle="Service Requests"
               columns={serviceRequestColumns}
               dataSource={serviceRequests}
+              showRowNumbers={true} // Enable row numbering
               pagination={{ pageSize: 4 }}
               rowKey="id"
             />
@@ -101,6 +113,7 @@ export default function Dashboard() {
               headerTitle="Occupancy by Property"
               columns={occupancyColumns}
               dataSource={occupancyData}
+              showRowNumbers={true} // Enable row numbering
               pagination={{ pageSize: 5 }}
               rowKey="id"
             />

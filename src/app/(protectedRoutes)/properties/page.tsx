@@ -14,7 +14,7 @@ import { generatePropertyColumn } from "./utils/index";
 export default function Properties() {
   const { client } = useAuth();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  // const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const {
     filterOptions,
     properties,
@@ -23,17 +23,7 @@ export default function Properties() {
     handleSortChange,
     handlePageChange,
     handleSortByChange,
-  } = useGetAllProperties(client?.csub || "");
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (selected: React.Key[], selectedRows: IProperty[]) => {
-      console.log(`Selected row keys: ${selected}`);
-      console.log("Selected rows: ", selectedRows);
-      setSelectedRowKeys(selected);
-    },
-    type: "checkbox" as const,
-  };
+  } = useGetAllProperties(client?.cuid || "");
 
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
@@ -47,7 +37,6 @@ export default function Properties() {
     <div className="page properties">
       <PageHeader
         title="Property portfolio"
-        subtitle="/properties/new"
         headerBtn={
           <>
             <Button
@@ -71,6 +60,7 @@ export default function Properties() {
               tableVariant="alt-2"
               columns={generatePropertyColumn()}
               dataSource={properties}
+              showRowNumbers={true} // Enable row numbering
               searchOpts={{
                 isVisible: true,
                 value: "",

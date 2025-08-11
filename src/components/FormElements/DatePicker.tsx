@@ -31,7 +31,7 @@ export const DatePicker: React.FC<CustomDatePickerProps> = ({
 }) => {
   const handleChange: DatePickerProps["onChange"] = (date, dateString) => {
     const dateValue = Array.isArray(dateString) ? dateString[0] : dateString;
-    onChange(dateValue || null);
+    onChange(dateValue || "");
   };
 
   const inputClasses = [

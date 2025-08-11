@@ -33,6 +33,13 @@ export type IPaginationQuery = {
   sort?: "asc" | "desc" | "";
 };
 
+// Generic filter interface that extends pagination
+export interface IFilterQuery<TSortBy = string, TStatus = string>
+  extends Omit<IPaginationQuery, "sortBy"> {
+  status?: TStatus;
+  sortBy?: TSortBy;
+}
+
 // Pagination interface
 export interface IPaginationResponse {
   total: number;
@@ -46,4 +53,5 @@ export interface ParsedError {
   message: string;
   fieldErrors: Record<string, string[]>;
   statusCode?: number;
+  hasValidationErrors?: boolean;
 }

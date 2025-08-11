@@ -28,8 +28,8 @@ export const useCurrentUser = () => {
     queryFn: async () => {
       try {
         console.log("Current user start fetchin...");
-        const response = await authService.currentuser(client?.csub ?? "");
-        return response?.data || null;
+        const response = await authService.currentuser(client?.cuid ?? "");
+        return response?.data;
       } catch (err: any) {
         console.info("Current user fetch failed:", err);
         const status = err.statusCode;
@@ -41,7 +41,7 @@ export const useCurrentUser = () => {
       }
     },
     refetchOnWindowFocus: true,
-    enabled: !!client?.csub,
+    enabled: !!client?.cuid,
     staleTime: TWO_MINUTES_IN_MS, // data is fresh for 2 minutes
     retry: (
       failureCount,
@@ -62,7 +62,7 @@ export const useCurrentUser = () => {
 
   // Event listener for GET_CURRENT_USER events
   useEvent(EventTypes.GET_CURRENT_USER, () => {
-    if (client?.csub) {
+    if (client?.cuid) {
       refetch();
     }
   });
@@ -70,7 +70,7 @@ export const useCurrentUser = () => {
   // Listen for token refresh events to refetch user data
   useEvent(EventTypes.TOKEN_REFRESHED, () => {
     console.log("Token refreshed, refetching user data...");
-    if (client?.csub) {
+    if (client?.cuid) {
       refetch().catch((err) => {
         console.error("Failed to refetch user data after token refresh:", err);
         // If user fetch fails after successful token refresh, clear user data
@@ -116,7 +116,7 @@ export const useCurrentUser = () => {
     user: userData,
     isFetchingUser,
     isRefreshingToken,
-    isLoading, // Combined loading state
+    isLoading,
     isError,
     error,
     isLoggedIn,

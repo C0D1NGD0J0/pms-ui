@@ -1,5 +1,3 @@
-import { handlers } from "./handlers";
-
 export const server = {
   listen: () => {
     console.log("MSW Server started");
@@ -10,7 +8,7 @@ export const server = {
   close: () => {
     console.log("MSW Server closed");
   },
-  use: (handlers: any[]) => {
+  use: () => {
     console.log("Mock handlers added");
   },
 };

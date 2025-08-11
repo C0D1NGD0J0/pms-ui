@@ -55,11 +55,13 @@
   z-index: 5;
   width: 100%;
   display: flex;
-  bottom: -0.7rem;
   flex-wrap: wrap;
   position: absolute;
+  font-weight: $fw-bold;
+  transition: $transition;
   color: hslaGen($danger-color, 0.9);
   font-size: clamp($fs-xsm, 8px, $fs-xsm);
+  background-color: hslaGen($white-color, 1);
 }
 
 // Form label
@@ -535,4 +537,15 @@
       background-color: hslaGen($grey-color, 0.3);
     }
   }
+}
+
+.radio-option {
+  gap: 1rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  color: hslaGen($primary-color);
+  background-color: hslaGen($grey-color, 0.4);
+  border: 1px solid hslaGen($primary-color, 0.3);
 }

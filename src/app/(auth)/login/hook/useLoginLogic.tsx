@@ -21,7 +21,7 @@ export function useLoginLogic() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [userAccounts, setUserAccounts] = useState<
-    { csub: string; displayName: string }[]
+    { cuid: string; displayName: string }[]
   >([]);
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: ILoginForm) => authService.login(data),
@@ -61,16 +61,20 @@ export function useLoginLogic() {
     }
   };
 
-  const handleSelect = (csub: string) => {
-    setSelectedClient(csub);
+  const handleSelect = (cuid: string) => {
+    setSelectedClient(cuid);
+  };
+
+  const handleModalConfirm = () => {
     const selectedAccount = userAccounts.find(
-      (account) => account.csub === csub
+      (account) => account.cuid === selectedClient
     );
     if (selectedAccount) {
       setClient(selectedAccount);
       publish(EventTypes.ACCOUNT_SWITCHED, selectedAccount);
       router.push("/dashboard");
     }
+    setIsModalOpen(false);
   };
 
   return {
@@ -80,6 +84,7 @@ export function useLoginLogic() {
     userAccounts,
     selectedClient,
     handleSelect,
+    handleModalConfirm,
     toggleModal: setIsModalOpen,
     handleSubmit,
   };

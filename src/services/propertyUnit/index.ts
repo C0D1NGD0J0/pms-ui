@@ -36,10 +36,10 @@ class PropertyUnitService {
 
   constructor() {}
 
-  async createUnits(cid: string, pid: string, data: ICreateUnitsRequest) {
+  async createUnits(cuid: string, pid: string, data: ICreateUnitsRequest) {
     try {
       const result = await axios.post(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units/`,
+        `${this.baseUrl}/${cuid}/client_properties/${pid}/units/`,
         data,
         this.axiosConfig
       );
@@ -51,7 +51,7 @@ class PropertyUnitService {
   }
 
   async getPropertyUnits(
-    cid: string,
+    cuid: string,
     pid: string,
     pagination: IPaginationQuery,
     filterQuery?: Partial<IUnitFilterParams>
@@ -59,7 +59,7 @@ class PropertyUnitService {
     try {
       const queryString = this.buildQueryString(filterQuery ?? {}, pagination);
       const result = await axios.get<IServerResponseWithPagination<IUnit[]>>(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units?${queryString}`,
+        `${this.baseUrl}/${cuid}/client_properties/${pid}/units?${queryString}`,
         this.axiosConfig
       );
       return result.data;
@@ -69,10 +69,10 @@ class PropertyUnitService {
     }
   }
 
-  async getUnit(cid: string, pid: string, unitId: string): Promise<IUnit> {
+  async getUnit(cuid: string, pid: string, unitId: string): Promise<IUnit> {
     try {
       const result = await axios.get<IServerResponse<IUnit>>(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units/${unitId}`,
+        `${this.baseUrl}/${cuid}/client_properties/${pid}/units/${unitId}`,
         this.axiosConfig
       );
       return result.data;
@@ -82,11 +82,11 @@ class PropertyUnitService {
     }
   }
 
-  async updateUnit(cid: string, pid: string, data: UnitFormValues) {
+  async updateUnit(cuid: string, pid: string, data: UnitFormValues) {
     try {
       const { puid } = data;
       const result = await axios.patch(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units/${puid}`,
+        `${this.baseUrl}/${cuid}/client_properties/${pid}/units/${puid}`,
         data,
         this.axiosConfig
       );
@@ -97,10 +97,10 @@ class PropertyUnitService {
     }
   }
 
-  async archiveUnits(cid: string, pid: string, data: IArchiveUnitsRequest) {
+  async archiveUnits(cuid: string, pid: string, data: IArchiveUnitsRequest) {
     try {
       const result = await axios.patch(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units/archive`,
+        `${this.baseUrl}/${cuid}/client_properties/${pid}/units/archive`,
         data,
         this.axiosConfig
       );
@@ -111,10 +111,10 @@ class PropertyUnitService {
     }
   }
 
-  async deleteUnit(cid: string, pid: string, unitId: string) {
+  async deleteUnit(cuid: string, pid: string, unitId: string) {
     try {
       const result = await axios.delete(
-        `${this.baseUrl}/${cid}/client_properties/${pid}/units/${unitId}`,
+        `${this.baseUrl}/${cuid}/client_properties/${pid}/units/${unitId}`,
         this.axiosConfig
       );
       return result;

@@ -1,6 +1,6 @@
-import { Modal, Radio } from "antd";
 import { UseFormReturnType } from "@mantine/form";
 import { ILoginForm } from "@interfaces/auth.interface";
+import { SelectClientAccountModal } from "@components/SelectClientAccountModal";
 import {
   FormInput,
   FormField,
@@ -18,10 +18,11 @@ interface LoginViewProps {
   form: UseFormReturnType<ILoginForm>;
   isSubmitting: boolean;
   isModalOpen: boolean;
-  userAccounts: Array<{ csub: string; displayName: string }>;
+  userAccounts: Array<{ cuid: string; displayName: string }>;
   selectedClient: string;
   handleSubmit: (values: ILoginForm) => void;
-  handleSelect: (csub: string) => void;
+  handleSelect: (cuid: string) => void;
+  handleModalConfirm: () => void;
   toggleModal: (isOpen: boolean) => void;
 }
 
@@ -31,6 +32,7 @@ export function LoginView({
   userAccounts,
   selectedClient,
   handleSelect,
+  handleModalConfirm,
   toggleModal,
   handleSubmit,
   isSubmitting,
@@ -117,41 +119,14 @@ export function LoginView({
         footerLinkText="Forgot your password?"
       />
       {isModalOpen && userAccounts.length > 0 && (
-        <Modal
-          title="Select Client Account"
-          open={isModalOpen}
-          footer={[
-            <Button
-              key="cancel"
-              className="btn-default mr-2"
-              onClick={() => toggleModal(false)}
-              label="Cancel"
-            />,
-            <Button
-              key="select"
-              className="btn-primary"
-              onClick={() => toggleModal(false)}
-              label="Select Client"
-            />,
-          ]}
-        >
-          <div className="">
-            <ul className="account-list">
-              {userAccounts.map((account) => (
-                <li key={account.csub}>
-                  <Radio
-                    key={account.csub}
-                    value={account.csub}
-                    checked={selectedClient === account.csub}
-                    onChange={(e) => handleSelect(e.target.value)}
-                  >
-                    {account.displayName}
-                  </Radio>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Modal>
+        <SelectClientAccountModal
+          isOpen={isModalOpen}
+          userAccounts={userAccounts}
+          selectedClient={selectedClient}
+          onSelect={handleSelect}
+          onCancel={() => toggleModal(false)}
+          onConfirm={handleModalConfirm}
+        />
       )}
     </>
   );

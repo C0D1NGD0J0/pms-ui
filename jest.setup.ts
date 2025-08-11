@@ -3,7 +3,7 @@ import { TextEncoder, TextDecoder } from "util";
 
 // Polyfill for TextEncoder/TextDecoder
 global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
+global.TextDecoder = TextDecoder as any;
 
 import { server } from "./src/tests/mocks/server";
 

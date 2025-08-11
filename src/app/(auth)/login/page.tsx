@@ -1,22 +1,11 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@store/auth.store";
+import React from "react";
 
 import { useLoginLogic } from "./hook";
 import { LoginView as Component } from "./view";
 
 export default function Login() {
-  const { push } = useRouter();
   const logic = useLoginLogic();
-  const { isLoggedIn, isAuthLoading } = useAuth();
-
-  useEffect(() => {
-    if (isLoggedIn && !isAuthLoading) {
-      push("/dashboard");
-    }
-  }, [isAuthLoading, isLoggedIn]);
 
   return (
     <Component
@@ -27,6 +16,7 @@ export default function Login() {
       selectedClient={logic.selectedClient}
       handleSubmit={logic.handleSubmit}
       handleSelect={logic.handleSelect}
+      handleModalConfirm={logic.handleModalConfirm}
       toggleModal={logic.toggleModal}
     />
   );

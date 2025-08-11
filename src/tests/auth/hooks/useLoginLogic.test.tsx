@@ -1,9 +1,9 @@
-import { renderHook, act, waitFor } from "@testing-library/react";
-import { useLoginLogic } from "@app/(auth)/login/hook/useLoginLogic";
-import { authService } from "@services/auth";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NotificationProvider } from "@hooks/useNotification";
 import { ReactNode } from "react";
+import { authService } from "@services/auth";
+import { NotificationProvider } from "@hooks/useNotification";
+import { renderHook, waitFor, act } from "@testing-library/react";
+import { useLoginLogic } from "@app/(auth)/login/hook/useLoginLogic";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 // Mock dependencies
 jest.mock("@services/auth");
@@ -24,9 +24,7 @@ function TestWrapper({ children }: { children: ReactNode }) {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </QueryClientProvider>
   );
 }
@@ -52,7 +50,7 @@ describe("useLoginLogic Hook", () => {
     const mockResponse = {
       msg: "Login successful",
       accounts: [],
-      activeAccount: { csub: "123", displayName: "Test User" },
+      activeAccount: { cuid: "123", displayName: "Test User" },
     };
     mockAuthService.login.mockResolvedValue(mockResponse);
 
@@ -83,10 +81,10 @@ describe("useLoginLogic Hook", () => {
     const mockResponse = {
       msg: "Login successful",
       accounts: [
-        { csub: "123", displayName: "Account 1" },
-        { csub: "456", displayName: "Account 2" },
+        { cuid: "123", displayName: "Account 1" },
+        { cuid: "456", displayName: "Account 2" },
       ],
-      activeAccount: null,
+      activeAccount: { cuid: "123", displayName: "Account 1" },
     };
     mockAuthService.login.mockResolvedValue(mockResponse);
 

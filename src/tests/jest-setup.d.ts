@@ -1,6 +1,5 @@
 // Type definitions for Jest global variables
 import "@testing-library/jest-dom";
-import { Lifecycle } from "@jest/types";
 
 declare global {
   // Extend expect matchers

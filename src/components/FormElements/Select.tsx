@@ -44,7 +44,7 @@ function isModernOnChange(onChange: any): onChange is (value: string) => void {
 export const Select = forwardRef<
   HTMLSelectElement,
   SelectProps | ModernSelectProps
->((props, ref) => {
+>((props) => {
   const {
     id,
     name,
