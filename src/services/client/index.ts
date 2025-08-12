@@ -11,7 +11,6 @@ class ClientService {
     try {
       const result = await axios.get(
         `${this.baseUrl}/${cuid}/client_details`,
-        undefined,
         this.axiosConfig
       );
       return result.data.data;
