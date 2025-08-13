@@ -7,6 +7,7 @@ export enum EventTypes {
   CURRENT_USER_UPDATED = "CURRENT_USER_UPDATED",
   TOKEN_REFRESHED = "TOKEN_REFRESHED",
   AUTH_FAILURE = "AUTH_FAILURE",
+  LOGOUT_INITIATED = "LOGOUT_INITIATED",
 }
 
 export type EventSystemHandler<T = any> = (data: T) => void;

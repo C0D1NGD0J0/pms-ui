@@ -13,7 +13,7 @@ const TWO_MINUTES_IN_MS = 2 * 60 * 1000;
 export const useCurrentUser = () => {
   const publish = usePublish();
   const queryClient = useQueryClient();
-  const { isLoggedIn, client, isRefreshingToken } = useAuth();
+  const { isLoggedIn, client } = useAuth();
   const { setUser } = useAuthActions();
 
   const {
@@ -109,14 +109,10 @@ export const useCurrentUser = () => {
     }
   }, [isSuccess, isError, userData, error, queryClient, publish]);
 
-  // Enhanced loading state that considers both user fetching and token refresh
-  const isLoading = isFetchingUser || isRefreshingToken;
-
   return {
     user: userData,
     isFetchingUser,
-    isRefreshingToken,
-    isLoading,
+    isLoading: isFetchingUser,
     isError,
     error,
     isLoggedIn,

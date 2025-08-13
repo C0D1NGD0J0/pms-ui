@@ -4,16 +4,18 @@ import { useAuthActions } from "@store/auth.store";
 import { useQueryClient } from "@tanstack/react-query";
 import { CURRENT_USER_QUERY_KEY } from "@utils/constants";
 import { ICurrentUser, UserClient } from "@interfaces/index";
+import { useLoadingManager } from "@hooks/useLoadingManager";
 
 import { useEvent } from "./useEvent";
 
 export function useAuthEventStore() {
   const queryClient = useQueryClient();
-  const { setUser, setAuthLoading, setClient, logout } = useAuthActions();
+  const { setUser, setClient, logout } = useAuthActions();
+  const { setAuthenticating, setFetchingUser } = useLoadingManager();
 
   useEvent(EventTypes.LOGIN_SUCCESS, (loginData: UserClient | null) => {
     if (loginData?.cuid) {
-      setAuthLoading(true);
+      setAuthenticating(true);
       setClient(loginData);
     }
   });
@@ -22,12 +24,19 @@ export function useAuthEventStore() {
     EventTypes.GET_CURRENT_USER,
     async (loginData: UserClient | null) => {
       if (loginData?.cuid) {
-        const resp = await authService.currentuser(loginData.cuid);
-        if (resp) {
-          setUser(resp.data);
-          setClient(resp.data.client);
-          queryClient.setQueryData(CURRENT_USER_QUERY_KEY, resp.data);
-          setAuthLoading(false);
+        setFetchingUser(true);
+        try {
+          const resp = await authService.currentuser(loginData.cuid);
+          if (resp) {
+            setUser(resp.data);
+            setClient(resp.data.client);
+            queryClient.setQueryData(CURRENT_USER_QUERY_KEY, resp.data);
+          }
+        } catch (error) {
+          console.error('Failed to fetch current user:', error);
+        } finally {
+          setFetchingUser(false);
+          setAuthenticating(false);
         }
       }
     }
@@ -36,7 +45,8 @@ export function useAuthEventStore() {
   useEvent(EventTypes.CURRENT_USER_UPDATED, (userData: ICurrentUser | null) => {
     setUser(userData);
     setClient(userData?.client ?? null);
-    setAuthLoading(false);
+    setFetchingUser(false);
+    setAuthenticating(false);
   });
 
   useEvent(EventTypes.LOGOUT, () => {
@@ -48,7 +58,7 @@ export function useAuthEventStore() {
     if (!account) {
       return;
     }
-    setAuthLoading(true);
+    setAuthenticating(true);
     setClient(account);
   });
 

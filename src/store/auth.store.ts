@@ -3,21 +3,39 @@ import { authService } from "@services/auth";
 import { ICurrentUser, UserClient } from "@interfaces/index";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+// Loading reasons for authentication states
+export enum LoadingReason {
+  INITIALIZING = "initializing",
+  AUTHENTICATING = "authenticating",
+  REFRESHING_TOKEN = "refreshing_token",
+  FETCHING_USER = "fetching_user",
+  PROCESSING_INVITE = "processing_invite",
+  IDLE_SESSION = "idle_session",
+  LOGGING_OUT = "logging_out",
+}
+
+// Loading messages
+const LOADING_MESSAGES: Record<LoadingReason, string> = {
+  [LoadingReason.INITIALIZING]: "Starting up...",
+  [LoadingReason.AUTHENTICATING]: "Authenticating...",
+  [LoadingReason.REFRESHING_TOKEN]: "Refreshing your session...",
+  [LoadingReason.FETCHING_USER]: "Loading your user info...",
+  [LoadingReason.PROCESSING_INVITE]: "Setting up your account...",
+  [LoadingReason.IDLE_SESSION]: "Session idle - tap to continue",
+  [LoadingReason.LOGGING_OUT]: "Signing out...",
+};
+
 type AuthState = {
   permissions: string[];
   user: ICurrentUser | null;
   client: UserClient | null;
-  isAuthLoading: boolean;
-  isRefreshingToken: boolean;
-  refreshTokenError: string | null;
+  currentLoadingState: LoadingReason | null;
   actions: {
-    logout: () => void;
+    logout: () => Promise<void>;
     setUser: (user: ICurrentUser | null) => void;
-    setAuthLoading: (isLoading: boolean) => void;
     setClient: (client: UserClient | null) => void;
     setPermissions: (permissions: string[]) => void;
-    setRefreshingToken: (isRefreshing: boolean) => void;
-    setRefreshTokenError: (error: string | null) => void;
+    setLoadingState: (state: LoadingReason | null) => void;
     clearAuthState: () => void;
   };
 };
@@ -28,9 +46,7 @@ const useAuthStore = create<AuthState>()(
       client: null,
       permissions: [],
       user: null,
-      isAuthLoading: false,
-      isRefreshingToken: false,
-      refreshTokenError: null,
+      currentLoadingState: null,
       actions: {
         logout: async () => {
           const cuid = get().client?.cuid;
@@ -39,9 +55,7 @@ const useAuthStore = create<AuthState>()(
           return set({
             user: null,
             permissions: [],
-            isAuthLoading: false,
-            isRefreshingToken: false,
-            refreshTokenError: null,
+            currentLoadingState: null,
             client: { cuid: "", displayName: "" },
           });
         },
@@ -54,14 +68,8 @@ const useAuthStore = create<AuthState>()(
         setPermissions: (permissions: string[]) => {
           return set({ permissions });
         },
-        setAuthLoading: (isAuthLoading: boolean) => {
-          return set({ isAuthLoading });
-        },
-        setRefreshingToken: (isRefreshingToken: boolean) => {
-          return set({ isRefreshingToken });
-        },
-        setRefreshTokenError: (refreshTokenError: string | null) => {
-          return set({ refreshTokenError });
+        setLoadingState: (currentLoadingState: LoadingReason | null) => {
+          return set({ currentLoadingState });
         },
         clearAuthState: () => {
           sessionStorage.removeItem("auth-storage");
@@ -69,9 +77,7 @@ const useAuthStore = create<AuthState>()(
             user: null,
             client: { cuid: "", displayName: "" },
             permissions: [],
-            isAuthLoading: false,
-            isRefreshingToken: false,
-            refreshTokenError: null,
+            currentLoadingState: null,
           });
         },
       },
@@ -87,23 +93,18 @@ const useAuthStore = create<AuthState>()(
 );
 
 export const useAuth = () => {
-  const {
-    client,
-    permissions,
-    user,
-    isAuthLoading,
-    isRefreshingToken,
-    refreshTokenError,
-  } = useAuthStore();
-  const isAuthenticated = !!client?.cuid && !isAuthLoading && !!user;
+  const { client, permissions, user, currentLoadingState } = useAuthStore();
+  const isAuthenticated = !!client?.cuid && !!user;
   return {
     isLoggedIn: isAuthenticated,
-    isAuthLoading,
-    isRefreshingToken,
-    refreshTokenError,
     user: user,
     permissions: permissions || [],
     client: client,
+    currentLoadingState,
+    isLoading: currentLoadingState !== null,
+    loadingMessage: currentLoadingState
+      ? LOADING_MESSAGES[currentLoadingState]
+      : "",
   };
 };
 
@@ -113,10 +114,8 @@ export const useAuthActions = () => {
     logout: actions.logout,
     setUser: actions.setUser,
     setClient: actions.setClient,
-    setAuthLoading: actions.setAuthLoading,
     clearAuthState: actions.clearAuthState,
     setPermissions: actions.setPermissions,
-    setRefreshingToken: actions.setRefreshingToken,
-    setRefreshTokenError: actions.setRefreshTokenError,
+    setLoadingState: actions.setLoadingState,
   };
 };
