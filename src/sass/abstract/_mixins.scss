@@ -327,18 +327,11 @@
       }
     }
 
-    // Icon Coloring
-    i {
-      @if map.has-key($theme-colors, "primary-text") {
-        color: hslaGen(map.get($theme-colors, "primary-text"));
-      }
-    }
-
     // Advanced Customizations
     .navbar-menu__item a,
     .sidebar__navbar-item a {
-      @if map.has-key($theme-colors, "primary-text") {
-        color: hslaGen(map.get($theme-colors, "primary-text"));
+      @if map.has-key($theme-colors, "link-text") {
+        color: hslaGen(map.get($theme-colors, "link-text"));
       }
     }
   } @else {

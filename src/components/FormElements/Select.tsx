@@ -42,9 +42,9 @@ function isModernOnChange(onChange: any): onChange is (value: string) => void {
 }
 
 export const Select = forwardRef<
-  HTMLSelectElement,
+  HTMLButtonElement,
   SelectProps | ModernSelectProps
->((props) => {
+>((props, ref) => {
   const {
     id,
     name,
@@ -240,7 +240,14 @@ export const Select = forwardRef<
   return (
     <div className={selectClasses}>
       <button
-        ref={triggerRef}
+        ref={(el) => {
+          triggerRef.current = el;
+          if (typeof ref === 'function') {
+            ref(el);
+          } else if (ref) {
+            ref.current = el;
+          }
+        }}
         id={id}
         type="button"
         className="select-trigger"
@@ -253,8 +260,6 @@ export const Select = forwardRef<
         aria-labelledby={ariaLabel ? undefined : `${id}-label`}
         aria-label={ariaLabel}
         aria-describedby={ariaDescribedBy}
-        aria-required={required}
-        aria-invalid={required && !value && isTouched}
       >
         <span className="select-value">{selectedLabel}</span>
         <span className="select-arrow" aria-hidden="true">

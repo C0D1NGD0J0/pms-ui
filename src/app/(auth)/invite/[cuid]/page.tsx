@@ -2,6 +2,7 @@
 
 import React, { useEffect } from "react";
 import { Skeleton } from "@src/components/Skeleton";
+import { useLoadingManager } from "@hooks/useLoadingManager";
 import { IInvitationDocument } from "@src/interfaces/invitation.interface";
 
 import { useValidateInviteToken } from "./hooks";
@@ -23,6 +24,7 @@ export default function InvitationPage({
 }: InvitationPageProps) {
   const { cuid } = React.use(params);
   const { token } = React.use(searchParams);
+  const { setProcessingInvite, isLoading } = useLoadingManager();
   const [invite, setInvite] = React.useState<{
     isValid: boolean;
     data: IInvitationDocument | null;
@@ -30,27 +32,28 @@ export default function InvitationPage({
     isValid: false,
     data: null,
   });
-  const { validateToken, isLoading } = useValidateInviteToken();
-  const [loading, setIsLoading] = React.useState(isLoading);
+  const { validateToken, isLoading: isValidatingToken } = useValidateInviteToken();
 
   useEffect(() => {
     if (cuid && token) {
+      setProcessingInvite(true);
       validateToken({ cuid, token })
         .then((resp) => {
           console.log("Token validation response:", resp);
           if (resp.success) {
             setInvite({ isValid: resp.isValid, data: resp.invitation });
           }
+          setProcessingInvite(false);
         })
         .catch(() => {
           setInvite({ isValid: false, data: null });
+          setProcessingInvite(false);
         });
     }
-    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cuid, token]);
 
-  if (loading) {
+  if (isLoading || isValidatingToken) {
     return (
       <>
         <Skeleton
@@ -77,7 +80,7 @@ export default function InvitationPage({
     );
   }
 
-  if (!token || (!isLoading && !invite.isValid)) {
+  if (!token || (!isValidatingToken && !invite.isValid)) {
     const errorType = !token ? "missing-token" : "invalid";
     return <InvalidInvitationError errorType={errorType} />;
   }

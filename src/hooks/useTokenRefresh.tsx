@@ -3,21 +3,20 @@
 import { useCallback } from "react";
 import { authService } from "@services/auth";
 import { EventTypes } from "@services/events";
-import { useAuthActions, useAuth } from "@store/auth.store";
+import { useAuthActions, LoadingReason } from "@store/auth.store";
+import { useLoadingManager } from "@hooks/useLoadingManager";
 
 import { usePublish, useEvent } from "./event";
 
 export const useTokenRefresh = () => {
-  const { isRefreshingToken, refreshTokenError } = useAuth();
-  const { setRefreshingToken, setRefreshTokenError, clearAuthState } =
-    useAuthActions();
+  const { clearAuthState } = useAuthActions();
+  const { setRefreshingToken, currentLoadingState } = useLoadingManager();
 
   const publish = usePublish();
 
   const refreshToken = useCallback(async () => {
     try {
       setRefreshingToken(true);
-      setRefreshTokenError(null);
 
       console.log("Manually triggering token refresh...");
       const response = await authService.refreshToken();
@@ -34,8 +33,6 @@ export const useTokenRefresh = () => {
       return false;
     } catch (error: any) {
       console.error("Manual token refresh failed:", error);
-      const errorMessage = error.message || "Token refresh failed";
-      setRefreshTokenError(errorMessage);
 
       // If refresh fails due to auth error, clear auth state
       if (error.statusCode === 401 || error.statusCode === 403) {
@@ -49,23 +46,16 @@ export const useTokenRefresh = () => {
     } finally {
       setRefreshingToken(false);
     }
-  }, [setRefreshingToken, setRefreshTokenError, clearAuthState, publish]);
-
-  const clearTokenRefreshError = useCallback(() => {
-    setRefreshTokenError(null);
-  }, [setRefreshTokenError]);
+  }, [setRefreshingToken, clearAuthState, publish]);
 
   // Listen for auth failures from axios interceptor using proper event system
   useEvent(EventTypes.AUTH_FAILURE, () => {
     console.log("Auth failure detected, clearing token refresh state");
     setRefreshingToken(false);
-    setRefreshTokenError("Authentication failed");
   });
 
   return {
-    isRefreshingToken,
-    refreshTokenError,
+    isRefreshingToken: currentLoadingState === LoadingReason.REFRESHING_TOKEN,
     refreshToken,
-    clearTokenRefreshError,
   };
 };

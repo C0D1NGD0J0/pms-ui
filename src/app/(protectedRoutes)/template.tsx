@@ -1,11 +1,12 @@
 "use client";
+import { useEffect, Suspense } from "react";
 import { Loading } from "@components/Loading";
 import { EventTypes } from "@services/events";
 import { Skeleton } from "@components/Skeleton";
 import { useAuthActions } from "@store/auth.store";
-import { useEffect, useState, Suspense } from "react";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { useIdleDetector, usePublish } from "@hooks/index";
+import { useLoadingManager } from "@hooks/useLoadingManager";
 import { useSearchParams, useRouter } from "next/navigation";
 
 function AuthTemplateContent({ children }: { children: React.ReactNode }) {
@@ -14,8 +15,8 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
   const searchParams = useSearchParams();
   const publish = usePublish();
   const { setClient } = useAuthActions();
-  const [loaderMessage, setLoaderMessage] = useState("Authenticating");
-  const [isProcessingInvite, setIsProcessingInvite] = useState(false);
+  const { setProcessingInvite, setIdleSession, loadingMessage, isLoading } =
+    useLoadingManager();
   const isIdle: boolean = useIdleDetector(10);
   const {
     isLoggedIn,
@@ -31,10 +32,9 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
     const accountName = searchParams.get("accountName");
 
     if (fromInvite === "true" && accountCuid && accountName) {
-      setLoaderMessage("Setting up your account...");
       const setupAuthFromInvite = async () => {
         try {
-          setIsProcessingInvite(true);
+          setProcessingInvite(true);
           const selectedAccount = {
             cuid: accountCuid,
             displayName: accountName,
@@ -44,35 +44,34 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
           router.replace("/dashboard");
         } catch (error) {
           void error;
-          setIsProcessingInvite(false);
+          setProcessingInvite(false);
           router.push("/login?error=invite-setup-failed");
         }
       };
 
       setupAuthFromInvite();
     }
-  }, [searchParams, setClient, publish, router]);
+  }, [searchParams, setClient, publish, router, setProcessingInvite]);
 
   // Hide loading when auth setup is complete
   useEffect(() => {
-    if (isProcessingInvite && user && !isAuthLoading) {
-      setIsProcessingInvite(false);
+    if (isLoading && user && !isAuthLoading) {
+      setProcessingInvite(false);
     }
-  }, [isProcessingInvite, user, isAuthLoading]);
+  }, [isLoading, user, isAuthLoading, setProcessingInvite]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
 
     if (isIdle && !isLoggedIn) {
+      setIdleSession(true);
       timeoutId = setTimeout(() => {
-        setLoaderMessage("Idle session detected");
         return push("/login");
       }, 5000);
     }
 
     if (!isLoggedIn) {
       timeoutId = setTimeout(() => {
-        setLoaderMessage("Login required to access this page.");
         return push("/login");
       }, 5000);
     }
@@ -83,7 +82,7 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIdle, isLoggedIn]);
+  }, [isIdle, isLoggedIn, setIdleSession]);
 
   if (isLoggedIn && isIdle) {
     return (
@@ -102,8 +101,8 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isLoggedIn || isProcessingInvite) {
-    return <Loading size="fullscreen" description={loaderMessage} />;
+  if (!isLoggedIn || isLoading) {
+    return <Loading size="fullscreen" description={loadingMessage} />;
   }
 
   return <>{children}</>;

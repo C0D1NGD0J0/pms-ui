@@ -5,7 +5,6 @@ import { RectQueryProvider } from "@hooks/useReactQuery";
 import { EventProvider } from "@components/EventProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { NotificationProvider } from "@hooks/useNotification";
-import { TokenRefreshOverlay } from "@components/TokenRefreshOverlay";
 import "@styles/main.scss";
 
 export default function RootLayout({
@@ -43,7 +42,6 @@ export default function RootLayout({
                     >
                       {children}
                     </ClientBootstrap>
-                    <TokenRefreshOverlay />
                   </EventProvider>
                 </RectQueryProvider>
               </ConfigProvider>

@@ -17,12 +17,14 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
     if (savedTheme) {
       setTheme(savedTheme);
       applyTheme(savedTheme);
+    } else {
+      // apply default theme if no saved theme
+      applyTheme("light");
     }
   }, []);
 
   const applyTheme = (selectedTheme: Theme) => {
-    document.body.classList.remove("light-theme", "dark-theme");
-    document.body.classList.add(`${selectedTheme}-theme`);
+    document.body.setAttribute("data-theme", selectedTheme);
   };
 
   const toggleTheme = () => {

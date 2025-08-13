@@ -163,33 +163,116 @@ $font-secondary: "Lato", sans-serif;
 
 $form-input-bg: #fff;
 $theme-colors-light: (
+  // Base colors
   "background": $white-color,
   "primary-text": $primary-color,
-  "navbar-bg": $light-grey-color,
-  "sidebar-bg": $white-color,
+  "secondary-text": $secondary-color,
+  "muted": $grey-color,
+  "link-text": $white-color,
+
+  // Layout components
+  "navbar-bg": $blue-ink-color,
+  "sidebar-bg": $blue-ink-color,
+  "footer-bg": $blue-ink-color,
+
+  // Cards and panels
   "card-bg": $white-color,
   "card-border": $light-grey-color,
-  "secondary-text": $secondary-color,
+  "panel-bg": $white-color,
+  "panel-border": $light-grey-color,
+
+  // Form elements
+  "input-bg": $white-color,
+  "input-border": $light-grey-color,
+  "input-text": $primary-color,
+  "input-placeholder": $grey-color,
+  "input-focus-border": $primary-color,
+
+  // Buttons
+  "button-primary-bg": $primary-color,
+  "button-primary-text": $white-color,
+  "button-secondary-bg": $white-color,
+  "button-secondary-text": $primary-color,
+  "button-secondary-border": $primary-color,
+
+  // Tables
+  "table-header-bg": $background-color,
+  "table-header-text": $primary-color,
+  "table-row-bg": $white-color,
+  "table-row-alt-bg": $off-white-color,
+  "table-border": $light-grey-color,
+
+  // Utilities
+  "border-color": $light-grey-color,
+  "shadow-color": $black-color,
+  "divider-color": $light-grey-color,
+
+  // Status colors
   "success": $success-color,
   "warning": $warning-color,
   "danger": $danger-color,
-  "muted": $grey-color,
-  "transition": 0.3s ease,
+
+  // Animation
+  "transition": 0.3s ease
 );
 
 $theme-colors-dark: (
+  // Base colors
   "background": $dark-grey-color,
   "primary-text": $white-color,
+  "secondary-text": $light-grey-color,
+  "muted": $light-grey-color,
+  "link-text": $white-color,
+
+  // Layout components
   "navbar-bg": $black-color,
-  "sidebar-bg": $dark-grey-color,
+  "sidebar-bg": $black-color,
+  "footer-bg": $black-color,
+
+  // Cards and panels
   "card-bg": $dark-grey-color,
   "card-border": $grey-color,
-  "secondary-text": $light-grey-color,
+  "panel-bg": $dark-grey-color,
+  "panel-border": $grey-color,
+
+  // Form elements
+  "input-bg": $dark-grey-color,
+  "input-border": $grey-color,
+  "input-text": $white-color,
+  "input-placeholder": $light-grey-color,
+  "input-focus-border": $secondary-color,
+
+  // Buttons
+  "button-primary-bg": $primary-color,
+  "button-primary-text": $white-color,
+  "button-secondary-bg": $dark-grey-color,
+  "button-secondary-text": $white-color,
+  "button-secondary-border": $light-grey-color,
+
+  // Tables
+  "table-header-bg": $black-color,
+  "table-header-text": $white-color,
+  "table-row-bg": $dark-grey-color,
+  "table-row-alt-bg": $black-color,
+  "table-border": $grey-color,
+
+  // Interactive states
+  "hover-bg": $black-color,
+  "active-bg": $grey-color,
+  "focus-outline": $secondary-color,
+
+  // Utilities
+  "border-color": $grey-color,
+  "shadow-color": $black-color,
+  "divider-color": $grey-color,
+
+  // Status colors
   "success": $success-color,
   "warning": $warning-color,
   "danger": $danger-color,
-  "muted": $light-grey-color,
-  "transition": 0.3s ease,
+
+  // Animation
+  "transition": 0.3s ease
 );
 
 $theme-transition-duration: 0.3s;

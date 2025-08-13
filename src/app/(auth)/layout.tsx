@@ -1,10 +1,12 @@
 "use client";
-import { Loading } from "@components/Loading";
-import React, { useEffect, useState } from "react";
-import { Skeleton } from "@src/components/Skeleton";
-import { useCurrentUser } from "@hooks/useCurrentUser";
+import React, { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
+
+import { Loading } from "@components/Loading";
+import { Skeleton } from "@src/components/Skeleton";
 import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
+import { useCurrentUser } from "@hooks/useCurrentUser";
+import { useLoadingManager } from "@hooks/useLoadingManager";
 
 interface MetaInfo {
   title: string;
@@ -81,20 +83,24 @@ const routeToBoxOrder: BoxOrderMapping = {
 const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
   const { push } = useRouter();
   const pathname = usePathname();
-  const [loading, setLoading] = useState(true);
+  const { setInitializing, isLoading, loadingMessage } = useLoadingManager();
   const { isLoggedIn, isLoading: isAuthLoading } = useCurrentUser();
 
   useEffect(() => {
+    setInitializing(true);
+  }, [setInitializing]);
+
+  useEffect(() => {
     if (isLoggedIn && !isAuthLoading) {
-      setLoading(false);
+      setInitializing(false);
       push("/dashboard");
     }
 
     if (!isLoggedIn && !isAuthLoading) {
-      setLoading(false);
+      setInitializing(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn, isAuthLoading]);
+  }, [isLoggedIn, isAuthLoading, setInitializing]);
 
   const LeftBox: React.FC<LeftBoxProps> = ({ meta }) => (
     <AuthContentBox className="auth-page_left-box">
@@ -124,10 +130,10 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     right: <RightBox>{children}</RightBox>,
     full: <FullBox>{children}</FullBox>,
   };
-  if (loading || isLoggedIn) {
+  if (isLoading || isLoggedIn) {
     return (
       <AuthLayoutWrapper>
-        <Loading description="Authenticating..." size="fullscreen" />
+        <Loading description={loadingMessage} size="fullscreen" />
       </AuthLayoutWrapper>
     );
   }
