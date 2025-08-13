@@ -1,8 +1,10 @@
 "use client";
 
 import { ICurrentUser } from "@interfaces/auth.interface";
+import { NavigationItem } from "@utils/navigationPermissions";
 
 import { useCurrentUser } from "./useCurrentUser";
+import { usePermissions } from "./usePermissions";
 
 export interface MenuItem {
   path: string | ((user: ICurrentUser | null | undefined) => string);
@@ -22,6 +24,7 @@ export interface MenuSection {
 
 export const useMenuItems = () => {
   const { user: currentUser } = useCurrentUser();
+  const permissions = usePermissions();
 
   const menuSections: MenuSection[] = [
     {
@@ -31,25 +34,28 @@ export const useMenuItems = () => {
           path: "/dashboard",
           icon: "bx bxs-dashboard",
           label: "Dashboard",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.DASHBOARD),
         },
         {
           path: "/properties",
           icon: "bx bx-building-house",
           label: "Properties",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.PROPERTIES),
         },
         {
           path: "/leases",
           icon: "bx bx-book-open",
           label: "Leases",
-          visible: true,
+          visible: () => permissions.canAccessNavigation(NavigationItem.LEASES),
         },
         {
           path: "/service-requests",
           icon: "bx bxs-briefcase-alt",
           label: "Service Requests",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.SERVICE_REQUESTS),
         },
       ],
     },
@@ -63,25 +69,29 @@ export const useMenuItems = () => {
           path: `/users/${currentUser?.client.cuid}/tenants`,
           icon: "bx bx-group",
           label: "Tenants",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.USERS_TENANTS),
         },
         {
           path: `/users/${currentUser?.client.cuid}/vendors`,
           icon: "bx bx-building",
           label: "Vendors",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.USERS_VENDORS),
         },
         {
           path: `/users/${currentUser?.client.cuid}/employees`,
           icon: "bx bx-id-card",
           label: "Employees",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.USERS_EMPLOYEES),
         },
         {
           path: `/users/${currentUser?.client.cuid}/add-users`,
           icon: "bx bx-plus",
           label: "Add Users",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.USERS_ADD),
         },
       ],
     },
@@ -89,22 +99,25 @@ export const useMenuItems = () => {
       type: "bottom",
       items: [
         {
-          path: `/account_settings/${currentUser?.client.cuid}`,
+          path: `/client/${currentUser?.client.cuid}/account_settings`,
           icon: "bx bx-cog",
           label: "Account",
-          visible: !!currentUser?.client.cuid,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.ACCOUNT_SETTINGS) &&
+            !!currentUser?.client.cuid,
         },
         {
           path: `/wallet/${currentUser?.client.cuid}`,
           icon: "bx bx-wallet",
           label: "Wallet",
-          visible: true,
+          visible: () => permissions.canAccessNavigation(NavigationItem.WALLET),
         },
         {
           path: "/viewings",
           icon: "bx bx-street-view",
           label: "Viewings",
-          visible: true,
+          visible: () =>
+            permissions.canAccessNavigation(NavigationItem.VIEWINGS),
         },
       ],
     },

@@ -16,9 +16,7 @@ export const Sidebar = () => {
   const sidebarRef = React.useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  // Update main element class and save state to localStorage
   const updateMainElementClass = (collapsed: boolean) => {
-    // Find the main element that is a parent of the sidebar
     if (sidebarRef.current) {
       const mainElement = sidebarRef.current.closest(".main");
       if (mainElement) {

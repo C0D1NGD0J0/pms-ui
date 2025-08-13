@@ -72,7 +72,6 @@ export default function Dashboard() {
               headerTitle="Service Requests"
               columns={serviceRequestColumns}
               dataSource={serviceRequests}
-              showRowNumbers={true} // Enable row numbering
               pagination={{ pageSize: 4 }}
               rowKey="id"
             />
@@ -113,7 +112,6 @@ export default function Dashboard() {
               headerTitle="Occupancy by Property"
               columns={occupancyColumns}
               dataSource={occupancyData}
-              showRowNumbers={true} // Enable row numbering
               pagination={{ pageSize: 5 }}
               rowKey="id"
             />

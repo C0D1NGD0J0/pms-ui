@@ -1,5 +1,5 @@
 import { Select } from "@components/FormElements";
-import React, { ChangeEvent, ReactNode } from "react";
+import React, { ChangeEvent, useCallback, ReactNode } from "react";
 
 export interface PanelHeaderProps {
   headerTitleComponent?: ReactNode;
@@ -23,16 +23,23 @@ export interface PanelHeaderProps {
   } | null;
 }
 
-export function PanelHeader({
+const PanelHeaderComponent = ({
   headerTitleComponent,
   header,
   searchOpts,
   filterOpts,
-}: PanelHeaderProps) {
+}: PanelHeaderProps) => {
   const isSeachVisible = (searchOpts && searchOpts?.isVisible) || false;
   const isFilterVisible = filterOpts?.isVisible || false;
   const [_sortBy, setSortBy] = React.useState<string>("");
-  console.log("Filter changed:", filterOpts);
+
+  const handleFilterChange = useCallback(
+    (value: string) => {
+      setSortBy(value);
+      filterOpts?.onFilterChange(value);
+    },
+    [filterOpts]
+  );
   return (
     <div className="panel-header">
       <div className="panel-header__title">
@@ -62,10 +69,7 @@ export function PanelHeader({
                 className="filter-select"
                 value={filterOpts.value}
                 options={filterOpts.options}
-                onChange={(value: string) => {
-                  setSortBy(value);
-                  filterOpts?.onFilterChange(value);
-                }}
+                onChange={handleFilterChange}
                 placeholder={filterOpts.filterPlaceholder || "Filter by..."}
               />
               {_sortBy && filterOpts.sortDirection && (
@@ -92,4 +96,6 @@ export function PanelHeader({
       )}
     </div>
   );
-}
+};
+
+export const PanelHeader = React.memo(PanelHeaderComponent);
