@@ -1,6 +1,9 @@
 import { useCallback } from "react";
 import { UnitTypeManager } from "@utils/unitTypeManager";
+import { NavigationItem } from "@utils/navigationPermissions";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
+
+import { PermissionCheckOptions, usePermissions } from "./usePermissions";
 
 interface UseConditionalRenderProps {
   // Unit-specific props
@@ -9,10 +12,6 @@ interface UseConditionalRenderProps {
   // Property-specific props
   propertyType?: string;
   maxAllowedUnits?: number;
-
-  // Shared props
-  userRole?: string;
-  userPermissions?: string[];
 }
 
 // Union type for categories that works for both units and properties
@@ -30,9 +29,8 @@ export const useConditionalRender = ({
   unitType,
   propertyType,
   maxAllowedUnits = 1,
-  userRole,
-  userPermissions,
 }: UseConditionalRenderProps) => {
+  const permissions = usePermissions();
   const isFieldVisible = useCallback(
     (fieldName: string, category?: Category) => {
       // If both unitType and propertyType are provided, prioritize unitType
@@ -140,32 +138,65 @@ export const useConditionalRender = ({
   );
 
   const canEdit = useCallback(
-    (fieldName: string) => {
-      // For now, always return true - role-based logic will be added later
-      // Future: Check userRole and userPermissions against field-specific rules
-      void fieldName; // Acknowledge parameter to avoid ESLint warning
-      return true;
+    (fieldName: string, resource?: string, context?: PermissionCheckOptions) => {
+      return permissions.canEditField(fieldName, resource, context);
     },
-    [userRole, userPermissions]
+    [permissions]
   );
 
   const isDisabled = useCallback(
-    (fieldName: string) => {
-      // For now, always return false - role-based logic will be added later
-      // Future: Some roles might have fields disabled but visible
-      void fieldName; // Acknowledge parameter to avoid ESLint warning
-      return false;
+    (fieldName: string, resource?: string) => {
+      return permissions.isFieldDisabled(fieldName, resource);
     },
-    [userRole, userPermissions]
+    [permissions]
+  );
+
+  const canAccessNavigation = useCallback(
+    (navItem: NavigationItem) => {
+      return permissions.canAccessNavigation(navItem);
+    },
+    [permissions]
+  );
+
+  const canAccessRoute = useCallback(
+    (route: string) => {
+      return permissions.canAccessRoute(route);
+    },
+    [permissions]
+  );
+
+  const canPerformAction = useCallback(
+    (action: string, resource?: string) => {
+      return permissions.canPerformAction(action, resource);
+    },
+    [permissions]
   );
 
   return {
+    // Field visibility and requirements (existing functionality)
     isVisible: isFieldVisible,
     isRequired,
     getVisibleFields,
     isCategoryVisible,
     getHelpText,
+    
+    // Role-based access control
     canEdit,
     isDisabled,
+    canAccessNavigation,
+    canAccessRoute, 
+    canPerformAction,
+    
+    // Permission utilities
+    hasRole: permissions.hasRole,
+    hasPermission: permissions.hasPermission,
+    isAuthenticated: permissions.isAuthenticated,
+    
+    // Convenience flags
+    isAdmin: permissions.isAdmin,
+    isManager: permissions.isManager,
+    isStaff: permissions.isStaff,
+    isTenant: permissions.isTenant,
+    isVendor: permissions.isVendor,
   };
 };

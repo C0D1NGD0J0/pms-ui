@@ -19,6 +19,7 @@ export enum NavigationItem {
   USERS = "users",
   CLIENT_SETTINGS = "client_settings",
   PROFILE_SETTINGS = "profile_settings",
+  ACCOUNT_SETTINGS = "account_settings", // Added for useMenuItems.tsx
   REPORTS = "reports",
   // Additional navigation items used in useMenuItems.tsx
   WALLET = "wallet",
@@ -49,6 +50,7 @@ export const NAVIGATION_ACCESS: Record<NavigationItem, UserRole> = {
   [NavigationItem.CLIENT_SETTINGS]: UserRole.MANAGER, // Managers and above
   [NavigationItem.REPORTS]: UserRole.STAFF, // Staff and above
   [NavigationItem.PROFILE_SETTINGS]: UserRole.VENDOR, // Vendors and above
+  [NavigationItem.ACCOUNT_SETTINGS]: UserRole.VENDOR, // Everyone can access their account settings
   // Additional navigation items
   [NavigationItem.WALLET]: UserRole.TENANT, // Tenants and above
   [NavigationItem.VIEWINGS]: UserRole.TENANT, // Tenants and above
