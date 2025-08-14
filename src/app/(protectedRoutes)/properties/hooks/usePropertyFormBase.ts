@@ -11,6 +11,8 @@ import {
   PropertyFormValues,
 } from "@interfaces/property.interface";
 
+import { useGetClientPropertyManagers } from "./useGetClientPropertyManagers";
+
 export type PropertyFormBaseProps = {
   initialValues?: PropertyFormValues;
 };
@@ -23,7 +25,12 @@ export function usePropertyFormBase({
 
   const { data: formConfig, loading: formConfigLoading } =
     usePropertyFormStaticData();
-
+  const { propertyManagers } = useGetClientPropertyManagers(
+    client?.cuid || "",
+    {
+      role: "all",
+    }
+  );
   const propertyForm = useForm<EditPropertyFormValues>({
     initialValues,
     validateInputOnBlur: true,
@@ -447,6 +454,7 @@ export function usePropertyFormBase({
     isFieldVisible,
     isFieldRequired,
     handleOnChange,
+    propertyManagers,
     getFieldHelpText,
     propertyTypeUtils,
     formConfigLoading,

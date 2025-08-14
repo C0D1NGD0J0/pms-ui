@@ -1,12 +1,11 @@
 "use client";
 import React, { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
-
 import { Loading } from "@components/Loading";
 import { Skeleton } from "@src/components/Skeleton";
-import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
 import { useCurrentUser } from "@hooks/useCurrentUser";
+import { usePathname, useRouter } from "next/navigation";
 import { useLoadingManager } from "@hooks/useLoadingManager";
+import { AuthLayoutWrapper, AuthContentBox } from "@components/AuthLayout";
 
 interface MetaInfo {
   title: string;

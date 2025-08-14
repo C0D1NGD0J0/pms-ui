@@ -35,6 +35,7 @@ export default function EditProperty() {
     isTabVisible,
     propertyForm,
     handleOnChange,
+    propertyManagers,
     documentTypeOptions,
     propertyTypeOptions,
     propertyStatusOptions,
@@ -55,6 +56,7 @@ export default function EditProperty() {
           saveAddress={saveAddress}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
+          propertyManagers={propertyManagers}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
         />

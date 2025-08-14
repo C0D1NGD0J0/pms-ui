@@ -116,11 +116,11 @@ export interface IPropertyDocument {
   cuid: string | undefined;
   propertyType: PropertyTypesEnum;
   status: PropertyStatusEnum;
-  managedBy: string;
+  managedBy: any;
   yearBuilt: number;
   occupancyStatus: PropertyOccupancyStatusEnum;
   maxAllowedUnits: number;
-  createdBy: string;
+  createdBy: any;
   deletedAt: string | null;
   pid: string;
   documents: any[];
@@ -281,7 +281,7 @@ export const defaultPropertyValues: PropertyFormValues = {
   cuid: "",
   pid: "",
   status: undefined as any,
-  managedBy: "",
+  managedBy: undefined as any,
   yearBuilt: 1800,
   propertyType: undefined as any,
   address: {

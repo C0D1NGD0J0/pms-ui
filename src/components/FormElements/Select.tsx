@@ -7,6 +7,7 @@ import React, {
   forwardRef,
   useEffect,
   useState,
+  useMemo,
   useRef,
 } from "react";
 
@@ -33,15 +34,10 @@ interface SelectProps {
 
 // Interface for the new modern select functionality
 interface ModernSelectProps extends Omit<SelectProps, "onChange"> {
-  onChange: (value: string) => void;
+  onChange: (value: string | ChangeEvent<HTMLSelectElement>) => void;
 }
 
-// Check if onChange expects a value string (modern) or event (legacy)
-function isModernOnChange(onChange: any): onChange is (value: string) => void {
-  return onChange.length === 1;
-}
-
-export const Select = forwardRef<
+const SelectComponent = forwardRef<
   HTMLButtonElement,
   SelectProps | ModernSelectProps
 >((props, ref) => {
@@ -68,21 +64,23 @@ export const Select = forwardRef<
   const listRef = useRef<HTMLUListElement>(null);
   const optionRefs = useRef<(HTMLLIElement | null)[]>([]);
 
-  // Find selected option
-  const selectedOption = options.find((option) => option.value === value);
+  // Find selected option - memoized to prevent recalculation on every render
+  const selectedOption = useMemo(
+    () => options?.find((option) => option.value === value),
+    [options, value]
+  );
   const selectedLabel = selectedOption?.label || placeholder;
-
+  console.log("Selected Label:", selectedLabel);
   const handleValueChange = useCallback(
     (newValue: string) => {
-      if (isModernOnChange(onChange)) {
-        onChange(newValue);
-      } else {
-        const syntheticEvent = {
-          target: { value: newValue, name },
-          currentTarget: { value: newValue, name },
-        } as ChangeEvent<HTMLSelectElement>;
-        onChange(syntheticEvent);
-      }
+      // Always create a synthetic event with the correct value
+      const syntheticEvent = {
+        target: { value: newValue, name },
+        currentTarget: { value: newValue, name },
+      } as ChangeEvent<HTMLSelectElement>;
+
+      // Pass the synthetic event to onChange handler
+      onChange(syntheticEvent);
     },
     [onChange, name]
   );
@@ -242,7 +240,7 @@ export const Select = forwardRef<
       <button
         ref={(el) => {
           triggerRef.current = el;
-          if (typeof ref === 'function') {
+          if (typeof ref === "function") {
             ref(el);
           } else if (ref) {
             ref.current = el;
@@ -281,9 +279,9 @@ export const Select = forwardRef<
           aria-labelledby={`${id}-label`}
           tabIndex={-1}
         >
-          {options.map((option, index) => (
+          {options?.map((option, index) => (
             <li
-              key={option.value}
+              key={`$${option.value}_${index}`}
               ref={(el) => {
                 optionRefs.current[index] = el;
               }}
@@ -310,4 +308,7 @@ export const Select = forwardRef<
   );
 });
 
-Select.displayName = "Select";
+SelectComponent.displayName = "Select";
+
+// Export the memoized version of the component
+export const Select = React.memo(SelectComponent);

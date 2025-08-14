@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useState } from "react";
 
 export interface PropertyImage {
@@ -22,10 +23,13 @@ export function ImageGallery({ images, title }: PropertyGalleryProps) {
       {title && <h4>{title}</h4>}
       <div className="sidebar-gallery">
         <div className="sidebar-gallery-main">
-          <img
+          <Image
             src={images[activeImageIndex].src}
             alt={images[activeImageIndex].alt}
             className="img-responsive"
+            width={500}
+            height={300}
+            priority
           />
         </div>
         {images.length > 1 && (
@@ -38,10 +42,12 @@ export function ImageGallery({ images, title }: PropertyGalleryProps) {
                 }`}
                 onClick={() => setActiveImageIndex(index)}
               >
-                <img
+                <Image
                   src={image.src}
                   alt={image.alt}
                   className="img-responsive"
+                  width={100}
+                  height={75}
                 />
               </div>
             ))}

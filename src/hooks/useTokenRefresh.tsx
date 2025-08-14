@@ -3,8 +3,8 @@
 import { useCallback } from "react";
 import { authService } from "@services/auth";
 import { EventTypes } from "@services/events";
-import { useAuthActions, LoadingReason } from "@store/auth.store";
 import { useLoadingManager } from "@hooks/useLoadingManager";
+import { useAuthActions, LoadingReason } from "@store/auth.store";
 
 import { usePublish, useEvent } from "./event";
 

@@ -286,28 +286,6 @@
       }
     }
 
-    // Form and Input Styling
-    .form-input {
-      @if map.has-key($theme-colors, "card-bg") {
-        background-color: hslaGen(map.get($theme-colors, "card-bg"));
-      }
-      @if map.has-key($theme-colors, "primary-text") {
-        color: hslaGen(map.get($theme-colors, "primary-text"));
-      }
-      @if map.has-key($theme-colors, "card-border") {
-        border-bottom-color: hslaGen(
-          map.get($theme-colors, "card-border"),
-          0.3
-        );
-      }
-
-      &::placeholder {
-        @if map.has-key($theme-colors, "secondary-text") {
-          color: hslaGen(map.get($theme-colors, "secondary-text"), 0.7);
-        }
-      }
-    }
-
     // Button Styling
     .btn-primary {
       @if map.has-key($theme-colors, "primary-text") and

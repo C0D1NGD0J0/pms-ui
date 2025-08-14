@@ -4,3 +4,4 @@ export * from "./useGetPropertyUnits";
 export * from "./useGetAllProperties";
 export * from "./useCsvUpload";
 export * from "./usePropertyData";
+export * from "./useGetClientPropertyManagers";

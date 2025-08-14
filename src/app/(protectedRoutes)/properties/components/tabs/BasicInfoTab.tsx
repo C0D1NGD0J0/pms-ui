@@ -18,6 +18,7 @@ import {
 interface Props {
   saveAddress: (address: EditPropertyFormValues["address"]) => void;
   propertyForm: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
+  propertyManagers: { value: string; label: string }[];
   propertyTypeOptions: { value: string; label: string }[];
   propertyStatusOptions: { value: string; label: string }[];
   handleOnChange: (
@@ -28,16 +29,11 @@ interface Props {
 export function BasicInfoTab({
   propertyForm: form,
   saveAddress,
+  propertyManagers,
   propertyTypeOptions,
   propertyStatusOptions,
   handleOnChange,
 }: Props) {
-  const propertyManagerOptions = [
-    { value: "1", label: "Jonathan Smith" },
-    { value: "2", label: "Sarah Johnson" },
-    { value: "3", label: "Michael Davis" },
-  ];
-
   return (
     <>
       <FormSection
@@ -112,7 +108,7 @@ export function BasicInfoTab({
               name="managedBy"
               value={form.values.managedBy || ""}
               onChange={handleOnChange}
-              options={propertyManagerOptions}
+              options={propertyManagers}
               placeholder="Assign property manager"
             />
           </FormField>

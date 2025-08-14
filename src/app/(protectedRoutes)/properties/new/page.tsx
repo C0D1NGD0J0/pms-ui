@@ -31,6 +31,7 @@ export default function CreateProperty() {
     hasTabErrors,
     propertyForm,
     handleOnChange,
+    propertyManagers,
     formConfigLoading,
     documentTypeOptions,
     propertyTypeOptions,
@@ -55,6 +56,7 @@ export default function CreateProperty() {
           saveAddress={saveAddress}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
+          propertyManagers={propertyManagers}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
         />
