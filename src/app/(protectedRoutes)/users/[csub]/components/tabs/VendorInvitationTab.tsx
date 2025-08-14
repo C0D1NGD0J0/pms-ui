@@ -104,8 +104,13 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               id="businessType"
               name="businessType"
               value={formData.vendorInfo?.businessType || ""}
-              onChange={(value: string) =>
-                onFieldChange("vendorInfo.businessType", value)
+              onChange={(
+                value: string | React.ChangeEvent<HTMLSelectElement>
+              ) =>
+                onFieldChange(
+                  "vendorInfo.businessType",
+                  typeof value === "string" ? value : value.target.value
+                )
               }
               options={[
                 { value: "", label: "Select business type" },
@@ -131,8 +136,13 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               id="primaryService"
               name="primaryService"
               value={formData.vendorInfo?.primaryService || ""}
-              onChange={(value: string) =>
-                onFieldChange("vendorInfo.primaryService", value)
+              onChange={(
+                value: string | React.ChangeEvent<HTMLSelectElement>
+              ) =>
+                onFieldChange(
+                  "vendorInfo.primaryService",
+                  typeof value === "string" ? value : value.target.value
+                )
               }
               options={[
                 { value: "", label: "Select primary service" },

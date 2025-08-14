@@ -51,8 +51,13 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               id="businessType"
               name="businessType"
               value={formData.vendorInfo?.businessType || ""}
-              onChange={(value: string) =>
-                onFieldChange("vendorInfo.businessType", value)
+              onChange={(
+                value: string | React.ChangeEvent<HTMLSelectElement>
+              ) =>
+                onFieldChange(
+                  "vendorInfo.businessType",
+                  typeof value === "string" ? value : value.target.value
+                )
               }
               options={[
                 { value: "", label: "Select business type" },

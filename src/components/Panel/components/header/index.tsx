@@ -34,9 +34,11 @@ const PanelHeaderComponent = ({
   const [_sortBy, setSortBy] = React.useState<string>("");
 
   const handleFilterChange = useCallback(
-    (value: string) => {
-      setSortBy(value);
-      filterOpts?.onFilterChange(value);
+    (value: string | React.ChangeEvent<HTMLSelectElement>) => {
+      const actualValue =
+        typeof value === "string" ? value : value.target.value;
+      setSortBy(actualValue);
+      filterOpts?.onFilterChange(actualValue);
     },
     [filterOpts]
   );

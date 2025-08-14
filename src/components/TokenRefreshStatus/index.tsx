@@ -11,21 +11,30 @@ interface TokenRefreshStatusProps {
 export const TokenRefreshStatus: React.FC<TokenRefreshStatusProps> = ({
   showDetails = false,
 }) => {
-  const { isRefreshingToken, refreshTokenError } = useAuth();
-  const { refreshToken, clearTokenRefreshError } = useTokenRefresh();
+  const { currentLoadingState } = useAuth();
+  const { isRefreshingToken, refreshToken } = useTokenRefresh();
+  // Since refreshTokenError is not defined in either hook, we'll need to handle it differently
+  const [refreshTokenError, setRefreshTokenError] = React.useState<
+    string | null
+  >(null);
+
+  const clearTokenRefreshError = () => setRefreshTokenError(null);
 
   const handleManualRefresh = async () => {
     const success = await refreshToken();
     console.log("Manual refresh result:", success);
   };
 
-  if (!showDetails && !isRefreshingToken && !refreshTokenError) {
+  const isRefreshing =
+    isRefreshingToken || currentLoadingState === "refreshing_token";
+
+  if (!showDetails && !isRefreshing && !refreshTokenError) {
     return null;
   }
 
   return (
     <div className="token_refresh_status">
-      {isRefreshingToken && (
+      {isRefreshing && (
         <div className="token_refresh_loading">
           <div className="spinner_small">
             <div className="spinner_ring"></div>
@@ -56,12 +65,12 @@ export const TokenRefreshStatus: React.FC<TokenRefreshStatusProps> = ({
         <div className="token_refresh_actions">
           <button
             onClick={handleManualRefresh}
-            disabled={isRefreshingToken}
+            disabled={isRefreshing}
             className={`btn btn-sm btn-outline-secondary ${
-              isRefreshingToken ? "btn-disabled" : ""
+              isRefreshing ? "btn-disabled" : ""
             }`}
           >
-            {isRefreshingToken ? "Refreshing..." : "Test Token Refresh"}
+            {isRefreshing ? "Refreshing..." : "Test Token Refresh"}
           </button>
         </div>
       )}

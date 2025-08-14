@@ -56,8 +56,11 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             id="department"
             name="department"
             value={formData.employeeInfo?.department || ""}
-            onChange={(value: string) =>
-              onFieldChange("employeeInfo.department", value)
+            onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) =>
+              onFieldChange(
+                "employeeInfo.department",
+                typeof value === "string" ? value : value.target.value
+              )
             }
             options={[
               { value: "", label: "Select department" },
