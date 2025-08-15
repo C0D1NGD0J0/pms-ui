@@ -5,10 +5,11 @@
   display: flex;
   gap: 0.5rem;
   align-items: center;
-  
+  padding-right: 1rem; // Add spacing from table edge
+
   .btn {
     flex-shrink: 0;
-    
+
     &-sm {
       height: 2rem; // Ensure consistent height
       min-height: 2rem;
@@ -108,7 +109,7 @@ tbody tr td,
   padding: 1.5rem 0.7rem !important;
   overflow-wrap: break-word !important;
   text-wrap: balance !important;
-  font-size: clamp(1.4rem, 1vw, 1.8rem) !important;
+  font-size: clamp(1.2rem, 1rem, 1.4rem) !important;
 }
 
 tbody td i,
@@ -349,5 +350,34 @@ tfoot {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+  }
+}
+
+// Status Badges
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  // text-transform: uppercase;
+
+  &.success {
+    background-color: hsla(130, 100%, 37%, 0.1);
+    color: hsl(130, 100%, 37%);
+  }
+
+  &.warning {
+    background-color: hsla(37, 100%, 67%, 0.1);
+    color: hsl(37, 100%, 67%);
+  }
+
+  &.danger {
+    background-color: hsla(0, 100%, 50%, 0.1);
+    color: hsl(0, 100%, 50%);
+  }
+
+  &.pending {
+    background-color: hsla(213, 14%, 56%, 0.1);
+    color: hsl(213, 14%, 56%);
   }
 }

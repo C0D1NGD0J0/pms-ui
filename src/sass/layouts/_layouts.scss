@@ -113,7 +113,7 @@
 
   &-content {
     min-width: 0;
-    padding: 1rem 4rem;
+    padding: 2rem;
     grid-area: dashboard-content;
 
     @include breakpoint("992px", max) {

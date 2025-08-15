@@ -56,35 +56,6 @@
   display: none;
 }
 
-// Status Badges
-.badge {
-  padding: 0.3rem 0.8rem;
-  border-radius: 2rem;
-  font-size: 1.2rem;
-  font-weight: 500;
-  text-transform: uppercase;
-
-  &.success {
-    background-color: hsla(130, 100%, 37%, 0.1);
-    color: hsl(130, 100%, 37%);
-  }
-
-  &.warning {
-    background-color: hsla(37, 100%, 67%, 0.1);
-    color: hsl(37, 100%, 67%);
-  }
-
-  &.danger {
-    background-color: hsla(0, 100%, 50%, 0.1);
-    color: hsl(0, 100%, 50%);
-  }
-
-  &.pending {
-    background-color: hsla(213, 14%, 56%, 0.1);
-    color: hsl(213, 14%, 56%);
-  }
-}
-
 // Team Members Section
 .team-header {
   display: flex;
