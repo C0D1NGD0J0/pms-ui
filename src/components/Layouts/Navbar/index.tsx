@@ -1,8 +1,8 @@
 "use client";
 import Link from "next/link";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthActions, useAuth } from "@store/auth.store";
-
 interface MenuItem {
   icon: string;
   label: string;
@@ -11,6 +11,7 @@ interface MenuItem {
 }
 
 export const Navbar: React.FC = () => {
+  const router = useRouter();
   const { isLoggedIn } = useAuth();
   const { logout } = useAuthActions();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -108,7 +109,12 @@ export const Navbar: React.FC = () => {
                   fontWeight: "100",
                 }}
                 className="text-danger"
-                onClick={logout}
+                onClick={async () => {
+                  await logout();
+                  console.log("User logged out");
+                  sessionStorage.removeItem("static-data-storage");
+                  sessionStorage.removeItem("auth-storage");
+                }}
               >
                 Logout
               </button>
