@@ -1,14 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Breadcrumb } from "@components/Breadcrumb";
 import { InsightCard } from "@components/Cards";
 import { Button } from "@components/FormElements";
-import { PageHeader } from "@components/PageElements/Header";
+import { Breadcrumb } from "@components/Breadcrumb";
+import { invitationService } from "@services/invite";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNotification } from "@hooks/useNotification";
 import { FilteredUser } from "@interfaces/user.interface";
-import { EmployeeTableView } from "./components/EmployeeTableView";
+import { PageHeader } from "@components/PageElements/Header";
+import { IInvitationFormData } from "@interfaces/invitation.interface";
+
 import { useGetEmployees } from "./hooks";
+import { AddEmployeeModal } from "./components/AddEmployeeModal";
+import { EmployeeTableView } from "./components/EmployeeTableView";
 
 interface StaffPageProps {
   params: Promise<{
@@ -19,6 +25,11 @@ interface StaffPageProps {
 export default function StaffPage({ params }: StaffPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
 
   const {
     employees,
@@ -49,8 +60,34 @@ export default function StaffPage({ params }: StaffPageProps) {
   };
 
   const handleAddNewEmployee = () => {
-    console.log("Add new employee");
-    // TODO: Implement add new employee modal/form
+    setIsAddEmployeeModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsAddEmployeeModalOpen(false);
+  };
+
+  const handleSubmitEmployeeInvite = async (
+    data: Partial<IInvitationFormData>
+  ) => {
+    try {
+      setIsSubmittingInvite(true);
+      await invitationService.sendInvite(cuid, data);
+
+      message.success("Employee invitation sent successfully!");
+      setIsAddEmployeeModalOpen(false);
+
+      // Refresh the employee list (this will refetch the data)
+      queryClient.invalidateQueries({ queryKey: [`/employees/${cuid}`, cuid] });
+    } catch (error: any) {
+      console.error("Failed to send employee invitation:", error);
+      message.error(
+        error?.response?.data?.message ||
+          "Failed to send employee invitation. Please try again."
+      );
+    } finally {
+      setIsSubmittingInvite(false);
+    }
   };
 
   const headerButtons = (
@@ -61,25 +98,11 @@ export default function StaffPage({ params }: StaffPageProps) {
         onClick={handleAddNewEmployee}
         icon={<i className={`bx bx-plus-circle`}></i>}
       />
-      <Button
-        label="Import employee list"
-        className="btn btn-secondary"
-        onClick={() => console.log("Import employees")}
-        icon={<i className={`bx bx-import`}></i>}
-      />
     </div>
   );
 
-  const breadcrumbItems = [
-    { title: "Dashboard", href: "/dashboard" },
-    { title: "Users", href: "#" },
-    { title: "Staff", href: `/users/${cuid}/staff` },
-  ];
-
   return (
     <div className="page-container">
-      <Breadcrumb items={breadcrumbItems} />
-      
       <div className="page add-users-page">
         <PageHeader title="Employee Management" headerBtn={headerButtons} />
 
@@ -91,7 +114,7 @@ export default function StaffPage({ params }: StaffPageProps) {
             trend={{
               value: "2",
               direction: "up",
-              period: "this quarter"
+              period: "this quarter",
             }}
           />
 
@@ -102,7 +125,7 @@ export default function StaffPage({ params }: StaffPageProps) {
             trend={{
               value: "4%",
               direction: "up",
-              period: "vs last month"
+              period: "vs last month",
             }}
           />
 
@@ -113,7 +136,7 @@ export default function StaffPage({ params }: StaffPageProps) {
             trend={{
               value: "0.8 hrs",
               direction: "up",
-              period: "improvement"
+              period: "improvement",
             }}
           />
 
@@ -124,7 +147,7 @@ export default function StaffPage({ params }: StaffPageProps) {
             trend={{
               value: "1.2",
               direction: "down",
-              period: "vs last year"
+              period: "vs last year",
             }}
           />
         </div>
@@ -144,6 +167,14 @@ export default function StaffPage({ params }: StaffPageProps) {
           totalCount={totalCount}
         />
       </div>
+
+      {/* Add Employee Modal */}
+      <AddEmployeeModal
+        isOpen={isAddEmployeeModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitEmployeeInvite}
+        isSubmitting={isSubmittingInvite}
+      />
     </div>
   );
 }

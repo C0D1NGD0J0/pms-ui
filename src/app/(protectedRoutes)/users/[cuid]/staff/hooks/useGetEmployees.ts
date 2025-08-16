@@ -1,8 +1,6 @@
 import { useTableData } from "@components/Table/hook";
-
 import { IPaginationQuery } from "@interfaces/utils.interface";
-
-import { employeeService, IEmployeeFilterParams } from "@services/employee";
+import { IEmployeeFilterParams, employeeService } from "@services/employee";
 
 export interface FilterOption {
   label: string;

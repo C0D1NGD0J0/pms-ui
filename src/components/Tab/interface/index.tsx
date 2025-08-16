@@ -22,11 +22,13 @@ export interface TabsProps {
   ariaLabel?: string;
   mode?: "new" | "edit";
   scrollOnChange?: boolean; // New prop to optionally disable auto-scrolling
+  variant?: "settings" | "profile"; // New variant prop for different tab styles
 }
 
 export interface TabListProps {
   children: ReactNode;
   className?: string;
+  variant?: "settings" | "profile"; // Variant prop for TabList
 }
 
 // Individual Tab component
@@ -36,6 +38,7 @@ export interface TabListItemProps {
   disabled?: boolean;
   className?: string;
   hasError?: boolean;
+  icon?: ReactNode; // Add icon support for profile variant
 }
 
 export interface TabPanelProps {
