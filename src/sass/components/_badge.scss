@@ -1,0 +1,207 @@
+@use "../abstract/index" as *;
+
+// Status Badge Styles
+.status-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &-small {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  &-large {
+    padding: 0.4rem 1rem;
+    font-size: 1.1rem;
+  }
+
+  // Status variants
+  &-active,
+  &-completed,
+  &-success {
+    background: hsla(130, 100%, 37%, 0.1);
+    color: hsl(130, 100%, 37%);
+  }
+
+  &-pending,
+  &-in-progress,
+  &-warning {
+    background: hsla(39, 73%, 49%, 0.1);
+    color: hsl(39, 73%, 49%);
+  }
+
+  &-error {
+    background: hsla(0, 100%, 50%, 0.1);
+    color: hsl(0, 100%, 50%);
+  }
+}
+
+// Employee Tag Styles  
+.employee-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.3rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  border: none;
+  cursor: default;
+  margin: 0;
+  line-height: 1.2;
+  
+  &-small {
+    padding: 0.2rem 0.6rem;
+    font-size: 1rem;
+    gap: 0.2rem;
+  }
+  
+  &-large {
+    padding: 0.4rem 1rem;
+    font-size: 1.2rem;
+    gap: 0.4rem;
+  }
+
+  .employee-tag-icon {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    
+    .employee-tag-small & {
+      font-size: 1rem;
+    }
+    
+    .employee-tag-large & {
+      font-size: 1.3rem;
+    }
+  }
+
+  .employee-tag-text {
+    line-height: 1;
+  }
+
+  // Variant styles
+  &-skill {
+    background: hsla(194, 66%, 24%, 0.1);
+    color: hsl(194, 66%, 24%);
+  }
+
+  &-employment {
+    background: hsla(213, 14%, 56%, 0.1);
+    color: hsl(213, 14%, 56%);
+  }
+
+  &-achievement {
+    background: hsla(39, 73%, 49%, 0.1);
+    color: hsl(39, 73%, 49%);
+  }
+
+  &-permission {
+    background: hsla(130, 100%, 37%, 0.1);
+    color: hsl(130, 100%, 37%);
+  }
+
+  &-department {
+    background: hsla(39, 73%, 49%, 0.1);
+    color: hsl(39, 73%, 49%);
+  }
+
+  // Override Ant Design Tag styles
+  &.ant-tag {
+    margin: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 0 !important;
+    border: none !important;
+    line-height: 1.2 !important;
+    padding: 0.3rem 0.8rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 500 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    border-radius: 0.3rem !important;
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+// Priority Badge Styles
+.priority-badge {
+  display: inline-block;
+  padding: 0.3rem 0.8rem;
+  border-radius: 0.3rem;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &-small {
+    padding: 0.2rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  &-large {
+    padding: 0.4rem 1rem;
+    font-size: 1.1rem;
+  }
+
+  &-high {
+    background: hsla(0, 100%, 50%, 0.1);
+    color: hsl(0, 100%, 50%);
+  }
+
+  &-medium {
+    background: hsla(39, 73%, 49%, 0.1);
+    color: hsl(39, 73%, 49%);
+  }
+
+  &-low {
+    background: hsla(130, 100%, 37%, 0.1);
+    color: hsl(130, 100%, 37%);
+  }
+}
+
+// Ant Design Badge overrides
+.ant-badge {
+  &.status-badge {
+    .ant-badge-status-dot {
+      width: 8px;
+      height: 8px;
+      
+      &.ant-badge-status-success {
+        background-color: hsl(130, 100%, 37%);
+      }
+      
+      &.ant-badge-status-processing {
+        background-color: hsl(39, 73%, 49%);
+      }
+      
+      &.ant-badge-status-error {
+        background-color: hsl(0, 100%, 50%);
+      }
+    }
+    
+    .ant-badge-status-text {
+      color: hsl(0, 0%, 20%);
+      font-weight: 500;
+    }
+  }
+  
+  .ant-badge-count {
+    background-color: hsl(194, 66%, 24%);
+    color: hsl(0, 0%, 100%);
+    font-weight: 600;
+  }
+  
+  .ant-badge-count-sm {
+    min-width: 14px;
+    height: 14px;
+    font-size: 10px;
+  }
+}

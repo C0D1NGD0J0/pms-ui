@@ -35,6 +35,14 @@ export interface FilteredVendorInfo {
   isLinkedAccount?: boolean;
   linkedVendorId?: string;
   isPrimaryVendor?: boolean;
+  companyName?: string;
+  serviceType?: string;
+  contactPerson?: string;
+  rating?: number;
+  reviewCount?: number;
+  completedJobs?: number;
+  averageResponseTime?: string;
+  averageServiceCost?: number;
   [key: string]: any;
 }
 
