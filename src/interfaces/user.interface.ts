@@ -11,17 +11,17 @@ export interface FilteredUser {
   isConnected: boolean;
   createdAt: Date | string;
   isActive: boolean;
-  
+
   // Profile information (optional, from populated profile)
   firstName?: string;
   lastName?: string;
   fullName?: string;
   avatar?: string;
   phoneNumber?: string;
-  
+
   // User type indicator
-  userType?: 'employee' | 'vendor' | 'tenant';
-  
+  userType?: "employee" | "vendor" | "tenant";
+
   // Type-specific information (conditional based on userType)
   employeeInfo?: EmployeeInfo;
   vendorInfo?: FilteredVendorInfo;
@@ -77,9 +77,7 @@ export interface PaginateResult {
   hasPrevPage: boolean;
 }
 
-export interface IUsersResponse {
-  data: {
-    users: FilteredUser[];
-    pagination: PaginateResult;
-  };
+export interface IListResponseWithPagination {
+  items: FilteredUser[];
+  pagination: PaginateResult;
 }

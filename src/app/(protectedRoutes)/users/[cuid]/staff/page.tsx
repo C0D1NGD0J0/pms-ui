@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
 import { Panel } from "@components/Panel";
 import { useRouter } from "next/navigation";
-import { InsightCard } from "@components/Cards";
+import React, { useState, useMemo } from "react";
 import { Button } from "@components/FormElements";
 import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
@@ -11,8 +10,13 @@ import { useNotification } from "@hooks/useNotification";
 import { FilteredUser } from "@interfaces/user.interface";
 import { AddUserModal } from "@components/UserManagement";
 import { PageHeader } from "@components/PageElements/Header";
+import { InsightCardList, InsightData } from "@components/Cards";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
+import {
+  aggregateEmployeesByDepartment,
+  generateLegendColors,
+} from "@utils/employeeUtils";
 
 import { useGetEmployees } from "./hooks";
 import { EmployeeTableView } from "./components/EmployeeTableView";
@@ -42,6 +46,60 @@ export default function StaffPage({ params }: StaffPageProps) {
     handleSortByChange,
     isLoading,
   } = useGetEmployees(cuid);
+
+  // Compute department statistics from real employee data
+  const departmentStats = useMemo(() => {
+    return aggregateEmployeesByDepartment(employees);
+  }, [employees]);
+
+  // Generate dynamic colors for the legend
+  const legendColors = useMemo(() => {
+    return generateLegendColors(departmentStats.length);
+  }, [departmentStats.length]);
+
+  // Define insight data for the cards
+  const insightData: InsightData[] = [
+    {
+      title: "Total Employees",
+      value: totalCount,
+      icon: <i className="bx bx-id-card"></i>,
+      trend: {
+        value: "2",
+        direction: "up",
+        period: "this quarter",
+      },
+    },
+    {
+      title: "Task Completion",
+      value: "92%",
+      icon: <i className="bx bx-task"></i>,
+      trend: {
+        value: "4%",
+        direction: "up",
+        period: "vs last month",
+      },
+    },
+    {
+      title: "Avg. Response Time",
+      value: "4.2 hrs",
+      icon: <i className="bx bx-time"></i>,
+      trend: {
+        value: "0.8 hrs",
+        direction: "up",
+        period: "improvement",
+      },
+    },
+    {
+      title: "Properties per Manager",
+      value: "8.5",
+      icon: <i className="bx bx-building-house"></i>,
+      trend: {
+        value: "1.2",
+        direction: "down",
+        period: "vs last year",
+      },
+    },
+  ];
 
   const handleEditEmployee = (employee: FilteredUser) => {
     console.log("Edit employee:", employee);
@@ -79,7 +137,9 @@ export default function StaffPage({ params }: StaffPageProps) {
       setIsAddEmployeeModalOpen(false);
 
       // Refresh the employee list (this will refetch the data)
-      queryClient.invalidateQueries({ queryKey: [`/employees/${cuid}`, cuid] });
+      queryClient.invalidateQueries({
+        queryKey: ["/clients/filtered-users/employees", cuid],
+      });
     } catch (error: any) {
       console.error("Failed to send employee invitation:", error);
       message.error(
@@ -107,53 +167,8 @@ export default function StaffPage({ params }: StaffPageProps) {
       <div className="page add-users-page">
         <PageHeader title="Employee Management" headerBtn={headerButtons} />
 
-        <div className="insights">
-          <InsightCard
-            title="Total Employees"
-            value={totalCount}
-            icon={<i className="bx bx-id-card"></i>}
-            trend={{
-              value: "2",
-              direction: "up",
-              period: "this quarter",
-            }}
-          />
+        <InsightCardList insights={insightData} />
 
-          <InsightCard
-            title="Task Completion"
-            value="92%"
-            icon={<i className="bx bx-task"></i>}
-            trend={{
-              value: "4%",
-              direction: "up",
-              period: "vs last month",
-            }}
-          />
-
-          <InsightCard
-            title="Avg. Response Time"
-            value="4.2 hrs"
-            icon={<i className="bx bx-time"></i>}
-            trend={{
-              value: "0.8 hrs",
-              direction: "up",
-              period: "improvement",
-            }}
-          />
-
-          <InsightCard
-            title="Properties per Manager"
-            value="8.5"
-            icon={<i className="bx bx-building-house"></i>}
-            trend={{
-              value: "1.2",
-              direction: "down",
-              period: "vs last year",
-            }}
-          />
-        </div>
-
-        {/* Main Employee Table */}
         <EmployeeTableView
           employees={employees}
           filterOptions={sortOptions}
@@ -168,10 +183,8 @@ export default function StaffPage({ params }: StaffPageProps) {
           totalCount={totalCount}
         />
 
-        {/* Analytics Panels */}
         <div className="flex-row">
           <div className="panels">
-            {/* Employee Department Distribution Panel */}
             <Panel variant="alt-2">
               <div className="panel-header">
                 <div className="panel-header__title">
@@ -182,40 +195,31 @@ export default function StaffPage({ params }: StaffPageProps) {
                 <div className="analytics-cards">
                   <div className="analytics-card">
                     <div className="chart-container">
-                      <DonutChart
-                        data={[
-                          { name: "Management", value: 4 },
-                          { name: "Maintenance", value: 8 },
-                          { name: "Leasing", value: 6 },
-                          { name: "Accounting", value: 3 },
-                          { name: "Security", value: 3 },
-                        ]}
-                        height={300}
-                        showTotal={true}
-                        showTooltip={true}
-                      />
+                      {departmentStats.length > 0 ? (
+                        <DonutChart
+                          data={departmentStats}
+                          height={300}
+                          showTotal={true}
+                          showTooltip={true}
+                        />
+                      ) : (
+                        <div className="empty-chart-state">
+                          <p>No department data available</p>
+                        </div>
+                      )}
                     </div>
                     <div className="chart-legend">
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(194, 66%, 24%)" }}></span>
-                        <span>Management (17%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(39, 73%, 49%)" }}></span>
-                        <span>Maintenance (33%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(130, 100%, 37%)" }}></span>
-                        <span>Leasing (25%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(37, 100%, 67%)" }}></span>
-                        <span>Accounting (12%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(0, 100%, 50%)" }}></span>
-                        <span>Security (13%)</span>
-                      </div>
+                      {departmentStats.map((dept, index) => (
+                        <div key={dept.name} className="legend-item">
+                          <span
+                            className="legend-color"
+                            style={{ backgroundColor: legendColors[index] }}
+                          ></span>
+                          <span>
+                            {dept.name} ({dept.percentage}%)
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

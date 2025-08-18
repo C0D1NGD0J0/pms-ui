@@ -187,7 +187,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
               },
             }}
             tableVariant="alt-2"
-            rowKey="id"
+            rowKey="uid"
           />
         </Panel>
       </div>

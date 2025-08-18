@@ -1,90 +1,100 @@
-import { useTableData } from "@components/Table/hook";
-import { IPaginationQuery } from "@interfaces/utils.interface";
-import { IEmployeeFilterParams, employeeService } from "@services/employee";
+import { IUserRoleType } from "@interfaces/user.interface";
+import {
+  FilteredUsersQueryParams,
+  useGetFilteredUsers,
+} from "@app/(protectedRoutes)/shared-hooks/useGetFilteredUsers";
+import {
+  COMMON_DEPARTMENT_OPTIONS,
+  COMMON_STATUS_OPTIONS,
+  EMPLOYEE_ROLE_OPTIONS,
+  COMMON_SORT_OPTIONS,
+} from "@app/(protectedRoutes)/shared-hooks/constants";
 
-export interface FilterOption {
-  label: string;
-  value: string;
+export interface EmployeeQueryParams {
+  role?: IUserRoleType;
+  department?: string;
+  status?: "active" | "inactive";
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc";
 }
 
-export const useGetEmployees = (cuid: string) => {
-  const sortOptions: FilterOption[] = [
-    { label: "All", value: "" },
-    { label: "Name", value: "name" },
-    { label: "Department", value: "department" },
-    { label: "Role", value: "role" },
-    { label: "Start Date", value: "startDate" },
-  ];
-
-  const departmentOptions: FilterOption[] = [
-    { label: "All Departments", value: "" },
-    { label: "Management", value: "management" },
-    { label: "Maintenance", value: "maintenance" },
-    { label: "Leasing", value: "leasing" },
-    { label: "Accounting", value: "accounting" },
-    { label: "Marketing", value: "marketing" },
-    { label: "Security", value: "security" },
-    { label: "Other", value: "other" },
-  ];
-
-  const roleOptions: FilterOption[] = [
-    { label: "All Roles", value: "" },
-    { label: "Property Manager", value: "manager" },
-    { label: "Administrative Staff", value: "staff" },
-    { label: "Maintenance", value: "maintenance" },
-    { label: "Leasing Agent", value: "leasing" },
-  ];
-
-  const statusOptions: FilterOption[] = [
-    { label: "All Status", value: "" },
-    { label: "Active", value: "active" },
-    { label: "Inactive", value: "inactive" },
-    { label: "Pending", value: "pending" },
-  ];
-
-  const fetchEmployees = (
-    pagination: IPaginationQuery & {
-      department?: string;
-      role?: string;
-      status?: "active" | "inactive" | "pending";
-      search?: string;
-    }
-  ) => {
-    const employeeQuery: IEmployeeFilterParams = {
-      page: pagination.page,
-      limit: pagination.limit,
-      sortBy: pagination.sortBy as "name" | "department" | "role" | "startDate",
-      sortOrder: pagination.sort as "asc" | "desc",
-      ...(pagination?.search && { search: pagination.search }),
-      ...(pagination?.department && { department: pagination.department }),
-      ...(pagination?.role && { role: pagination.role }),
-      ...(pagination?.status && { status: pagination.status }),
-    };
-
-    return employeeService.getEmployees(cuid, employeeQuery);
+export const useGetEmployees = (
+  cuid: string,
+  initialParams?: EmployeeQueryParams
+) => {
+  const baseParams: FilteredUsersQueryParams = {
+    type: "employee",
+    role: initialParams?.role ? [initialParams.role] : ["staff", "manager"],
+    department: initialParams?.department,
+    status: initialParams?.status,
+    search: initialParams?.search,
+    page: initialParams?.page,
+    limit: initialParams?.limit,
+    sortBy: initialParams?.sortBy,
+    sort: initialParams?.sort,
   };
 
-  const tableData = useTableData({
-    queryKeys: [`/employees/${cuid}`, cuid],
-    fetchFn: fetchEmployees,
-    paginationConfig: {
-      initialLimit: 10,
-    },
-  });
+  // Use base hook with employee constraints
+  const baseHook = useGetFilteredUsers(cuid, baseParams);
+
+  // Custom role handler that maintains employee constraints
+  const handleRoleFilter = (role: IUserRoleType | "") => {
+    if (role) {
+      baseHook.updateQueryParams({ role: [role], page: 1 });
+    } else {
+      baseHook.updateQueryParams({ role: ["staff", "manager"], page: 1 });
+    }
+  };
 
   return {
-    sortOptions,
-    departmentOptions,
-    roleOptions,
-    statusOptions,
-    pagination: tableData?.pagination || {},
-    employees: tableData.data?.data?.users || [],
-    handleSortChange: tableData.handleSortChange,
-    handlePageChange: tableData.handlePageChange,
-    handleSortByChange: tableData.handleSortByChange,
-    totalCount: tableData.data?.data?.pagination?.total || 0,
-    isLoading: tableData.isLoading,
-    error: tableData.error,
-    refetch: tableData.refetch,
+    employees: baseHook.data,
+    totalCount: baseHook.totalCount,
+
+    // Loading states
+    isLoading: baseHook.isLoading,
+    isError: baseHook.isError,
+    error: baseHook.error,
+
+    // Actions
+    refetch: baseHook.refetch,
+    queryParams: {
+      role: Array.isArray(baseHook.queryParams.role)
+        ? baseHook.queryParams.role[0]
+        : baseHook.queryParams.role,
+      department: baseHook.queryParams.department,
+      status: baseHook.queryParams.status,
+      search: baseHook.queryParams.search,
+      page: baseHook.queryParams.page,
+      limit: baseHook.queryParams.limit,
+      sortBy: baseHook.queryParams.sortBy,
+      sort: baseHook.queryParams.sort,
+    } as EmployeeQueryParams,
+
+    // Backward compatibility pagination object
+    pagination: {
+      page: baseHook.queryParams.page || 1,
+      limit: baseHook.queryParams.limit || 10,
+      sortBy: baseHook.queryParams.sortBy,
+      sort: baseHook.queryParams.sort,
+    },
+
+    // Handlers (delegate to base hook)
+    handlePageChange: baseHook.handlePageChange,
+    handleLimitChange: baseHook.handleLimitChange,
+    handleSortChange: baseHook.handleSortChange,
+    handleSortByChange: baseHook.handleSortByChange,
+    handleSearch: baseHook.handleSearch,
+    handleRoleFilter, // Custom employee role handler
+    handleDepartmentFilter: baseHook.handleDepartmentFilter,
+    handleStatusFilter: baseHook.handleStatusFilter,
+
+    // Filter options (use shared constants)
+    sortOptions: COMMON_SORT_OPTIONS,
+    departmentOptions: COMMON_DEPARTMENT_OPTIONS,
+    roleOptions: EMPLOYEE_ROLE_OPTIONS, // Employee-specific roles only
+    statusOptions: COMMON_STATUS_OPTIONS,
   };
 };
