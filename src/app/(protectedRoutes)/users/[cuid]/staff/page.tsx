@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { FilteredUser } from "@interfaces/user.interface";
 import { PageHeader } from "@components/PageElements/Header";
-import { HorizontalBarChart, DonutChart } from "@components/Charts";
+import { VerticalBarChart, DonutChart } from "@components/Charts";
 import {
   PanelsWrapper,
   PanelContent,
@@ -50,6 +50,25 @@ export default function StaffPage({ params }: StaffPageProps) {
     return generateLegendColors(departmentStats.length);
   }, [departmentStats.length]);
 
+  // Compute role distribution from real employee data
+  const roleDistribution = useMemo(() => {
+    const roleMap = new Map<string, number>();
+
+    employees.forEach((employee) => {
+      employee.roles.forEach((role) => {
+        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
+        roleMap.set(capitalizedRole, (roleMap.get(capitalizedRole) || 0) + 1);
+      });
+    });
+
+    return Array.from(roleMap.entries())
+      .map(([name, value]) => ({
+        name,
+        value,
+      }))
+      .sort((a, b) => b.value - a.value); // Sort by count descending
+  }, [employees]);
+
   const handleEditEmployee = (employee: FilteredUser) => {
     console.log("Edit employee:", employee);
     // TODO: Implement edit employee modal/form
@@ -73,7 +92,7 @@ export default function StaffPage({ params }: StaffPageProps) {
         <PageHeader title="Employee Management" />
         <div className="flex-row">
           <PanelsWrapper>
-            <Panel variant="default">
+            <Panel variant="alt-2">
               <EmployeeTableView
                 employees={employees}
                 filterOptions={sortOptions}
@@ -134,22 +153,23 @@ export default function StaffPage({ params }: StaffPageProps) {
             </Panel>
 
             <Panel variant="alt-2">
-              <PanelHeader header={{ title: "Top Employee Performance" }} />
+              <PanelHeader header={{ title: "Employee Role Distribution" }} />
               <PanelContent>
                 <div className="chart-container">
-                  <HorizontalBarChart
-                    data={[
-                      { name: "Sarah Johnson", value: 4.9 },
-                      { name: "Mike Rodriguez", value: 4.7 },
-                      { name: "Emily Davis", value: 4.5 },
-                      { name: "James Wilson", value: 4.3 },
-                      { name: "Lisa Anderson", value: 4.1 },
-                    ]}
-                    height={300}
-                    valueKey="value"
-                    nameKey="name"
-                    showAxis={true}
-                  />
+                  {roleDistribution.length > 0 ? (
+                    <VerticalBarChart
+                      data={roleDistribution}
+                      height={300}
+                      valueKey="value"
+                      nameKey="name"
+                      showAxis={true}
+                      showGrid={true}
+                    />
+                  ) : (
+                    <div className="empty-chart-state">
+                      <p>No role data available</p>
+                    </div>
+                  )}
                 </div>
               </PanelContent>
             </Panel>

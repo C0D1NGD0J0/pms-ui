@@ -28,13 +28,13 @@ export const useGetEmployees = (
   const baseParams: FilteredUsersQueryParams = {
     type: "employee",
     role: initialParams?.role ? [initialParams.role] : ["staff", "manager"],
-    department: initialParams?.department,
-    status: initialParams?.status,
-    search: initialParams?.search,
-    page: initialParams?.page,
-    limit: initialParams?.limit,
-    sortBy: initialParams?.sortBy,
-    sort: initialParams?.sort,
+    department: initialParams?.department || "",
+    status: initialParams?.status || "active",
+    search: initialParams?.search || "",
+    page: initialParams?.page || 1,
+    limit: initialParams?.limit || 10,
+    sortBy: initialParams?.sortBy || "",
+    sort: initialParams?.sort || "desc",
   };
 
   // Use base hook with employee constraints
