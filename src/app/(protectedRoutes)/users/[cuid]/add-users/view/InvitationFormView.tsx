@@ -16,7 +16,7 @@ import {
   EmployeeDetailsTab,
   RoleSelectionTab,
   ReviewTab,
-} from "../../components";
+} from "../components";
 
 interface InvitationFormViewProps {
   onSubmit: (values: InvitationFormValues) => void;

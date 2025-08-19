@@ -94,7 +94,7 @@ export const Sidebar = () => {
 
   const isActive = (path: string | ((user: any) => string)) => {
     const resolvedPath = getResolvedPath(path);
-    return pathname === resolvedPath;
+    return pathname === resolvedPath || pathname.startsWith(resolvedPath + "/");
   };
 
   useEffect(() => {
@@ -102,6 +102,11 @@ export const Sidebar = () => {
       setIsUsersDropdownOpen(false);
     }
   }, [isSidebarCollapsed, isUsersDropdownOpen]);
+
+  // Close dropdown when pathname changes (navigation occurs)
+  useEffect(() => {
+    setIsUsersDropdownOpen(false);
+  }, [pathname]);
 
   return (
     <aside

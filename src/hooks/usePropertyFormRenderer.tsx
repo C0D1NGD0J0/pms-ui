@@ -1,11 +1,8 @@
 import { useCallback } from "react";
 import { UnitTypeManager } from "@utils/unitTypeManager";
-import { NavigationItem } from "@utils/navigationPermissions";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 
-import { PermissionCheckOptions, usePermissions } from "./usePermissions";
-
-interface UseConditionalRenderProps {
+interface UsePropertyFormRendererProps {
   // Unit-specific props
   unitType?: string;
 
@@ -25,12 +22,11 @@ type PropertyCategory =
   | "unit";
 type Category = UnitCategory | PropertyCategory;
 
-export const useConditionalRender = ({
+export const usePropertyFormRenderer = ({
   unitType,
   propertyType,
   maxAllowedUnits = 1,
-}: UseConditionalRenderProps) => {
-  const permissions = usePermissions();
+}: UsePropertyFormRendererProps) => {
   const isFieldVisible = useCallback(
     (fieldName: string, category?: Category) => {
       // If both unitType and propertyType are provided, prioritize unitType
@@ -137,66 +133,20 @@ export const useConditionalRender = ({
     [unitType, propertyType, maxAllowedUnits]
   );
 
-  const canEdit = useCallback(
-    (fieldName: string, resource?: string, context?: PermissionCheckOptions) => {
-      return permissions.canEditField(fieldName, resource, context);
-    },
-    [permissions]
-  );
-
-  const isDisabled = useCallback(
-    (fieldName: string, resource?: string) => {
-      return permissions.isFieldDisabled(fieldName, resource);
-    },
-    [permissions]
-  );
-
-  const canAccessNavigation = useCallback(
-    (navItem: NavigationItem) => {
-      return permissions.canAccessNavigation(navItem);
-    },
-    [permissions]
-  );
-
-  const canAccessRoute = useCallback(
-    (route: string) => {
-      return permissions.canAccessRoute(route);
-    },
-    [permissions]
-  );
-
-  const canPerformAction = useCallback(
-    (action: string, resource?: string) => {
-      return permissions.canPerformAction(action, resource);
-    },
-    [permissions]
-  );
-
   return {
-    // Field visibility and requirements (existing functionality)
+    // Field visibility and requirements
     isVisible: isFieldVisible,
     isRequired,
     getVisibleFields,
     isCategoryVisible,
     getHelpText,
-    
-    // Role-based access control
-    canEdit,
-    isDisabled,
-    canAccessNavigation,
-    canAccessRoute, 
-    canPerformAction,
-    
-    // Permission utilities
-    hasRole: permissions.hasRole,
-    hasPermission: permissions.hasPermission,
-    isAuthenticated: permissions.isAuthenticated,
-    
-    // Convenience flags
-    isAdmin: permissions.isAdmin,
-    isManager: permissions.isManager,
-    isStaff: permissions.isStaff,
-    isTenant: permissions.isTenant,
-    isVendor: permissions.isVendor,
   };
+};
+
+// Export types for external usage
+export type {
+  UsePropertyFormRendererProps,
+  Category,
+  UnitCategory,
+  PropertyCategory,
 };

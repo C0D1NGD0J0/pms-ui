@@ -377,9 +377,9 @@
         color: hslaGen($white-color, 1);
       }
 
-      &:hover > span,
-      &:hover > div > span,
-      &:hover > a::before {
+      &:not(.sidebar__dropdown):hover > span,
+      &:not(.sidebar__dropdown):hover > div > span,
+      &:not(.sidebar__dropdown):hover > a::before {
         transition: $transition;
         color: hslaGen($secondary-color, 0.8);
       }
@@ -533,16 +533,27 @@
         justify-content: center;
       }
 
-      a {
-        font-size: 1.3rem;
-        color: hsl(0, 0%, 100%);
-        transition: color 0.3s ease;
-      }
-
       &:hover {
         a {
           color: hsl(39, 73%, 49%);
         }
+      }
+
+      span {
+        font-size: $fs-lg;
+        font-weight: $fw-bold;
+        transition: $transition;
+        color: hslaGen($white-color, 1);
+      }
+
+      &:hover span {
+        transition: $transition;
+        color: hslaGen($secondary-color, 0.8);
+      }
+
+      &.active span {
+        position: relative;
+        color: hslaGen($secondary-color, 1);
       }
     }
   }

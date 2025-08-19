@@ -9,7 +9,7 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
 import { InvitationFormValues } from "@src/validations/invitation.validations";
 
-import { InvitationPreview } from "../components/InvitationPreview";
+import { InvitationPreview } from "./components/InvitationPreview";
 import {
   InvitationPreviewModal,
   InvitationTableView,

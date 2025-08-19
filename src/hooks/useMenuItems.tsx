@@ -80,7 +80,7 @@ export const useMenuItems = () => {
             permissions.canAccessNavigation(NavigationItem.USERS_VENDORS),
         },
         {
-          path: `/users/${currentUser?.client.cuid}/employees`,
+          path: `/users/${currentUser?.client.cuid}/staff`,
           icon: "bx bx-id-card",
           label: "Employees",
           visible: () =>

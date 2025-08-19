@@ -98,7 +98,7 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     if (!isLoggedIn && !isAuthLoading) {
       setInitializing(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [isLoggedIn, isAuthLoading, setInitializing]);
 
   const LeftBox: React.FC<LeftBoxProps> = ({ meta }) => (

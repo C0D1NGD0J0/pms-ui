@@ -6,7 +6,7 @@ export * from "./usePagination";
 export * from "./useCurrentUser";
 export * from "./useScrollToTop";
 export * from "./useNotification";
-export * from "./useConditionalRender";
+export * from "./usePropertyFormRenderer";
 export * from "./useTokenRefresh";
 export * from "./useMenuItems";
 export * from "./useDefaultFormData";

@@ -60,7 +60,7 @@ export default function Properties() {
               tableVariant="alt-2"
               columns={generatePropertyColumn()}
               dataSource={properties}
-              showRowNumbers={true} // Enable row numbering
+              showRowNumbers={true}
               searchOpts={{
                 isVisible: true,
                 value: "",

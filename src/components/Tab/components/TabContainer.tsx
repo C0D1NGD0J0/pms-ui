@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
+ 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useScrollToTop } from "@hooks/useScrollToTop";
@@ -24,6 +24,7 @@ export const TabContainer: React.FC<TabsProps> = ({
   mode = "new",
   ariaLabel = "Tabs",
   scrollOnChange = true,
+  variant = "settings",
 }) => {
   const { scrollToTop } = useScrollToTop();
   const searchParams = useSearchParams();
@@ -73,7 +74,7 @@ export const TabContainer: React.FC<TabsProps> = ({
   return (
     <TabsContext.Provider value={{ activeTabId, setActiveTabId, registerTab }}>
       <div
-        className={`tabs-container ${className}`}
+        className={`tabs-container tabs-container-${variant} ${className}`}
         role="tablist"
         aria-label={ariaLabel}
       >
@@ -86,6 +87,8 @@ export const TabContainer: React.FC<TabsProps> = ({
 export const TabList: React.FC<TabListProps> = ({
   children,
   className = "",
+  variant = "settings",
 }) => {
-  return <ul className={`settings-tabs ${className}`}>{children}</ul>;
+  const tabsClass = variant === "profile" ? "profile-tabs" : "settings-tabs";
+  return <ul className={`${tabsClass} ${className}`}>{children}</ul>;
 };
