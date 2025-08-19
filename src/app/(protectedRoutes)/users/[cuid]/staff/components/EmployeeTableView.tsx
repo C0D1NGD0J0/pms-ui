@@ -1,12 +1,10 @@
 "use client";
-import { Panel } from "@components/Panel";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
 import { FilteredUser } from "@interfaces/user.interface";
 import { IPaginationQuery } from "@interfaces/utils.interface";
-
-import { FilterOption } from "../hooks/useGetEmployees";
+import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
 
 interface EmployeeTableViewProps {
   employees: FilteredUser[];
@@ -150,47 +148,41 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   };
 
   return (
-    <div className="flex-row">
-      <div className="panels">
-        <Panel variant="alt-2">
-          <Table
-            columns={employeeColumns}
-            dataSource={employees}
-            loading={isLoading}
-            withHeader={true}
-            headerTitle="Employee Directory"
-            searchOpts={{
-              value: searchValue,
-              isVisible: true,
-              placeholder: "Search employees by name, email, or job title...",
-              onChange: handleSearchChange,
-            }}
-            filterOpts={{
-              value: pagination.sortBy ?? "",
-              isVisible: true,
-              options: filterOptions,
-              filterPlaceholder: "Sort by...",
-              onFilterChange: (value: string) => {
-                handleSortByChange(value);
-              },
-              sortDirection: pagination.sort,
-              onSortDirectionChange: (sort: "asc" | "desc") => {
-                handleSortChange(sort);
-              },
-            }}
-            pagination={{
-              total: totalCount,
-              current: pagination.page,
-              pageSize: pagination.limit,
-              onChange: (page: number) => {
-                handlePageChange(page);
-              },
-            }}
-            tableVariant="alt-2"
-            rowKey="uid"
-          />
-        </Panel>
-      </div>
-    </div>
+    <Table
+      columns={employeeColumns}
+      dataSource={employees}
+      loading={isLoading}
+      withHeader={true}
+      headerTitle="Employee Directory"
+      searchOpts={{
+        value: searchValue,
+        isVisible: true,
+        placeholder: "Search employees by name, email, or job title...",
+        onChange: handleSearchChange,
+      }}
+      filterOpts={{
+        value: pagination.sortBy ?? "",
+        isVisible: true,
+        options: filterOptions,
+        filterPlaceholder: "Sort by...",
+        onFilterChange: (value: string) => {
+          handleSortByChange(value);
+        },
+        sortDirection: pagination.sort,
+        onSortDirectionChange: (sort: "asc" | "desc") => {
+          handleSortChange(sort);
+        },
+      }}
+      pagination={{
+        total: totalCount,
+        current: pagination.page,
+        pageSize: pagination.limit,
+        onChange: (page: number) => {
+          handlePageChange(page);
+        },
+      }}
+      tableVariant="alt-2"
+      rowKey="uid"
+    />
   );
 };

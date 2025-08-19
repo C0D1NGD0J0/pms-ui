@@ -30,10 +30,41 @@ export interface ScopedPermission {
   scope: "any" | "mine" | "assigned" | "available";
 }
 
+// Backend resource types from permissions.json
+export type BackendResource =
+  | "property"
+  | "user"
+  | "invitation"
+  | "client"
+  | "maintenance"
+  | "lease"
+  | "payment"
+  | "report";
+
+// Backend actions per resource
+export type ResourceActions = {
+  property: "create" | "read" | "update" | "delete" | "list";
+  user: "invite" | "read" | "update" | "remove" | "list" | "assign_roles";
+  invitation: "send" | "revoke" | "resend" | "list" | "read" | "stats";
+  client: "read" | "update" | "settings" | "manage_users";
+  maintenance: "create" | "read" | "update" | "delete" | "list";
+  lease: "create" | "read" | "update" | "delete" | "list";
+  payment: "create" | "read" | "update" | "delete" | "list";
+  report: "create" | "read" | "update" | "delete" | "list";
+};
+
+// Backend role inheritance mapping (from permissions.json)
+export const BACKEND_ROLE_INHERITANCE: Record<UserRole, UserRole[]> = {
+  [UserRole.ADMIN]: [UserRole.MANAGER, UserRole.STAFF, UserRole.TENANT],
+  [UserRole.MANAGER]: [UserRole.STAFF, UserRole.TENANT],
+  [UserRole.STAFF]: [UserRole.TENANT],
+  [UserRole.TENANT]: [],
+  [UserRole.VENDOR]: [],
+};
+
 export const usePermissions = () => {
   const { user: currentUser, isLoading: isUserLoading } = useCurrentUser();
 
-  // Get current user's role and permissions
   const currentRoleAndPermissions = useMemo(() => {
     if (!currentUser?.client?.role) return null;
     return {
@@ -108,51 +139,75 @@ export const usePermissions = () => {
   );
 
   /**
-   * Core permission checking with context awareness
+   * Check if user's role inherits permissions from target role (backend-aligned)
+   */
+  const roleInheritsFrom = useCallback(
+    (targetRole: UserRole): boolean => {
+      if (!currentRole) return false;
+      if (currentRole === targetRole) return true;
+
+      const inheritedRoles = BACKEND_ROLE_INHERITANCE[currentRole] || [];
+      return inheritedRoles.includes(targetRole);
+    },
+    [currentRole]
+  );
+
+  /**
+   * Core permission checking with context awareness (backend-aligned)
    */
   const hasPermission = useCallback(
     (permission: string, options: PermissionCheckOptions = {}): boolean => {
-      if (!currentUser) return false;
+      if (!currentUser || !currentRole) return false;
 
       const { checkInheritance = true, context } = options;
 
       // Parse scoped permission
       const scopedPerm = parseScopedPermission(permission);
       if (scopedPerm) {
-        // Check if user has the base permission
-        const basePermission = `${scopedPerm.resource}:${scopedPerm.action}`;
-        const extendedPermission = `${scopedPerm.resource}:${scopedPerm.action}:${scopedPerm.scope}`;
-
-        const hasBasePermission =
-          userPermissions.includes(basePermission) ||
-          userPermissions.includes(extendedPermission) ||
-          userPermissions.includes(`${scopedPerm.action}:${scopedPerm.scope}`);
-
-        if (hasBasePermission) {
-          // Validate context if scope requires it
-          const contextValid = checkResourceAccess(scopedPerm, {
+        // Check direct scoped permission first
+        const fullPermission = `${scopedPerm.resource}:${scopedPerm.action}:${scopedPerm.scope}`;
+        if (userPermissions.includes(fullPermission)) {
+          return checkResourceAccess(scopedPerm, {
             ...permissionContext,
             ...context,
           });
+        }
 
-          if (contextValid) {
-            return true;
-          } else {
-            return false;
+        // Check base permission without scope
+        const basePermission = `${scopedPerm.resource}:${scopedPerm.action}`;
+        if (userPermissions.includes(basePermission)) {
+          return checkResourceAccess(scopedPerm, {
+            ...permissionContext,
+            ...context,
+          });
+        }
+
+        // Check role-based inheritance if enabled
+        if (checkInheritance) {
+          // Check if this permission is typically granted to inherited roles
+          const resourceRole = getRequiredRoleForPermission(
+            scopedPerm.resource,
+            scopedPerm.action
+          );
+          if (resourceRole && roleInheritsFrom(resourceRole)) {
+            return checkResourceAccess(scopedPerm, {
+              ...permissionContext,
+              ...context,
+            });
           }
         }
       }
 
-      // Direct permission check
+      // Direct permission check (non-scoped)
       if (userPermissions.includes(permission)) {
         return true;
       }
 
-      // Role hierarchy inheritance check
+      // Legacy role hierarchy check for non-resource permissions
       if (checkInheritance && currentRole) {
         const currentLevel = ROLE_HIERARCHY[currentRole] || 0;
-        if (currentLevel >= 3) {
-          // Staff level and above have broader access
+        if (currentLevel >= 4) {
+          // Manager and above
           return true;
         }
       }
@@ -161,12 +216,68 @@ export const usePermissions = () => {
     },
     [
       currentUser,
-      userPermissions,
       currentRole,
+      userPermissions,
       parseScopedPermission,
       checkResourceAccess,
       permissionContext,
+      roleInheritsFrom,
     ]
+  );
+
+  /**
+   * Get the minimum required role for a resource action (based on backend permissions.json)
+   */
+  const getRequiredRoleForPermission = useCallback(
+    (resource: string, action: string): UserRole | null => {
+      // This maps common patterns from backend permissions.json
+      const permissionRoleMap: Record<string, UserRole> = {
+        // Property permissions
+        "property:create": UserRole.MANAGER,
+        "property:read": UserRole.STAFF,
+        "property:update": UserRole.STAFF,
+        "property:delete": UserRole.MANAGER,
+
+        // User permissions
+        "user:list": UserRole.STAFF,
+        "user:invite": UserRole.MANAGER,
+        "user:remove": UserRole.ADMIN,
+        "user:assign_roles": UserRole.ADMIN,
+
+        // Invitation permissions
+        "invitation:send": UserRole.MANAGER,
+        "invitation:revoke": UserRole.MANAGER,
+        "invitation:stats": UserRole.MANAGER,
+
+        // Client permissions
+        "client:settings": UserRole.ADMIN,
+        "client:manage_users": UserRole.ADMIN,
+
+        // Maintenance permissions
+        "maintenance:create": UserRole.VENDOR,
+        "maintenance:read": UserRole.VENDOR,
+        "maintenance:update": UserRole.VENDOR,
+        "maintenance:delete": UserRole.MANAGER,
+
+        // Lease permissions
+        "lease:create": UserRole.MANAGER,
+        "lease:read": UserRole.STAFF,
+        "lease:update": UserRole.STAFF,
+        "lease:delete": UserRole.MANAGER,
+
+        // Payment permissions
+        "payment:create": UserRole.TENANT,
+        "payment:read": UserRole.TENANT,
+        "payment:list": UserRole.STAFF,
+
+        // Report permissions
+        "report:read": UserRole.STAFF,
+        "report:create": UserRole.STAFF,
+      };
+
+      return permissionRoleMap[`${resource}:${action}`] || null;
+    },
+    []
   );
 
   /**
@@ -424,6 +535,55 @@ export const usePermissions = () => {
     return !!currentUser && !!currentRole;
   }, [currentUser, currentRole]);
 
+  // Resource-specific convenience methods
+  const canCreateProperty = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("property:create", { context }),
+    [hasPermission]
+  );
+
+  const canViewProperty = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("property:read", { context }),
+    [hasPermission]
+  );
+
+  const canEditProperty = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("property:update", { context }),
+    [hasPermission]
+  );
+
+  const canDeleteProperty = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("property:delete", { context }),
+    [hasPermission]
+  );
+
+  const canManageUsers = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("user:list", { context }),
+    [hasPermission]
+  );
+
+  const canInviteUsers = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("invitation:send", { context }),
+    [hasPermission]
+  );
+
+  const canManageClient = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("client:settings", { context }),
+    [hasPermission]
+  );
+
+  const canViewReports = useCallback(
+    (context?: PermissionCheckOptions["context"]) =>
+      hasPermission("report:read", { context }),
+    [hasPermission]
+  );
+
   return {
     // Core permission checks
     hasPermission,
@@ -443,6 +603,16 @@ export const usePermissions = () => {
     checkMultiplePermissions,
     canEditField,
     isFieldDisabled,
+
+    // Resource-specific convenience methods
+    canCreateProperty,
+    canViewProperty,
+    canEditProperty,
+    canDeleteProperty,
+    canManageUsers,
+    canInviteUsers,
+    canManageClient,
+    canViewReports,
 
     // User info
     getUserRole,
