@@ -2,9 +2,9 @@
 
 import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { ChartContainer } from "@components/Charts";
 import { FilteredUser } from "@interfaces/user.interface";
 import { PageHeader } from "@components/PageElements/Header";
-import { VerticalBarChart, DonutChart } from "@components/Charts";
 import {
   PanelsWrapper,
   PanelContent,
@@ -40,12 +40,10 @@ export default function StaffPage({ params }: StaffPageProps) {
     isLoading,
   } = useGetEmployees(cuid);
 
-  // Compute department statistics from real employee data
   const departmentStats = useMemo(() => {
     return aggregateEmployeesByDepartment(employees);
   }, [employees]);
 
-  // Generate dynamic colors for the legend
   const legendColors = useMemo(() => {
     return generateLegendColors(departmentStats.length);
   }, [departmentStats.length]);
@@ -120,33 +118,24 @@ export default function StaffPage({ params }: StaffPageProps) {
               <PanelContent>
                 <div className="analytics-cards">
                   <div className="analytics-card">
-                    <div className="chart-container">
-                      {departmentStats.length > 0 ? (
-                        <DonutChart
-                          data={departmentStats}
-                          height={300}
-                          showTotal={true}
-                          showTooltip={true}
-                        />
-                      ) : (
-                        <div className="empty-chart-state">
-                          <p>No department data available</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="chart-legend">
-                      {departmentStats.map((dept, index) => (
-                        <div key={dept.name} className="legend-item">
-                          <span
-                            className="legend-color"
-                            style={{ backgroundColor: legendColors[index] }}
-                          ></span>
-                          <span>
-                            {dept.name} ({dept.percentage}%)
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    <ChartContainer
+                      type="donut"
+                      data={departmentStats}
+                      height={300}
+                      colors={legendColors}
+                      chartProps={{
+                        showTotal: true,
+                        showTooltip: true,
+                      }}
+                      showLegend={true}
+                      legend={departmentStats.map((dept, index) => ({
+                        name: dept.name,
+                        color: legendColors[index],
+                        percentage: dept.percentage,
+                      }))}
+                      emptyStateMessage="No department data available"
+                      emptyStateIcon={<i className="bx bx-building"></i>}
+                    />
                   </div>
                 </div>
               </PanelContent>
@@ -155,22 +144,19 @@ export default function StaffPage({ params }: StaffPageProps) {
             <Panel variant="alt-2">
               <PanelHeader header={{ title: "Employee Role Distribution" }} />
               <PanelContent>
-                <div className="chart-container">
-                  {roleDistribution.length > 0 ? (
-                    <VerticalBarChart
-                      data={roleDistribution}
-                      height={300}
-                      valueKey="value"
-                      nameKey="name"
-                      showAxis={true}
-                      showGrid={true}
-                    />
-                  ) : (
-                    <div className="empty-chart-state">
-                      <p>No role data available</p>
-                    </div>
-                  )}
-                </div>
+                <ChartContainer
+                  type="verticalBar"
+                  data={roleDistribution}
+                  height={300}
+                  chartProps={{
+                    valueKey: "value",
+                    nameKey: "name",
+                    showAxis: true,
+                    showGrid: true,
+                  }}
+                  emptyStateMessage="No role data available"
+                  emptyStateIcon={<i className="bx bx-user-voice"></i>}
+                />
               </PanelContent>
             </Panel>
           </PanelsWrapper>

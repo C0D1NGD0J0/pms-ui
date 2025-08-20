@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { IUserRoleType } from "@interfaces/user.interface";
-import { IFilteredUsersParams, clientService } from "@services/client";
+import { IFilteredUsersParams, userService } from "@src/services/users";
 
 import {
   COMMON_DEPARTMENT_OPTIONS,
@@ -52,7 +52,7 @@ export const useGetFilteredUsers = (
         ...(queryParams.status && { status: queryParams.status }),
       };
 
-      const resp = await clientService.getFilteredUsers(cuid, userQuery);
+      const resp = await userService.getFilteredUsers(cuid, userQuery);
       return resp;
     },
   });

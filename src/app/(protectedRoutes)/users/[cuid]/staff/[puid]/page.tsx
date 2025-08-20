@@ -4,16 +4,16 @@ import React, { useState } from "react";
 import { UserProfileHeader } from "@components/UserManagement";
 import { TabPanelContent } from "@components/Tab/components/TabPanelContent";
 import { TabContainer, TabListItem, TabList } from "@components/Tab/components";
+import {
+  PerformanceTab,
+  PropertiesTab,
+  DocumentsTab,
+  OverviewTab,
+  ContactTab,
+  TasksTab,
+} from "@components/UserDetail";
 
 import { useGetEmployee } from "../hooks";
-import {
-  EmployeePerformanceTab,
-  EmployeePropertiesTab,
-  EmployeeDocumentsTab,
-  EmployeeOverviewTab,
-  EmployeeContactTab,
-  EmployeeTasksTab,
-} from "../components/tabs";
 
 interface EmployeeDetailPageProps {
   params: Promise<{
@@ -38,11 +38,6 @@ export default function EmployeeDetailPage({
   const handleViewSchedule = () => {
     console.log("View employee schedule");
     // TODO: Implement view schedule functionality
-  };
-
-  const handleDownloadDocument = (documentId: string) => {
-    console.log("Download document:", documentId);
-    // TODO: Implement document download functionality
   };
 
   const handleTabChange = (tabId: string) => {
@@ -77,34 +72,80 @@ export default function EmployeeDetailPage({
       id: "overview",
       label: "Overview",
       icon: <i className="bx bx-user"></i>,
-      content: <EmployeeOverviewTab employee={employee} />,
+      content: (
+        <OverviewTab
+          userType="employee"
+          personalInfo={{
+            fullName: employee.personalInfo.fullName,
+            employeeId: employee.employeeInfo.employeeId,
+            hireDate: employee.employeeInfo.hireDate,
+            employmentType: employee.employeeInfo.employmentType,
+            directManager: employee.employeeInfo.directManager,
+          }}
+          skills={employee.skills}
+          about={employee.about}
+        />
+      ),
     },
     {
       id: "properties",
       label: "Properties",
       icon: <i className="bx bx-building-house"></i>,
-      content: <EmployeePropertiesTab employee={employee} />,
+      content: (
+        <PropertiesTab
+          userType="employee"
+          properties={employee.properties}
+        />
+      ),
     },
     {
       id: "tasks",
       label: "Tasks & Tickets",
       icon: <i className="bx bx-task"></i>,
-      content: <EmployeeTasksTab employee={employee} />,
+      content: (
+        <TasksTab
+          userType="employee"
+          tasks={employee.tasks}
+        />
+      ),
     },
     {
       id: "performance",
       label: "Performance",
       icon: <i className="bx bx-trending-up"></i>,
-      content: <EmployeePerformanceTab employee={employee} />,
+      content: (
+        <PerformanceTab
+          userType="employee"
+          metrics={{
+            taskCompletionRate: employee.performance.taskCompletionRate,
+            satisfaction: employee.performance.tenantSatisfaction,
+            occupancyRate: employee.performance.avgOccupancyRate,
+            responseTime: employee.performance.avgResponseTime,
+          }}
+          monthlyData={employee.performance.monthlyTrends.map((trend, index) => ({
+            id: `month-${index}`,
+            month: trend.month,
+            tasksCompleted: trend.tasksCompleted,
+            responseTime: trend.avgResponseTime,
+            rating: trend.tenantRating,
+            performanceScore: `${trend.performanceScore}%`,
+          }))}
+        />
+      ),
     },
     {
       id: "documents",
       label: "Documents",
       icon: <i className="bx bx-file"></i>,
       content: (
-        <EmployeeDocumentsTab
-          employee={employee}
-          onDownloadDocument={handleDownloadDocument}
+        <DocumentsTab
+          userType="employee"
+          documents={employee.documents.map(doc => ({
+            id: doc.id,
+            title: doc.name,
+            description: doc.date,
+            type: doc.type.toLowerCase() as 'certification' | 'contract' | 'license' | 'insurance' | 'report',
+          }))}
         />
       ),
     },
@@ -112,7 +153,20 @@ export default function EmployeeDetailPage({
       id: "contact",
       label: "Contact",
       icon: <i className="bx bx-phone"></i>,
-      content: <EmployeeContactTab employee={employee} />,
+      content: (
+        <ContactTab
+          userType="employee"
+          contactInfo={{
+            primary: employee.contact.primary,
+            office: employee.contact.office,
+            emergency: employee.contact.emergency,
+            manager: {
+              ...employee.contact.manager,
+              title: "Direct Manager",
+            },
+          }}
+        />
+      ),
     },
   ];
 
