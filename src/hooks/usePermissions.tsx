@@ -63,7 +63,7 @@ export const BACKEND_ROLE_INHERITANCE: Record<UserRole, UserRole[]> = {
 };
 
 export const usePermissions = () => {
-  const { user: currentUser, isLoading: isUserLoading } = useCurrentUser();
+  const { user: currentUser } = useCurrentUser();
 
   const currentRoleAndPermissions = useMemo(() => {
     if (!currentUser?.client?.role) return null;
@@ -225,6 +225,27 @@ export const usePermissions = () => {
     ]
   );
 
+  const checkPermissionWithOwnership = useCallback(
+    (
+      permission: string,
+      context?: { ownerId?: string; key: "sub" | "uid" }
+    ): { hasPermission: boolean; isResourceOwner: boolean } => {
+      if (!currentUser) return { hasPermission: false, isResourceOwner: false };
+
+      const permissionResult = hasPermission(permission);
+
+      const isResourceOwner = !!(
+        context?.ownerId && context.ownerId === currentUser[context.key]
+      );
+
+      return {
+        hasPermission: permissionResult,
+        isResourceOwner,
+      };
+    },
+    [hasPermission, currentUser?.sub]
+  );
+
   /**
    * Get the minimum required role for a resource action (based on backend permissions.json)
    */
@@ -239,6 +260,7 @@ export const usePermissions = () => {
         "property:delete": UserRole.MANAGER,
 
         // User permissions
+        "user:read": UserRole.STAFF,
         "user:list": UserRole.STAFF,
         "user:invite": UserRole.MANAGER,
         "user:remove": UserRole.ADMIN,
@@ -586,6 +608,7 @@ export const usePermissions = () => {
 
   return {
     // Core permission checks
+    checkPermissionWithOwnership,
     hasPermission,
     hasPermissions,
     hasRole,
@@ -619,7 +642,6 @@ export const usePermissions = () => {
     isAuthenticated,
     currentUser,
     userPermissions,
-    isLoading: isUserLoading,
 
     // Context
     permissionContext,

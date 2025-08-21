@@ -17,7 +17,7 @@ export const withPermission = <P extends object>(
   options: WithPermissionOptions
 ) => {
   const WrappedComponent = forwardRef<unknown, P>((props, ref) => {
-    const { hasPermission, hasPermissions } = usePermissions();
+    const { hasPermission, hasPermissions } = usePermissions(undefined);
     const {
       permission,
       permissions,
@@ -61,7 +61,7 @@ export const withFieldPermission = <P extends object>(
 ) => {
   const WrappedComponent = forwardRef<unknown, P & { disabled?: boolean }>(
     (props, ref) => {
-      const { isFieldDisabled } = usePermissions();
+      const { isFieldDisabled } = usePermissions(undefined);
 
       // Extract disabled prop and rest props separately
       const { disabled: propDisabled, ...restProps } = props;
@@ -102,7 +102,8 @@ export const withActionPermission = <P extends object>(
       assignedUsers?: string[];
     }
   >((props, ref) => {
-    const { canPerformActionOnResource, canPerformAction } = usePermissions();
+    const { canPerformActionOnResource, canPerformAction } =
+      usePermissions(undefined);
     const { resourceId, ownerId, assignedUsers, disabled, ...restProps } =
       props;
 
@@ -141,7 +142,7 @@ export const withRole = <P extends object>(
   fallback?: ComponentType | (() => ReactNode)
 ) => {
   const WrappedComponent = forwardRef<unknown, P>((props, ref) => {
-    const { getUserRole } = usePermissions();
+    const { getUserRole } = usePermissions(undefined);
     const currentRole = getUserRole();
 
     if (!currentRole || !allowedRoles.includes(currentRole)) {

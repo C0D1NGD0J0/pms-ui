@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { ChartContainer } from "@components/Charts";
 import { FilteredUser } from "@interfaces/user.interface";
+import { usePermissions } from "@src/hooks/usePermissions";
 import { PageHeader } from "@components/PageElements/Header";
 import {
   PanelsWrapper,
@@ -28,7 +29,6 @@ interface StaffPageProps {
 export default function StaffPage({ params }: StaffPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
-
   const {
     employees,
     sortOptions,
@@ -39,6 +39,7 @@ export default function StaffPage({ params }: StaffPageProps) {
     handleSortByChange,
     isLoading,
   } = useGetEmployees(cuid);
+  const permission = usePermissions();
 
   const departmentStats = useMemo(() => {
     return aggregateEmployeesByDepartment(employees);
@@ -103,6 +104,7 @@ export default function StaffPage({ params }: StaffPageProps) {
                 onViewDetails={handleViewEmployeeDetails}
                 pagination={pagination}
                 totalCount={totalCount}
+                permissions={permission}
               />
             </Panel>
           </PanelsWrapper>

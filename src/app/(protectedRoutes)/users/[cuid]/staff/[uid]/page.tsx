@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
+import { TabItem } from "@components/Tab/interface";
+import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
-import { TabPanelContent } from "@components/Tab/components/TabPanelContent";
-import { TabContainer, TabListItem, TabList } from "@components/Tab/components";
 import {
   PerformanceTab,
   PropertiesTab,
@@ -19,6 +19,7 @@ import {
 } from "@components/UserDetail";
 
 import { useGetEmployeeInfo } from "../hooks/useGetEmployee";
+import { usePermissions } from "@src/hooks/usePermissions";
 
 interface EmployeeDetailPageProps {
   params: Promise<{
@@ -31,11 +32,14 @@ export default function EmployeeDetailPage({
   params,
 }: EmployeeDetailPageProps) {
   const router = useRouter();
+  const permission = usePermissions();
   const { cuid, uid } = React.use(params);
   const [activeTab, setActiveTab] = useState("overview");
   const { employee, isLoading, error } = useGetEmployeeInfo(cuid, uid);
-  console.log(employee, "------");
-
+  const { isResourceOwner } = permission.checkPermissionWithOwnership("user", {
+    ownerId: employee?.user.uid,
+    key: "uid",
+  });
   const handleBack = () => {
     router.back();
   };
@@ -96,7 +100,6 @@ export default function EmployeeDetailPage({
     );
   }
 
-  // Format hire date for display
   const formatDate = (dateString: string) => {
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
@@ -109,7 +112,7 @@ export default function EmployeeDetailPage({
     }
   };
 
-  const tabItems = [
+  const tabItems: TabItem[] = [
     {
       id: "overview",
       label: "Overview",
@@ -164,6 +167,7 @@ export default function EmployeeDetailPage({
           }}
         />
       ),
+      isHidden: !isResourceOwner,
     },
     {
       id: "performance",
@@ -173,7 +177,8 @@ export default function EmployeeDetailPage({
         <PerformanceTab
           userType="employee"
           metrics={{
-            taskCompletionRate: employee.employeeInfo.performance.taskCompletionRate,
+            taskCompletionRate:
+              employee.employeeInfo.performance.taskCompletionRate,
             satisfaction: employee.employeeInfo.performance.tenantSatisfaction,
             occupancyRate: employee.employeeInfo.performance.avgOccupancyRate,
             responseTime: employee.employeeInfo.performance.avgResponseTime,
@@ -181,6 +186,7 @@ export default function EmployeeDetailPage({
           monthlyData={[]} // TODO: Add monthly performance data when available
         />
       ),
+      isHidden: !isResourceOwner,
     },
     {
       id: "tasks",
@@ -209,10 +215,10 @@ export default function EmployeeDetailPage({
           documents={employee.documents || []}
         />
       ),
+      isHidden: !isResourceOwner,
     },
   ];
 
-  // Create tags from employee data
   const employeeTags = [
     ...employee.user.roles.map((role: string) => ({
       type: "employment" as const,
@@ -226,7 +232,6 @@ export default function EmployeeDetailPage({
     })),
   ];
 
-  // Create statistics from employee data
   const statistics = {
     "Properties Managed": employee.employeeInfo.stats.propertiesManaged,
     "Units Managed": employee.employeeInfo.stats.unitsManaged,
@@ -289,28 +294,12 @@ export default function EmployeeDetailPage({
         <div className="employee-tabs">
           <TabContainer
             variant="profile"
+            tabItems={tabItems}
             defaultTab={activeTab}
             onChange={handleTabChange}
             scrollOnChange={false}
             ariaLabel="Employee information tabs"
-          >
-            <TabList variant="profile">
-              {tabItems.map((tab) => (
-                <TabListItem
-                  key={tab.id}
-                  id={tab.id}
-                  label={tab.label}
-                  icon={tab.icon}
-                />
-              ))}
-            </TabList>
-
-            {tabItems.map((tab) => (
-              <TabPanelContent key={tab.id} id={tab.id}>
-                {tab.content}
-              </TabPanelContent>
-            ))}
-          </TabContainer>
+          />
         </div>
       </div>
     </div>

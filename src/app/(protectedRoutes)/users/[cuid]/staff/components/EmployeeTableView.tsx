@@ -3,6 +3,7 @@ import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
 import { FilteredUser } from "@interfaces/user.interface";
+import { usePermissions } from "@src/hooks/usePermissions";
 import { IPaginationQuery } from "@interfaces/utils.interface";
 import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
 
@@ -18,6 +19,7 @@ interface EmployeeTableViewProps {
   onViewDetails: (employee: FilteredUser) => void;
   pagination: IPaginationQuery;
   totalCount: number;
+  permissions: ReturnType<typeof usePermissions>;
 }
 
 export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
@@ -32,8 +34,16 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onViewDetails,
   pagination,
   totalCount,
+  permissions,
 }) => {
   const [searchValue, setSearchValue] = useState("");
+
+  const canEditResource = (record: { id: string }) => {
+    return permissions.checkPermissionWithOwnership("user:update", {
+      ownerId: record.id,
+      key: "uid",
+    });
+  };
 
   const formatDepartment = (department?: string) => {
     if (!department) return "N/A";
@@ -114,32 +124,43 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
     {
       title: "Actions",
       dataIndex: "actions",
-      render: (_, record) => (
-        <div className="table-actions">
-          <Button
-            label="View"
-            className="btn-sm btn-primary"
-            onClick={() => onViewDetails(record)}
-            title="View employee details"
-          />
-          <Button
-            label="Edit"
-            className="btn-sm btn-outline"
-            onClick={() => onEdit(record)}
-            title="Edit employee information"
-          />
-          <Button
-            label={record.isActive ? "Deactivate" : "Activate"}
-            className={`btn-sm ${
-              record.isActive ? "btn-danger" : "btn-success"
-            }`}
-            onClick={() => onToggleStatus(record.uid, !record.isActive)}
-            title={
-              record.isActive ? "Deactivate employee" : "Activate employee"
-            }
-          />
-        </div>
-      ),
+      render: (_, record) => {
+        const { isResourceOwner, hasPermission } = canEditResource({
+          id: record.uid,
+        });
+        console.log("Edit permissions:", isResourceOwner, hasPermission);
+        return (
+          <div className="table-actions">
+            <Button
+              label="View"
+              className="btn-sm btn-primary"
+              onClick={() => onViewDetails(record)}
+              title="View employee details"
+            />
+
+            {(isResourceOwner || hasPermission) && (
+              <Button
+                label="Edit"
+                className="btn-sm btn-outline"
+                onClick={() => onEdit(record)}
+                title="Edit employee information"
+              />
+            )}
+            {permissions.isAdmin && (
+              <Button
+                label={record.isActive ? "Deactivate" : "Activate"}
+                className={`btn-sm ${
+                  record.isActive ? "btn-danger" : "btn-success"
+                }`}
+                onClick={() => onToggleStatus(record.uid, !record.isActive)}
+                title={
+                  record.isActive ? "Deactivate employee" : "Activate employee"
+                }
+              />
+            )}
+          </div>
+        );
+      },
     },
   ];
 
