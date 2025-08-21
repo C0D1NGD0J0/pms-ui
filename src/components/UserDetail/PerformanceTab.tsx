@@ -76,7 +76,7 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({
   ];
 
   return (
-    <div className="performance-tab">
+    <div className="employee-performance">
       <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
         Performance Metrics
       </h3>

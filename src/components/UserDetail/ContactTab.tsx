@@ -38,7 +38,7 @@ export const ContactTab: React.FC<ContactTabProps> = ({
   };
 
   return (
-    <div className="contact-tab">
+    <div className="employee-contact">
       <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
         Contact Information
       </h3>

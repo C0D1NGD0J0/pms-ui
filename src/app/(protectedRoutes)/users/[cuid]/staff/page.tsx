@@ -73,7 +73,7 @@ export default function StaffPage({ params }: StaffPageProps) {
   };
 
   const handleViewEmployeeDetails = (employee: FilteredUser) => {
-    router.push(`/users/${cuid}/staff/${employee.id}`);
+    router.push(`/users/${cuid}/staff/${employee.uid}`);
   };
 
   const handleToggleEmployeeStatus = (
@@ -124,8 +124,7 @@ export default function StaffPage({ params }: StaffPageProps) {
                       height={300}
                       colors={legendColors}
                       chartProps={{
-                        showTotal: true,
-                        showTooltip: true,
+                        donutchart: { showTotal: true, showTooltip: true },
                       }}
                       showLegend={true}
                       legend={departmentStats.map((dept, index) => ({
@@ -149,10 +148,12 @@ export default function StaffPage({ params }: StaffPageProps) {
                   data={roleDistribution}
                   height={300}
                   chartProps={{
-                    valueKey: "value",
-                    nameKey: "name",
-                    showAxis: true,
-                    showGrid: true,
+                    barChart: {
+                      valueKey: "value",
+                      nameKey: "name",
+                      showAxis: true,
+                      showGrid: true,
+                    },
                   }}
                   emptyStateMessage="No role data available"
                   emptyStateIcon={<i className="bx bx-user-voice"></i>}

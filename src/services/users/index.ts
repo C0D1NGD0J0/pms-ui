@@ -23,13 +23,13 @@ class UsersService {
 
   constructor() {}
 
-  async getClientDetails(cuid: string, uid: string) {
+  async getUserDetails(cuid: string, uid: string) {
     try {
       const result = await axios.get(
         `${this.baseUrl}/${cuid}/user_details/${uid}`,
         this.axiosConfig
       );
-      return result.data.data;
+      return result.data;
     } catch (error) {
       console.error("Error fetching user details:", error);
       throw error;

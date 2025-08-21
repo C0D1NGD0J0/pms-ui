@@ -1,2 +1,2 @@
-export { useGetEmployees } from "./useGetEmployees";
-export { useGetEmployee } from "./useGetEmployee";
+export * from "./useGetEmployees";
+export * from "./useGetEmployee";

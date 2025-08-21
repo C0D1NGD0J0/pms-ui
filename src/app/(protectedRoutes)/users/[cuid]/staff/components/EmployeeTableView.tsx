@@ -133,7 +133,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
             className={`btn-sm ${
               record.isActive ? "btn-danger" : "btn-success"
             }`}
-            onClick={() => onToggleStatus(record.id, !record.isActive)}
+            onClick={() => onToggleStatus(record.uid, !record.isActive)}
             title={
               record.isActive ? "Deactivate employee" : "Activate employee"
             }

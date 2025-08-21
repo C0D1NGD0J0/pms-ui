@@ -6,11 +6,11 @@ export const PageHeader = ({
   subtitle,
   headerBtn,
   breadcrumbItems,
-  showBreadcrumb = true,
+  withBreadcrumb = true,
 }: {
   title: string;
   subtitle?: string;
-  showBreadcrumb?: boolean;
+  withBreadcrumb?: boolean;
   headerBtn?: React.ReactNode;
   breadcrumbItems?: Array<{ title: React.ReactNode; href?: string }>;
 }) => (
@@ -18,7 +18,7 @@ export const PageHeader = ({
     <div className="page-header__title">
       <h2>{title}</h2>
       {subtitle && <small>{subtitle}</small>}
-      {showBreadcrumb && <Breadcrumb items={breadcrumbItems} />}
+      {withBreadcrumb && <Breadcrumb items={breadcrumbItems} />}
     </div>
     {headerBtn && <div className="page-header__actions">{headerBtn}</div>}
   </div>

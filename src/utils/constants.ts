@@ -564,4 +564,15 @@ export const INVITE_QUERY_KEYS = {
     pagination,
   ],
 };
+export const USER_QUERY_KEYS = {
+  getClientUsers: (cuid: string, pagination: unknown) => [
+    `/clients/${cuid}/filtered-users`,
+    pagination,
+  ],
+  getUserByUid: (cuid: string, uid: string) => [
+    `/clients/${cuid}/users_details/${uid}`,
+    uid,
+  ],
+};
+
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

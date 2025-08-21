@@ -47,11 +47,6 @@ const generateBreadcrumbItems = (pathname: string): BreadcrumbItem[] => {
   pathSegments.forEach((segment, index) => {
     currentPath += `/${segment}`;
 
-    // Skip CUID-like segments (long alphanumeric strings)
-    if (segment.length > 10 && /^[a-zA-Z0-9]+$/.test(segment)) {
-      return;
-    }
-
     const formattedName = segment
       .replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase());

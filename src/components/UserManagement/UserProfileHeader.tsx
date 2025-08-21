@@ -30,6 +30,7 @@ export interface UserProfileHeaderProps {
     personalInfo: {
       fullName: string;
       initials: string;
+      avatar?: string;
     };
     status: 'active' | 'inactive';
     metaInfo: UserMetaInfo;

@@ -30,7 +30,7 @@ interface ChartContainerProps {
 
   // Chart-specific props
   chartProps?: {
-    donutchart: {
+    donutchart?: {
       innerRadius?: number | string;
       outerRadius?: number | string;
       showTotal?: boolean;

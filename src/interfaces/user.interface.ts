@@ -1,5 +1,71 @@
 import { EmployeeInfo } from "./invitation.interface";
 
+export interface EmployeeDetailResponse {
+  user: {
+    uid: string;
+    email: string;
+    displayName: string;
+    roles: string[];
+    isActive: boolean;
+    createdAt: string;
+    userType: "employee";
+  };
+  profile: {
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    avatar: {
+      url: string;
+    };
+    phoneNumber: string;
+    email: string;
+    about: string;
+    contact: {
+      phone: string;
+      email: string;
+    };
+  };
+  status: string;
+  properties: any[];
+  tasks: any[];
+  documents: any[];
+  employeeInfo: {
+    employeeId: string;
+    hireDate: string;
+    tenure: string;
+    employmentType: string;
+    department: string;
+    position: string;
+    directManager: string;
+    skills: string[];
+    officeInfo: {
+      address: string;
+      city: string;
+      workHours: string;
+    };
+    emergencyContact: {
+      name: string;
+      relationship: string;
+      phone: string;
+    };
+    stats: {
+      propertiesManaged: number;
+      unitsManaged: number;
+      tasksCompleted: number;
+      onTimeRate: string;
+      rating: string;
+      activeTasks: number;
+    };
+    performance: {
+      taskCompletionRate: string;
+      tenantSatisfaction: string;
+      avgOccupancyRate: string;
+      avgResponseTime: string;
+    };
+    tags: string[];
+  };
+}
+
 // TODO: When backend types are accessible, replace with proper imports:
 // import type { VendorInfo } from '@shared/interfaces/profile.interface';
 type VendorInfo = any; // Use actual VendorInfo from backend when available
@@ -18,7 +84,7 @@ export type IUserRoleType =
  */
 export interface FilteredUser {
   // Basic user information
-  id: string;
+  uid: string;
   email: string;
   displayName: string;
   roles: IUserRoleType[];

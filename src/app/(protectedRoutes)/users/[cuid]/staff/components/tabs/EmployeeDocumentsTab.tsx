@@ -1,9 +1,8 @@
 import React from "react";
-
-import { EmployeeDetail } from "../../hooks/useGetEmployee";
+import { EmployeeDetailResponse } from "@interfaces/user.interface";
 
 interface EmployeeDocumentsTabProps {
-  employee: EmployeeDetail;
+  employee: EmployeeDetailResponse;
   onDownloadDocument?: (documentId: string) => void;
 }
 
@@ -17,7 +16,7 @@ export const EmployeeDocumentsTab: React.FC<EmployeeDocumentsTabProps> = ({
     if (onDownloadDocument) {
       onDownloadDocument(documentId);
     } else {
-      console.log('Download document:', documentId);
+      console.log("Download document:", documentId);
       // Default behavior - could show a toast or handle download
     }
   };
@@ -25,7 +24,7 @@ export const EmployeeDocumentsTab: React.FC<EmployeeDocumentsTabProps> = ({
   return (
     <div className="employee-documents">
       <h3 className="tab-section-title">Documents & Certifications</h3>
-      
+
       <div className="document-list">
         {documents.map((document) => (
           <div key={document.id} className="document-item">
@@ -38,13 +37,13 @@ export const EmployeeDocumentsTab: React.FC<EmployeeDocumentsTabProps> = ({
                 <span>{document.date}</span>
               </div>
             </div>
-            <div 
+            <div
               className="document-action"
               onClick={() => handleDownload(document.id)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
+                if (e.key === "Enter" || e.key === " ") {
                   handleDownload(document.id);
                 }
               }}
@@ -59,4 +58,4 @@ export const EmployeeDocumentsTab: React.FC<EmployeeDocumentsTabProps> = ({
   );
 };
 
-EmployeeDocumentsTab.displayName = 'EmployeeDocumentsTab';
+EmployeeDocumentsTab.displayName = "EmployeeDocumentsTab";

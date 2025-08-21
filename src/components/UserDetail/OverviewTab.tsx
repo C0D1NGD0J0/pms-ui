@@ -10,6 +10,9 @@ interface PersonalInfo {
   businessType?: string;
   directManager?: string;
   accountManager?: string;
+  tenure?: string;
+  department?: string;
+  position?: string;
 }
 
 interface OverviewTabProps {

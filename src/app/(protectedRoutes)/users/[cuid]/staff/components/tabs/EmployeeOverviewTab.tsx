@@ -1,16 +1,17 @@
 import React from "react";
 import { EmployeeTag } from "@components/Badge";
-
-import { EmployeeDetail } from "../../hooks/useGetEmployee";
+import { EmployeeDetailResponse } from "@interfaces/user.interface";
 
 interface EmployeeOverviewTabProps {
-  employee: EmployeeDetail;
+  employee: EmployeeDetailResponse;
 }
 
 export const EmployeeOverviewTab: React.FC<EmployeeOverviewTabProps> = ({
   employee,
 }) => {
-  const { employeeInfo, skills, about } = employee;
+  const { profile, employeeInfo } = employee;
+  const { about } = profile;
+  const { employeeId, hireDate, employmentType, directManager, skills } = employeeInfo;
 
   return (
     <div className="employee-overview">
@@ -21,28 +22,28 @@ export const EmployeeOverviewTab: React.FC<EmployeeOverviewTabProps> = ({
             <i className="bx bx-id-card"></i>
             <div className="info-content">
               <div className="info-label">Employee ID</div>
-              <div className="info-value">{employeeInfo.employeeId}</div>
+              <div className="info-value">{employeeId}</div>
             </div>
           </div>
           <div className="info-item">
             <i className="bx bx-calendar"></i>
             <div className="info-content">
               <div className="info-label">Hire Date</div>
-              <div className="info-value">{employeeInfo.hireDate}</div>
+              <div className="info-value">{hireDate}</div>
             </div>
           </div>
           <div className="info-item">
             <i className="bx bx-briefcase"></i>
             <div className="info-content">
               <div className="info-label">Employment Type</div>
-              <div className="info-value">{employeeInfo.employmentType}</div>
+              <div className="info-value">{employmentType}</div>
             </div>
           </div>
           <div className="info-item">
             <i className="bx bx-user-check"></i>
             <div className="info-content">
               <div className="info-label">Direct Manager</div>
-              <div className="info-value">{employeeInfo.directManager}</div>
+              <div className="info-value">{directManager}</div>
             </div>
           </div>
         </div>
@@ -51,7 +52,7 @@ export const EmployeeOverviewTab: React.FC<EmployeeOverviewTabProps> = ({
       <div className="info-section">
         <h4>Skills & Expertise</h4>
         <div className="skills-container">
-          {skills.map((skill, index) => (
+          {skills.map((skill: string, index: number) => (
             <EmployeeTag
               key={index}
               variant="skill"
