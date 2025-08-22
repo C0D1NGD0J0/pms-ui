@@ -7,9 +7,9 @@ import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
 import { TabContainer } from "@components/Tab/components";
-import { usePermissions } from "@src/hooks/usePermissions";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PerformanceTab,
   PropertiesTab,
@@ -32,14 +32,11 @@ export default function EmployeeDetailPage({
   params,
 }: EmployeeDetailPageProps) {
   const router = useRouter();
-  const permission = usePermissions();
+  const permission = useUnifiedPermissions();
   const { cuid, uid } = React.use(params);
   const [activeTab, setActiveTab] = useState("overview");
   const { employee, isLoading, error } = useGetEmployeeInfo(cuid, uid);
-  const { isResourceOwner } = permission.checkPermissionWithOwnership("user", {
-    ownerId: employee?.user.uid,
-    key: "uid",
-  });
+  const isResourceOwner = permission.isOwner(employee?.user.uid);
   const handleBack = () => {
     router.back();
   };

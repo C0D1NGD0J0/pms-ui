@@ -2,9 +2,9 @@
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
-import { usePermissions } from "@src/hooks/usePermissions";
-import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IPaginationQuery } from "@interfaces/utils.interface";
+import { FilteredUserTableData } from "@interfaces/user.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
 
 interface EmployeeTableViewProps {
@@ -19,7 +19,7 @@ interface EmployeeTableViewProps {
   onViewDetails: (employee: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
-  permissions: ReturnType<typeof usePermissions>;
+  permissions: ReturnType<typeof useUnifiedPermissions>;
 }
 
 export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
@@ -38,11 +38,18 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
-  const canEditResource = (record: { id: string }) => {
-    return permissions.checkPermissionWithOwnership("user:update", {
-      ownerId: record.id,
-      key: "uid",
+  const canEditResource = (record: {
+    id: string;
+    key: "sub" | "id" | "uid";
+  }) => {
+    const canEdit = permissions.can("user.update", {
+      resourceOwner: record.id,
     });
+    const isResourceOwner = permissions.isOwner(record.key, record.id);
+    return {
+      hasPermission: canEdit,
+      isResourceOwner,
+    };
   };
 
   const formatDepartment = (department?: string) => {
@@ -127,6 +134,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
       render: (_, record) => {
         const { isResourceOwner, hasPermission } = canEditResource({
           id: record.uid,
+          key: "uid",
         });
         console.log("Edit permissions:", isResourceOwner, hasPermission);
         return (

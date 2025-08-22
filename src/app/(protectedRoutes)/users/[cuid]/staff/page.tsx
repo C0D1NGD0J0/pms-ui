@@ -4,10 +4,10 @@ import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@src/components/Loading";
 import { ChartContainer } from "@components/Charts";
-import { usePermissions } from "@src/hooks/usePermissions";
 import { generateLegendColors } from "@utils/employeeUtils";
 import { PageHeader } from "@components/PageElements/Header";
 import { FilteredUserTableData } from "@interfaces/user.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import {
   PanelsWrapper,
@@ -38,7 +38,7 @@ export default function StaffPage({ params }: StaffPageProps) {
     handleSortByChange,
     isLoading,
   } = useGetEmployees(cuid);
-  const permission = usePermissions();
+  const permission = useUnifiedPermissions();
 
   // Separate stats query that won't re-render charts on pagination changes
   const { stats, isLoading: statsLoading } = useGetUserStats(cuid, {

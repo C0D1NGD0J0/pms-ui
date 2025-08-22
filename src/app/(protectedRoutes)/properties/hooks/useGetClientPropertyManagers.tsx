@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { userService } from "@src/services";
 import { useQuery } from "@tanstack/react-query";
-import { clientService } from "@services/client";
 
 export interface PropertyManagerQueryParams {
   role?: "admin" | "staff" | "manager" | "all";
@@ -37,7 +37,7 @@ export const useGetClientPropertyManagers = (
   const query = useQuery({
     queryKey: ["/property_managers", cuid, queryParams],
     queryFn: async () => {
-      const resp = await clientService.getClientPropertyManagers(
+      const resp = await userService.getClientPropertyManagers(
         cuid,
         queryParams
       );

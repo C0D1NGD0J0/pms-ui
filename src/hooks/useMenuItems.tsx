@@ -1,10 +1,9 @@
 "use client";
 
 import { ICurrentUser } from "@interfaces/auth.interface";
-import { NavigationItem } from "@utils/navigationPermissions";
 
 import { useCurrentUser } from "./useCurrentUser";
-import { usePermissions } from "./usePermissions";
+import { useUnifiedPermissions } from "./useUnifiedPermissions";
 
 export interface MenuItem {
   path: string | ((user: ICurrentUser | null | undefined) => string);
@@ -24,7 +23,7 @@ export interface MenuSection {
 
 export const useMenuItems = () => {
   const { user: currentUser } = useCurrentUser();
-  const permissions = usePermissions();
+  const permissions = useUnifiedPermissions();
 
   const menuSections: MenuSection[] = [
     {
@@ -34,28 +33,25 @@ export const useMenuItems = () => {
           path: "/dashboard",
           icon: "bx bxs-dashboard",
           label: "Dashboard",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.DASHBOARD),
+          visible: () => permissions.canAccess("dashboard"),
         },
         {
           path: "/properties",
           icon: "bx bx-building-house",
           label: "Properties",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.PROPERTIES),
+          visible: () => permissions.canAccess("properties"),
         },
         {
           path: "/leases",
           icon: "bx bx-book-open",
           label: "Leases",
-          visible: () => permissions.canAccessNavigation(NavigationItem.LEASES),
+          visible: () => permissions.canAccess("leases"),
         },
         {
           path: "/service-requests",
           icon: "bx bxs-briefcase-alt",
           label: "Service Requests",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.SERVICE_REQUESTS),
+          visible: () => permissions.canAccess("service_requests"),
         },
       ],
     },
@@ -69,29 +65,25 @@ export const useMenuItems = () => {
           path: `/users/${currentUser?.client.cuid}/tenants`,
           icon: "bx bx-group",
           label: "Tenants",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.USERS_TENANTS),
+          visible: () => permissions.canAccess("users.tenants"),
         },
         {
           path: `/users/${currentUser?.client.cuid}/vendors`,
           icon: "bx bx-building",
           label: "Vendors",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.USERS_VENDORS),
+          visible: () => permissions.canAccess("users.vendors"),
         },
         {
           path: `/users/${currentUser?.client.cuid}/staff`,
           icon: "bx bx-id-card",
           label: "Employees",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.USERS_EMPLOYEES),
+          visible: () => permissions.canAccess("users.employees"),
         },
         {
           path: `/users/${currentUser?.client.cuid}/add-users`,
           icon: "bx bx-plus",
           label: "Add Users",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.USERS_ADD),
+          visible: () => permissions.canAccess("users.add"),
         },
       ],
     },
@@ -103,21 +95,20 @@ export const useMenuItems = () => {
           icon: "bx bx-cog",
           label: "Account",
           visible: () =>
-            permissions.canAccessNavigation(NavigationItem.ACCOUNT_SETTINGS) &&
+            permissions.canAccess("settings.account") &&
             !!currentUser?.client.cuid,
         },
         {
           path: `/wallet/${currentUser?.client.cuid}`,
           icon: "bx bx-wallet",
           label: "Wallet",
-          visible: () => permissions.canAccessNavigation(NavigationItem.WALLET),
+          visible: () => permissions.canAccess("wallet"),
         },
         {
           path: "/viewings",
           icon: "bx bx-street-view",
           label: "Viewings",
-          visible: () =>
-            permissions.canAccessNavigation(NavigationItem.VIEWINGS),
+          visible: () => permissions.canAccess("viewings"),
         },
       ],
     },
