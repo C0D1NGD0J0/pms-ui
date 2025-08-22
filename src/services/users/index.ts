@@ -91,6 +91,33 @@ class UsersService {
       throw error;
     }
   }
+
+  async getUserStats(
+    cuid: string,
+    params?: IFilteredUsersParams
+  ): Promise<any> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.role) {
+        if (Array.isArray(params.role)) {
+          params.role = params.role.join(",") as any;
+          queryParams.append("role", params.role as any);
+        }
+      }
+
+      let url = `${this.baseUrl}/${cuid}/users/stats`;
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const result = await axios.get(url, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      throw error;
+    }
+  }
 }
 
 export const userService = new UsersService();

@@ -163,8 +163,50 @@ export interface PaginateResult {
 }
 
 export interface IListResponseWithPagination {
-  items: FilteredUser[];
+  items: FilteredUserTableData[];
   pagination: PaginateResult;
+}
+
+/**
+ * Stats distribution interface for charts
+ */
+export interface StatsDistribution {
+  name: string;
+  value: number;
+  percentage: number;
+}
+
+/**
+ * User statistics for filtered users response
+ */
+export interface IUserStats {
+  departmentDistribution: StatsDistribution[];
+  roleDistribution: StatsDistribution[];
+  totalFilteredUsers: number;
+}
+
+/**
+ * Minimal employee info for table display
+ */
+export interface FilteredUserEmployeeInfo {
+  jobTitle?: string;
+  department?: string;
+  startDate?: Date | string;
+}
+
+/**
+ * Lightweight user data for table display only
+ * Contains only the fields needed for table rendering
+ */
+export interface FilteredUserTableData {
+  uid: string;
+  email: string;
+  displayName: string;
+  fullName?: string;
+  phoneNumber?: string;
+  isActive: boolean;
+  isConnected: boolean;
+  employeeInfo?: FilteredUserEmployeeInfo;
 }
 
 /**

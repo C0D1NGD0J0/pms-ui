@@ -7,6 +7,7 @@ import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
 import { TabContainer } from "@components/Tab/components";
+import { usePermissions } from "@src/hooks/usePermissions";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
 import {
@@ -19,7 +20,6 @@ import {
 } from "@components/UserDetail";
 
 import { useGetEmployeeInfo } from "../hooks/useGetEmployee";
-import { usePermissions } from "@src/hooks/usePermissions";
 
 interface EmployeeDetailPageProps {
   params: Promise<{

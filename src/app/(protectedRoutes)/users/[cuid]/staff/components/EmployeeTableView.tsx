@@ -2,21 +2,21 @@
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
-import { FilteredUser } from "@interfaces/user.interface";
 import { usePermissions } from "@src/hooks/usePermissions";
+import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IPaginationQuery } from "@interfaces/utils.interface";
 import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
 
 interface EmployeeTableViewProps {
-  employees: FilteredUser[];
+  employees: FilteredUserTableData[];
   filterOptions: FilterOption[];
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
   handleSortChange: (sort: "asc" | "desc") => void;
   isLoading?: boolean;
-  onEdit: (employee: FilteredUser) => void;
+  onEdit: (employee: FilteredUserTableData) => void;
   onToggleStatus: (employeeId: string, isActive: boolean) => void;
-  onViewDetails: (employee: FilteredUser) => void;
+  onViewDetails: (employee: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
   permissions: ReturnType<typeof usePermissions>;
@@ -72,7 +72,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
     return "Inactive";
   };
 
-  const employeeColumns: TableColumn<FilteredUser>[] = [
+  const employeeColumns: TableColumn<FilteredUserTableData>[] = [
     {
       title: "Employee",
       dataIndex: "fullName",
