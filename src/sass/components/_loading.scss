@@ -86,30 +86,8 @@
     font-weight: bold;
     text-align: center;
     align-items: center;
+    justify-content: center;
     color: hslaGen($primary-color);
-
-    .dot_pulse {
-      display: inline-flex;
-      align-items: center;
-      position: relative;
-
-      &::after,
-      &::before {
-        content: "•";
-        display: inline-block;
-        animation: pulse 1.8s infinite;
-        margin: 0 0.2rem;
-        opacity: 0;
-      }
-
-      &::before {
-        animation-delay: 0.2s;
-      }
-
-      &::after {
-        animation-delay: 0.3s;
-      }
-    }
   }
 }
 

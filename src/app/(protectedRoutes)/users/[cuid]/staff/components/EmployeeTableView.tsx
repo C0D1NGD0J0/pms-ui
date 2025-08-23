@@ -182,6 +182,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
       dataSource={employees}
       loading={isLoading}
       withHeader={true}
+      showRowNumbers={true}
       headerTitle="Employee Directory"
       searchOpts={{
         value: searchValue,
