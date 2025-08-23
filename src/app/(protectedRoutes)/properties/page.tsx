@@ -8,13 +8,13 @@ import { PageHeader } from "@components/PageElements";
 import { useGetAllProperties } from "@properties/hooks";
 import { CsvUploadModal } from "@properties/components";
 import { PanelsWrapper, Panel } from "@components/Panel";
-
-import { generatePropertyColumn } from "./utils/index";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 export default function Properties() {
   const { client } = useAuth();
+  const permissions = useUnifiedPermissions();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
-  // const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+
   const {
     filterOptions,
     properties,
@@ -33,18 +33,88 @@ export default function Properties() {
     setIsCsvModalOpen(false);
   };
 
+  const propertyColumns = [
+    {
+      title: "Name",
+      dataIndex: "name",
+    },
+    {
+      title: "Property Type",
+      dataIndex: "propertyType",
+      render: (type: string) => type.charAt(0).toUpperCase() + type.slice(1),
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      render: (address: any) => {
+        if (address.state !== address.city) {
+          return `${address.street}, ${address.city}, ${address.state}, ${address.country}`;
+        }
+        return `${address.street}, ${address.city}, ${address.country}`;
+      },
+    },
+    {
+      title: "Details",
+      dataIndex: "specifications",
+      render: (specs: any, record: any) => {
+        if (
+          record.propertyType === "commercial" ||
+          record.propertyType === "industrial"
+        ) {
+          return `${specs?.totalArea || 0} sq ft`;
+        }
+        return `${specs?.bedrooms || 0} bed, ${specs?.bathrooms || 0} bath, ${
+          specs?.totalArea || 0
+        } sq ft`;
+      },
+    },
+    { title: "Status", dataIndex: "status", isStatus: true },
+    {
+      title: "Action",
+      dataIndex: "pid",
+      render: (pid: string, record: any) => {
+        const show =
+          permissions.isManagerOrAbove ||
+          permissions.isOwner("sub", record.data.createdBy);
+        return (
+          <div className="action-icons">
+            <Link
+              href={`/properties/${pid}`}
+              className="action-icon view-icon"
+              title="View Property"
+            >
+              <i className="bx bx-show"></i>
+            </Link>
+            {show && (
+              <Link
+                href={`/properties/${pid}/edit`}
+                className="action-icon edit-icon"
+                title="Edit Property"
+              >
+                <i className="bx bx-edit"></i>
+              </Link>
+            )}
+          </div>
+        );
+      },
+    },
+  ];
+
   return (
     <div className="page properties">
       <PageHeader
         title="Property portfolio"
         headerBtn={
           <>
-            <Button
-              label="Import CSV"
-              onClick={openCsvModal}
-              icon={<i className="bx bx-upload"></i>}
-              className="btn btn-secondary mr-2"
-            />
+            {permissions.isManagerOrAbove && (
+              <Button
+                label="Import CSV"
+                onClick={openCsvModal}
+                icon={<i className="bx bx-upload"></i>}
+                className="btn btn-secondary mr-2"
+              />
+            )}
+
             <Link href="/properties/new" className="btn btn-primary">
               <i className="bx bx-plus-circle"></i>
               Add New Property
@@ -58,7 +128,7 @@ export default function Properties() {
           <Panel variant="alt-2">
             <Table
               tableVariant="alt-2"
-              columns={generatePropertyColumn()}
+              columns={propertyColumns}
               dataSource={properties}
               showRowNumbers={true}
               searchOpts={{

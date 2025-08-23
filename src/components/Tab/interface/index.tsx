@@ -6,6 +6,8 @@ export interface TabItem {
   content: ReactNode;
   hasError?: boolean;
   disabled?: boolean;
+  icon?: ReactNode; // Add icon support for profile variant
+  isHidden?: boolean; // Hide tab if true
 }
 
 export interface TabsContextType {
@@ -15,7 +17,8 @@ export interface TabsContextType {
 }
 
 export interface TabsProps {
-  children: ReactNode;
+  children?: ReactNode; // Make optional when using tabItems
+  tabItems?: TabItem[]; // New prop for self-contained tab system
   defaultTab?: string;
   onChange?: (tabId: string) => void;
   className?: string;

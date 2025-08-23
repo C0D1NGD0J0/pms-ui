@@ -29,8 +29,8 @@ class AuthService {
   }) => {
     try {
       const res = await axios.post<{
-        accounts: Array<{ cuid: string; displayName: string }>;
-        activeAccount: { cuid: string; displayName: string };
+        accounts: Array<{ cuid: string; clientDisplayName: string }>;
+        activeAccount: { cuid: string; clientDisplayName: string };
         msg: string;
       }>(`${this.baseUrl}/login`, data);
 

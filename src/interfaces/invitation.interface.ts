@@ -216,8 +216,8 @@ export interface AccountSetupFormData {
 }
 
 export interface IInvitationAcceptResponse {
-  accounts: Array<{ cuid: string; displayName: string }>;
-  activeAccount: { cuid: string; displayName: string };
+  accounts: Array<{ cuid: string; clientDisplayName: string }>;
+  activeAccount: { cuid: string; clientDisplayName: string };
   msg: string;
   success: boolean;
 }

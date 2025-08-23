@@ -199,3 +199,7 @@ $utils: (
     }
   }
 }
+
+.text-fade {
+  animation: fade 3s linear infinite;
+}

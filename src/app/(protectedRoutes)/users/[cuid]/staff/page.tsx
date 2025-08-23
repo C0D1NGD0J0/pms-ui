@@ -2,19 +2,19 @@
 
 import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { FilteredUser } from "@interfaces/user.interface";
+import { Loading } from "@src/components/Loading";
+import { ChartContainer } from "@components/Charts";
+import { generateLegendColors } from "@utils/employeeUtils";
 import { PageHeader } from "@components/PageElements/Header";
-import { VerticalBarChart, DonutChart } from "@components/Charts";
+import { FilteredUserTableData } from "@interfaces/user.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import {
   PanelsWrapper,
   PanelContent,
   PanelHeader,
   Panel,
 } from "@components/Panel";
-import {
-  aggregateEmployeesByDepartment,
-  generateLegendColors,
-} from "@utils/employeeUtils";
 
 import { useGetEmployees } from "./hooks";
 import { EmployeeTableView } from "./components/EmployeeTableView";
@@ -28,7 +28,6 @@ interface StaffPageProps {
 export default function StaffPage({ params }: StaffPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
-
   const {
     employees,
     sortOptions,
@@ -39,43 +38,32 @@ export default function StaffPage({ params }: StaffPageProps) {
     handleSortByChange,
     isLoading,
   } = useGetEmployees(cuid);
+  const permission = useUnifiedPermissions();
 
-  // Compute department statistics from real employee data
+  // Separate stats query that won't re-render charts on pagination changes
+  const { stats, isLoading: statsLoading } = useGetUserStats(cuid, {
+    role: ["staff", "manager"],
+  });
+
   const departmentStats = useMemo(() => {
-    return aggregateEmployeesByDepartment(employees);
-  }, [employees]);
+    return stats?.departmentDistribution || [];
+  }, [stats?.departmentDistribution]);
 
-  // Generate dynamic colors for the legend
   const legendColors = useMemo(() => {
     return generateLegendColors(departmentStats.length);
   }, [departmentStats.length]);
 
-  // Compute role distribution from real employee data
   const roleDistribution = useMemo(() => {
-    const roleMap = new Map<string, number>();
+    return stats?.roleDistribution || [];
+  }, [stats?.roleDistribution]);
 
-    employees.forEach((employee) => {
-      employee.roles.forEach((role) => {
-        const capitalizedRole = role.charAt(0).toUpperCase() + role.slice(1);
-        roleMap.set(capitalizedRole, (roleMap.get(capitalizedRole) || 0) + 1);
-      });
-    });
-
-    return Array.from(roleMap.entries())
-      .map(([name, value]) => ({
-        name,
-        value,
-      }))
-      .sort((a, b) => b.value - a.value); // Sort by count descending
-  }, [employees]);
-
-  const handleEditEmployee = (employee: FilteredUser) => {
+  const handleEditEmployee = (employee: FilteredUserTableData) => {
     console.log("Edit employee:", employee);
     // TODO: Implement edit employee modal/form
   };
 
-  const handleViewEmployeeDetails = (employee: FilteredUser) => {
-    router.push(`/users/${cuid}/staff/${employee.id}`);
+  const handleViewEmployeeDetails = (employee: FilteredUserTableData) => {
+    router.push(`/users/${cuid}/staff/${employee.uid}`);
   };
 
   const handleToggleEmployeeStatus = (
@@ -105,12 +93,12 @@ export default function StaffPage({ params }: StaffPageProps) {
                 onViewDetails={handleViewEmployeeDetails}
                 pagination={pagination}
                 totalCount={totalCount}
+                permissions={permission}
               />
             </Panel>
           </PanelsWrapper>
         </div>
 
-        {/* Analytics Section */}
         <div className="flex-row">
           <PanelsWrapper>
             <Panel variant="alt-2">
@@ -118,59 +106,56 @@ export default function StaffPage({ params }: StaffPageProps) {
                 header={{ title: "Employee Department Distribution" }}
               />
               <PanelContent>
-                <div className="analytics-cards">
-                  <div className="analytics-card">
-                    <div className="chart-container">
-                      {departmentStats.length > 0 ? (
-                        <DonutChart
-                          data={departmentStats}
-                          height={300}
-                          showTotal={true}
-                          showTooltip={true}
-                        />
-                      ) : (
-                        <div className="empty-chart-state">
-                          <p>No department data available</p>
-                        </div>
-                      )}
-                    </div>
-                    <div className="chart-legend">
-                      {departmentStats.map((dept, index) => (
-                        <div key={dept.name} className="legend-item">
-                          <span
-                            className="legend-color"
-                            style={{ backgroundColor: legendColors[index] }}
-                          ></span>
-                          <span>
-                            {dept.name} ({dept.percentage}%)
-                          </span>
-                        </div>
-                      ))}
+                {statsLoading ? (
+                  <Loading description="Loading stats..." />
+                ) : (
+                  <div className="analytics-cards">
+                    <div className="analytics-card">
+                      <ChartContainer
+                        type="donut"
+                        data={departmentStats}
+                        height={300}
+                        colors={legendColors}
+                        chartProps={{
+                          donutchart: { showTotal: true, showTooltip: true },
+                        }}
+                        showLegend={true}
+                        legend={departmentStats.map((dept, index) => ({
+                          name: dept.name,
+                          color: legendColors[index],
+                          percentage: dept.percentage,
+                        }))}
+                        emptyStateMessage="No department data available"
+                        emptyStateIcon={<i className="bx bx-building"></i>}
+                      />
                     </div>
                   </div>
-                </div>
+                )}
               </PanelContent>
             </Panel>
 
             <Panel variant="alt-2">
               <PanelHeader header={{ title: "Employee Role Distribution" }} />
               <PanelContent>
-                <div className="chart-container">
-                  {roleDistribution.length > 0 ? (
-                    <VerticalBarChart
-                      data={roleDistribution}
-                      height={300}
-                      valueKey="value"
-                      nameKey="name"
-                      showAxis={true}
-                      showGrid={true}
-                    />
-                  ) : (
-                    <div className="empty-chart-state">
-                      <p>No role data available</p>
-                    </div>
-                  )}
-                </div>
+                {statsLoading ? (
+                  <Loading description="Loading stats..." />
+                ) : (
+                  <ChartContainer
+                    type="verticalBar"
+                    data={roleDistribution}
+                    height={300}
+                    chartProps={{
+                      barChart: {
+                        valueKey: "value",
+                        nameKey: "name",
+                        showAxis: true,
+                        showGrid: true,
+                      },
+                    }}
+                    emptyStateMessage="No role data available"
+                    emptyStateIcon={<i className="bx bx-user-voice"></i>}
+                  />
+                )}
               </PanelContent>
             </Panel>
           </PanelsWrapper>

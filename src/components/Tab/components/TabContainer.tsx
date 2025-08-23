@@ -1,9 +1,10 @@
- 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useScrollToTop } from "@hooks/useScrollToTop";
 
 import { TabsContext } from "../hook";
+import { TabListItem } from "./TabListItem";
+import { TabPanelContent } from "./TabPanelContent";
 import { TabListProps, TabsProps } from "../interface";
 
 const validTabs = [
@@ -18,6 +19,7 @@ const validTabs = [
 ];
 export const TabContainer: React.FC<TabsProps> = ({
   children,
+  tabItems,
   defaultTab,
   onChange,
   className = "",
@@ -71,6 +73,11 @@ export const TabContainer: React.FC<TabsProps> = ({
     setAvailableTabs((prev) => ({ ...prev, [id]: !disabled }));
   };
 
+  // Get active tab content when using tabItems
+  const activeTabItem = tabItems
+    ?.filter((item) => !item.isHidden)
+    .find((item) => item.id === activeTabId);
+
   return (
     <TabsContext.Provider value={{ activeTabId, setActiveTabId, registerTab }}>
       <div
@@ -78,7 +85,33 @@ export const TabContainer: React.FC<TabsProps> = ({
         role="tablist"
         aria-label={ariaLabel}
       >
-        {children}
+        {tabItems ? (
+          <>
+            <TabList variant={variant}>
+              {tabItems
+                .filter((item) => !item.isHidden)
+                .map((item) => (
+                  <TabListItem
+                    key={item.id}
+                    id={item.id}
+                    label={item.label}
+                    icon={item.icon}
+                    hasError={item.hasError}
+                    disabled={item.disabled}
+                  />
+                ))}
+            </TabList>
+
+            {activeTabItem && (
+              <TabPanelContent key={activeTabItem.id} id={activeTabItem.id}>
+                {activeTabItem.content}
+              </TabPanelContent>
+            )}
+          </>
+        ) : (
+          // Legacy pattern: Manual children (backward compatibility)
+          children
+        )}
       </div>
     </TabsContext.Provider>
   );

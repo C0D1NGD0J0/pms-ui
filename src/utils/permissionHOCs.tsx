@@ -1,12 +1,15 @@
 import { ComponentType, ReactElement, forwardRef, ReactNode } from "react";
-import { PermissionCheckOptions, usePermissions } from "@hooks/usePermissions";
+import {
+  useUnifiedPermissions,
+  PermissionContext,
+} from "@hooks/useUnifiedPermissions";
 
 export interface WithPermissionOptions {
   permission?: string;
   permissions?: string[];
   requireAll?: boolean;
   fallback?: ComponentType | (() => ReactElement | null);
-  context?: PermissionCheckOptions;
+  context?: PermissionContext;
 }
 
 /**
@@ -17,7 +20,7 @@ export const withPermission = <P extends object>(
   options: WithPermissionOptions
 ) => {
   const WrappedComponent = forwardRef<unknown, P>((props, ref) => {
-    const { hasPermission, hasPermissions } = usePermissions();
+    const { can, canAll, canAny } = useUnifiedPermissions();
     const {
       permission,
       permissions,
@@ -29,9 +32,11 @@ export const withPermission = <P extends object>(
     let hasAccess = false;
 
     if (permission) {
-      hasAccess = hasPermission(permission, context);
+      hasAccess = can(permission, context);
     } else if (permissions && permissions.length > 0) {
-      hasAccess = hasPermissions(permissions, { ...context, requireAll });
+      hasAccess = requireAll
+        ? canAll(permissions, context)
+        : canAny(permissions, context);
     } else {
       hasAccess = true;
     }
@@ -61,11 +66,13 @@ export const withFieldPermission = <P extends object>(
 ) => {
   const WrappedComponent = forwardRef<unknown, P & { disabled?: boolean }>(
     (props, ref) => {
-      const { isFieldDisabled } = usePermissions();
+      const { isFieldDisabled } = useUnifiedPermissions();
 
       // Extract disabled prop and rest props separately
       const { disabled: propDisabled, ...restProps } = props;
-      const isDisabled = propDisabled || isFieldDisabled(fieldName, resource);
+      const isDisabled =
+        propDisabled ||
+        (resource ? isFieldDisabled(resource, fieldName) : false);
 
       // Pass restProps and disabled separately to avoid type conflicts
       return (
@@ -102,18 +109,18 @@ export const withActionPermission = <P extends object>(
       assignedUsers?: string[];
     }
   >((props, ref) => {
-    const { canPerformActionOnResource, canPerformAction } = usePermissions();
+    const { can } = useUnifiedPermissions();
     const { resourceId, ownerId, assignedUsers, disabled, ...restProps } =
       props;
 
-    const hasPermission =
-      resourceId && resource
-        ? canPerformActionOnResource(action, resource, resourceId, {
-            ownerId,
-            assignedUsers,
-          })
-        : canPerformAction(action, resource);
+    const permission = resource ? `${resource}.${action}` : action;
+    const context: PermissionContext = {
+      resourceOwner: ownerId,
+      resourceId,
+      assignedTo: assignedUsers,
+    };
 
+    const hasPermission = can(permission, context);
     const isDisabled = disabled || !hasPermission;
 
     return (
@@ -141,8 +148,8 @@ export const withRole = <P extends object>(
   fallback?: ComponentType | (() => ReactNode)
 ) => {
   const WrappedComponent = forwardRef<unknown, P>((props, ref) => {
-    const { getUserRole } = usePermissions();
-    const currentRole = getUserRole();
+    const { getRoleTitle } = useUnifiedPermissions();
+    const currentRole = getRoleTitle();
 
     if (!currentRole || !allowedRoles.includes(currentRole)) {
       const Fallback = fallback;

@@ -1,11 +1,10 @@
 import React from "react";
 import { TableColumn, Table } from "@components/Table";
 import { PriorityBadge, StatusBadge } from "@components/Badge";
-
-import { EmployeeDetail } from "../../hooks/useGetEmployee";
+import { EmployeeDetailResponse } from "@interfaces/user.interface";
 
 interface EmployeeTasksTabProps {
-  employee: EmployeeDetail;
+  employee: EmployeeDetailResponse;
 }
 
 export const EmployeeTasksTab: React.FC<EmployeeTasksTabProps> = ({

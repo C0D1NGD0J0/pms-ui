@@ -45,9 +45,8 @@ export const Loading: React.FC<LoadingProps> = ({
             <div className={"spinner_ring"}></div>
           </div>
 
-          <div className={"message"}>
-            <h3>{description}</h3>
-            <span className={"dot_pulse"}></span>
+          <div className={"message text-fade"}>
+            <h3>{description || "Loading..."}</h3>
           </div>
 
           {isCloseable && !customBtn && (

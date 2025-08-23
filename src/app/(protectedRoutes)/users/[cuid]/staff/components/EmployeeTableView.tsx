@@ -2,22 +2,24 @@
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
-import { FilteredUser } from "@interfaces/user.interface";
 import { IPaginationQuery } from "@interfaces/utils.interface";
+import { FilteredUserTableData } from "@interfaces/user.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
 
 interface EmployeeTableViewProps {
-  employees: FilteredUser[];
+  employees: FilteredUserTableData[];
   filterOptions: FilterOption[];
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
   handleSortChange: (sort: "asc" | "desc") => void;
   isLoading?: boolean;
-  onEdit: (employee: FilteredUser) => void;
+  onEdit: (employee: FilteredUserTableData) => void;
   onToggleStatus: (employeeId: string, isActive: boolean) => void;
-  onViewDetails: (employee: FilteredUser) => void;
+  onViewDetails: (employee: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
+  permissions: ReturnType<typeof useUnifiedPermissions>;
 }
 
 export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
@@ -32,8 +34,23 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   onViewDetails,
   pagination,
   totalCount,
+  permissions,
 }) => {
   const [searchValue, setSearchValue] = useState("");
+
+  const canEditResource = (record: {
+    id: string;
+    key: "sub" | "id" | "uid";
+  }) => {
+    const canEdit = permissions.can("user.update", {
+      resourceOwner: record.id,
+    });
+    const isResourceOwner = permissions.isOwner(record.key, record.id);
+    return {
+      hasPermission: canEdit,
+      isResourceOwner,
+    };
+  };
 
   const formatDepartment = (department?: string) => {
     if (!department) return "N/A";
@@ -62,7 +79,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
     return "Inactive";
   };
 
-  const employeeColumns: TableColumn<FilteredUser>[] = [
+  const employeeColumns: TableColumn<FilteredUserTableData>[] = [
     {
       title: "Employee",
       dataIndex: "fullName",
@@ -114,32 +131,44 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
     {
       title: "Actions",
       dataIndex: "actions",
-      render: (_, record) => (
-        <div className="table-actions">
-          <Button
-            label="View"
-            className="btn-sm btn-primary"
-            onClick={() => onViewDetails(record)}
-            title="View employee details"
-          />
-          <Button
-            label="Edit"
-            className="btn-sm btn-outline"
-            onClick={() => onEdit(record)}
-            title="Edit employee information"
-          />
-          <Button
-            label={record.isActive ? "Deactivate" : "Activate"}
-            className={`btn-sm ${
-              record.isActive ? "btn-danger" : "btn-success"
-            }`}
-            onClick={() => onToggleStatus(record.id, !record.isActive)}
-            title={
-              record.isActive ? "Deactivate employee" : "Activate employee"
-            }
-          />
-        </div>
-      ),
+      render: (_, record) => {
+        const { isResourceOwner, hasPermission } = canEditResource({
+          id: record.uid,
+          key: "uid",
+        });
+        console.log("Edit permissions:", isResourceOwner, hasPermission);
+        return (
+          <div className="table-actions">
+            <Button
+              label="View"
+              className="btn-sm btn-primary"
+              onClick={() => onViewDetails(record)}
+              title="View employee details"
+            />
+
+            {(isResourceOwner || hasPermission) && (
+              <Button
+                label="Edit"
+                className="btn-sm btn-outline"
+                onClick={() => onEdit(record)}
+                title="Edit employee information"
+              />
+            )}
+            {permissions.isAdmin && (
+              <Button
+                label={record.isActive ? "Deactivate" : "Activate"}
+                className={`btn-sm ${
+                  record.isActive ? "btn-danger" : "btn-success"
+                }`}
+                onClick={() => onToggleStatus(record.uid, !record.isActive)}
+                title={
+                  record.isActive ? "Deactivate employee" : "Activate employee"
+                }
+              />
+            )}
+          </div>
+        );
+      },
     },
   ];
 
@@ -153,6 +182,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
       dataSource={employees}
       loading={isLoading}
       withHeader={true}
+      showRowNumbers={true}
       headerTitle="Employee Directory"
       searchOpts={{
         value: searchValue,

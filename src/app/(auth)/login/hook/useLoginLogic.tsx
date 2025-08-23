@@ -21,7 +21,7 @@ export function useLoginLogic() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [userAccounts, setUserAccounts] = useState<
-    { cuid: string; displayName: string }[]
+    { cuid: string; clientDisplayName: string }[]
   >([]);
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: ILoginForm) => authService.login(data),

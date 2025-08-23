@@ -1,5 +1,71 @@
 import { EmployeeInfo } from "./invitation.interface";
 
+export interface EmployeeDetailResponse {
+  user: {
+    uid: string;
+    email: string;
+    displayName: string;
+    roles: string[];
+    isActive: boolean;
+    createdAt: string;
+    userType: "employee";
+  };
+  profile: {
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    avatar: {
+      url: string;
+    };
+    phoneNumber: string;
+    email: string;
+    about: string;
+    contact: {
+      phone: string;
+      email: string;
+    };
+  };
+  status: string;
+  properties: any[];
+  tasks: any[];
+  documents: any[];
+  employeeInfo: {
+    employeeId: string;
+    hireDate: string;
+    tenure: string;
+    employmentType: string;
+    department: string;
+    position: string;
+    directManager: string;
+    skills: string[];
+    officeInfo: {
+      address: string;
+      city: string;
+      workHours: string;
+    };
+    emergencyContact: {
+      name: string;
+      relationship: string;
+      phone: string;
+    };
+    stats: {
+      propertiesManaged: number;
+      unitsManaged: number;
+      tasksCompleted: number;
+      onTimeRate: string;
+      rating: string;
+      activeTasks: number;
+    };
+    performance: {
+      taskCompletionRate: string;
+      tenantSatisfaction: string;
+      avgOccupancyRate: string;
+      avgResponseTime: string;
+    };
+    tags: string[];
+  };
+}
+
 // TODO: When backend types are accessible, replace with proper imports:
 // import type { VendorInfo } from '@shared/interfaces/profile.interface';
 type VendorInfo = any; // Use actual VendorInfo from backend when available
@@ -18,7 +84,7 @@ export type IUserRoleType =
  */
 export interface FilteredUser {
   // Basic user information
-  id: string;
+  uid: string;
   email: string;
   displayName: string;
   roles: IUserRoleType[];
@@ -97,8 +163,50 @@ export interface PaginateResult {
 }
 
 export interface IListResponseWithPagination {
-  items: FilteredUser[];
+  items: FilteredUserTableData[];
   pagination: PaginateResult;
+}
+
+/**
+ * Stats distribution interface for charts
+ */
+export interface StatsDistribution {
+  name: string;
+  value: number;
+  percentage: number;
+}
+
+/**
+ * User statistics for filtered users response
+ */
+export interface IUserStats {
+  departmentDistribution: StatsDistribution[];
+  roleDistribution: StatsDistribution[];
+  totalFilteredUsers: number;
+}
+
+/**
+ * Minimal employee info for table display
+ */
+export interface FilteredUserEmployeeInfo {
+  jobTitle?: string;
+  department?: string;
+  startDate?: Date | string;
+}
+
+/**
+ * Lightweight user data for table display only
+ * Contains only the fields needed for table rendering
+ */
+export interface FilteredUserTableData {
+  uid: string;
+  email: string;
+  displayName: string;
+  fullName?: string;
+  phoneNumber?: string;
+  isActive: boolean;
+  isConnected: boolean;
+  employeeInfo?: FilteredUserEmployeeInfo;
 }
 
 /**

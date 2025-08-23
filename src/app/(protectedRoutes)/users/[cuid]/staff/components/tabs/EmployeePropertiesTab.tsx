@@ -1,10 +1,9 @@
 import React from "react";
 import { TableColumn, Table } from "@components/Table";
-
-import { EmployeeDetail } from "../../hooks/useGetEmployee";
+import { EmployeeDetailResponse } from "@interfaces/user.interface";
 
 interface EmployeePropertiesTabProps {
-  employee: EmployeeDetail;
+  employee: EmployeeDetailResponse;
 }
 
 export const EmployeePropertiesTab: React.FC<EmployeePropertiesTabProps> = ({

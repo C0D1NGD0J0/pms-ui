@@ -81,7 +81,6 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
         clearTimeout(timeoutId);
       }
     };
-     
   }, [isIdle, isLoggedIn, setIdleSession]);
 
   if (isLoggedIn && isIdle) {

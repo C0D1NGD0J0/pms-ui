@@ -1,15 +1,16 @@
 import React from "react";
-
-import { EmployeeDetail } from "../../hooks/useGetEmployee";
+import { EmployeeDetailResponse } from "@interfaces/user.interface";
 
 interface EmployeeContactTabProps {
-  employee: EmployeeDetail;
+  employee: EmployeeDetailResponse;
 }
 
 export const EmployeeContactTab: React.FC<EmployeeContactTabProps> = ({
   employee,
 }) => {
-  const { contact } = employee;
+  const { profile, employeeInfo } = employee;
+  const { contact } = profile;
+  const { emergencyContact } = employeeInfo;
 
   return (
     <div className="employee-contact">
@@ -20,15 +21,15 @@ export const EmployeeContactTab: React.FC<EmployeeContactTabProps> = ({
           <h4>Primary Contact</h4>
           <div className="contact-item">
             <i className="bx bx-user"></i>
-            <span>{contact.primary.name}</span>
+            <span>{profile.fullName}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-phone"></i>
-            <span>{contact.primary.phone}</span>
+            <span>{contact.phone}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-envelope"></i>
-            <span>{contact.primary.email}</span>
+            <span>{contact.email}</span>
           </div>
         </div>
 
@@ -36,15 +37,15 @@ export const EmployeeContactTab: React.FC<EmployeeContactTabProps> = ({
           <h4>Office Information</h4>
           <div className="contact-item">
             <i className="bx bx-map"></i>
-            <span>{contact.office.address}</span>
+            <span>{employeeInfo.officeInfo.address}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-city"></i>
-            <span>{contact.office.city}</span>
+            <span>{employeeInfo.officeInfo.city}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-time-five"></i>
-            <span>{contact.office.hours}</span>
+            <span>{employeeInfo.officeInfo.workHours}</span>
           </div>
         </div>
 
@@ -52,15 +53,15 @@ export const EmployeeContactTab: React.FC<EmployeeContactTabProps> = ({
           <h4>Emergency Contact</h4>
           <div className="contact-item">
             <i className="bx bx-user"></i>
-            <span>{contact.emergency.name}</span>
+            <span>{emergencyContact.name}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-phone"></i>
-            <span>{contact.emergency.phone}</span>
+            <span>{emergencyContact.phone}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-info-circle"></i>
-            <span>Relationship: {contact.emergency.relationship}</span>
+            <span>Relationship: {emergencyContact.relationship}</span>
           </div>
         </div>
 
@@ -68,15 +69,15 @@ export const EmployeeContactTab: React.FC<EmployeeContactTabProps> = ({
           <h4>Direct Manager</h4>
           <div className="contact-item">
             <i className="bx bx-user-check"></i>
-            <span>{contact.manager.name}</span>
+            <span>{employeeInfo.directManager}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-phone"></i>
-            <span>{contact.manager.phone}</span>
+            <span>N/A</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-envelope"></i>
-            <span>{contact.manager.email}</span>
+            <span>N/A</span>
           </div>
         </div>
       </div>

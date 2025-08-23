@@ -3,7 +3,7 @@ import { FormRadio, Button, Modal } from "@components/FormElements";
 
 interface SelectClientAccountModalProps {
   isOpen: boolean;
-  userAccounts: Array<{ cuid: string; displayName: string }>;
+  userAccounts: Array<{ cuid: string; clientDisplayName: string }>;
   selectedClient: string;
   onSelect: (cuid: string) => void;
   onCancel: () => void;
@@ -42,7 +42,7 @@ export const SelectClientAccountModal: React.FC<
                 value={account.cuid}
                 checked={selectedClient === account.cuid}
                 onChange={handleRadioChange}
-                label={account.displayName}
+                label={account.clientDisplayName}
                 className="account-radio-option"
               />
             ))}
