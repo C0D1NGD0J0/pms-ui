@@ -37,10 +37,7 @@ export const useGetEmployees = (
     sort: initialParams?.sort || "desc",
   };
 
-  // Use base hook with employee constraints
   const baseHook = useGetFilteredUsers(cuid, baseParams);
-
-  // Custom role handler that maintains employee constraints
   const handleRoleFilter = (role: IUserRoleType | "") => {
     if (role) {
       baseHook.updateQueryParams({ role: [role], page: 1 });

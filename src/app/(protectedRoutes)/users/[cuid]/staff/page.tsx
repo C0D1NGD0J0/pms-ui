@@ -40,7 +40,6 @@ export default function StaffPage({ params }: StaffPageProps) {
   } = useGetEmployees(cuid);
   const permission = useUnifiedPermissions();
 
-  // Separate stats query that won't re-render charts on pagination changes
   const { stats, isLoading: statsLoading } = useGetUserStats(cuid, {
     role: ["staff", "manager"],
   });
@@ -140,21 +139,25 @@ export default function StaffPage({ params }: StaffPageProps) {
                 {statsLoading ? (
                   <Loading description="Loading stats..." />
                 ) : (
-                  <ChartContainer
-                    type="verticalBar"
-                    data={roleDistribution}
-                    height={300}
-                    chartProps={{
-                      barChart: {
-                        valueKey: "value",
-                        nameKey: "name",
-                        showAxis: true,
-                        showGrid: true,
-                      },
-                    }}
-                    emptyStateMessage="No role data available"
-                    emptyStateIcon={<i className="bx bx-user-voice"></i>}
-                  />
+                  <div className="analytics-cards">
+                    <div className="analytics-card">
+                      <ChartContainer
+                        type="verticalBar"
+                        data={roleDistribution}
+                        height={300}
+                        chartProps={{
+                          barChart: {
+                            valueKey: "value",
+                            nameKey: "name",
+                            showAxis: true,
+                            showGrid: true,
+                          },
+                        }}
+                        emptyStateMessage="No role data available"
+                        emptyStateIcon={<i className="bx bx-user-voice"></i>}
+                      />
+                    </div>
+                  </div>
                 )}
               </PanelContent>
             </Panel>

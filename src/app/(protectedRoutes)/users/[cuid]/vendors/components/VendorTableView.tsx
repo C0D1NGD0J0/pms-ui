@@ -3,21 +3,21 @@ import { Panel } from "@components/Panel";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
-import { FilteredUser } from "@interfaces/user.interface";
 import { IPaginationQuery } from "@interfaces/utils.interface";
+import { FilteredUserTableData } from "@interfaces/user.interface";
 
 import { FilterOption } from "../hooks/useGetVendors";
 
 interface VendorTableViewProps {
-  vendors: FilteredUser[];
+  vendors: FilteredUserTableData[];
   filterOptions: FilterOption[];
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
   handleSortChange: (sort: "asc" | "desc") => void;
   isLoading?: boolean;
-  onEdit: (vendor: FilteredUser) => void;
-  onMessage: (vendor: FilteredUser) => void;
-  onViewDetails: (vendor: FilteredUser) => void;
+  onEdit: (vendor: FilteredUserTableData) => void;
+  onMessage: (vendor: FilteredUserTableData) => void;
+  onViewDetails: (vendor: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
 }
@@ -37,11 +37,6 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
-  const formatServiceType = (serviceType?: string) => {
-    if (!serviceType) return "N/A";
-    return serviceType.charAt(0).toUpperCase() + serviceType.slice(1);
-  };
-
   const formatPhone = (phone?: string) => {
     if (!phone) return "N/A";
     return phone;
@@ -49,10 +44,10 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
 
   const renderRating = (rating?: number) => {
     if (!rating) return <span className="text-muted">No rating</span>;
-    
+
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
-    
+
     return (
       <div className="vendor-rating">
         <div className="stars">
@@ -60,15 +55,18 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
             <i key={i} className="bx bxs-star"></i>
           ))}
           {hasHalfStar && <i className="bx bxs-star-half"></i>}
-          {Array.from({ length: 5 - fullStars - (hasHalfStar ? 1 : 0) }, (_, i) => (
-            <i key={`empty-${i}`} className="bx bx-star"></i>
-          ))}
+          {Array.from(
+            { length: 5 - fullStars - (hasHalfStar ? 1 : 0) },
+            (_, i) => (
+              <i key={`empty-${i}`} className="bx bx-star"></i>
+            )
+          )}
         </div>
       </div>
     );
   };
 
-  const vendorColumns: TableColumn<FilteredUser>[] = [
+  const vendorColumns: TableColumn<FilteredUserTableData>[] = [
     {
       title: "Company",
       dataIndex: "company",
@@ -76,9 +74,6 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
         <div>
           <div className="table-primary-text">
             {record.vendorInfo?.companyName || record.displayName}
-          </div>
-          <div className="table-secondary-text">
-            {formatServiceType(record.vendorInfo?.serviceType)}
           </div>
         </div>
       ),
@@ -88,7 +83,9 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
       dataIndex: "contactPerson",
       render: (_, record) => (
         <div className="table-primary-text">
-          {record.vendorInfo?.contactPerson || record.fullName || record.displayName}
+          {record.vendorInfo?.contactPerson ||
+            record.fullName ||
+            record.displayName}
         </div>
       ),
     },
@@ -115,25 +112,22 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
       render: (_, record) => (
         <div className="table-actions vendor-actions">
           <Button
-            className="btn-sm btn-icon"
+            className="btn-sm btn-default"
             onClick={() => onViewDetails(record)}
             title="View vendor details"
-            label=""
-            icon={<i className="bx bx-show"></i>}
+            label="View"
           />
           <Button
-            className="btn-sm btn-icon"
+            className="btn-sm btn-primary"
             onClick={() => onEdit(record)}
             title="Edit vendor information"
-            label=""
-            icon={<i className="bx bx-edit"></i>}
+            label="Edit"
           />
           <Button
-            className="btn-sm btn-icon"
+            className="btn-sm btn-secondary"
             onClick={() => onMessage(record)}
             title="Send message to vendor"
-            label=""
-            icon={<i className="bx bx-envelope"></i>}
+            label="Message"
           />
         </div>
       ),
@@ -145,47 +139,43 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
   };
 
   return (
-    <div className="flex-row">
-      <div className="panels">
-        <Panel variant="alt-2">
-          <Table
-            columns={vendorColumns}
-            dataSource={vendors}
-            loading={isLoading}
-            withHeader={true}
-            headerTitle="Vendor Directory"
-            searchOpts={{
-              value: searchValue,
-              isVisible: true,
-              placeholder: "Search vendors...",
-              onChange: handleSearchChange,
-            }}
-            filterOpts={{
-              value: pagination.sortBy ?? "",
-              isVisible: true,
-              options: filterOptions,
-              filterPlaceholder: "All Vendors",
-              onFilterChange: (value: string) => {
-                handleSortByChange(value);
-              },
-              sortDirection: pagination.sort,
-              onSortDirectionChange: (sort: "asc" | "desc") => {
-                handleSortChange(sort);
-              },
-            }}
-            pagination={{
-              total: totalCount,
-              current: pagination.page,
-              pageSize: pagination.limit,
-              onChange: (page: number) => {
-                handlePageChange(page);
-              },
-            }}
-            tableVariant="alt-2"
-            rowKey="id"
-          />
-        </Panel>
-      </div>
-    </div>
+    <Panel variant="alt-2">
+      <Table
+        columns={vendorColumns}
+        dataSource={vendors}
+        loading={isLoading}
+        withHeader={true}
+        headerTitle="Vendor Directory"
+        searchOpts={{
+          value: searchValue,
+          isVisible: true,
+          placeholder: "Search vendors...",
+          onChange: handleSearchChange,
+        }}
+        filterOpts={{
+          value: pagination.sortBy ?? "",
+          isVisible: true,
+          options: filterOptions,
+          filterPlaceholder: "All Vendors",
+          onFilterChange: (value: string) => {
+            handleSortByChange(value);
+          },
+          sortDirection: pagination.sort,
+          onSortDirectionChange: (sort: "asc" | "desc") => {
+            handleSortChange(sort);
+          },
+        }}
+        pagination={{
+          total: totalCount,
+          current: pagination.page,
+          pageSize: pagination.limit,
+          onChange: (page: number) => {
+            handlePageChange(page);
+          },
+        }}
+        tableVariant="alt-2"
+        rowKey="uid"
+      />
+    </Panel>
   );
 };

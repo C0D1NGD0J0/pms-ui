@@ -1,18 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
-import { Panel } from "@components/Panel";
 import { useRouter } from "next/navigation";
 import { InsightCard } from "@components/Cards";
+import React, { useState, useMemo } from "react";
 import { Button } from "@components/FormElements";
+import { ChartContainer } from "@components/Charts";
 import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
-import { FilteredUser } from "@interfaces/user.interface";
 import { AddUserModal } from "@components/UserManagement";
 import { PageHeader } from "@components/PageElements/Header";
-import { HorizontalBarChart, DonutChart } from "@components/Charts";
+import { generateLegendColors } from "@src/utils/employeeUtils";
+import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
+import {
+  PanelsWrapper,
+  PanelContent,
+  PanelHeader,
+  Panel,
+} from "@components/Panel";
 
 import { useGetVendors } from "./hooks";
 import { VendorTableView } from "./components/VendorTableView";
@@ -34,36 +41,43 @@ export default function VendorsPage({ params }: VendorsPageProps) {
 
   const {
     vendors,
-    sortOptions,
+    serviceOptions,
     pagination,
     totalCount,
     handleSortChange,
     handlePageChange,
-    handleSortByChange,
+    handleServiceTypeFilter,
     isLoading,
   } = useGetVendors(cuid);
 
-  const handleEditVendor = (vendor: FilteredUser) => {
+  const { stats } = useGetUserStats(cuid, {
+    role: ["vendor"],
+  });
+
+  const serviceTypeData = useMemo(() => {
+    return stats?.departmentDistribution || [];
+  }, [stats]);
+
+  const legendColors = useMemo(() => {
+    return generateLegendColors(serviceTypeData.length);
+  }, [serviceTypeData.length]);
+
+  const handleEditVendor = (vendor: FilteredUserTableData) => {
     console.log("Edit vendor:", vendor);
     // TODO: Implement edit vendor modal/form
   };
 
-  const handleViewVendorDetails = (vendor: FilteredUser) => {
-    router.push(`/users/${cuid}/vendors/${vendor.id}`);
+  const handleViewVendorDetails = (vendor: FilteredUserTableData) => {
+    router.push(`/users/${cuid}/vendors/${vendor.uid}`);
   };
 
-  const handleMessageVendor = (vendor: FilteredUser) => {
+  const handleMessageVendor = (vendor: FilteredUserTableData) => {
     console.log("Message vendor:", vendor);
     // TODO: Implement message vendor functionality
   };
 
   const handleAddNewVendor = () => {
     setIsAddVendorModalOpen(true);
-  };
-
-  const handleImportVendors = () => {
-    console.log("Import vendor list");
-    // TODO: Implement vendor import functionality
   };
 
   const handleCloseModal = () => {
@@ -95,12 +109,6 @@ export default function VendorsPage({ params }: VendorsPageProps) {
 
   const headerButtons = (
     <div className="flex-row">
-      <Button
-        label="Import vendor list"
-        className="btn btn-primary"
-        onClick={handleImportVendors}
-        icon={<i className="bx bx-import"></i>}
-      />
       <Button
         label="Add new vendor"
         className="btn btn-success"
@@ -161,105 +169,60 @@ export default function VendorsPage({ params }: VendorsPageProps) {
           />
         </div>
 
-        {/* Main Vendor Table */}
-        <VendorTableView
-          vendors={vendors}
-          filterOptions={sortOptions}
-          handlePageChange={handlePageChange}
-          handleSortByChange={handleSortByChange}
-          handleSortChange={handleSortChange}
-          isLoading={isLoading}
-          onEdit={handleEditVendor}
-          onMessage={handleMessageVendor}
-          onViewDetails={handleViewVendorDetails}
-          pagination={pagination}
-          totalCount={totalCount}
-        />
-
-        {/* Analytics Panels */}
         <div className="flex-row">
-          <div className="panels">
-            {/* Vendor Service Types Panel */}
+          <PanelsWrapper>
             <Panel variant="alt-2">
-              <div className="panel-header">
-                <div className="panel-header__title">
-                  <h4>Vendor Service Types</h4>
-                </div>
-              </div>
-              <div className="panel-content">
+              <VendorTableView
+                vendors={vendors}
+                filterOptions={serviceOptions}
+                handlePageChange={handlePageChange}
+                handleSortByChange={handleServiceTypeFilter}
+                handleSortChange={handleSortChange}
+                isLoading={isLoading}
+                onEdit={handleEditVendor}
+                onMessage={handleMessageVendor}
+                onViewDetails={handleViewVendorDetails}
+                pagination={pagination}
+                totalCount={totalCount}
+              />
+            </Panel>
+          </PanelsWrapper>
+        </div>
+
+        <div className="flex-row">
+          <PanelsWrapper>
+            <Panel variant="alt-2">
+              <PanelHeader header={{ title: "Vendor Service Types" }} />
+              <PanelContent>
                 <div className="analytics-cards">
                   <div className="analytics-card">
-                    <div className="chart-container">
-                      <DonutChart
-                        data={[
-                          { name: "Plumbing", value: 30 },
-                          { name: "Electrical", value: 25 },
-                          { name: "HVAC", value: 20 },
-                          { name: "General", value: 15 },
-                          { name: "Other", value: 10 },
-                        ]}
-                        height={300}
-                        showTotal={true}
-                        showTooltip={true}
-                      />
-                    </div>
-                    <div className="chart-legend">
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(194, 66%, 24%)" }}></span>
-                        <span>Plumbing (30%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(39, 73%, 49%)" }}></span>
-                        <span>Electrical (25%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(130, 100%, 37%)" }}></span>
-                        <span>HVAC (20%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(0, 100%, 50%)" }}></span>
-                        <span>General (15%)</span>
-                      </div>
-                      <div className="legend-item">
-                        <span className="legend-color" style={{ backgroundColor: "hsl(213, 14%, 56%)" }}></span>
-                        <span>Other (10%)</span>
-                      </div>
-                    </div>
+                    <ChartContainer
+                      type="donut"
+                      data={serviceTypeData}
+                      height={300}
+                      colors={legendColors}
+                      chartProps={{
+                        donutchart: { showTotal: true, showTooltip: true },
+                      }}
+                      showLegend={true}
+                      legend={serviceTypeData.map((service, index) => ({
+                        name: service.name,
+                        color: legendColors[index],
+                        percentage: service.percentage,
+                      }))}
+                      emptyStateMessage="No service type data available"
+                      emptyStateIcon={<i className="bx bx-wrench"></i>}
+                    />
                   </div>
                 </div>
-              </div>
+              </PanelContent>
             </Panel>
 
-            {/* Vendor Performance Panel */}
-            <Panel variant="alt-2">
-              <div className="panel-header">
-                <div className="panel-header__title">
-                  <h4>Vendor Performance</h4>
-                </div>
-              </div>
-              <div className="panel-content">
-                <div className="chart-container">
-                  <HorizontalBarChart
-                    data={[
-                      { name: "Climate Systems", value: 4.9 },
-                      { name: "City Plumbing", value: 4.5 },
-                      { name: "Locksmith Express", value: 4.3 },
-                      { name: "ElectraPro", value: 4.0 },
-                      { name: "Security Masters", value: 3.5 },
-                    ]}
-                    height={300}
-                    valueKey="value"
-                    nameKey="name"
-                    showAxis={true}
-                  />
-                </div>
-              </div>
-            </Panel>
-          </div>
+            <></>
+          </PanelsWrapper>
         </div>
       </div>
 
-      {/* Add Vendor Modal */}
       <AddUserModal
         userType="vendor"
         isOpen={isAddVendorModalOpen}

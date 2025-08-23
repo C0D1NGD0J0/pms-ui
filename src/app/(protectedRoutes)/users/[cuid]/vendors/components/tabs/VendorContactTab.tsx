@@ -1,98 +1,111 @@
 import React from "react";
-
-import { VendorDetail } from "../../hooks/useGetVendor";
+import { VendorDetailResponse } from "@interfaces/user.interface";
 
 interface VendorContactTabProps {
-  vendor: VendorDetail;
+  vendor: VendorDetailResponse;
 }
 
 export const VendorContactTab: React.FC<VendorContactTabProps> = ({
   vendor,
 }) => {
-  const { contact, personalInfo } = vendor;
-
   return (
-    <div className="vendor-contact">
+    <div className="employee-contact">
+      <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
+        Contact Information
+      </h3>
+      
       <div className="contact-grid">
         <div className="contact-card">
           <h4>Primary Contact</h4>
           <div className="contact-item">
             <i className="bx bx-user"></i>
-            <div className="contact-info">
-              <div className="contact-label">Name</div>
-              <div className="contact-value">{contact.primary.name}</div>
-            </div>
+            <span>{vendor.vendorInfo?.contactPerson?.name || vendor.profile.fullName}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-phone"></i>
-            <div className="contact-info">
-              <div className="contact-label">Phone</div>
-              <div className="contact-value">{contact.primary.phone}</div>
-            </div>
+            <span>
+              {vendor.profile.phoneNumber || 
+               vendor.profile.contact?.phone || 
+               vendor.vendorInfo?.contactPerson?.phone || 'N/A'}
+            </span>
           </div>
           <div className="contact-item">
             <i className="bx bx-envelope"></i>
-            <div className="contact-info">
-              <div className="contact-label">Email</div>
-              <div className="contact-value">{contact.primary.email}</div>
-            </div>
+            <span>
+              {vendor.profile.email || 
+               vendor.profile.contact?.email || 
+               vendor.vendorInfo?.contactPerson?.email || 'N/A'}
+            </span>
+          </div>
+          <div className="contact-item">
+            <i className="bx bx-briefcase"></i>
+            <span>{vendor.vendorInfo?.contactPerson?.jobTitle || 'Owner/Manager'}</span>
           </div>
         </div>
 
         <div className="contact-card">
-          <h4>Office Information</h4>
+          <h4>Business Information</h4>
           <div className="contact-item">
             <i className="bx bx-map"></i>
-            <div className="contact-info">
-              <div className="contact-label">Address</div>
-              <div className="contact-value">{contact.office.address}</div>
-            </div>
+            <span>{vendor.vendorInfo?.businessAddress || 'Address not provided'}</span>
           </div>
           <div className="contact-item">
-            <i className="bx bx-map-pin"></i>
-            <div className="contact-info">
-              <div className="contact-label">City</div>
-              <div className="contact-value">{contact.office.city}</div>
-            </div>
-          </div>
-          <div className="contact-item">
-            <i className="bx bx-time"></i>
-            <div className="contact-info">
-              <div className="contact-label">Hours</div>
-              <div className="contact-value">{contact.office.hours}</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="contact-card">
-          <h4>Emergency Contact</h4>
-          <div className="contact-item">
-            <i className="bx bx-phone-call"></i>
-            <div className="contact-info">
-              <div className="contact-label">24/7 Emergency Line</div>
-              <div className="contact-value">{personalInfo.phoneNumber}</div>
-            </div>
-          </div>
-          <div className="contact-item">
-            <i className="bx bx-envelope-open"></i>
-            <div className="contact-info">
-              <div className="contact-label">Emergency Email</div>
-              <div className="contact-value">{personalInfo.email}</div>
-            </div>
+            <i className="bx bx-city"></i>
+            <span>{vendor.vendorInfo?.serviceAreas?.baseLocation || 'Service area not specified'}</span>
           </div>
           <div className="contact-item">
             <i className="bx bx-time-five"></i>
-            <div className="contact-info">
-              <div className="contact-label">Response Time</div>
-              <div className="contact-value">Within 1 hour</div>
-            </div>
+            <span>{vendor.vendorInfo?.businessHours || 'Contact for hours'}</span>
+          </div>
+        </div>
+
+        <div className="contact-card">
+          <h4>Insurance & Legal</h4>
+          <div className="contact-item">
+            <i className="bx bx-shield"></i>
+            <span>
+              Provider: {vendor.vendorInfo?.insuranceInfo?.provider || 'Not provided'}
+            </span>
           </div>
           <div className="contact-item">
-            <i className="bx bx-calendar-check"></i>
-            <div className="contact-info">
-              <div className="contact-label">Availability</div>
-              <div className="contact-value">24/7 for emergencies</div>
-            </div>
+            <i className="bx bx-file-blank"></i>
+            <span>
+              Policy: {vendor.vendorInfo?.insuranceInfo?.policyNumber || 'Not provided'}
+            </span>
+          </div>
+          <div className="contact-item">
+            <i className="bx bx-calendar"></i>
+            <span>
+              Expires: {vendor.vendorInfo?.insuranceInfo?.expirationDate 
+                ? new Date(vendor.vendorInfo.insuranceInfo.expirationDate).toLocaleDateString()
+                : 'Not provided'}
+            </span>
+          </div>
+          <div className="contact-item">
+            <i className="bx bx-id-card"></i>
+            <span>
+              Registration: {vendor.vendorInfo?.registrationNumber || 'Not provided'}
+            </span>
+          </div>
+        </div>
+
+        <div className="contact-card">
+          <h4>Account Manager</h4>
+          <div className="contact-item">
+            <i className="bx bx-user-circle"></i>
+            <span>Account Manager</span>
+          </div>
+          <div className="contact-item">
+            <i className="bx bx-phone"></i>
+            <span>Contact main office</span>
+          </div>
+          <div className="contact-item">
+            <i className="bx bx-envelope"></i>
+            <span>accounts@company.com</span>
+          </div>
+          <div className="contact-item">
+            <i className="bx bx-time-five"></i>
+            <span>Response: {vendor.vendorInfo?.stats?.responseTime || 'Varies'}</span>
           </div>
         </div>
       </div>

@@ -66,9 +66,6 @@ export interface EmployeeDetailResponse {
   };
 }
 
-// TODO: When backend types are accessible, replace with proper imports:
-// import type { VendorInfo } from '@shared/interfaces/profile.interface';
-type VendorInfo = any; // Use actual VendorInfo from backend when available
 
 export type IUserRoleType =
   | "admin"
@@ -195,6 +192,33 @@ export interface FilteredUserEmployeeInfo {
 }
 
 /**
+ * Minimal vendor info for table display
+ */
+export interface FilteredUserVendorInfo {
+  averageResponseTime?: string;
+  averageServiceCost?: number;
+  businessType?: string;
+  companyName?: string;
+  completedJobs?: number;
+  contactPerson?: string;
+  isLinkedAccount?: boolean;
+  isPrimaryVendor?: boolean;
+  linkedVendorId?: string;
+  rating?: number;
+  reviewCount?: number;
+  serviceType?: string;
+}
+
+/**
+ * Minimal tenant info for table display
+ */
+export interface FilteredUserTenantInfo {
+  unitNumber?: string;
+  leaseStatus?: string;
+  rentStatus?: string;
+}
+
+/**
  * Lightweight user data for table display only
  * Contains only the fields needed for table rendering
  */
@@ -207,6 +231,8 @@ export interface FilteredUserTableData {
   isActive: boolean;
   isConnected: boolean;
   employeeInfo?: FilteredUserEmployeeInfo;
+  vendorInfo?: FilteredUserVendorInfo;
+  tenantInfo?: FilteredUserTenantInfo;
 }
 
 /**
@@ -220,6 +246,171 @@ export interface GetFilteredUsersResponse {
   };
   message: string;
 }
+
+/**
+ * Structured response for getClientUserInfo
+ */
+export interface IUserDetailResponse {
+  profile: {
+    firstName: string;
+    lastName: string;
+    fullName: string;
+    avatar: any;
+    phoneNumber: string;
+    email: string;
+    about: string;
+    contact: {
+      phone: string;
+      email: string;
+    };
+  };
+  user: {
+    uid: string;
+    email: string;
+    displayName: string;
+    roles: string[];
+    isActive: boolean;
+    createdAt: Date | string;
+    userType: 'employee' | 'vendor' | 'tenant';
+  };
+  employeeInfo?: IEmployeeDetailInfo;
+  vendorInfo?: IVendorDetailInfo;
+  tenantInfo?: ITenantDetailInfo;
+  properties: any[];
+  documents: any[];
+  status: string;
+  tasks: any[];
+  services?: any[]; // Services for vendor users
+}
+
+/**
+ * Vendor detail information for getClientUserInfo response
+ */
+export interface IVendorDetailInfo {
+  servicesOffered: {
+    plumbing?: boolean;
+    electrical?: boolean;
+    hvac?: boolean;
+    cleaning?: boolean;
+    landscaping?: boolean;
+    painting?: boolean;
+    carpentry?: boolean;
+    roofing?: boolean;
+    security?: boolean;
+    pestControl?: boolean;
+    applianceRepair?: boolean;
+    maintenance?: boolean;
+    other?: boolean;
+  };
+  stats: {
+    completedJobs: number;
+    activeJobs: number;
+    rating: string;
+    responseTime: string;
+    onTimeRate: string;
+  };
+  insuranceInfo: {
+    provider: string;
+    policyNumber: string;
+    expirationDate: Date | null;
+    coverageAmount: number;
+  };
+  contactPerson: {
+    name: string;
+    jobTitle: string;
+    email: string;
+    phone: string;
+  };
+  serviceAreas: {
+    baseLocation: string;
+    maxDistance: number;
+  };
+  linkedVendorId: string | null;
+  registrationNumber: string;
+  isLinkedAccount: boolean;
+  isPrimaryVendor: boolean;
+  yearsInBusiness: number;
+  businessType: string;
+  companyName: string;
+  tags: string[];
+  taxId: string;
+  // Additional fields that might be used in the UI
+  businessAddress?: string;
+  businessHours?: string;
+  totalRevenue?: string;
+  totalProjects?: number;
+  activeProjects?: number;
+  performance?: {
+    avgResponseTime: string;
+    completionRate: string;
+    customerRating: string;
+    repeatRate: string;
+  };
+}
+
+/**
+ * Employee detail information for getClientUserInfo response
+ */
+export interface IEmployeeDetailInfo {
+  stats: {
+    propertiesManaged: number;
+    unitsManaged: number;
+    tasksCompleted: number;
+    onTimeRate: string;
+    rating: string;
+    activeTasks: number;
+  };
+  performance: {
+    taskCompletionRate: string;
+    tenantSatisfaction: string;
+    avgOccupancyRate: string;
+    avgResponseTime: string;
+  };
+  emergencyContact: {
+    name: string;
+    relationship: string;
+    phone: string;
+  };
+  officeInfo: {
+    address: string;
+    city: string;
+    workHours: string;
+  };
+  hireDate: Date | string;
+  employmentType: string;
+  directManager: string;
+  employeeId: string;
+  department: string;
+  position: string;
+  skills: string[];
+  tenure: string;
+  tags: string[];
+}
+
+/**
+ * Tenant detail information for getClientUserInfo response
+ */
+export interface ITenantDetailInfo {
+  leaseInfo: {
+    status: string;
+    startDate: Date | string;
+    endDate: Date | string | null;
+    monthlyRent: number;
+  };
+  unit: {
+    propertyName: string;
+    unitNumber: string;
+    address: string;
+  };
+  maintenanceRequests: any[];
+  paymentHistory: any[];
+  rentStatus: string;
+  documents: any[];
+}
+
+// Type aliases for backward compatibility
+export type EmployeeDetailResponse = IUserDetailResponse;
+export type VendorDetailResponse = IUserDetailResponse;
 
 /**
  * Filter options for querying users
