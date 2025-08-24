@@ -40,14 +40,14 @@ export const useGetVendors = (
     status: initialParams?.status || "active",
     page: initialParams?.page || 1,
     limit: initialParams?.limit || 10,
-    sortBy: initialParams?.sortBy || "displayName",
+    sortBy: initialParams?.sortBy,
     sort: initialParams?.sort || "asc",
   };
 
   const baseHook = useGetFilteredUsers(cuid, baseParams);
   const handleServiceTypeFilter = (serviceType: string) => {
     baseHook.updateQueryParams({
-      sortBy: serviceType || "displayName",
+      sortBy: serviceType,
       page: 1,
     });
   };

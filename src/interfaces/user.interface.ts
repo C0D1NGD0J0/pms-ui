@@ -346,6 +346,13 @@ export interface IVendorDetailInfo {
     customerRating: string;
     repeatRate: string;
   };
+  linkedUsers?: Array<{
+    uid: string;
+    displayName: string;
+    email: string;
+    isActive: boolean;
+    phoneNumber?: string;
+  }>;
 }
 
 /**
