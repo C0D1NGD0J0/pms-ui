@@ -7,7 +7,7 @@ interface CustomDatePickerProps {
   id: string;
   name: string;
   value?: string | null;
-  onChange: (value: string) => void;
+  onChange: (value: string, field?: string) => void;
   className?: string;
   placeholder?: string;
   required?: boolean;
@@ -31,7 +31,7 @@ export const DatePicker: React.FC<CustomDatePickerProps> = ({
 }) => {
   const handleChange: DatePickerProps["onChange"] = (date, dateString) => {
     const dateValue = Array.isArray(dateString) ? dateString[0] : dateString;
-    onChange(dateValue || "");
+    onChange(dateValue || "", name);
   };
 
   const inputClasses = [

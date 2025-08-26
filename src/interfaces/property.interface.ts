@@ -138,6 +138,11 @@ export interface IPropertyDocument {
   unitInfo?: IUnitInfo;
 }
 
+export type ClientPropertyResponse = {
+  property: IPropertyDocument;
+  unitInfo: IUnitInfo;
+};
+
 // Business methods interface (no data properties)
 export interface IPropertyModelMethods {
   // Occupancy status methods

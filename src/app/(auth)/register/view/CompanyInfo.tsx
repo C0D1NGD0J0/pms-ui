@@ -1,4 +1,3 @@
- 
 "use client";
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
@@ -32,7 +31,7 @@ export default function CompanyInfo({
         <FloatingLabelInput
           required
           id="tradingName"
-          name="tradingName"
+          name="companyProfile.tradingName"
           onChange={onChange}
           label="Trading name"
           value={formContext.values.companyProfile?.tradingName || ""}
@@ -57,7 +56,14 @@ export default function CompanyInfo({
         <FloatingLabelInput
           id="companyPhone"
           name="companyProfile.companyPhone"
-          onChange={onChange}
+          onChange={(e) =>
+            onChange({
+              target: {
+                name: e.target.name,
+                value: `+${e.target.value.replace(/\D/g, "")}`,
+              },
+            } as React.ChangeEvent<HTMLInputElement>)
+          }
           value={formContext.values.companyProfile?.companyPhone || ""}
           errorMsg={formContext.errors["companyProfile.companyPhone"]}
           label="Business phone number"

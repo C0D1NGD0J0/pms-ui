@@ -1,7 +1,7 @@
 import { useForm } from "@mantine/form";
 import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
-import UserInfo from "@app/(auth)/register/UserInfo";
+import UserInfo from "@app/(auth)/register/view/UserInfo";
 import { ISignupForm } from "@interfaces/auth.interface";
 
 function UserInfoWrapper() {
@@ -38,7 +38,7 @@ function UserInfoWrapper() {
 describe("UserInfo Component", () => {
   it("should render all required user info fields", () => {
     render(<UserInfoWrapper />);
-    
+
     expect(screen.getByText("First name")).toBeInTheDocument();
     expect(screen.getByText("Last name")).toBeInTheDocument();
     expect(screen.getByText("Email")).toBeInTheDocument();
@@ -51,7 +51,7 @@ describe("UserInfo Component", () => {
 
   it("should render account type dropdown", () => {
     render(<UserInfoWrapper />);
-    
+
     expect(screen.getByText("Acount type")).toBeInTheDocument();
   });
 });

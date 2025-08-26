@@ -8,8 +8,8 @@ import {
   AuthContentBody,
 } from "@components/AuthLayout";
 
-import UserInfo from "../UserInfo";
-import CompanyInfo from "../CompanyInfo";
+import UserInfo from "./UserInfo";
+import CompanyInfo from "./CompanyInfo";
 
 interface RegisterViewProps {
   form: UseFormReturnType<ISignupForm, (values: ISignupForm) => ISignupForm>;

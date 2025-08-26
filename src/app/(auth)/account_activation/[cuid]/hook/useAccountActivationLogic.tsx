@@ -38,7 +38,7 @@ export function useAccountActivationLogic() {
   const form = useForm<IAccountActivationForm>({
     initialValues: {
       token: "",
-      cuid: cuid,
+      cuid: "",
     },
     validateInputOnChange: true,
     validate: zodResolver(AccountActivationSchema) as any,
@@ -47,6 +47,8 @@ export function useAccountActivationLogic() {
   useEffect(() => {
     if (token) {
       form.setFieldValue("token", token);
+      form.setFieldValue("cuid", cuid);
+      form.validate();
     }
   }, [token]);
 
@@ -84,6 +86,7 @@ export function useAccountActivationLogic() {
         token: values.token,
         email: "",
       });
+      console.log(response, values);
       openNotification(
         "success",
         "Account Activated",

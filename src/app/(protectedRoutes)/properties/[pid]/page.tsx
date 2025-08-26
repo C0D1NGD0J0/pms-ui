@@ -180,10 +180,10 @@ export default function PropertyShow() {
   const [searchTerm, setSearchTerm] = useState("");
   const params = useParams<{ pid: string }>();
   let savedUnits: IUnit[] = [];
-  const { data: property, isLoading, error } = usePropertyData(params.pid);
+  const { data, isLoading, error } = usePropertyData(params.pid);
 
-  const isMultiUnit = property?.propertyType
-    ? propertyTypeRules[property.propertyType]?.isMultiUnit ?? false
+  const isMultiUnit = data?.property?.propertyType
+    ? propertyTypeRules[data.property.propertyType]?.isMultiUnit ?? false
     : false;
 
   const {
@@ -191,13 +191,13 @@ export default function PropertyShow() {
     isLoading: isUnitsLoading,
     error: unitsError,
   } = useGetPropertyUnits(
-    property?.cuid ?? "",
+    data?.property?.cuid ?? "",
     params.pid,
     {
       limit: 10,
     },
     {
-      enabled: isMultiUnit && !!property?.cuid && !!params.pid,
+      enabled: isMultiUnit && !!data?.property?.cuid && !!params.pid,
     }
   );
 
@@ -215,7 +215,7 @@ export default function PropertyShow() {
     return <Loading description="Fetching property details" />;
   }
 
-  if (error || !property) {
+  if (error || !data?.property) {
     return (
       <div className="page property-show">
         <div className="error-message">
@@ -233,7 +233,7 @@ export default function PropertyShow() {
       content: (
         <CurrentTenantTab
           tenant={null}
-          property={property}
+          property={data?.property}
           isMultiUnit={isMultiUnit}
         />
       ),
@@ -254,19 +254,19 @@ export default function PropertyShow() {
       content: <DocumentsTab />,
     },
   ];
-  console.log(isMultiUnit, units, "Property Data:", property);
+  console.log(isMultiUnit, units, "Property Data:", data?.property);
   return (
     <div className="page property-show">
       <PageHeader
-        title={property.name}
-        subtitle={`Property ID: #${property.pid} | ${
-          property.address?.fullAddress || "No address"
+        title={data?.property?.name}
+        subtitle={`Property ID: #${data?.property?.pid} | ${
+          data?.property?.address?.fullAddress || "No address"
         }`}
         headerBtn={
           <div className="flex-row">
             <Link
               href={{
-                pathname: `/properties/${property.pid}/edit`,
+                pathname: `/properties/${data?.property?.pid}/edit`,
                 query: { activeTab: "basic" },
               }}
               className="btn btn-outline"
@@ -274,10 +274,10 @@ export default function PropertyShow() {
               <i className="bx bx-edit btn-icon"></i>
               <strong>Edit Property</strong>
             </Link>
-            {property.unitInfo?.canAddUnit && (
+            {data?.unitInfo?.canAddUnit && (
               <Link
                 href={{
-                  pathname: `/properties/${property.pid}/edit`,
+                  pathname: `/properties/${data?.property?.pid}/edit`,
                   query: { activeTab: "units" },
                 }}
                 className="btn btn-primary"
@@ -352,12 +352,12 @@ export default function PropertyShow() {
 
         <PropertySidebar>
           <ImageGallery images={propertyData.images} title="Property Gallery" />
-          {(property.unitInfo?.currentUnits ?? 0) > 0 && isMultiUnit && (
+          {(data.unitInfo?.currentUnits ?? 0) > 0 && isMultiUnit && (
             <UnitsList
               units={savedUnits}
               errors={unitsError}
               isLoading={isUnitsLoading}
-              unitsStats={property.unitInfo}
+              unitsStats={data?.unitInfo}
             />
           )}
           <PropertyManager manager={propertyData.manager} />
