@@ -254,7 +254,7 @@ export default function PropertyShow() {
       content: <DocumentsTab />,
     },
   ];
-  console.log(isMultiUnit, units, "Property Data:", data?.property);
+
   return (
     <div className="page property-show">
       <PageHeader
@@ -306,8 +306,8 @@ export default function PropertyShow() {
                     <TabList>
                       {tabs.map((tab) => (
                         <TabListItem
-                          key={tab.key}
                           id={tab.key}
+                          key={tab.key}
                           label={tab.label}
                         />
                       ))}

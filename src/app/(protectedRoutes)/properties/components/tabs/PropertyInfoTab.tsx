@@ -124,7 +124,11 @@ export function PropertyInfoTab({
                 name="specifications.lotSize"
                 type="number"
                 value={form.values.specifications.lotSize?.toString() || ""}
-                onChange={handleOnChange}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  form.setFieldValue("specifications.lotSize", numValue);
+                }}
                 placeholder="Enter lot size"
                 min={
                   formConfig?.specifications?.lotSize?.min?.toString() || "0"

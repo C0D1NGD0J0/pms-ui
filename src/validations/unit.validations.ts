@@ -157,7 +157,8 @@ export const unitSchema = z.object({
   puid: z
     .string()
     .min(10, "Property unique ID (puid) is required")
-    .max(36, "Invalid property unique ID (puid) detected."),
+    .max(36, "Invalid property unique ID (puid) detected.")
+    .optional(),
   unitNumber: z
     .string()
     .min(1, "Unit number is required")

@@ -162,7 +162,7 @@ export function useBaseUnitForm({
   }, [currentUnit, unitForm]);
 
   const setFormErrors = (unit: UnitFormValues, errors: string[]) => {
-    const unitIndex = findUnitIndexByPuid(unit.puid);
+    const unitIndex = findUnitIndexByPuid(unit?.puid || "");
     if (unitIndex === -1) return;
 
     const formErrors: Record<string, string> = {};

@@ -251,7 +251,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
       );
       return;
     }
-    console.log("Updating unit:", unit);
+
     updateMutation.mutate(unit);
   };
 
