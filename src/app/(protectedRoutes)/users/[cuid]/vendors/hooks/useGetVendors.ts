@@ -1,11 +1,11 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { VENDOR_QUERY_KEYS } from "@utils/constants";
+import { IFilteredVendorsParams, vendorService } from "@services/vendors";
 import {
   COMMON_STATUS_OPTIONS,
   COMMON_SORT_OPTIONS,
 } from "@app/(protectedRoutes)/shared-hooks/constants";
-import {
-  FilteredUsersQueryParams,
-  useGetFilteredUsers,
-} from "@app/(protectedRoutes)/shared-hooks/useGetFilteredUsers";
 
 export interface FilterOption {
   label: string;
@@ -13,9 +13,7 @@ export interface FilterOption {
 }
 
 export interface VendorQueryParams {
-  serviceType?: string;
   status?: "active" | "inactive";
-  search?: string;
   page?: number;
   limit?: number;
   sortBy?: string;
@@ -34,59 +32,90 @@ export const useGetVendors = (
   cuid: string,
   initialParams?: VendorQueryParams
 ) => {
-  const baseParams: FilteredUsersQueryParams = {
-    type: "vendor",
-    role: ["vendor"],
-    status: initialParams?.status || "active",
-    page: initialParams?.page || 1,
-    limit: initialParams?.limit || 10,
-    sortBy: initialParams?.sortBy,
-    sort: initialParams?.sort || "asc",
+  const [queryParams, setQueryParams] = useState<VendorQueryParams>(
+    initialParams || {
+      status: "active",
+      page: 1,
+      limit: 10,
+      sort: "asc",
+    }
+  );
+
+  const query = useQuery({
+    queryKey: VENDOR_QUERY_KEYS.getClientVendors(cuid, queryParams),
+    queryFn: async () => {
+      const vendorQuery: IFilteredVendorsParams = {
+        ...(queryParams.status && { status: queryParams.status }),
+        ...(queryParams.page && { page: queryParams.page }),
+        ...(queryParams.limit && { limit: queryParams.limit }),
+        ...(queryParams.sortBy && { sortBy: queryParams.sortBy }),
+        ...(queryParams.sort && { sort: queryParams.sort }),
+      };
+
+      const resp = await vendorService.getFilteredVendors(cuid, vendorQuery);
+      return resp;
+    },
+  });
+
+  const updateQueryParams = (newParams: Partial<VendorQueryParams>) => {
+    setQueryParams((prev) => ({
+      ...prev,
+      ...newParams,
+    }));
   };
 
-  const baseHook = useGetFilteredUsers(cuid, baseParams);
+  const handlePageChange = (page: number) => {
+    updateQueryParams({ page });
+  };
+
+  const handleLimitChange = (limit: number) => {
+    updateQueryParams({ limit, page: 1 });
+  };
+
+  const handleSortChange = (sort: "asc" | "desc") => {
+    updateQueryParams({ sort });
+  };
+
+  const handleSortByChange = (sortBy: string) => {
+    updateQueryParams({ sortBy });
+  };
+
+  const handleStatusFilter = (status: "active" | "inactive" | "") => {
+    updateQueryParams({ status: status || undefined, page: 1 });
+  };
+
   const handleServiceTypeFilter = (serviceType: string) => {
-    baseHook.updateQueryParams({
-      sortBy: serviceType,
+    updateQueryParams({
+      sortBy: serviceType !== "all" ? serviceType : undefined,
       page: 1,
     });
   };
 
   return {
-    vendors: baseHook.data,
-    totalCount: baseHook.totalCount,
+    vendors: query.data?.items || [],
+    totalCount: query.data?.pagination?.total || 0,
 
-    isLoading: baseHook.isLoading,
-    isError: baseHook.isError,
-    error: baseHook.error,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
 
-    refetch: baseHook.refetch,
-    queryParams: {
-      serviceType:
-        baseHook.queryParams.sortBy !== "displayName"
-          ? baseHook.queryParams.sortBy
-          : undefined,
-      status: baseHook.queryParams.status,
-      page: baseHook.queryParams.page,
-      limit: baseHook.queryParams.limit,
-      sortBy: baseHook.queryParams.sortBy,
-      sort: baseHook.queryParams.sort,
-    } as VendorQueryParams,
+    refetch: query.refetch,
+    queryParams,
+    updateQueryParams,
 
     pagination: {
-      page: baseHook.queryParams.page || 1,
-      limit: baseHook.queryParams.limit || 10,
-      sortBy: baseHook.queryParams.sortBy,
-      sort: baseHook.queryParams.sort,
+      page: queryParams.page || 1,
+      limit: queryParams.limit || 10,
+      sortBy: queryParams.sortBy,
+      sort: queryParams.sort,
     },
 
-    handlePageChange: baseHook.handlePageChange,
-    handleLimitChange: baseHook.handleLimitChange,
-    handleSortChange: baseHook.handleSortChange,
-    handleSortByChange: baseHook.handleSortByChange,
-    handleSearch: baseHook.handleSearch,
+    handlePageChange,
+    handleLimitChange,
+    handleSortChange,
+    handleSortByChange,
+    handleStatusFilter,
     handleServiceTypeFilter,
-    handleStatusFilter: baseHook.handleStatusFilter,
 
     sortOptions: COMMON_SORT_OPTIONS,
     serviceOptions: VENDOR_SERVICE_OPTIONS,

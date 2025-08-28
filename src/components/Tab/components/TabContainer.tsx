@@ -34,14 +34,24 @@ export const TabContainer: React.FC<TabsProps> = ({
   const [availableTabs, setAvailableTabs] = useState<{
     [key: string]: boolean;
   }>({});
+
+  // Get available tab IDs from tabItems if provided
+  const getValidTabs = () => {
+    if (tabItems) {
+      return tabItems.filter((item) => !item.isHidden).map((item) => item.id);
+    }
+    return validTabs;
+  };
+
   const [activeTabId, setActiveTabId] = useState<string>(() => {
+    const currentValidTabs = getValidTabs();
     if (mode === "edit" && typeof window !== "undefined") {
       const saved = activeTabFromParams || localStorage.getItem("activeTab");
-      if (validTabs.includes(saved || "")) {
-        return saved || "";
+      if (saved && currentValidTabs.includes(saved)) {
+        return saved;
       }
     }
-    return defaultTab || "";
+    return defaultTab || currentValidTabs[0] || "";
   });
 
   useEffect(() => {

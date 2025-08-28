@@ -579,4 +579,23 @@ export const USER_QUERY_KEYS = {
   ],
 };
 
+export const VENDOR_QUERY_KEYS = {
+  getClientVendors: (cuid: string, pagination: unknown) => [
+    `/vendors/${cuid}/vendors/filteredVendors`,
+    pagination,
+  ],
+  getVendorByUid: (cuid: string, vendorId: string) => [
+    `/vendors/${cuid}/vendors/${vendorId}`,
+    vendorId,
+  ],
+  getAllClientVendors: (cuid: string) => [
+    `/vendors/${cuid}/vendors`,
+    cuid,
+  ],
+  getVendorStats: (cuid: string, filterParams?: unknown) => [
+    `/vendors/${cuid}/vendors/stats`,
+    filterParams,
+  ],
+};
+
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

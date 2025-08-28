@@ -1,15 +1,6 @@
-import { EmployeeInfo } from "./invitation.interface";
+import { EmployeeInfo, VendorInfo } from "./invitation.interface";
 
 export interface EmployeeDetailResponse {
-  user: {
-    uid: string;
-    email: string;
-    displayName: string;
-    roles: string[];
-    isActive: boolean;
-    createdAt: string;
-    userType: "employee";
-  };
   profile: {
     firstName: string;
     lastName: string;
@@ -24,6 +15,11 @@ export interface EmployeeDetailResponse {
       phone: string;
       email: string;
     };
+    uid: string;
+    displayName: string;
+    roles: string[];
+    isActive: boolean;
+    userType: "employee";
   };
   status: string;
   properties: any[];
@@ -65,7 +61,6 @@ export interface EmployeeDetailResponse {
     tags: string[];
   };
 }
-
 
 export type IUserRoleType =
   | "admin"
@@ -115,7 +110,6 @@ export interface FilteredVendorInfo extends VendorInfo {
   isPrimaryVendor?: boolean;
   companyName?: string;
   serviceType?: string;
-  contactPerson?: string;
   rating?: number;
   reviewCount?: number;
   completedJobs?: number;
@@ -205,6 +199,7 @@ export interface FilteredUserVendorInfo {
   isPrimaryVendor?: boolean;
   linkedVendorId?: string;
   rating?: number;
+  vuid: string;
   reviewCount?: number;
   serviceType?: string;
 }
@@ -263,15 +258,11 @@ export interface IUserDetailResponse {
       phone: string;
       email: string;
     };
-  };
-  user: {
     uid: string;
-    email: string;
     displayName: string;
     roles: string[];
     isActive: boolean;
-    createdAt: Date | string;
-    userType: 'employee' | 'vendor' | 'tenant';
+    userType: "employee" | "vendor" | "tenant";
   };
   employeeInfo?: IEmployeeDetailInfo;
   vendorInfo?: IVendorDetailInfo;
@@ -359,6 +350,24 @@ export interface IVendorDetailInfo {
  * Employee detail information for getClientUserInfo response
  */
 export interface IEmployeeDetailInfo {
+  employeeId: string;
+  hireDate: string;
+  tenure: string;
+  employmentType: string;
+  department: string;
+  position: string;
+  directManager: string;
+  skills: string[];
+  officeInfo: {
+    address: string;
+    city: string;
+    workHours: string;
+  };
+  emergencyContact: {
+    name: string;
+    relationship: string;
+    phone: string;
+  };
   stats: {
     propertiesManaged: number;
     unitsManaged: number;
@@ -373,24 +382,6 @@ export interface IEmployeeDetailInfo {
     avgOccupancyRate: string;
     avgResponseTime: string;
   };
-  emergencyContact: {
-    name: string;
-    relationship: string;
-    phone: string;
-  };
-  officeInfo: {
-    address: string;
-    city: string;
-    workHours: string;
-  };
-  hireDate: Date | string;
-  employmentType: string;
-  directManager: string;
-  employeeId: string;
-  department: string;
-  position: string;
-  skills: string[];
-  tenure: string;
   tags: string[];
 }
 
@@ -415,8 +406,6 @@ export interface ITenantDetailInfo {
   documents: any[];
 }
 
-// Type aliases for backward compatibility
-export type EmployeeDetailResponse = IUserDetailResponse;
 export type VendorDetailResponse = IUserDetailResponse;
 
 /**

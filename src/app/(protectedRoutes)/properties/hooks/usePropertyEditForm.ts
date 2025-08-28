@@ -38,15 +38,15 @@ export function usePropertyEditForm({
         financialDetails: {
           ...propertyData.property.financialDetails,
           lastAssessmentDate:
-            propertyData.property.financialDetails.lastAssessmentDate || "",
+            propertyData.property.financialDetails?.lastAssessmentDate || "",
           purchaseDate:
-            propertyData.property.financialDetails.purchaseDate || "",
+            propertyData.property.financialDetails?.purchaseDate || "",
         },
-        unitInfo: propertyData.unitInfo,
+        unitInfo: propertyData?.unitInfo,
       });
       setOriginalValues({
         ...propertyData.property,
-        unitInfo: propertyData.unitInfo,
+        unitInfo: propertyData?.unitInfo,
       });
     }
   }, [propertyData]);

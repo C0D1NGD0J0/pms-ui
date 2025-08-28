@@ -13,6 +13,7 @@ interface DocumentData {
 }
 
 interface VendorDocumentsTabProps {
+  [k: string]: any;
   // In the future, this could accept vendor data to get real documents
 }
 

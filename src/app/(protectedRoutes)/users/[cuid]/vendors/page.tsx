@@ -13,7 +13,6 @@ import { PageHeader } from "@components/PageElements/Header";
 import { generateLegendColors } from "@src/utils/employeeUtils";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
-import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import {
   PanelsWrapper,
   PanelContent,
@@ -21,7 +20,7 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useGetVendors } from "./hooks";
+import { useGetVendorStats, useGetVendors } from "./hooks";
 import { VendorTableView } from "./components/VendorTableView";
 
 interface VendorsPageProps {
@@ -50,17 +49,24 @@ export default function VendorsPage({ params }: VendorsPageProps) {
     isLoading,
   } = useGetVendors(cuid);
 
-  const { stats } = useGetUserStats(cuid, {
-    role: ["vendor"],
-  });
-
-  const serviceTypeData = useMemo(() => {
-    return stats?.departmentDistribution || [];
+  const { stats } = useGetVendorStats(cuid);
+  console.log("Vendor stats:", stats);
+  
+  const businessTypeData = useMemo(() => {
+    return stats?.businessTypeDistribution || [];
   }, [stats]);
 
-  const legendColors = useMemo(() => {
-    return generateLegendColors(serviceTypeData.length);
-  }, [serviceTypeData.length]);
+  const servicesData = useMemo(() => {
+    return stats?.servicesDistribution || [];
+  }, [stats]);
+
+  const businessTypeLegendColors = useMemo(() => {
+    return generateLegendColors(businessTypeData.length);
+  }, [businessTypeData.length]);
+
+  const servicesLegendColors = useMemo(() => {
+    return generateLegendColors(servicesData.length);
+  }, [servicesData.length]);
 
   const handleEditVendor = (vendor: FilteredUserTableData) => {
     console.log("Edit vendor:", vendor);
@@ -68,7 +74,7 @@ export default function VendorsPage({ params }: VendorsPageProps) {
   };
 
   const handleViewVendorDetails = (vendor: FilteredUserTableData) => {
-    router.push(`/users/${cuid}/vendors/${vendor.uid}`);
+    router.push(`/users/${cuid}/vendors/${vendor.vendorInfo?.vuid}`);
   };
 
   const handleMessageVendor = (vendor: FilteredUserTableData) => {
@@ -126,7 +132,7 @@ export default function VendorsPage({ params }: VendorsPageProps) {
         <div className="insights">
           <InsightCard
             title="Total Vendors"
-            value={totalCount}
+            value={stats?.totalVendors || totalCount}
             icon={<i className="bx bx-building"></i>}
             trend={{
               value: "4",
@@ -136,35 +142,35 @@ export default function VendorsPage({ params }: VendorsPageProps) {
           />
 
           <InsightCard
-            title="Completed Jobs"
-            value="138"
+            title="Business Types"
+            value={businessTypeData.length}
+            icon={<i className="bx bx-category"></i>}
+            trend={{
+              value: `${businessTypeData.length > 0 ? businessTypeData[0]?.name : 'None'}`,
+              direction: "neutral",
+              period: "most common",
+            }}
+          />
+
+          <InsightCard
+            title="Services Offered"
+            value={servicesData.length}
+            icon={<i className="bx bx-wrench"></i>}
+            trend={{
+              value: `${servicesData.length > 0 ? servicesData[0]?.name : 'None'}`,
+              direction: "neutral",
+              period: "most popular",
+            }}
+          />
+
+          <InsightCard
+            title="Active Vendors"
+            value={stats?.totalVendors || 0}
             icon={<i className="bx bx-check-circle"></i>}
             trend={{
-              value: "12%",
+              value: "100%",
               direction: "up",
-              period: "vs last quarter",
-            }}
-          />
-
-          <InsightCard
-            title="Avg. Service Cost"
-            value="$285"
-            icon={<i className="bx bx-money"></i>}
-            trend={{
-              value: "3%",
-              direction: "down",
-              period: "vs last quarter",
-            }}
-          />
-
-          <InsightCard
-            title="Avg. Response Time"
-            value="1.8 days"
-            icon={<i className="bx bx-time"></i>}
-            trend={{
-              value: "0.5 days",
-              direction: "up",
-              period: "improvement",
+              period: "connected",
             }}
           />
         </div>
@@ -192,33 +198,58 @@ export default function VendorsPage({ params }: VendorsPageProps) {
         <div className="flex-row">
           <PanelsWrapper>
             <Panel variant="alt-2">
-              <PanelHeader header={{ title: "Vendor Service Types" }} />
+              <PanelHeader header={{ title: "Vendor Business Types" }} />
               <PanelContent>
                 <div className="analytics-cards">
                   <div className="analytics-card">
                     <ChartContainer
                       type="donut"
-                      data={serviceTypeData}
+                      data={businessTypeData}
                       height={300}
-                      colors={legendColors}
+                      colors={businessTypeLegendColors}
                       chartProps={{
                         donutchart: { showTotal: true, showTooltip: true },
                       }}
                       showLegend={true}
-                      legend={serviceTypeData.map((service, index) => ({
-                        name: service.name,
-                        color: legendColors[index],
-                        percentage: service.percentage,
+                      legend={businessTypeData.map((type, index) => ({
+                        name: type.name,
+                        color: businessTypeLegendColors[index],
+                        percentage: type.percentage,
                       }))}
-                      emptyStateMessage="No service type data available"
-                      emptyStateIcon={<i className="bx bx-wrench"></i>}
+                      emptyStateMessage="No business type data available"
+                      emptyStateIcon={<i className="bx bx-category"></i>}
                     />
                   </div>
                 </div>
               </PanelContent>
             </Panel>
 
-            <></>
+            <Panel variant="alt-2">
+              <PanelHeader header={{ title: "Services Offered" }} />
+              <PanelContent>
+                <div className="analytics-cards">
+                  <div className="analytics-card">
+                    <ChartContainer
+                      type="donut"
+                      data={servicesData}
+                      height={300}
+                      colors={servicesLegendColors}
+                      chartProps={{
+                        donutchart: { showTotal: true, showTooltip: true },
+                      }}
+                      showLegend={true}
+                      legend={servicesData.map((service, index) => ({
+                        name: service.name,
+                        color: servicesLegendColors[index],
+                        percentage: service.percentage,
+                      }))}
+                      emptyStateMessage="No services data available"
+                      emptyStateIcon={<i className="bx bx-wrench"></i>}
+                    />
+                  </div>
+                </div>
+              </PanelContent>
+            </Panel>
           </PanelsWrapper>
         </div>
       </div>

@@ -1,14 +1,14 @@
-import { userService } from "@services/users";
 import { useQuery } from "@tanstack/react-query";
-import { USER_QUERY_KEYS } from "@utils/constants";
+import { vendorService } from "@services/vendors";
+import { VENDOR_QUERY_KEYS } from "@utils/constants";
 import { VendorDetailResponse } from "@interfaces/user.interface";
 
-export const useGetVendor = (cuid: string, vendorId: string) => {
+export const useGetVendor = (cuid: string, vuid: string) => {
   const query = useQuery<VendorDetailResponse>({
-    enabled: !!cuid && !!vendorId,
-    queryKey: USER_QUERY_KEYS.getUserByUid(cuid, vendorId),
+    enabled: !!cuid && !!vuid,
+    queryKey: VENDOR_QUERY_KEYS.getVendorByUid(cuid, vuid),
     queryFn: async () => {
-      const response = await userService.getUserDetails(cuid, vendorId);
+      const response = await vendorService.getVendorDetails(cuid, vuid);
       return response;
     },
   });
