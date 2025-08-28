@@ -7,51 +7,51 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
 import { SignupSchema } from "@validations/auth.validations";
 
-// const user1 = {
-//   firstName: "Wayne",
-//   lastName: "Rooney",
-//   email: "wayne@example.com",
-//   password: "Password1",
-//   cpassword: "Password1",
-//   location: "England",
-//   accountType: {
-//     planId: "personal",
-//     planName: "Personal",
-//     isCorporate: false,
-//   },
-//   phoneNumber: "02071234567",
-//   displayName: "Wayne Rooney",
-//   companyProfile: {
-//     tradingName: "",
-//     legalEntityName: "",
-//     website: "",
-//     companyEmail: "",
-//     companyPhone: "",
-//   },
-// };
-
-const user2 = {
-  firstName: "Donald",
-  lastName: "Trump",
-  email: "donald@example.com",
+const user1 = {
+  firstName: "Wayne",
+  lastName: "Rooney",
+  email: "wayne@example.com",
   password: "Password1",
   cpassword: "Password1",
-  location: "USA",
+  location: "England",
   accountType: {
-    planId: "business",
-    planName: "Business",
+    planId: "personal",
+    planName: "Personal",
     isCorporate: false,
   },
   phoneNumber: "02071234567",
-  displayName: "Donald Trump",
+  displayName: "Wayne Rooney",
   companyProfile: {
-    tradingName: "Trump Organization",
-    legalEntityName: "Trump Organization LLC",
-    website: "www.trumporganization.com",
-    companyEmail: "info@trumporganization.com",
-    companyPhone: "12025550173",
+    tradingName: "",
+    legalEntityName: "",
+    website: "",
+    companyEmail: "",
+    companyPhone: "",
   },
 };
+
+// const user2 = {
+//   firstName: "Donald",
+//   lastName: "Trump",
+//   email: "donald@example.com",
+//   password: "Password1",
+//   cpassword: "Password1",
+//   location: "USA",
+//   accountType: {
+//     planId: "business",
+//     planName: "Business",
+//     isCorporate: false,
+//   },
+//   phoneNumber: "02071234567",
+//   displayName: "Donald Trump",
+//   companyProfile: {
+//     tradingName: "Trump Organization",
+//     legalEntityName: "Trump Organization LLC",
+//     website: "www.trumporganization.com",
+//     companyEmail: "info@trumporganization.com",
+//     companyPhone: "12025550173",
+//   },
+// };
 
 export function useRegisterLogic() {
   const { mutateAsync, isPending } = useMutation({
@@ -84,7 +84,7 @@ export function useRegisterLogic() {
     //   },
     // },
     validateInputOnChange: true,
-    initialValues: user2,
+    initialValues: user1,
     validate: zodResolver(SignupSchema) as any,
   });
 
