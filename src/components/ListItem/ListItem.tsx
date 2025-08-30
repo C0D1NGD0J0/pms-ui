@@ -11,7 +11,6 @@ export interface ListItemProps {
   className?: string;
   disabled?: boolean;
   children?: React.ReactNode;
-  // Review-specific props for self-enclosing functionality
   rating?: number;
   reviewText?: string;
   reviewAuthor?: string;

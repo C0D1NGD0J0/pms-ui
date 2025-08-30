@@ -1,11 +1,7 @@
 import React from "react";
 import { ListItem } from "@components/ListItem";
 
-interface VendorReviewsTabProps {
-  // In the future, this could accept vendor data to get real reviews
-}
-
-export const VendorReviewsTab: React.FC<VendorReviewsTabProps> = () => {
+export const ReviewsTab: React.FC = () => {
   return (
     <div className="reviews-tab">
       <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
@@ -35,4 +31,4 @@ export const VendorReviewsTab: React.FC<VendorReviewsTabProps> = () => {
   );
 };
 
-VendorReviewsTab.displayName = "VendorReviewsTab";
+ReviewsTab.displayName = "ReviewsTab";

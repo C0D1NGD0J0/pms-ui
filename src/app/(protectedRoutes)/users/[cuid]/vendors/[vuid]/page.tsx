@@ -9,15 +9,14 @@ import { TabItem } from "@components/Tab/interface";
 import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
-import { PerformanceTab, ContactTab } from "@components/UserDetail";
+import { PerformanceTab, DocumentsTab, ContactTab } from "@components/UserDetail";
 
 import { useGetVendor } from "../hooks";
 import {
-  VendorDocumentsTab,
-  VendorProjectsTab,
   VendorServicesTab,
-  VendorReviewsTab,
   VendorUsersTab,
+  ProjectsTab,
+  ReviewsTab,
 } from "../components/tabs";
 
 interface VendorDetailPageProps {
@@ -177,19 +176,19 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
       id: "projects",
       label: "Projects",
       icon: <i className="bx bx-briefcase"></i>,
-      content: <VendorProjectsTab vendor={vendor} />,
+      content: <ProjectsTab vendor={vendor} />,
     },
     {
       id: "reviews",
       label: "Reviews",
       icon: <i className="bx bx-star"></i>,
-      content: <VendorReviewsTab />,
+      content: <ReviewsTab />,
     },
     {
       id: "documents",
       label: "Documents",
       icon: <i className="bx bx-file"></i>,
-      content: <VendorDocumentsTab />,
+      content: <DocumentsTab userType={userType} />,
     },
   ];
 

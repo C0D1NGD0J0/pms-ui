@@ -15,7 +15,7 @@ interface VendorProjectsTabProps {
   vendor: VendorDetailResponse;
 }
 
-export const VendorProjectsTab: React.FC<VendorProjectsTabProps> = ({
+export const ProjectsTab: React.FC<VendorProjectsTabProps> = ({
   vendor,
 }) => {
   // Prepare project data for the Table component
@@ -95,4 +95,4 @@ export const VendorProjectsTab: React.FC<VendorProjectsTabProps> = ({
   );
 };
 
-VendorProjectsTab.displayName = "VendorProjectsTab";
+ProjectsTab.displayName = "ProjectsTab";

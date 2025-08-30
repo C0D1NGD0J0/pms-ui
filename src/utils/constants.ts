@@ -588,10 +588,11 @@ export const VENDOR_QUERY_KEYS = {
     `/vendors/${cuid}/vendors/${vendorId}`,
     vendorId,
   ],
-  getAllClientVendors: (cuid: string) => [
-    `/vendors/${cuid}/vendors`,
-    cuid,
+  getVendorTeamMembers: (cuid: string, vuid: string, pagination: unknown) => [
+    `/vendors/${cuid}/team_members/${vuid}`,
+    pagination,
   ],
+  getAllClientVendors: (cuid: string) => [`/vendors/${cuid}/vendors`, cuid],
   getVendorStats: (cuid: string, filterParams?: unknown) => [
     `/vendors/${cuid}/vendors/stats`,
     filterParams,

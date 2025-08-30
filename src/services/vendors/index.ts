@@ -1,4 +1,5 @@
 import axios from "@configs/axios";
+import { VendorQueryParams } from "@src/interfaces";
 import { IListResponseWithPagination } from "@interfaces/user.interface";
 
 export interface IFilteredVendorsParams {
@@ -90,6 +91,33 @@ class VendorService {
       return result.data;
     } catch (error) {
       console.error("Error fetching vendor stats:", error);
+      throw error;
+    }
+  }
+
+  async getVendorTeamMembers(
+    cuid: string,
+    vuid: string,
+    pagination?: VendorQueryParams
+  ) {
+    try {
+      const q = new URLSearchParams();
+
+      if (pagination?.status) q.append("status", pagination.status);
+      if (pagination?.page) q.append("page", pagination.page.toString());
+      if (pagination?.limit) q.append("limit", pagination.limit.toString());
+      if (pagination?.sortBy) q.append("sortBy", pagination.sortBy);
+      if (pagination?.sort) q.append("sort", pagination.sort);
+
+      let url = `${this.baseUrl}/${cuid}/team_members/${vuid}`;
+      if (q.toString()) {
+        url += `?${q.toString()}`;
+      }
+
+      const result = await axios.get(url);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching vendor team members:", error);
       throw error;
     }
   }

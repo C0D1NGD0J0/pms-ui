@@ -5,10 +5,13 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-  background: hsla(213, 14%, 56%, 0.05);
   border-radius: $base-border-radius;
   transition: $transition;
   cursor: pointer;
+
+  &.dark {
+    background: hsla(213, 14%, 56%, 0.1);
+  }
 
   &:hover {
     background: hsla(213, 14%, 56%, 0.1);
@@ -98,7 +101,7 @@
 
   // Variants
   &--document {
-    border: 1px solid hsla(213, 14%, 56%, 0.1);
+    border: 1px solid hslaGen($grey-color, 0.1);
   }
 
   &--review {

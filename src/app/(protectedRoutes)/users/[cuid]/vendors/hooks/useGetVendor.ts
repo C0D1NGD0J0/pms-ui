@@ -3,9 +3,13 @@ import { vendorService } from "@services/vendors";
 import { VENDOR_QUERY_KEYS } from "@utils/constants";
 import { VendorDetailResponse } from "@interfaces/user.interface";
 
-export const useGetVendor = (cuid: string, vuid: string) => {
+export const useGetVendor = (
+  cuid: string,
+  vuid: string,
+  isTeamMember: boolean = false
+) => {
   const query = useQuery<VendorDetailResponse>({
-    enabled: !!cuid && !!vuid,
+    enabled: !!cuid && !!vuid && !isTeamMember,
     queryKey: VENDOR_QUERY_KEYS.getVendorByUid(cuid, vuid),
     queryFn: async () => {
       const response = await vendorService.getVendorDetails(cuid, vuid);
