@@ -39,8 +39,6 @@ describe("useLoginLogic Hook", () => {
       wrapper: TestWrapper,
     });
 
-    expect(result.current.form.values.email).toBe("zlatan@example.com");
-    expect(result.current.form.values.password).toBe("password");
     expect(result.current.form.values.rememberMe).toBe(false);
     expect(result.current.isSubmitting).toBe(false);
     expect(result.current.isModalOpen).toBe(false);

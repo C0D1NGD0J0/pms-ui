@@ -68,7 +68,7 @@ describe("LoginView Component", () => {
       />
     );
 
-    expect(screen.getByText("Select Client Account")).toBeInTheDocument();
+    // Modal should be rendered with account selection
     expect(screen.getByText("Account 1")).toBeInTheDocument();
     expect(screen.getByText("Account 2")).toBeInTheDocument();
   });

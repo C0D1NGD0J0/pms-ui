@@ -53,6 +53,7 @@ describe("ResetPasswordView Component", () => {
   it("should render footer link to login", () => {
     render(<ResetPasswordViewWrapper />);
     
-    expect(screen.getByText("Login")).toBeInTheDocument();
+    expect(screen.getByText("Already have an account? Log in")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Already have an account? Log in" })).toHaveAttribute("href", "/login");
   });
 });

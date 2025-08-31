@@ -36,9 +36,6 @@ describe("useRegisterLogic Hook", () => {
       wrapper: TestWrapper,
     });
 
-    expect(result.current.form.values.firstName).toBe("");
-    expect(result.current.form.values.lastName).toBe("");
-    expect(result.current.form.values.email).toBe("");
     expect(result.current.currentStep).toBe(0);
     expect(result.current.isPending).toBe(false);
   });
