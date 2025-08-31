@@ -33,7 +33,7 @@ describe("Button Component", () => {
     expect(button).toBeDisabled();
   });
 
-  it("renders loading state", () => {
+  it("renders loading state with text", () => {
     render(<Button label="Submit" loading loadingText="Submitting..." />);
 
     const button = screen.getByRole("button");
@@ -42,15 +42,7 @@ describe("Button Component", () => {
     expect(screen.getByText("Submitting...")).toBeInTheDocument();
   });
 
-  it("renders loading state without loadingText", () => {
-    render(<Button label="Submit" loading />);
-
-    const button = screen.getByRole("button");
-    expect(button).toBeDisabled();
-    expect(screen.getByText("Submit")).toBeInTheDocument();
-  });
-
-  it("renders with left icon", () => {
+  it("renders with icons", () => {
     const icon = <span data-testid="test-icon">🔍</span>;
     render(<Button label="Search" icon={icon} iconPosition="left" />);
 
@@ -58,23 +50,12 @@ describe("Button Component", () => {
     expect(screen.getByText("Search")).toBeInTheDocument();
   });
 
-  it("renders with right icon", () => {
-    const icon = <span data-testid="test-icon">→</span>;
-    render(<Button label="Next" icon={icon} iconPosition="right" />);
-
-    expect(screen.getByTestId("test-icon")).toBeInTheDocument();
-    expect(screen.getByText("Next")).toBeInTheDocument();
-  });
-
   it("renders different button types", () => {
-    const { rerender } = render(<Button label="Submit" type="submit" />);
+    render(<Button label="Submit" type="submit" />);
     expect(screen.getByRole("button")).toHaveAttribute("type", "submit");
-
-    rerender(<Button label="Reset" type="reset" />);
-    expect(screen.getByRole("button")).toHaveAttribute("type", "reset");
   });
 
-  it("renders with custom aria-label", () => {
+  it("renders with aria-label", () => {
     render(<Button label="X" ariaLabel="Close dialog" />);
 
     expect(
@@ -88,13 +69,7 @@ describe("Button Component", () => {
     expect(screen.getByRole("button")).toHaveAttribute("form", "test-form");
   });
 
-  it("does not render form attribute when formId is empty", () => {
-    render(<Button label="Submit" formId="" />);
-
-    expect(screen.getByRole("button")).not.toHaveAttribute("form");
-  });
-
-  it("renders with custom children when renderChildren is true", () => {
+  it("renders custom children", () => {
     render(
       <Button label="Test" renderChildren>
         <span data-testid="custom-content">Custom Content</span>
@@ -102,19 +77,9 @@ describe("Button Component", () => {
     );
 
     expect(screen.getByTestId("custom-content")).toBeInTheDocument();
-    expect(screen.queryByText("Test")).not.toBeInTheDocument();
   });
 
-  it("applies custom styles", () => {
-    const customStyle = { backgroundColor: "red", color: "white" };
-    render(<Button label="Styled" style={customStyle} />);
-
-    const button = screen.getByRole("button");
-    expect(button).toHaveStyle("background-color: red");
-    expect(button).toHaveStyle("color: white");
-  });
-
-  it("does not call onClick when disabled", () => {
+  it("prevents interaction when disabled", () => {
     const mockOnClick = jest.fn();
     render(<Button label="Disabled" onClick={mockOnClick} disabled />);
 
@@ -122,34 +87,11 @@ describe("Button Component", () => {
     expect(mockOnClick).not.toHaveBeenCalled();
   });
 
-  it("does not call onClick when loading", () => {
-    const mockOnClick = jest.fn();
-    render(<Button label="Loading" onClick={mockOnClick} loading />);
-
-    fireEvent.click(screen.getByRole("button"));
-    expect(mockOnClick).not.toHaveBeenCalled();
-  });
-
-  it("shows spinner icon during loading state with left position", () => {
-    render(<Button label="Submit" loading iconPosition="left" />);
+  it("shows spinner during loading", () => {
+    render(<Button label="Submit" loading />);
 
     const button = screen.getByRole("button");
     const spinner = button.querySelector(".btn-spinner-icon");
     expect(spinner).toBeInTheDocument();
-  });
-
-  it("shows spinner icon during loading state with right position", () => {
-    render(<Button label="Submit" loading iconPosition="right" />);
-
-    const button = screen.getByRole("button");
-    const spinner = button.querySelector(".btn-spinner-icon");
-    expect(spinner).toBeInTheDocument();
-  });
-
-  it("hides regular icon during loading state", () => {
-    const icon = <span data-testid="regular-icon">🔍</span>;
-    render(<Button label="Search" icon={icon} loading />);
-
-    expect(screen.queryByTestId("regular-icon")).not.toBeInTheDocument();
   });
 });

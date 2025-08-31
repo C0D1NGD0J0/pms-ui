@@ -1,12 +1,15 @@
-import { render, screen, fireEvent } from "@tests/utils/test-utils";
 import { UnitsList } from "@components/Property/UnitsList";
 import { UnitStatus, IUnit } from "@interfaces/unit.interface";
+import { fireEvent, render, screen } from "@tests/utils/test-utils";
 
 const mockUnits: IUnit[] = [
   {
     id: "1",
     puid: "unit-1",
     unitNumber: "A",
+    unitType: "studio",
+    floor: 1,
+    isActive: true,
     status: "occupied" as UnitStatus,
     specifications: {
       rooms: 2,
@@ -17,11 +20,25 @@ const mockUnits: IUnit[] = [
       rentAmount: 1200,
       currency: "USD",
     },
+    amenities: {
+      airConditioning: false,
+      heating: false,
+      washerDryer: false,
+      dishwasher: false,
+      parking: false,
+      storage: false,
+      cableTV: false,
+      internet: false,
+    },
+    leases: [],
   },
   {
     id: "2", 
     puid: "unit-2",
     unitNumber: "B",
+    unitType: "studio",
+    floor: 1,
+    isActive: true,
     status: "available" as UnitStatus,
     specifications: {
       rooms: 1,
@@ -32,11 +49,25 @@ const mockUnits: IUnit[] = [
       rentAmount: 900,
       currency: "USD",
     },
+    amenities: {
+      airConditioning: false,
+      heating: false,
+      washerDryer: false,
+      dishwasher: false,
+      parking: false,
+      storage: false,
+      cableTV: false,
+      internet: false,
+    },
+    leases: [],
   },
   {
     id: "3",
     puid: "unit-3", 
     unitNumber: "C",
+    unitType: "studio",
+    floor: 2,
+    isActive: true,
     status: "maintenance" as UnitStatus,
     specifications: {
       rooms: 3,
@@ -47,12 +78,33 @@ const mockUnits: IUnit[] = [
       rentAmount: 1500,
       currency: "USD",
     },
+    amenities: {
+      airConditioning: false,
+      heating: false,
+      washerDryer: false,
+      dishwasher: false,
+      parking: false,
+      storage: false,
+      cableTV: false,
+      internet: false,
+    },
+    leases: [],
   },
 ];
 
 const mockUnitsStats = {
   currentUnits: 3,
   maxAllowedUnits: 5,
+  availableSpaces: 2,
+  unitStats: {
+    occupied: 1,
+    available: 1,
+    maintenance: 1,
+    reserved: 0,
+    inactive: 0,
+    vacant: 1,
+  },
+  canAddUnit: true,
 };
 
 describe("UnitsList Component", () => {
@@ -182,13 +234,30 @@ describe("UnitsList Component", () => {
   it("handles units without complete specifications", () => {
     const incompleteUnit: IUnit = {
       id: "4",
+      puid: "unit-4",
       unitNumber: "D",
+      unitType: "studio",
+      floor: 1,
+      isActive: true,
       status: "available" as UnitStatus,
-      specifications: {}, // Empty specifications
+      specifications: {
+        totalArea: 0, // Required field but empty value
+      },
       fees: {
         rentAmount: 800,
         currency: "USD",
       },
+      amenities: {
+        airConditioning: false,
+        heating: false,
+        washerDryer: false,
+        dishwasher: false,
+        parking: false,
+        storage: false,
+        cableTV: false,
+        internet: false,
+      },
+      leases: [],
     };
 
     render(<UnitsList {...defaultProps} units={[incompleteUnit]} />);
