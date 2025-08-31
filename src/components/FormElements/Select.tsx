@@ -70,7 +70,6 @@ const SelectComponent = forwardRef<
     [options, value]
   );
   const selectedLabel = selectedOption?.label || placeholder;
-  console.log("Selected Label:", selectedLabel);
   const handleValueChange = useCallback(
     (newValue: string) => {
       // Always create a synthetic event with the correct value
@@ -312,3 +311,4 @@ SelectComponent.displayName = "Select";
 
 // Export the memoized version of the component
 export const Select = React.memo(SelectComponent);
+Select.displayName = "Select";
