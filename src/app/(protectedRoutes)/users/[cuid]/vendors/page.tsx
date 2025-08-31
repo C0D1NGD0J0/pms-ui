@@ -147,7 +147,7 @@ export default function VendorsPage({ params }: VendorsPageProps) {
             icon={<i className="bx bx-category"></i>}
             trend={{
               value: `${businessTypeData.length > 0 ? businessTypeData[0]?.name : 'None'}`,
-              direction: "neutral",
+              direction: "none",
               period: "most common",
             }}
           />
@@ -158,7 +158,7 @@ export default function VendorsPage({ params }: VendorsPageProps) {
             icon={<i className="bx bx-wrench"></i>}
             trend={{
               value: `${servicesData.length > 0 ? servicesData[0]?.name : 'None'}`,
-              direction: "neutral",
+              direction: "none",
               period: "most popular",
             }}
           />

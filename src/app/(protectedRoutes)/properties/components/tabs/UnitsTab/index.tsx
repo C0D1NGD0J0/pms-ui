@@ -122,7 +122,7 @@ export function UnitsTab({ property }: Props) {
     if (unit.id && unit.propertyId) {
       setUnitToDelete(unit);
       setShowDeleteModal(true);
-    } else {
+    } else if (unit.puid) {
       handleRemoveUnit(unit.puid);
     }
   };
@@ -339,7 +339,7 @@ export function UnitsTab({ property }: Props) {
           label="Cancel"
           disabled={isSubmitting}
           className="btn btn-outline btn-grow"
-          onClick={() => handleRemoveUnit(currentUnit.puid)}
+          onClick={() => currentUnit.puid && handleRemoveUnit(currentUnit.puid)}
         />
         <Button
           form="units-form"

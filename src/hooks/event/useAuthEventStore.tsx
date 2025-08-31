@@ -29,7 +29,11 @@ export function useAuthEventStore() {
           const resp = await authService.currentuser(loginData.cuid);
           if (resp) {
             setUser(resp.data);
-            setClient(resp.data.client);
+            const clientData = {
+              cuid: resp.data.client.cuid,
+              displayName: resp.data.client.clientDisplayName,
+            };
+            setClient(clientData);
             queryClient.setQueryData(CURRENT_USER_QUERY_KEY, resp.data);
           }
         } catch (error) {
@@ -44,7 +48,11 @@ export function useAuthEventStore() {
 
   useEvent(EventTypes.CURRENT_USER_UPDATED, (userData: ICurrentUser | null) => {
     setUser(userData);
-    setClient(userData?.client ?? null);
+    const clientData = userData?.client ? {
+      cuid: userData.client.cuid,
+      displayName: userData.client.clientDisplayName,
+    } : null;
+    setClient(clientData);
     setFetchingUser(false);
     setAuthenticating(false);
   });

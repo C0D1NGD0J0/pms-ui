@@ -192,7 +192,7 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
   const handleDeleteUnit = useCallback(
     (unit: UnitFormValues) => {
-      if (!unit.id || !unit.propertyId) {
+      if (!unit.id || !unit.propertyId || !unit.puid) {
         openNotification(
           "error",
           "Cannot Delete Unit",

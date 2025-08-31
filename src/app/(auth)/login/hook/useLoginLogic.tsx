@@ -70,8 +70,12 @@ export function useLoginLogic() {
       (account) => account.cuid === selectedClient
     );
     if (selectedAccount) {
-      setClient(selectedAccount);
-      publish(EventTypes.ACCOUNT_SWITCHED, selectedAccount);
+      const clientData = {
+        cuid: selectedAccount.cuid,
+        displayName: selectedAccount.clientDisplayName,
+      };
+      setClient(clientData);
+      publish(EventTypes.ACCOUNT_SWITCHED, clientData);
       router.push("/dashboard");
     }
     setIsModalOpen(false);

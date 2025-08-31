@@ -14,7 +14,7 @@ export const VendorProfileHeader: React.FC<VendorProfileHeaderProps> = ({
   onSendMessage,
   onViewContract,
 }) => {
-  const { vendorInfo, user } = vendor;
+  const { vendorInfo, profile } = vendor;
 
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
@@ -35,7 +35,7 @@ export const VendorProfileHeader: React.FC<VendorProfileHeaderProps> = ({
           )}
         </div>
         <span className="rating-text">
-          {rating}/5 ({vendorInfo.reviewCount} reviews)
+          {rating}/5
         </span>
       </div>
     );
@@ -46,32 +46,32 @@ export const VendorProfileHeader: React.FC<VendorProfileHeaderProps> = ({
       <div className="employee-header-top">
         <div className="employee-profile">
           <div className="employee-avatar">
-            {vendorInfo.companyName
-              .split(' ')
-              .map(word => word[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)}
+            {vendorInfo?.companyName
+              ?.split(' ')
+              ?.map(word => word[0])
+              ?.join('')
+              ?.toUpperCase()
+              ?.slice(0, 2)}
             <StatusBadge
-              status={user.isActive ? "active" : "inactive"}
+              status={profile.isActive ? "active" : "inactive"}
               variant="text"
               className="employee-status"
             >
-              {user.isActive ? "Active" : "Inactive"}
+              {profile.isActive ? "Active" : "Inactive"}
             </StatusBadge>
           </div>
 
           <div className="employee-info">
-            <h1>{vendorInfo.companyName}</h1>
+            <h1>{vendorInfo?.companyName}</h1>
             <div className="employee-meta">
-              <span className="employee-role">{vendorInfo.businessType}</span>
+              <span className="employee-role">{vendorInfo?.businessType}</span>
               <div className="vendor-rating-container">
-                {renderStars(vendorInfo.rating)}
+                {renderStars(parseFloat(vendorInfo?.stats?.rating || "0"))}
               </div>
             </div>
 
             <div className="employee-tags">
-              {vendorInfo.tags?.map((tag, index) => (
+              {vendorInfo?.tags?.map((tag, index) => (
                 <EmployeeTag
                   key={index}
                   icon={<i className="bx bx-check-circle"></i>}
@@ -103,27 +103,27 @@ export const VendorProfileHeader: React.FC<VendorProfileHeaderProps> = ({
 
       <div className="employee-stats">
         <div className="stat-item">
-          <span className="stat-number">{vendorInfo.totalRevenue}</span>
+          <span className="stat-number">{vendorInfo?.totalRevenue}</span>
           <span className="stat-label">Revenue</span>
         </div>
         <div className="stat-item">
-          <span className="stat-number">{vendorInfo.totalProjects}</span>
+          <span className="stat-number">{vendorInfo?.totalProjects}</span>
           <span className="stat-label">Total Projects</span>
         </div>
         <div className="stat-item">
-          <span className="stat-number">{vendorInfo.activeProjects}</span>
+          <span className="stat-number">{vendorInfo?.activeProjects}</span>
           <span className="stat-label">Active Projects</span>
         </div>
         <div className="stat-item">
-          <span className="stat-number">{vendorInfo.stats.onTimeRate}</span>
+          <span className="stat-number">{vendorInfo?.stats?.onTimeRate}</span>
           <span className="stat-label">On-Time Rate</span>
         </div>
         <div className="stat-item">
-          <span className="stat-number">{vendorInfo.stats.responseTime}</span>
+          <span className="stat-number">{vendorInfo?.stats?.responseTime}</span>
           <span className="stat-label">Response Time</span>
         </div>
         <div className="stat-item">
-          <span className="stat-number">{vendorInfo.stats.repeatRate}</span>
+          <span className="stat-number">85%</span>
           <span className="stat-label">Repeat Rate</span>
         </div>
       </div>

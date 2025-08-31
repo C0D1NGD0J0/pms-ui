@@ -170,7 +170,7 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
       id: "users",
       label: "Team Members",
       icon: <i className="bx bx-users"></i>,
-      content: <VendorUsersTab />,
+      content: <VendorUsersTab cuid={cuid} vuid={vuid} />,
     },
     {
       id: "projects",
@@ -188,7 +188,7 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
       id: "documents",
       label: "Documents",
       icon: <i className="bx bx-file"></i>,
-      content: <DocumentsTab userType={userType} />,
+      content: <DocumentsTab userType="vendor" />,
     },
   ];
 
