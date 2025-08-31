@@ -2,7 +2,7 @@ import { FilteredUser } from "@interfaces/user.interface";
 
 export const mockEmployees: FilteredUser[] = [
   {
-    id: "emp-001",
+    uid: "emp-001",
     email: "john.dawson@company.com",
     displayName: "John Dawson",
     firstName: "John",
@@ -23,7 +23,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-002",
+    uid: "emp-002",
     email: "maria.rodriguez@company.com",
     displayName: "Maria Rodriguez",
     firstName: "Maria",
@@ -44,7 +44,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-003",
+    uid: "emp-003",
     email: "thomas.wilson@company.com",
     displayName: "Thomas Wilson",
     firstName: "Thomas",
@@ -65,7 +65,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-004",
+    uid: "emp-004",
     email: "samantha.lee@company.com",
     displayName: "Samantha Lee",
     firstName: "Samantha",
@@ -86,7 +86,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-005",
+    uid: "emp-005",
     email: "david.zhang@company.com",
     displayName: "David Zhang",
     firstName: "David",
@@ -107,7 +107,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-006",
+    uid: "emp-006",
     email: "jessica.miller@company.com",
     displayName: "Jessica Miller",
     firstName: "Jessica",
@@ -128,7 +128,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-007",
+    uid: "emp-007",
     email: "robert.harris@company.com",
     displayName: "Robert Harris",
     firstName: "Robert",
@@ -149,7 +149,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-008",
+    uid: "emp-008",
     email: "emily.chen@company.com",
     displayName: "Emily Chen",
     firstName: "Emily",
@@ -170,7 +170,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-009",
+    uid: "emp-009",
     email: "michael.brown@company.com",
     displayName: "Michael Brown",
     firstName: "Michael",
@@ -191,7 +191,7 @@ export const mockEmployees: FilteredUser[] = [
     },
   },
   {
-    id: "emp-010",
+    uid: "emp-010",
     email: "sarah.johnson@company.com",
     displayName: "Sarah Johnson",
     firstName: "Sarah",
