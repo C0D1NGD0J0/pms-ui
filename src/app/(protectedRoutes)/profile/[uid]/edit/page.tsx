@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import React, { useState, use } from "react";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
@@ -14,11 +14,12 @@ import {
   SettingsTab,
 } from "./components/index";
 
-const ProfileEditPage: React.FC<{ uid: string }> = (props) => {
-  // const params = useParams(); // TODO: Use this when implementing API calls
+const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
+  params,
+}) => {
+  const { uid } = use(params);
   const router = useRouter();
-  // const uid = params.uid as string; // TODO: Use this when implementing API calls
-  console.log("Editing profile for UID:", props.uid);
+  console.log("Editing profile for UID:", uid);
   const [activeTab, setActiveTab] = useState("personal");
 
   // TODO: Replace with API call to fetch user profile data

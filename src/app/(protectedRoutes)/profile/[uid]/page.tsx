@@ -1,10 +1,10 @@
 "use client";
-import React from "react";
 import Image from "next/image";
+import React, { use } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@components/FormElements";
 import { InsightCardList } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
-import { useParams, useRouter } from "next/navigation";
 import { TableColumn, Table } from "@components/Table";
 import { ListItem } from "@components/ListItem/ListItem";
 import {
@@ -15,13 +15,12 @@ import {
 } from "@components/Panel";
 
 interface ProfileViewPageProps {
-  params?: { uid: string };
+  params: Promise<{ uid: string }>;
 }
 
-const ProfileViewPage: React.FC<ProfileViewPageProps> = () => {
-  const params = useParams();
+const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
+  const { uid } = use(params);
   const router = useRouter();
-  const uid = params.uid as string;
 
   // TODO: Replace with API call to fetch user profile data
   // const { data: profileData, isLoading, error } = useGetUserProfile(uid);2
