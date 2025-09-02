@@ -14,15 +14,11 @@ import {
   SettingsTab,
 } from "./components/index";
 
-interface ProfileEditPageProps {
-  params?: { uid: string };
-}
-
-const ProfileEditPage = ({ params }: ProfileEditPageProps) => {
+const ProfileEditPage = (props: { uid: string }) => {
   // const params = useParams(); // TODO: Use this when implementing API calls
   const router = useRouter();
   // const uid = params.uid as string; // TODO: Use this when implementing API calls
-  console.log("Editing profile for UID:", params?.uid);
+  console.log("Editing profile for UID:", props.uid);
   const [activeTab, setActiveTab] = useState("personal");
 
   // TODO: Replace with API call to fetch user profile data
