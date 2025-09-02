@@ -36,7 +36,8 @@ export default function EmployeeDetailPage({
   const { cuid, uid } = React.use(params);
   const [activeTab, setActiveTab] = useState("overview");
   const { employee, isLoading, error } = useGetEmployeeInfo(cuid, uid);
-  const isResourceOwner = permission.isOwner(employee?.user.uid);
+
+  const isResourceOwner = permission.isOwner("uid", employee?.profile.uid);
   const handleBack = () => {
     router.back();
   };
@@ -217,7 +218,7 @@ export default function EmployeeDetailPage({
   ];
 
   const employeeTags = [
-    ...employee.user.roles.map((role: string) => ({
+    ...employee.profile.roles.map((role: string) => ({
       type: "employment" as const,
       label: role.charAt(0).toUpperCase() + role.slice(1),
       icon: "bx bx-user-check",
@@ -265,7 +266,7 @@ export default function EmployeeDetailPage({
               }`,
               avatar: employee.profile.avatar?.url,
             },
-            status: employee.user.isActive ? "active" : "inactive",
+            status: employee.profile.isActive ? "active" : "inactive",
             metaInfo: {
               primary: employee.employeeInfo.position,
               secondary:

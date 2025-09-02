@@ -3,7 +3,7 @@ import { authService } from "@services/auth";
 import { NotificationProvider } from "@hooks/useNotification";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useAccountActivationLogic } from "@app/(auth)/account_activation/[cid]/hook/useAccountActivationLogic";
+import { useAccountActivationLogic } from "@app/(auth)/account_activation/[cuid]/hook/useAccountActivationLogic";
 
 // Mock dependencies
 jest.mock("@services/auth");

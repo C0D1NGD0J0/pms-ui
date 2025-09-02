@@ -4,12 +4,12 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { PermissionAction, PermissionField, PermissionGate } from "@components/PermissionGate";
 
 // Mock the usePermissions hook
-jest.mock("@hooks/usePermissions", () => ({
-  usePermissions: jest.fn(),
+jest.mock("@hooks/useUnifiedPermissions", () => ({
+  useUnifiedPermissions: jest.fn(),
 }));
 
-import { usePermissions } from "@hooks/usePermissions";
-const mockUsePermissions = usePermissions as jest.MockedFunction<typeof usePermissions>;
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<typeof useUnifiedPermissions>;
 
 // Test wrapper with QueryClient
 const createWrapper = () => {
@@ -33,9 +33,10 @@ describe("Permission Components", () => {
 
   describe("PermissionGate", () => {
     it("should render children when permission is granted", () => {
-      mockUsePermissions.mockReturnValue({
-        hasPermission: jest.fn().mockReturnValue(true),
-        hasPermissions: jest.fn(),
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn().mockReturnValue(true),
+        canAll: jest.fn(),
+        canAny: jest.fn(),
       } as any);
 
       render(
@@ -49,9 +50,10 @@ describe("Permission Components", () => {
     });
 
     it("should not render children when permission is denied", () => {
-      mockUsePermissions.mockReturnValue({
-        hasPermission: jest.fn().mockReturnValue(false),
-        hasPermissions: jest.fn(),
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn().mockReturnValue(false),
+        canAll: jest.fn(),
+        canAny: jest.fn(),
       } as any);
 
       render(
@@ -65,9 +67,10 @@ describe("Permission Components", () => {
     });
 
     it("should render fallback when permission is denied", () => {
-      mockUsePermissions.mockReturnValue({
-        hasPermission: jest.fn().mockReturnValue(false),
-        hasPermissions: jest.fn(),
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn().mockReturnValue(false),
+        canAll: jest.fn(),
+        canAny: jest.fn(),
       } as any);
 
       render(
@@ -85,10 +88,11 @@ describe("Permission Components", () => {
     });
 
     it("should handle multiple permissions with requireAll", () => {
-      const mockHasPermissions = jest.fn().mockReturnValue(true);
-      mockUsePermissions.mockReturnValue({
-        hasPermission: jest.fn(),
-        hasPermissions: mockHasPermissions,
+      const mockCanAll = jest.fn().mockReturnValue(true);
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn(),
+        canAll: mockCanAll,
+        canAny: jest.fn(),
       } as any);
 
       render(
@@ -101,18 +105,19 @@ describe("Permission Components", () => {
         { wrapper: createWrapper() }
       );
 
-      expect(mockHasPermissions).toHaveBeenCalledWith(
+      expect(mockCanAll).toHaveBeenCalledWith(
         ["property:read", "property:update"],
-        { requireAll: true }
+        {}
       );
       expect(screen.getByText("Protected Content")).toBeInTheDocument();
     });
 
     it("should pass context to permission checks", () => {
-      const mockHasPermission = jest.fn().mockReturnValue(true);
-      mockUsePermissions.mockReturnValue({
-        hasPermission: mockHasPermission,
-        hasPermissions: jest.fn(),
+      const mockCan = jest.fn().mockReturnValue(true);
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: mockCan,
+        canAll: jest.fn(),
+        canAny: jest.fn(),
       } as any);
 
       const context = { resourceId: "prop123", ownerId: "user123" };
@@ -127,13 +132,13 @@ describe("Permission Components", () => {
         { wrapper: createWrapper() }
       );
 
-      expect(mockHasPermission).toHaveBeenCalledWith("property:update", context);
+      expect(mockCan).toHaveBeenCalledWith("property:update", context);
     });
   });
 
   describe("PermissionField", () => {
     it("should render field when edit permission is granted", () => {
-      mockUsePermissions.mockReturnValue({
+      mockUseUnifiedPermissions.mockReturnValue({
         canEditField: jest.fn().mockReturnValue(true),
         isFieldDisabled: jest.fn(),
       } as any);
@@ -149,7 +154,7 @@ describe("Permission Components", () => {
     });
 
     it("should hide field when edit permission is denied in hide mode", () => {
-      mockUsePermissions.mockReturnValue({
+      mockUseUnifiedPermissions.mockReturnValue({
         canEditField: jest.fn().mockReturnValue(false),
         isFieldDisabled: jest.fn(),
       } as any);
@@ -166,7 +171,7 @@ describe("Permission Components", () => {
 
     it("should provide disabled state in disable mode", () => {
       const mockIsFieldDisabled = jest.fn().mockReturnValue(true);
-      mockUsePermissions.mockReturnValue({
+      mockUseUnifiedPermissions.mockReturnValue({
         canEditField: jest.fn(),
         isFieldDisabled: mockIsFieldDisabled,
       } as any);
@@ -182,12 +187,12 @@ describe("Permission Components", () => {
         { wrapper: createWrapper() }
       );
 
-      expect(mockIsFieldDisabled).toHaveBeenCalledWith("price", "property");
+      expect(mockIsFieldDisabled).toHaveBeenCalledWith("property", "price", {});
       expect(screen.getByTestId("field-input")).toBeDisabled();
     });
 
     it("should render fallback when field is hidden", () => {
-      mockUsePermissions.mockReturnValue({
+      mockUseUnifiedPermissions.mockReturnValue({
         canEditField: jest.fn().mockReturnValue(false),
         isFieldDisabled: jest.fn(),
       } as any);
@@ -211,9 +216,8 @@ describe("Permission Components", () => {
 
   describe("PermissionAction", () => {
     it("should render action when permission is granted", () => {
-      mockUsePermissions.mockReturnValue({
-        canPerformAction: jest.fn().mockReturnValue(true),
-        canPerformActionOnResource: jest.fn(),
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn().mockReturnValue(true),
       } as any);
 
       render(
@@ -227,9 +231,8 @@ describe("Permission Components", () => {
     });
 
     it("should not render action when permission is denied", () => {
-      mockUsePermissions.mockReturnValue({
-        canPerformAction: jest.fn().mockReturnValue(false),
-        canPerformActionOnResource: jest.fn(),
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn().mockReturnValue(false),
       } as any);
 
       render(
@@ -243,10 +246,9 @@ describe("Permission Components", () => {
     });
 
     it("should use resource-specific action check when resourceId is provided", () => {
-      const mockCanPerformActionOnResource = jest.fn().mockReturnValue(true);
-      mockUsePermissions.mockReturnValue({
-        canPerformAction: jest.fn(),
-        canPerformActionOnResource: mockCanPerformActionOnResource,
+      const mockCan = jest.fn().mockReturnValue(true);
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: mockCan,
       } as any);
 
       render(
@@ -262,20 +264,20 @@ describe("Permission Components", () => {
         { wrapper: createWrapper() }
       );
 
-      expect(mockCanPerformActionOnResource).toHaveBeenCalledWith(
-        "update",
-        "property", 
-        "prop123",
-        "user123",
-        ["user123", "user456"]
+      expect(mockCan).toHaveBeenCalledWith(
+        "property.update",
+        {
+          resourceOwner: "user123",
+          resourceId: "prop123",
+          assignedTo: ["user123", "user456"]
+        }
       );
       expect(screen.getByTestId("action-button")).toBeInTheDocument();
     });
 
     it("should render fallback when action is not permitted", () => {
-      mockUsePermissions.mockReturnValue({
-        canPerformAction: jest.fn().mockReturnValue(false),
-        canPerformActionOnResource: jest.fn(),
+      mockUseUnifiedPermissions.mockReturnValue({
+        can: jest.fn().mockReturnValue(false),
       } as any);
 
       render(

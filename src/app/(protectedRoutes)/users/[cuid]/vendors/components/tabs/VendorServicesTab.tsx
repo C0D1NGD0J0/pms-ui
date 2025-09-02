@@ -1,85 +1,102 @@
 import React from "react";
-import { EmployeeTag } from "@components/Badge";
+import { TableColumn, Table } from "@components/Table";
+import { VendorDetailResponse } from "@interfaces/user.interface";
 
-import { VendorDetail } from "../../hooks/useGetVendor";
+interface ServiceData {
+  id: string;
+  service: string;
+  category: string;
+  rate: string;
+  availability: string;
+  responseTime: string;
+}
 
 interface VendorServicesTabProps {
-  vendor: VendorDetail;
+  vendor: VendorDetailResponse;
 }
 
 export const VendorServicesTab: React.FC<VendorServicesTabProps> = ({
   vendor,
 }) => {
-  const { services, vendorInfo } = vendor;
+  const formatServiceName = (key: string): string => {
+    return key
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase());
+  };
+
+  const servicesOffered = vendor.vendorInfo?.servicesOffered
+    ? Object.entries(vendor.vendorInfo.servicesOffered)
+        .filter(([, value]) => value === true)
+        .map(([key]) => formatServiceName(key))
+    : [];
+
+  // Prepare service data for the Table component
+  const serviceData: ServiceData[] =
+    servicesOffered.length > 0
+      ? servicesOffered.map((service, index) => ({
+          id: `service-${index}`,
+          service: service,
+          category: service,
+          rate: "Contact for Quote",
+          availability: "Business Hours",
+          responseTime: "Same Day",
+        }))
+      : [
+          {
+            id: "service-default",
+            service: "General Maintenance",
+            category: "General",
+            rate: "Contact for Quote",
+            availability: "Business Hours",
+            responseTime: "Same Day",
+          },
+        ];
+
+  // Define table columns for services
+  const serviceColumns: TableColumn<ServiceData>[] = [
+    {
+      title: "Service",
+      dataIndex: "service",
+      render: (service: string) => <strong>{service}</strong>,
+    },
+    {
+      title: "Category",
+      dataIndex: "category",
+      render: (category: string) => (
+        <span className="service-badge">
+          <i className="bx bx-wrench"></i> {category}
+        </span>
+      ),
+    },
+    {
+      title: "Rate",
+      dataIndex: "rate",
+      render: (rate: string) => <span className="price">{rate}</span>,
+    },
+    {
+      title: "Availability",
+      dataIndex: "availability",
+    },
+    {
+      title: "Response Time",
+      dataIndex: "responseTime",
+    },
+  ];
 
   return (
-    <div className="vendor-services">
-      <div className="info-section">
-        <h4>Services Offered</h4>
-        <div className="services-table">
-          <div className="services-table-header">
-            <div className="header-cell">Service</div>
-            <div className="header-cell">Category</div>
-            <div className="header-cell">Rate</div>
-            <div className="header-cell">Availability</div>
-            <div className="header-cell">Response Time</div>
-          </div>
-          {services.map((service) => (
-            <div key={service.id} className="service-row">
-              <div className="service-cell">
-                <div className="service-info">
-                  <i className={service.categoryIcon}></i>
-                  <span className="service-name">{service.name}</span>
-                </div>
-              </div>
-              <div className="service-cell">
-                <EmployeeTag variant="permission" size="small">
-                  {service.category}
-                </EmployeeTag>
-              </div>
-              <div className="service-cell service-rate">{service.rate}</div>
-              <div className="service-cell">{service.availability}</div>
-              <div className="service-cell">{service.responseTime}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="info-section">
-        <h4>Business Information</h4>
-        <div className="info-grid">
-          <div className="info-item">
-            <i className="bx bx-buildings"></i>
-            <div className="info-content">
-              <div className="info-label">Business Type</div>
-              <div className="info-value">{vendorInfo.businessType}</div>
-            </div>
-          </div>
-          <div className="info-item">
-            <i className="bx bx-star"></i>
-            <div className="info-content">
-              <div className="info-label">Rating</div>
-              <div className="info-value">{vendorInfo.rating}/5 stars</div>
-            </div>
-          </div>
-          <div className="info-item">
-            <i className="bx bx-group"></i>
-            <div className="info-content">
-              <div className="info-label">Total Reviews</div>
-              <div className="info-value">{vendorInfo.reviewCount} reviews</div>
-            </div>
-          </div>
-          <div className="info-item">
-            <i className="bx bx-check-circle"></i>
-            <div className="info-content">
-              <div className="info-label">Status</div>
-              <div className="info-value">{vendorInfo.status}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="services-tab">
+      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
+        Services & Pricing
+      </h3>
+      <Table
+        columns={serviceColumns}
+        dataSource={serviceData}
+        rowKey="id"
+        pagination={false}
+        tableVariant="default"
+      />
     </div>
   );
 };
 
-VendorServicesTab.displayName = 'VendorServicesTab';
+VendorServicesTab.displayName = "VendorServicesTab";

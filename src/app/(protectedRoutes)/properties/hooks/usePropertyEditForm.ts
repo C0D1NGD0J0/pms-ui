@@ -33,10 +33,22 @@ export function usePropertyEditForm({
 
   useEffect(() => {
     if (propertyData) {
-      propertyForm.setValues(propertyData);
-      setOriginalValues(propertyData);
+      propertyForm.setValues({
+        ...propertyData.property,
+        financialDetails: {
+          ...propertyData.property.financialDetails,
+          lastAssessmentDate:
+            propertyData.property.financialDetails?.lastAssessmentDate || "",
+          purchaseDate:
+            propertyData.property.financialDetails?.purchaseDate || "",
+        },
+        unitInfo: propertyData?.unitInfo,
+      });
+      setOriginalValues({
+        ...propertyData.property,
+        unitInfo: propertyData?.unitInfo,
+      });
     }
-     
   }, [propertyData]);
 
   const updatePropertyMutation = useMutation({

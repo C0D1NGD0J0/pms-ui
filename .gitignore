@@ -140,3 +140,4 @@ random.txt
 docs/
 src/**/*.md
 src/**/*.csv
+test-data/

@@ -85,19 +85,24 @@ export function createUnitSchema(unitType: UnitType) {
 
   const feesSchema = z.object({
     currency: z.enum(["USD", "EUR", "GBP", "CAD"]).default("USD"),
-    rentAmount: createNumericField(0, 100000, "rentAmount", [
+    rentAmount: createNumericField(0, 1000000, "rentAmount", [
       "Rent amount is required",
-      "Rent amount cannot exceed 100000",
+      "Rent amount cannot exceed 1000000",
     ]).refine((val) => {
       if (isRequired("fees.rentAmount") || isRequired("rentAmount")) {
         return val > 0;
       }
       return true;
     }, `Rent amount is required for ${unitType} units`),
-    securityDeposit: z
-      .number()
-      .min(0, "Security deposit cannot be negative")
-      .default(0),
+    securityDeposit: createNumericField(0, 100000, "securityDeposit", [
+      "Security deposit is required",
+      "Security deposit cannot exceed 100000",
+    ]).refine((val) => {
+      if (isRequired("fees.securityDeposit") || isRequired("securityDeposit")) {
+        return val > 0;
+      }
+      return true;
+    }, `Security deposit is required for ${unitType} units`),
   });
 
   const amenitiesSchema = z.object({
@@ -151,8 +156,9 @@ export const unitSchema = z.object({
   propertyId: z.string().optional(),
   puid: z
     .string()
-    .min(30, "Property unique ID (puid) is required")
-    .max(36, "Invalid property unique ID (puid) detected."),
+    .min(10, "Property unique ID (puid) is required")
+    .max(36, "Invalid property unique ID (puid) detected.")
+    .optional(),
   unitNumber: z
     .string()
     .min(1, "Unit number is required")

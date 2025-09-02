@@ -14,5 +14,6 @@ export * from "@components/FormElements/Modal";
 export * from "@components/FormElements/Select";
 export * from "@components/FormElements/TextArea";
 export * from "@components/FormElements/Toggle";
+export * from "@components/FormElements/ToggleListItem";
 export * from "@components/FormElements/FileInput";
 export * from "@components/FormElements/Tooltip";

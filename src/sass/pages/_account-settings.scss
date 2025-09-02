@@ -207,6 +207,17 @@
   margin-bottom: 2rem;
 
   .toggle-label {
+    .toggle-title {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+
+      i {
+        font-size: 1.8rem;
+        color: hsl(194, 66%, 24%);
+      }
+    }
+
     h4 {
       font-size: 1.6rem;
       margin-bottom: 0.5rem;

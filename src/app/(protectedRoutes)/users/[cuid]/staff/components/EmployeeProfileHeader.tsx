@@ -14,7 +14,7 @@ export const EmployeeProfileHeader: React.FC<EmployeeProfileHeaderProps> = ({
   onSendMessage,
   onViewSchedule,
 }) => {
-  const { profile, employeeInfo, user } = employee;
+  const { profile, employeeInfo } = employee;
 
   return (
     <div className="employee-header">
@@ -23,11 +23,11 @@ export const EmployeeProfileHeader: React.FC<EmployeeProfileHeaderProps> = ({
           <div className="employee-avatar">
             {`${profile.firstName?.[0] || ""}${profile.lastName?.[0] || ""}`}
             <StatusBadge
-              status={user.isActive ? "active" : "inactive"}
+              status={profile.isActive ? "active" : "inactive"}
               variant="text"
               className="employee-status"
             >
-              {user.isActive ? "Active" : "Inactive"}
+              {profile.isActive ? "Active" : "Inactive"}
             </StatusBadge>
           </div>
 

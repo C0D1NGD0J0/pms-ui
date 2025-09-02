@@ -8,7 +8,13 @@ export const AccountActivationSchema = z.object({
     .regex(/^[a-zA-Z0-9_-]+$/, {
       message: "Invalid verification code pattern detected.",
     }),
-  cuid: z.string().uuid({ message: "Invalid customer ID format" }),
+  cuid: z
+    .string()
+    .refine(
+      (val) =>
+        val.length >= 12 && val.length <= 36 && /^[a-zA-Z0-9-]+$/.test(val),
+      { message: "Invalid customer ID format." }
+    ),
 });
 
 export const SignupSchema = z
@@ -20,7 +26,7 @@ export const SignupSchema = z
       .string()
       .min(8, { message: "Password must be at least 8 characters long" }),
     cpassword: z.string(),
-    location: z.string().min(4, { message: "Location is required" }),
+    location: z.string().min(3, { message: "Location is required" }),
     accountType: z.object({
       planId: z.string().min(1, { message: "Plan is required" }).optional(),
       planName: z.string().min(1, { message: "Plan name is required" }),

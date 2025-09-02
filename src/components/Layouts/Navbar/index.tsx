@@ -59,12 +59,12 @@ export const Navbar: React.FC = () => {
 
       <ul className={`navbar-menu ${isMobileMenuOpen ? "mobile-active" : ""}`}>
         {menuItems.map((item, index) => {
-          // skip auth-required items if user is not logged in
           if (item.authRequired && !isLoggedIn) return null;
 
           // Skip non-auth items if user is logged in
           if (
             !item.authRequired &&
+            isLoggedIn &&
             (item.label === "Login" || item.label === "Signup")
           )
             return null;
@@ -92,7 +92,7 @@ export const Navbar: React.FC = () => {
             }`}
           >
             <li>
-              <Link href="/profile">Profile</Link>
+              <Link href="/profile/user123">Profile</Link>
             </li>
             <li>
               <Link href="/settings">Settings</Link>

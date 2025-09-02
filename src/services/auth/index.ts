@@ -63,8 +63,8 @@ class AuthService {
   };
   accountActivation = async (cuid: string, data: { token: string }) => {
     try {
-      const res = await axios.put(
-        `${this.baseUrl}/account_activation/${cuid}?t=${data.token}`
+      const res = await axios.patch(
+        `${this.baseUrl}/${cuid}/account_activation?t=${data.token}`
       );
       return res;
     } catch (error) {
@@ -73,7 +73,7 @@ class AuthService {
   };
   resendActivationLink = async (email: string) => {
     try {
-      const res = await axios.put(`${this.baseUrl}/resend_activation_link`, {
+      const res = await axios.patch(`${this.baseUrl}/resend_activation_link`, {
         email,
       });
       return res;
@@ -83,7 +83,7 @@ class AuthService {
   };
   forgotPassword = async (email: string) => {
     try {
-      const res = await axios.put(`${this.baseUrl}/forgot_password`, {
+      const res = await axios.patch(`${this.baseUrl}/forgot_password`, {
         email,
       });
       return res;
@@ -93,7 +93,7 @@ class AuthService {
   };
   resetPassword = async (token: string, password: string) => {
     try {
-      const res = await axios.put(`${this.baseUrl}/reset_password`, {
+      const res = await axios.patch(`${this.baseUrl}/reset_password`, {
         resetToken: token,
         password,
       });

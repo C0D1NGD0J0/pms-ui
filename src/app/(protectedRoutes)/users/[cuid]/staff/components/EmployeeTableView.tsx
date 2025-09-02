@@ -19,6 +19,7 @@ interface EmployeeTableViewProps {
   onViewDetails: (employee: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
+  headerTitle?: string;
   permissions: ReturnType<typeof useUnifiedPermissions>;
 }
 
@@ -35,6 +36,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   pagination,
   totalCount,
   permissions,
+  headerTitle = "Employee Directory",
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -183,7 +185,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
       loading={isLoading}
       withHeader={true}
       showRowNumbers={true}
-      headerTitle="Employee Directory"
+      headerTitle={headerTitle}
       searchOpts={{
         value: searchValue,
         isVisible: true,
