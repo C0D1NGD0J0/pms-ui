@@ -7,6 +7,52 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
 import { SignupSchema } from "@validations/auth.validations";
 
+const user1 = {
+  firstName: "Wayne",
+  lastName: "Rooney",
+  email: "wayne@example.com",
+  password: "Password1",
+  cpassword: "Password1",
+  location: "England",
+  accountType: {
+    planId: "personal",
+    planName: "Personal",
+    isCorporate: false,
+  },
+  phoneNumber: "02071234567",
+  displayName: "Wayne Rooney",
+  companyProfile: {
+    tradingName: "",
+    legalEntityName: "",
+    website: "",
+    companyEmail: "",
+    companyPhone: "",
+  },
+};
+
+// const user2 = {
+//   firstName: "Donald",
+//   lastName: "Trump",
+//   email: "donald@example.com",
+//   password: "Password1",
+//   cpassword: "Password1",
+//   location: "USA",
+//   accountType: {
+//     planId: "business",
+//     planName: "Business",
+//     isCorporate: false,
+//   },
+//   phoneNumber: "02071234567",
+//   displayName: "Donald Trump",
+//   companyProfile: {
+//     tradingName: "Trump Organization",
+//     legalEntityName: "Trump Organization LLC",
+//     website: "www.trumporganization.com",
+//     companyEmail: "info@trumporganization.com",
+//     companyPhone: "12025550173",
+//   },
+// };
+
 export function useRegisterLogic() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: authService.signup,
@@ -15,33 +61,35 @@ export function useRegisterLogic() {
   const [currentStep, setCurrentStep] = useState(0);
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
-    initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      cpassword: "",
-      location: "",
-      accountType: {
-        planId: "",
-        planName: "",
-        isCorporate: false,
-      },
-      phoneNumber: "",
-      displayName: "",
-      companyProfile: {
-        tradingName: "",
-        legalEntityName: "",
-        website: "",
-        companyEmail: "",
-        companyPhone: "",
-      },
-    },
+    // initialValues: {
+    //   firstName: "Wayne",
+    //   lastName: "Rooney",
+    //   email: "wayne@example.com",
+    //   password: "Password1",
+    //   cpassword: "Password1",
+    //   location: "England",
+    //   accountType: {
+    //     planId: "personal",
+    //     planName: "Personal",
+    //     isCorporate: false,
+    //   },
+    //   phoneNumber: "02071234567",
+    //   displayName: "Wayne Rooney",
+    //   companyProfile: {
+    //     tradingName: "",
+    //     legalEntityName: "",
+    //     website: "",
+    //     companyEmail: "",
+    //     companyPhone: "",
+    //   },
+    // },
     validateInputOnChange: true,
+    initialValues: user1,
     validate: zodResolver(SignupSchema) as any,
   });
 
   const nextStep = () => {
+    form.validate();
     setCurrentStep(currentStep + 1);
   };
 
@@ -54,6 +102,7 @@ export function useRegisterLogic() {
     field?: keyof ISignupForm
   ) => {
     if (typeof e === "string" && field) {
+      console.log("Setting field:", field, "to value:", e);
       form.setFieldValue(field, e);
       return;
     } else if (typeof e !== "string") {

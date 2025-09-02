@@ -14,6 +14,7 @@ import {
 
 import { CompanyTab } from "./tabs/CompanyTab";
 import { ProfileTab } from "./tabs/ProfileTab";
+import { AdminUsersTab } from "./tabs/AdminUsersTab";
 import { PreferencesTab } from "./tabs/PreferencesTab";
 import { SubscriptionTab } from "./tabs/SubscriptionTab";
 import { IdentificationTab } from "./tabs/IdentificationTab";
@@ -58,6 +59,11 @@ export function AccountTabs({
         tabLabel: "Subscription",
         isVisible: true,
       },
+      {
+        key: "admin-users",
+        tabLabel: "Admin Users",
+        isVisible: true,
+      },
     ],
     [clientInfo.accountType.isEnterpriseAccount]
   );
@@ -65,6 +71,7 @@ export function AccountTabs({
   const handleTabChange = async (newTab: string) => {
     setActiveTab(newTab);
   };
+
   const renderActiveTabContent = (tab: string) => {
     const tabProps = {
       inEditMode,
@@ -83,6 +90,8 @@ export function AccountTabs({
         return <SubscriptionTab inEditmode={false} {...tabProps} />;
       case "identification":
         return <IdentificationTab {...tabProps} />;
+      case "admin-users":
+        return <AdminUsersTab {...tabProps} />;
       default:
         return <ProfileTab {...tabProps} />;
     }

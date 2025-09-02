@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { v4 as uuidv4 } from "uuid";
 import { useForm } from "@mantine/form";
 import { extractChanges } from "@utils/helpers";
@@ -6,7 +5,7 @@ import { useUnitFormStaticData, useAuth } from "@store/index";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { createUnitSchema } from "@validations/unit.validations";
 import { PropertyFormValues } from "@interfaces/property.interface";
-import { useConditionalRender, useNotification } from "@hooks/index";
+import { usePropertyFormRenderer, useNotification } from "@hooks/index";
 import { useGetPropertyUnits } from "@app/(protectedRoutes)/properties/hooks";
 import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
 import {
@@ -38,7 +37,7 @@ export function useBaseUnitForm({
 
   const { data: formConfig, loading: formConfigLoading } =
     useUnitFormStaticData();
-  const { isVisible } = useConditionalRender({
+  const { isVisible } = usePropertyFormRenderer({
     unitType: currentUnit?.unitType,
   });
 
@@ -163,7 +162,7 @@ export function useBaseUnitForm({
   }, [currentUnit, unitForm]);
 
   const setFormErrors = (unit: UnitFormValues, errors: string[]) => {
-    const unitIndex = findUnitIndexByPuid(unit.puid);
+    const unitIndex = findUnitIndexByPuid(unit?.puid || "");
     if (unitIndex === -1) return;
 
     const formErrors: Record<string, string> = {};

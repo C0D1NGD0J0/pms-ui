@@ -21,7 +21,7 @@ export function useLoginLogic() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [userAccounts, setUserAccounts] = useState<
-    { cuid: string; displayName: string }[]
+    { cuid: string; clientDisplayName: string }[]
   >([]);
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: ILoginForm) => authService.login(data),
@@ -29,8 +29,8 @@ export function useLoginLogic() {
 
   const form = useForm<ILoginForm>({
     initialValues: {
-      password: "password",
-      email: "zlatan@example.com",
+      password: "Password1",
+      email: "wayne@example.com",
       otpCode: "",
       rememberMe: false,
     },
@@ -70,8 +70,12 @@ export function useLoginLogic() {
       (account) => account.cuid === selectedClient
     );
     if (selectedAccount) {
-      setClient(selectedAccount);
-      publish(EventTypes.ACCOUNT_SWITCHED, selectedAccount);
+      const clientData = {
+        cuid: selectedAccount.cuid,
+        displayName: selectedAccount.clientDisplayName,
+      };
+      setClient(clientData);
+      publish(EventTypes.ACCOUNT_SWITCHED, clientData);
       router.push("/dashboard");
     }
     setIsModalOpen(false);

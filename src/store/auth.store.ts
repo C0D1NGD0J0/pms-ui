@@ -50,13 +50,12 @@ const useAuthStore = create<AuthState>()(
       actions: {
         logout: async () => {
           const cuid = get().client?.cuid;
-          sessionStorage.removeItem("auth-storage");
           await authService.logout(cuid);
           return set({
             user: null,
+            client: null,
             permissions: [],
             currentLoadingState: null,
-            client: { cuid: "", displayName: "" },
           });
         },
         setUser: (user: ICurrentUser | null) => {
@@ -72,10 +71,9 @@ const useAuthStore = create<AuthState>()(
           return set({ currentLoadingState });
         },
         clearAuthState: () => {
-          sessionStorage.removeItem("auth-storage");
           return set({
             user: null,
-            client: { cuid: "", displayName: "" },
+            client: null,
             permissions: [],
             currentLoadingState: null,
           });
@@ -83,7 +81,7 @@ const useAuthStore = create<AuthState>()(
       },
     }),
     {
-      name: "auth-storage", // unique name for the storage (session storage key)
+      name: "auth-storage",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => {
         return { client: state.client } as unknown as AuthState;

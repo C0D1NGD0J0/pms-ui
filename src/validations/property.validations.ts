@@ -40,11 +40,11 @@ export const propertySchema = z
         .min(10, "Address is required and must be at least 10 characters"),
     }),
     financialDetails: z.object({
-      purchasePrice: z.number().min(0).optional(),
-      purchaseDate: z.string().optional(),
-      marketValue: z.number().min(0).optional(),
-      propertyTax: z.number().min(0).optional(),
-      lastAssessmentDate: z.string().optional(),
+      purchasePrice: z.number().min(0).optional().default(0),
+      purchaseDate: z.string().optional().default(""),
+      marketValue: z.number().min(0).optional().default(0),
+      propertyTax: z.number().min(0).optional().default(0),
+      lastAssessmentDate: z.string().optional().default(""),
     }),
 
     fees: z.object({

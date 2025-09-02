@@ -1,9 +1,10 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useScrollToTop } from "@hooks/useScrollToTop";
 
 import { TabsContext } from "../hook";
+import { TabListItem } from "./TabListItem";
+import { TabPanelContent } from "./TabPanelContent";
 import { TabListProps, TabsProps } from "../interface";
 
 const validTabs = [
@@ -18,12 +19,14 @@ const validTabs = [
 ];
 export const TabContainer: React.FC<TabsProps> = ({
   children,
+  tabItems,
   defaultTab,
   onChange,
   className = "",
   mode = "new",
   ariaLabel = "Tabs",
   scrollOnChange = true,
+  variant = "settings",
 }) => {
   const { scrollToTop } = useScrollToTop();
   const searchParams = useSearchParams();
@@ -31,14 +34,24 @@ export const TabContainer: React.FC<TabsProps> = ({
   const [availableTabs, setAvailableTabs] = useState<{
     [key: string]: boolean;
   }>({});
+
+  // Get available tab IDs from tabItems if provided
+  const getValidTabs = () => {
+    if (tabItems) {
+      return tabItems.filter((item) => !item.isHidden).map((item) => item.id);
+    }
+    return validTabs;
+  };
+
   const [activeTabId, setActiveTabId] = useState<string>(() => {
+    const currentValidTabs = getValidTabs();
     if (mode === "edit" && typeof window !== "undefined") {
       const saved = activeTabFromParams || localStorage.getItem("activeTab");
-      if (validTabs.includes(saved || "")) {
-        return saved || "";
+      if (saved && currentValidTabs.includes(saved)) {
+        return saved;
       }
     }
-    return defaultTab || "";
+    return defaultTab || currentValidTabs[0] || "";
   });
 
   useEffect(() => {
@@ -70,14 +83,45 @@ export const TabContainer: React.FC<TabsProps> = ({
     setAvailableTabs((prev) => ({ ...prev, [id]: !disabled }));
   };
 
+  // Get active tab content when using tabItems
+  const activeTabItem = tabItems
+    ?.filter((item) => !item.isHidden)
+    .find((item) => item.id === activeTabId);
+
   return (
     <TabsContext.Provider value={{ activeTabId, setActiveTabId, registerTab }}>
       <div
-        className={`tabs-container ${className}`}
+        className={`tabs-container tabs-container-${variant} ${className}`}
         role="tablist"
         aria-label={ariaLabel}
       >
-        {children}
+        {tabItems ? (
+          <>
+            <TabList variant={variant}>
+              {tabItems
+                .filter((item) => !item.isHidden)
+                .map((item) => (
+                  <TabListItem
+                    key={item.id}
+                    id={item.id}
+                    label={item.label}
+                    icon={item.icon}
+                    hasError={item.hasError}
+                    disabled={item.disabled}
+                  />
+                ))}
+            </TabList>
+
+            {activeTabItem && (
+              <TabPanelContent key={activeTabItem.id} id={activeTabItem.id}>
+                {activeTabItem.content}
+              </TabPanelContent>
+            )}
+          </>
+        ) : (
+          // Legacy pattern: Manual children (backward compatibility)
+          children
+        )}
       </div>
     </TabsContext.Provider>
   );
@@ -86,6 +130,8 @@ export const TabContainer: React.FC<TabsProps> = ({
 export const TabList: React.FC<TabListProps> = ({
   children,
   className = "",
+  variant = "settings",
 }) => {
-  return <ul className={`settings-tabs ${className}`}>{children}</ul>;
+  const tabsClass = variant === "profile" ? "profile-tabs" : "settings-tabs";
+  return <ul className={`${tabsClass} ${className}`}>{children}</ul>;
 };

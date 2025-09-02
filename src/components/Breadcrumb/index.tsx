@@ -39,20 +39,20 @@ const generateBreadcrumbItems = (pathname: string): BreadcrumbItem[] => {
   const pathSegments = pathname.split("/").filter((segment) => segment);
 
   const breadcrumbItems: BreadcrumbItem[] = [
-    { title: "home", href: "/dashboard" },
+    { title: "Home", href: "/dashboard" },
   ];
 
   let currentPath = "";
 
   pathSegments.forEach((segment, index) => {
-    currentPath += `/${segment}}`;
+    currentPath += `/${segment}`;
 
     const formattedName = segment
       .replace(/-/g, " ")
       .replace(/\b\w/g, (char) => char.toUpperCase());
 
     breadcrumbItems.push({
-      title: formattedName.toLocaleLowerCase(),
+      title: formattedName,
       href: index < pathSegments.length - 1 ? currentPath : undefined,
     });
   });

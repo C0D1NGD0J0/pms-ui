@@ -50,7 +50,7 @@ export default function InvitationPage({
           setProcessingInvite(false);
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [cuid, token]);
 
   if (isLoading || isValidatingToken) {

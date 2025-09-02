@@ -564,4 +564,39 @@ export const INVITE_QUERY_KEYS = {
     pagination,
   ],
 };
+export const USER_QUERY_KEYS = {
+  getClientUsers: (cuid: string, pagination: unknown) => [
+    `/clients/${cuid}/filtered-users`,
+    pagination,
+  ],
+  getUserStats: (cuid: string, filters: unknown) => [
+    `/clients/${cuid}/users/stats`,
+    filters,
+  ],
+  getUserByUid: (cuid: string, uid: string) => [
+    `/clients/${cuid}/users_details/${uid}`,
+    uid,
+  ],
+};
+
+export const VENDOR_QUERY_KEYS = {
+  getClientVendors: (cuid: string, pagination: unknown) => [
+    `/vendors/${cuid}/vendors/filteredVendors`,
+    pagination,
+  ],
+  getVendorByUid: (cuid: string, vendorId: string) => [
+    `/vendors/${cuid}/vendors/${vendorId}`,
+    vendorId,
+  ],
+  getVendorTeamMembers: (cuid: string, vuid: string, pagination: unknown) => [
+    `/vendors/${cuid}/team_members/${vuid}`,
+    pagination,
+  ],
+  getAllClientVendors: (cuid: string) => [`/vendors/${cuid}/vendors`, cuid],
+  getVendorStats: (cuid: string, filterParams?: unknown) => [
+    `/vendors/${cuid}/vendors/stats`,
+    filterParams,
+  ],
+};
+
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

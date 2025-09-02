@@ -18,7 +18,7 @@ interface LoginViewProps {
   form: UseFormReturnType<ILoginForm>;
   isSubmitting: boolean;
   isModalOpen: boolean;
-  userAccounts: Array<{ cuid: string; displayName: string }>;
+  userAccounts: Array<{ cuid: string; clientDisplayName: string }>;
   selectedClient: string;
   handleSubmit: (values: ILoginForm) => void;
   handleSelect: (cuid: string) => void;

@@ -9,6 +9,7 @@ export const TabListItem: React.FC<TabListItemProps> = ({
   className = "",
   disabled = false,
   hasError = false,
+  icon,
 }) => {
   const { activeTabId, setActiveTabId } = useTabsContext();
   const isActive = activeTabId === id;
@@ -32,7 +33,8 @@ export const TabListItem: React.FC<TabListItemProps> = ({
       tabIndex={isActive ? 0 : -1}
       data-tab={id}
     >
-      {label}
+      {icon && <span className="tab-icon">{icon}</span>}
+      <span className="tab-label">{label}</span>
       {hasError && (
         <span
           className="error-indicator"

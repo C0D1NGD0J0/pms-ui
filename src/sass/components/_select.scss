@@ -250,7 +250,7 @@
 @media (prefers-color-scheme: dark) {
   .custom-select-wrapper {
     .select-trigger {
-      background-color: hslaGen($dark-grey-color);
+      background-color: hslaGen($white-color);
       border-color: hslaGen($grey-color, 0.4);
       color: hslaGen($white-color);
     }

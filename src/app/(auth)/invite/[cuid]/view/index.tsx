@@ -42,7 +42,7 @@ export function InvitationAcceptanceView({
   const [isDeclineModalOpen, setIsDeclineModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [userAccounts, setUserAccounts] = useState<
-    Array<{ cuid: string; displayName: string }>
+    Array<{ cuid: string; clientDisplayName: string }>
   >([]);
 
   const handleAccountSetupNext = (accountData: IInvitationAcceptResponse) => {
@@ -108,7 +108,7 @@ export function InvitationAcceptanceView({
       const params = new URLSearchParams({
         fromInvite: "true",
         accountCuid: selectedAccount.cuid,
-        accountName: selectedAccount.displayName,
+        accountName: selectedAccount.clientDisplayName,
       });
 
       router.push(`/dashboard?${params.toString()}`);

@@ -43,6 +43,6 @@ describe("ForgotPasswordView Component", () => {
   it("should render footer link to login", () => {
     render(<ForgotPasswordViewWrapper />);
     
-    expect(screen.getByText("login")).toBeInTheDocument();
+    expect(screen.getByText("Already have an account? Log in")).toBeInTheDocument();
   });
 });

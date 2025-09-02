@@ -7,6 +7,7 @@ import {
 } from "@interfaces/utils.interface";
 import {
   EditPropertyFormValues,
+  ClientPropertyResponse,
   IPropertyFilterParams,
   PropertyFormValues,
   IPropertyDocument,
@@ -107,14 +108,12 @@ class PropertyService {
   async getClientProperty(
     cuid: string,
     propertyPid: string
-  ): Promise<IPropertyDocument> {
+  ): Promise<ClientPropertyResponse> {
     try {
-      const result = await axios.get<IServerResponse<IPropertyDocument>>(
+      const result = await axios.get<IServerResponse<ClientPropertyResponse>>(
         `${this.baseUrl}/${cuid}/client_properties/${propertyPid}?q`,
         this.axiosConfig
       );
-      // const transformedData = postTransformPropertyData(result.data);
-      // console.log("Transformed Property Data:", transformedData);
       return result.data;
     } catch (error) {
       console.error("Error fetching clientproperty:", error);

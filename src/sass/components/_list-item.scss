@@ -1,0 +1,146 @@
+@use "../abstract/index" as *;
+
+.list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: $base-border-radius;
+  transition: $transition;
+  cursor: pointer;
+
+  &.dark {
+    background: hsla(213, 14%, 56%, 0.1);
+  }
+
+  &:hover {
+    background: hsla(213, 14%, 56%, 0.1);
+  }
+
+  &--disabled {
+    cursor: default;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__icon {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: hslaGen($primary-color);
+    color: hslaGen($white-color);
+    border-radius: $base-border-radius;
+
+    i {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__details {
+    flex: 1;
+
+    h5 {
+      font-size: 1.3rem;
+      color: hslaGen($dark-grey-color);
+      margin: 0 0 0.2rem 0;
+      font-weight: 500;
+    }
+
+    span {
+      font-size: 1.1rem;
+      color: hslaGen($grey-color);
+    }
+  }
+
+  &__review-content {
+    margin-top: 0.5rem;
+  }
+
+  &__stars {
+    display: flex;
+    gap: 0.2rem;
+    margin-bottom: 0.5rem;
+
+    i {
+      font-size: 1.3rem;
+
+      &.filled {
+        color: hslaGen($secondary-color);
+      }
+
+      &.empty {
+        color: hslaGen($grey-color);
+      }
+    }
+  }
+
+  &__review-text {
+    font-size: 1.2rem;
+    color: hslaGen($dark-grey-color);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  &__action {
+    color: hslaGen($primary-color);
+    font-size: 1.8rem;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  // Variants
+  &--document {
+    border: 1px solid hslaGen($grey-color, 0.1);
+  }
+
+  &--review {
+    background: hsla(213, 14%, 56%, 0.05);
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+
+    .list-item__icon {
+      background: hslaGen($secondary-color);
+    }
+
+    .list-item__details {
+      h5 {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  &--generic {
+    // Default styles already applied above
+  }
+
+  &--info {
+    .list-item__info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .list-item__label {
+      font-size: 1.3rem;
+      color: hslaGen($dark-grey-color);
+      font-weight: 500;
+    }
+
+    .list-item__value {
+      font-size: 1.3rem;
+      color: hslaGen($grey-color);
+    }
+  }
+}

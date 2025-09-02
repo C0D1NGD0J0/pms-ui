@@ -20,11 +20,10 @@ import {
   Bar,
 } from "recharts";
 
-// Type definitions for better TypeScript support
 interface ChartDataPoint {
   name: string;
   value: number;
-  [key: string]: any; // Allow for additional properties
+  [key: string]: any;
 }
 
 interface ChartProps {
@@ -67,7 +66,6 @@ interface LineChartProps extends ChartProps {
   margin?: { top?: number; right?: number; bottom?: number; left?: number };
 }
 
-// Using your existing color palette from CSS
 const DEFAULT_COLORS = {
   primary: "hsl(194, 66%, 24%)",
   secondary: "hsl(39, 73%, 49%)",
@@ -77,7 +75,6 @@ const DEFAULT_COLORS = {
   muted: "hsl(213, 14%, 56%)",
 };
 
-// Default color array for consistent use across charts
 export const DEFAULT_COLOR_ARRAY = [
   DEFAULT_COLORS.primary,
   DEFAULT_COLORS.secondary,
@@ -87,7 +84,6 @@ export const DEFAULT_COLOR_ARRAY = [
   DEFAULT_COLORS.muted,
 ];
 
-// Custom Tooltip for charts
 const CustomTooltip = ({
   active,
   payload,
@@ -115,7 +111,6 @@ const CustomTooltip = ({
   return null;
 };
 
-// Prop types for chart components
 interface ChartProps {
   data: ChartDataPoint[];
   height?: number;
@@ -135,7 +130,7 @@ export const DonutChart = ({
   showTooltip = true,
   showTotal = true,
 }: DonutChartProps) => {
-  // Calculate total for center label
+  // calculate total for center label
   const total = data.reduce((sum, item) => sum + (item[valueKey] || 0), 0);
 
   return (
@@ -302,3 +297,6 @@ export const LineChartComponent = ({
     </ResponsiveContainer>
   );
 };
+
+// Export the new ChartContainer component
+export { ChartContainer } from "./ChartContainer";

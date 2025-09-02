@@ -1,5 +1,8 @@
 import { ReactNode } from "react";
-import { PermissionCheckOptions, usePermissions } from "@hooks/usePermissions";
+import {
+  useUnifiedPermissions,
+  PermissionContext,
+} from "@hooks/useUnifiedPermissions";
 
 export interface PermissionGateProps {
   children: ReactNode;
@@ -7,7 +10,7 @@ export interface PermissionGateProps {
   permissions?: string[];
   requireAll?: boolean;
   fallback?: ReactNode;
-  context?: PermissionCheckOptions;
+  context?: PermissionContext;
 }
 
 export const PermissionGate = ({
@@ -18,14 +21,16 @@ export const PermissionGate = ({
   fallback = null,
   context = {},
 }: PermissionGateProps) => {
-  const { hasPermission, hasPermissions } = usePermissions();
+  const { can, canAll, canAny } = useUnifiedPermissions();
 
   let hasAccess = false;
 
   if (permission) {
-    hasAccess = hasPermission(permission, context);
+    hasAccess = can(permission, context);
   } else if (permissions && permissions.length > 0) {
-    hasAccess = hasPermissions(permissions, { ...context, requireAll });
+    hasAccess = requireAll
+      ? canAll(permissions, context)
+      : canAny(permissions, context);
   } else {
     // No permissions specified, allow access
     hasAccess = true;
@@ -38,7 +43,7 @@ export interface PermissionFieldProps {
   children: ReactNode;
   fieldName: string;
   resource?: string;
-  context?: PermissionCheckOptions;
+  context?: PermissionContext;
   mode?: "hide" | "disable";
   fallback?: ReactNode;
 }
@@ -51,10 +56,12 @@ export const PermissionField = ({
   mode = "hide",
   fallback = null,
 }: PermissionFieldProps) => {
-  const { canEditField, isFieldDisabled } = usePermissions();
+  const { canEditField, isFieldDisabled } = useUnifiedPermissions();
 
   if (mode === "disable") {
-    const disabled = isFieldDisabled(fieldName, resource);
+    const disabled = resource
+      ? isFieldDisabled(resource, fieldName, context)
+      : false;
     if (typeof children === "function") {
       return <>{(children as any)({ disabled })}</>;
     }
@@ -62,7 +69,7 @@ export const PermissionField = ({
   }
 
   // Hide mode
-  const canEdit = canEditField(fieldName, resource, context);
+  const canEdit = resource ? canEditField(resource, fieldName, context) : true;
   return canEdit ? <>{children}</> : <>{fallback}</>;
 };
 
@@ -85,14 +92,16 @@ export const PermissionAction = ({
   assignedUsers,
   fallback = null,
 }: PermissionActionProps) => {
-  const { canPerformActionOnResource, canPerformAction } = usePermissions();
+  const { can } = useUnifiedPermissions();
 
-  const hasAccess = resourceId
-    ? canPerformActionOnResource(action, resource || "unknown", resourceId, {
-        ownerId,
-        assignedUsers,
-      })
-    : canPerformAction(action, resource);
+  const permission = resource ? `${resource}.${action}` : action;
+  const context: PermissionContext = {
+    resourceOwner: ownerId,
+    resourceId,
+    assignedTo: assignedUsers,
+  };
+
+  const hasAccess = can(permission, context);
 
   return hasAccess ? <>{children}</> : <>{fallback}</>;
 };

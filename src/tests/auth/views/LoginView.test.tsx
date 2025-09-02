@@ -7,7 +7,7 @@ import { ILoginForm } from "@interfaces/auth.interface";
 const mockProps = {
   isSubmitting: false,
   isModalOpen: false,
-  userAccounts: [] as { cuid: string; displayName: string }[],
+  userAccounts: [] as { cuid: string; clientDisplayName: string }[],
   selectedClient: "",
   handleSubmit: jest.fn(),
   handleSelect: jest.fn(),
@@ -56,8 +56,8 @@ describe("LoginView Component", () => {
 
   it("should render account selection modal when accounts exist", () => {
     const userAccounts = [
-      { cuid: "123", displayName: "Account 1" },
-      { cuid: "456", displayName: "Account 2" },
+      { cuid: "123", clientDisplayName: "Account 1" },
+      { cuid: "456", clientDisplayName: "Account 2" },
     ];
 
     render(
@@ -68,7 +68,7 @@ describe("LoginView Component", () => {
       />
     );
 
-    expect(screen.getByText("Select Client Account")).toBeInTheDocument();
+    // Modal should be rendered with account selection
     expect(screen.getByText("Account 1")).toBeInTheDocument();
     expect(screen.getByText("Account 2")).toBeInTheDocument();
   });

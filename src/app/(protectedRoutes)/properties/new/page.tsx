@@ -5,6 +5,7 @@ import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
   PanelContent,
@@ -37,6 +38,7 @@ export default function CreateProperty() {
     propertyTypeOptions,
     propertyStatusOptions,
   } = usePropertyFormBase();
+  const permission = useUnifiedPermissions();
   const { isSubmitting, handleSubmit } = usePropertyForm();
 
   const handleOpenCSVModal = () => {
@@ -118,12 +120,16 @@ export default function CreateProperty() {
         title="Add New Property"
         subtitle="/properties/new"
         headerBtn={
-          <Button
-            className="btn btn-secondary"
-            label="Upload CSV"
-            icon={<i className="bx bx-upload ghost"></i>}
-            onClick={handleOpenCSVModal}
-          />
+          <>
+            {permission.isManagerOrAbove && (
+              <Button
+                className="btn btn-secondary"
+                label="Upload CSV"
+                icon={<i className="bx bx-upload ghost"></i>}
+                onClick={handleOpenCSVModal}
+              />
+            )}
+          </>
         }
       />
 

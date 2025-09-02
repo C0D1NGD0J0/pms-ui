@@ -6,6 +6,8 @@ export interface TabItem {
   content: ReactNode;
   hasError?: boolean;
   disabled?: boolean;
+  icon?: ReactNode; // Add icon support for profile variant
+  isHidden?: boolean; // Hide tab if true
 }
 
 export interface TabsContextType {
@@ -15,18 +17,21 @@ export interface TabsContextType {
 }
 
 export interface TabsProps {
-  children: ReactNode;
+  children?: ReactNode; // Make optional when using tabItems
+  tabItems?: TabItem[]; // New prop for self-contained tab system
   defaultTab?: string;
   onChange?: (tabId: string) => void;
   className?: string;
   ariaLabel?: string;
   mode?: "new" | "edit";
   scrollOnChange?: boolean; // New prop to optionally disable auto-scrolling
+  variant?: "settings" | "profile"; // New variant prop for different tab styles
 }
 
 export interface TabListProps {
   children: ReactNode;
   className?: string;
+  variant?: "settings" | "profile"; // Variant prop for TabList
 }
 
 // Individual Tab component
@@ -36,6 +41,7 @@ export interface TabListItemProps {
   disabled?: boolean;
   className?: string;
   hasError?: boolean;
+  icon?: ReactNode; // Add icon support for profile variant
 }
 
 export interface TabPanelProps {
