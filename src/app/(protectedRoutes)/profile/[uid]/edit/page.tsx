@@ -14,7 +14,7 @@ import {
   SettingsTab,
 } from "./components/index";
 
-const ProfileEditPage = (props: { uid: string }) => {
+const ProfileEditPage: React.FC<{ uid: string }> = (props) => {
   // const params = useParams(); // TODO: Use this when implementing API calls
   const router = useRouter();
   // const uid = params.uid as string; // TODO: Use this when implementing API calls
