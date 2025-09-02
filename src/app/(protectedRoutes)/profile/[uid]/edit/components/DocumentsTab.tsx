@@ -1,8 +1,15 @@
 import React from "react";
 import { TableColumn, Table } from "@components/Table";
-import { FileInput, Button, FormField, FormInput, FormLabel, Select } from "@components/FormElements";
 import { ListItem } from "@src/components/ListItem/ListItem";
 import { FormSection } from "@components/FormLayout/formSection";
+import {
+  FileInput,
+  FormField,
+  FormInput,
+  FormLabel,
+  Button,
+  Select,
+} from "@components/FormElements";
 
 interface DocumentData {
   id: string;
@@ -30,7 +37,11 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({}) => {
 
   // Document types configuration
   const documentTypes = [
-    { value: "license", label: "Professional License", icon: "bx-certification" },
+    {
+      value: "license",
+      label: "Professional License",
+      icon: "bx-certification",
+    },
     { value: "insurance", label: "Insurance Certificate", icon: "bx-shield" },
     { value: "training", label: "Training Certificate", icon: "bx-file" },
     { value: "certification", label: "Safety Certification", icon: "bx-award" },
@@ -63,27 +74,31 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({}) => {
   ]);
 
   const handleFormChange = (field: string, value: any) => {
-    setUploadForm(prev => ({
+    setUploadForm((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleAddDocument = () => {
     if (uploadForm.file && uploadForm.documentName && uploadForm.documentType) {
-      const selectedType = documentTypes.find(type => type.value === uploadForm.documentType);
+      const selectedType = documentTypes.find(
+        (type) => type.value === uploadForm.documentType
+      );
       const newDocument: DocumentData = {
         id: `doc-${Date.now()}`,
         title: uploadForm.documentName,
         type: selectedType?.label || uploadForm.documentType,
-        subtitle: `${uploadForm.file.name} • Uploaded: ${new Date().toLocaleDateString()}`,
+        subtitle: `${
+          uploadForm.file.name
+        } • Uploaded: ${new Date().toLocaleDateString()}`,
         icon: selectedType?.icon || "bx-file",
         status: "uploaded",
         file: uploadForm.file,
       };
 
-      setDocuments(prev => [...prev, newDocument]);
-      
+      setDocuments((prev) => [...prev, newDocument]);
+
       // Reset form
       setUploadForm({
         documentName: "",
@@ -100,7 +115,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({}) => {
     if (document.file) {
       // Create download link for uploaded file
       const url = URL.createObjectURL(document.file);
-      const link = document.createElement('a');
+      const link = globalThis.document.createElement("a");
       link.href = url;
       link.download = document.file.name;
       link.click();
@@ -112,7 +127,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({}) => {
   };
 
   const handleRemove = (documentId: string) => {
-    setDocuments(prev => prev.filter(doc => doc.id !== documentId));
+    setDocuments((prev) => prev.filter((doc) => doc.id !== documentId));
   };
 
   // Define table columns for documents
@@ -201,10 +216,10 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({}) => {
               }
               options={[
                 { value: "", label: "Select document type..." },
-                ...documentTypes.map(type => ({
+                ...documentTypes.map((type) => ({
                   value: type.value,
-                  label: type.label
-                }))
+                  label: type.label,
+                })),
               ]}
             />
           </FormField>
@@ -222,7 +237,11 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({}) => {
             label="Add Document"
             icon={<i className="bx bx-plus"></i>}
             onClick={handleAddDocument}
-            disabled={!uploadForm.file || !uploadForm.documentName || !uploadForm.documentType}
+            disabled={
+              !uploadForm.file ||
+              !uploadForm.documentName ||
+              !uploadForm.documentType
+            }
           />
         </div>
       </FormSection>

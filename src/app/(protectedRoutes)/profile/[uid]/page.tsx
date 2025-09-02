@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Image from "next/image";
 import { Button } from "@components/FormElements";
 import { InsightCardList } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
@@ -239,9 +240,11 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = () => {
             <PanelContent>
               <div className="profile-header">
                 <div className="profile-header__avatar">
-                  <img
+                  <Image
                     src="/assets/imgs/avatar.png"
                     alt="Profile"
+                    width={100}
+                    height={100}
                     className="profile-header__avatar-image"
                   />
                 </div>

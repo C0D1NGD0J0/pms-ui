@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
-import { useParams, useRouter } from "next/navigation";
 import { TabContainer } from "@components/Tab/components";
 
 import {
@@ -18,23 +18,23 @@ interface ProfileEditPageProps {
   params?: { uid: string };
 }
 
-const ProfileEditPage: React.FC<ProfileEditPageProps> = () => {
-  const params = useParams();
+const ProfileEditPage = ({ params }: ProfileEditPageProps) => {
+  // const params = useParams(); // TODO: Use this when implementing API calls
   const router = useRouter();
-  const uid = params.uid as string;
-
+  // const uid = params.uid as string; // TODO: Use this when implementing API calls
+  console.log("Editing profile for UID:", params?.uid);
   const [activeTab, setActiveTab] = useState("personal");
 
   // TODO: Replace with API call to fetch user profile data
   // const { data: profileData, isLoading, error } = useGetUserProfile(uid);
-  
+
   // TODO: Populate formData with actual API data when available
   // useEffect(() => {
   //   if (profileData) {
   //     setFormData(profileData);
   //   }
   // }, [profileData]);
-  
+
   const [formData, setFormData] = useState({
     userInfo: {
       email: "",

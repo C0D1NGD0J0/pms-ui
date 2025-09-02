@@ -5,7 +5,6 @@ import { render } from "@tests/utils/test-utils";
 import { Sidebar } from "@components/Layouts/Sidebar";
 import { fireEvent, waitFor, screen } from "@testing-library/react";
 
-// Mock dependencies
 jest.mock("@store/auth.store");
 jest.mock("@theme/index");
 jest.mock("@hooks/useMenuItems");
@@ -49,7 +48,6 @@ describe("Sidebar Component", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    // Mock localStorage
     Object.defineProperty(window, "localStorage", {
       value: {
         getItem: jest.fn(),
@@ -155,7 +153,7 @@ describe("Sidebar Component", () => {
   });
 
   it("renders navigation menu items", () => {
-    const { container } = render(<Sidebar />);
+    render(<Sidebar />);
 
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.getByText("Properties")).toBeInTheDocument();
@@ -224,7 +222,7 @@ describe("Sidebar Component", () => {
     render(<Sidebar />);
 
     const logoutLink = screen.getByText("Logout").closest("a");
-    
+
     expect(logoutLink).toHaveAttribute("href", "#");
     fireEvent.click(logoutLink!);
     // Just verify the link is clickable and rendered correctly

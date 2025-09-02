@@ -6,6 +6,7 @@ import { fireEvent, screen } from "@testing-library/react";
 jest.mock("next/image", () => ({
   __esModule: true,
   default: ({ src, alt, width, height, className }: any) => (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       src={src}
       alt={alt}
@@ -96,7 +97,9 @@ describe("Loading Component", () => {
 
     const cancelButton = screen.getByRole("button", { name: "Cancel" });
     expect(cancelButton).toBeInTheDocument();
-    expect(cancelButton).toHaveClass("btn btn-outline-ghost btn-sm btn-rounded");
+    expect(cancelButton).toHaveClass(
+      "btn btn-outline-ghost btn-sm btn-rounded"
+    );
   });
 
   it("calls onClose when cancel button is clicked", () => {
@@ -175,7 +178,9 @@ describe("Loading Component", () => {
     expect(screen.getByText("Complex loading process")).toBeInTheDocument();
 
     // Check fullscreen size
-    expect(container.querySelector(".loading_container")).toHaveClass("loading_fullscreen");
+    expect(container.querySelector(".loading_container")).toHaveClass(
+      "loading_fullscreen"
+    );
 
     // Check logo
     expect(screen.getByAltText("Logo")).toBeInTheDocument();

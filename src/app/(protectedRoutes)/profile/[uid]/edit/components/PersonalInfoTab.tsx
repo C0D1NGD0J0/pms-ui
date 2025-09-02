@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { FormSection } from "@components/FormLayout/formSection";
 import {
   FormField,
@@ -42,12 +43,13 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               flexShrink: 0,
             }}
           >
-            <img
-              src={formData.personalInfo.avatar.url || "/assets/imgs/avatar.png"}
+            <Image
+              src={
+                formData.personalInfo.avatar.url || "/assets/imgs/avatar.png"
+              }
               alt="Profile"
+              fill
               style={{
-                width: "100%",
-                height: "100%",
                 objectFit: "cover",
               }}
             />
@@ -125,9 +127,17 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               id="dob"
               name="dob"
               type="date"
-              value={formData.personalInfo.dob ? formData.personalInfo.dob.toISOString().split('T')[0] : ""}
+              value={
+                formData.personalInfo.dob
+                  ? formData.personalInfo.dob.toISOString().split("T")[0]
+                  : ""
+              }
               onChange={(e) =>
-                handleInputChange("personalInfo", "dob", new Date(e.target.value))
+                handleInputChange(
+                  "personalInfo",
+                  "dob",
+                  new Date(e.target.value)
+                )
               }
             />
           </FormField>
@@ -171,7 +181,12 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               id="bio"
               name="bio"
               rows={4}
-              style={{ width: "100%", padding: "0.5rem", border: "1px solid #ccc", borderRadius: "4px" }}
+              style={{
+                width: "100%",
+                padding: "0.5rem",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+              }}
               value={formData.personalInfo.bio}
               onChange={(e) =>
                 handleInputChange("personalInfo", "bio", e.target.value)
@@ -180,7 +195,6 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
           </FormField>
         </div>
       </FormSection>
-
     </div>
   );
 };
