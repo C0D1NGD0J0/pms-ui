@@ -64,7 +64,7 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
               name="issueDate"
               type="date"
               value={
-                formData.identification.issueDate.toISOString().split("T")[0]
+                formData.identification.issueDate ? formData.identification.issueDate.toISOString().split("T")[0] : ""
               }
               onChange={(e) =>
                 handleInputChange(
@@ -82,7 +82,7 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
               name="expiryDate"
               type="date"
               value={
-                formData.identification.expiryDate.toISOString().split("T")[0]
+                formData.identification.expiryDate ? formData.identification.expiryDate.toISOString().split("T")[0] : ""
               }
               onChange={(e) =>
                 handleInputChange(

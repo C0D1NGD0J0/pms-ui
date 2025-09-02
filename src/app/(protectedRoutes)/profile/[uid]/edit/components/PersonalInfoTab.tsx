@@ -125,7 +125,7 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               id="dob"
               name="dob"
               type="date"
-              value={formData.personalInfo.dob.toISOString().split('T')[0]}
+              value={formData.personalInfo.dob ? formData.personalInfo.dob.toISOString().split('T')[0] : ""}
               onChange={(e) =>
                 handleInputChange("personalInfo", "dob", new Date(e.target.value))
               }

@@ -80,7 +80,7 @@ export const EmployeeInfoTab: React.FC<EmployeeInfoTabProps> = ({
               id="startDate"
               name="startDate"
               type="date"
-              value={formData.employeeInfo.startDate.toISOString().split("T")[0]}
+              value={formData.employeeInfo.startDate ? formData.employeeInfo.startDate.toISOString().split("T")[0] : ""}
               onChange={(e) =>
                 handleInputChange(
                   "employeeInfo",
