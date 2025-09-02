@@ -124,4 +124,23 @@
   &--generic {
     // Default styles already applied above
   }
+
+  &--info {
+    .list-item__info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .list-item__label {
+      font-size: 1.3rem;
+      color: hslaGen($dark-grey-color);
+      font-weight: 500;
+    }
+
+    .list-item__value {
+      font-size: 1.3rem;
+      color: hslaGen($grey-color);
+    }
+  }
 }

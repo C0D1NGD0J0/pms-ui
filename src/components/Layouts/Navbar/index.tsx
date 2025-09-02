@@ -92,7 +92,7 @@ export const Navbar: React.FC = () => {
             }`}
           >
             <li>
-              <Link href="/profile">Profile</Link>
+              <Link href="/profile/user123">Profile</Link>
             </li>
             <li>
               <Link href="/settings">Settings</Link>

@@ -4,7 +4,7 @@ export interface ListItemProps {
   icon: string;
   title: string;
   subtitle: string;
-  variant?: "document" | "review" | "generic";
+  variant?: "document" | "review" | "generic" | "info";
   actionIcon?: string;
   onAction?: () => void;
   onClick?: () => void;
@@ -99,9 +99,18 @@ export const ListItem: React.FC<ListItemProps> = ({
           <i className={`bx ${icon}`} />
         </div>
         <div className="list-item__details">
-          <h5>{title}</h5>
-          <span>{subtitle}</span>
-          {renderReviewContent()}
+          {variant === "info" ? (
+            <div className="list-item__info">
+              <span className="list-item__label">{title}:</span>
+              <span className="list-item__value">{subtitle}</span>
+            </div>
+          ) : (
+            <>
+              <h5>{title}</h5>
+              <span>{subtitle}</span>
+              {renderReviewContent()}
+            </>
+          )}
         </div>
       </div>
       {onAction && (
