@@ -10,7 +10,7 @@ interface MenuItem {
 }
 
 export const Navbar: React.FC = () => {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { logout } = useAuthActions();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
@@ -92,10 +92,7 @@ export const Navbar: React.FC = () => {
             }`}
           >
             <li>
-              <Link href="/profile/user123">Profile</Link>
-            </li>
-            <li>
-              <Link href="/settings">Settings</Link>
+              <Link href={`/profile/${user?.uid}`}>Profile</Link>
             </li>
             <li>
               <button
