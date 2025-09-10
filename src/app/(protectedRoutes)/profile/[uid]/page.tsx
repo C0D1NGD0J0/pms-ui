@@ -232,7 +232,7 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
   ];
 
   if (isLoading) {
-    <Skeleton active />;
+    return <Skeleton active />;
   }
 
   return (
