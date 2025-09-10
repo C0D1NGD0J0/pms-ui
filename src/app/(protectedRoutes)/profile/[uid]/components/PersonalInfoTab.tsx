@@ -126,11 +126,9 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
                 height: "100%",
               }}
               onError={() => {
-                console.log("Image failed to load, switching to fallback");
                 setImageError(true);
               }}
               onLoad={() => {
-                console.log("Image loaded successfully");
                 setImageError(false);
               }}
             />
