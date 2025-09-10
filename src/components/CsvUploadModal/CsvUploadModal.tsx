@@ -214,7 +214,9 @@ export function CsvUploadModal({
         <div className="csv-uploader">
           <FileInput
             accept=".csv"
-            onChange={handleFileChange}
+            onChange={(file) =>
+              handleFileChange(Array.isArray(file) ? file[0] : file)
+            }
             instructionText="Please use our CSV template to ensure proper formatting"
           />
         </div>

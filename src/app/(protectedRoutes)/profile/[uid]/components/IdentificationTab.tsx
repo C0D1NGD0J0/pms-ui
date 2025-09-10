@@ -1,4 +1,5 @@
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout/formSection";
 import {
   FormField,
@@ -6,16 +7,24 @@ import {
   FormLabel,
   Select,
 } from "@components/FormElements";
+import {
+  IdentificationFormValues,
+  ProfileFormValues,
+} from "@validations/profile.validations";
 
 interface IdentificationTabProps {
-  formData: any;
-  handleInputChange: (section: string, field: string, value: any) => void;
+  profileForm: UseFormReturnType<ProfileFormValues>;
+  handleNestedChange: (section: string, field: string, value: any) => void;
+  idTypeOptions: Array<{ value: string; label: string }>;
 }
 
 export const IdentificationTab: React.FC<IdentificationTabProps> = ({
-  formData,
-  handleInputChange,
+  profileForm,
+  handleNestedChange,
+  idTypeOptions,
 }) => {
+  const identification = profileForm.values
+    .identification as IdentificationFormValues;
   return (
     <div className="resource-form">
       <FormSection
@@ -28,31 +37,26 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <Select
               id="idType"
               name="idType"
-              value={formData.identification.idType}
+              required
+              value={identification.idType}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange("identification", "idType", e.target.value)
+                handleNestedChange("identification", "idType", e.target.value)
               }
-              options={[
-                { value: "passport", label: "Passport" },
-                { value: "drivers-license", label: "Driver's License" },
-                { value: "national-id", label: "National ID" },
-                {
-                  value: "corporation-license",
-                  label: "Corporation License",
-                },
-              ]}
+              options={idTypeOptions}
             />
           </FormField>
           <FormField>
             <FormLabel htmlFor="idNumber" label="ID Number" />
             <FormInput
               id="idNumber"
+              required
               name="idNumber"
               type="text"
-              value={formData.identification.idNumber}
+              value={identification.idNumber || ""}
               onChange={(e) =>
-                handleInputChange("identification", "idNumber", e.target.value)
+                handleNestedChange("identification", "idNumber", e.target.value)
               }
+              hasError={!!(profileForm.errors as any).identification?.idNumber}
             />
           </FormField>
         </div>
@@ -61,18 +65,22 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormLabel htmlFor="issueDate" label="Issue Date" />
             <FormInput
               id="issueDate"
+              required
               name="issueDate"
               type="date"
               value={
-                formData.identification.issueDate ? formData.identification.issueDate.toISOString().split("T")[0] : ""
+                identification.issueDate
+                  ? identification.issueDate.toISOString().split("T")[0]
+                  : ""
               }
               onChange={(e) =>
-                handleInputChange(
+                handleNestedChange(
                   "identification",
                   "issueDate",
                   new Date(e.target.value)
                 )
               }
+              hasError={!!(profileForm.errors as any).identification?.issueDate}
             />
           </FormField>
           <FormField>
@@ -80,16 +88,22 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormInput
               id="expiryDate"
               name="expiryDate"
+              required
               type="date"
               value={
-                formData.identification.expiryDate ? formData.identification.expiryDate.toISOString().split("T")[0] : ""
+                identification.expiryDate
+                  ? identification.expiryDate.toISOString().split("T")[0]
+                  : ""
               }
               onChange={(e) =>
-                handleInputChange(
+                handleNestedChange(
                   "identification",
                   "expiryDate",
                   new Date(e.target.value)
                 )
+              }
+              hasError={
+                !!(profileForm.errors as any).identification?.expiryDate
               }
             />
           </FormField>
@@ -101,10 +115,16 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
               id="authority"
               name="authority"
               type="text"
-              value={formData.identification.authority}
+              required
+              value={identification.authority || ""}
               onChange={(e) =>
-                handleInputChange("identification", "authority", e.target.value)
+                handleNestedChange(
+                  "identification",
+                  "authority",
+                  e.target.value
+                )
               }
+              hasError={!!(profileForm.errors as any).identification?.authority}
             />
           </FormField>
           <FormField>
@@ -112,14 +132,18 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
             <FormInput
               id="issuingState"
               name="issuingState"
+              required
               type="text"
-              value={formData.identification.issuingState}
+              value={identification.issuingState || ""}
               onChange={(e) =>
-                handleInputChange(
+                handleNestedChange(
                   "identification",
                   "issuingState",
                   e.target.value
                 )
+              }
+              hasError={
+                !!(profileForm.errors as any).identification?.issuingState
               }
             />
           </FormField>

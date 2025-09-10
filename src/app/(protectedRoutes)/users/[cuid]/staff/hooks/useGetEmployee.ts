@@ -12,7 +12,7 @@ export const useGetEmployeeInfo = (
     enabled: !!cuid && !!uid && isTeamMember,
     queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
     queryFn: async () => {
-      const response = await userService.getUserDetails(cuid, uid);
+      const response = await userService.getUserEmployeeDetails(cuid, uid);
       return response;
     },
   });

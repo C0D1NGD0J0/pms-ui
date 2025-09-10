@@ -22,7 +22,7 @@ export const useGetUserOrVendor = (
       if (userType === "vendor") {
         return await vendorService.getVendorDetails(cuid, resourceId);
       } else {
-        return await userService.getUserDetails(cuid, resourceId);
+        return await userService.getUserEmployeeDetails(cuid, resourceId);
       }
     },
   });

@@ -1,5 +1,7 @@
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout/formSection";
+import { ProfileFormValues } from "@validations/profile.validations";
 import {
   ToggleListItem,
   FormField,
@@ -9,13 +11,13 @@ import {
 } from "@components/FormElements";
 
 interface SettingsTabProps {
-  formData: any;
-  handleInputChange: (section: string, field: string, value: any) => void;
+  profileForm: UseFormReturnType<ProfileFormValues>;
+  handleNestedChange: (section: string, field: string, value: any) => void;
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({
-  formData,
-  handleInputChange,
+  profileForm,
+  handleNestedChange,
 }) => {
   return (
     <div className="resource-form">
@@ -29,9 +31,9 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             <Select
               id="theme"
               name="theme"
-              value={formData.settings.theme}
+              value={profileForm.values.settings.theme}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange("settings", "theme", e.target.value)
+                handleNestedChange("settings", "theme", e.target.value)
               }
               options={[
                 { value: "light", label: "Light" },
@@ -44,9 +46,9 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             <Select
               id="loginType"
               name="loginType"
-              value={formData.settings.loginType}
+              value={profileForm.values.settings.loginType}
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange("settings", "loginType", e.target.value)
+                handleNestedChange("settings", "loginType", e.target.value)
               }
               options={[
                 { value: "password", label: "Password" },
@@ -62,9 +64,9 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               id="timeZone"
               name="timeZone"
               type="text"
-              value={formData.profileMeta.timeZone}
+              value={profileForm.values.settings.timeZone}
               onChange={(e) =>
-                handleInputChange("profileMeta", "timeZone", e.target.value)
+                handleNestedChange("settings", "timeZone", e.target.value)
               }
             />
           </FormField>
@@ -74,9 +76,9 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               id="lang"
               name="lang"
               type="text"
-              value={formData.profileMeta.lang}
+              value={profileForm.values.settings.lang}
               onChange={(e) =>
-                handleInputChange("profileMeta", "lang", e.target.value)
+                handleNestedChange("settings", "lang", e.target.value)
               }
             />
           </FormField>
@@ -113,16 +115,12 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             description={item.description}
             icon={item.icon}
             initialState={
-              formData.settings.notifications[
-                item.key as keyof typeof formData.settings.notifications
+              profileForm.values.settings.notifications[
+                item.key as keyof typeof profileForm.values.settings.notifications
               ]
             }
             onChange={(newState) =>
-              handleInputChange(
-                "settings.notifications",
-                item.key,
-                newState
-              )
+              handleNestedChange("settings.notifications", item.key, newState)
             }
             name={`settings.notifications.${item.key}`}
           />
@@ -135,13 +133,18 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       >
         <div className="form-fields">
           <FormField>
-            <FormLabel htmlFor="dataRetentionPolicy" label="Data Retention Policy" />
+            <FormLabel
+              htmlFor="dataRetentionPolicy"
+              label="Data Retention Policy"
+            />
             <Select
               id="dataRetentionPolicy"
               name="dataRetentionPolicy"
-              value={formData.settings.gdprSettings.dataRetentionPolicy}
+              value={
+                profileForm.values.settings.gdprSettings.dataRetentionPolicy
+              }
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                handleInputChange(
+                handleNestedChange(
                   "settings.gdprSettings",
                   "dataRetentionPolicy",
                   e.target.value
@@ -155,14 +158,16 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             />
           </FormField>
         </div>
-        
+
         <ToggleListItem
           title="Data Processing Consent"
           description="I consent to the processing of my personal data"
           icon="bx-shield-check"
-          initialState={formData.settings.gdprSettings.dataProcessingConsent}
+          initialState={
+            profileForm.values.settings.gdprSettings.dataProcessingConsent
+          }
           onChange={(newState) =>
-            handleInputChange(
+            handleNestedChange(
               "settings.gdprSettings",
               "dataProcessingConsent",
               newState

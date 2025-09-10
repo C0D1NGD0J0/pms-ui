@@ -1,9 +1,11 @@
 "use client";
+import React from "react";
 import Image from "next/image";
-import React, { use } from "react";
+import { useAuth } from "@src/store";
 import { useRouter } from "next/navigation";
 import { Button } from "@components/FormElements";
 import { InsightCardList } from "@components/Cards";
+import { Skeleton } from "@src/components/Skeleton";
 import { PageHeader } from "@components/PageElements";
 import { TableColumn, Table } from "@components/Table";
 import { ListItem } from "@components/ListItem/ListItem";
@@ -14,18 +16,18 @@ import {
   Panel,
 } from "@components/Panel";
 
+import { useGetProfileInfo } from "../hooks";
+
 interface ProfileViewPageProps {
   params: Promise<{ uid: string }>;
 }
 
 const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
-  const { uid } = use(params);
+  const { uid } = React.use(params);
+  const { user } = useAuth();
   const router = useRouter();
+  const { isLoading } = useGetProfileInfo(user?.client.cuid ?? "", "");
 
-  // TODO: Replace with API call to fetch user profile data
-  // const { data: profileData, isLoading, error } = useGetUserProfile(uid);2
-
-  // Placeholder data structure - replace with actual API data
   const profileData = {
     personalInfo: {
       fullName: "",
@@ -228,6 +230,10 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
       ),
     },
   ];
+
+  if (isLoading) {
+    return <Skeleton active />;
+  }
 
   return (
     <div className="page">

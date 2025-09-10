@@ -566,15 +566,18 @@ export const INVITE_QUERY_KEYS = {
 };
 export const USER_QUERY_KEYS = {
   getClientUsers: (cuid: string, pagination: unknown) => [
-    `/clients/${cuid}/filtered-users`,
+    `/users/${cuid}/filtered-users`,
     pagination,
   ],
+  getUserProfile: (cuid: string, uid: string) => [
+    `/users/${cuid}/profile_details/${uid}`,
+  ],
   getUserStats: (cuid: string, filters: unknown) => [
-    `/clients/${cuid}/users/stats`,
+    `/users/${cuid}/users/stats`,
     filters,
   ],
   getUserByUid: (cuid: string, uid: string) => [
-    `/clients/${cuid}/users_details/${uid}`,
+    `/users/${cuid}/users_details/${uid}`,
     uid,
   ],
 };

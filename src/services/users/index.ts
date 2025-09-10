@@ -1,4 +1,5 @@
 import axios from "@configs/axios";
+import { prepareRequestData } from "@utils/formDataTransformer";
 import { UpdateClientDetailsFormData } from "@validations/client.validations";
 import {
   IListResponseWithPagination,
@@ -23,7 +24,7 @@ class UsersService {
 
   constructor() {}
 
-  async getUserDetails(cuid: string, uid: string) {
+  async getUserEmployeeDetails(cuid: string, uid: string) {
     try {
       const result = await axios.get(
         `${this.baseUrl}/${cuid}/user_details/${uid}`,
@@ -32,24 +33,6 @@ class UsersService {
       return result.data;
     } catch (error) {
       console.error("Error fetching user details:", error);
-      throw error;
-    }
-  }
-
-  async updateUser(
-    cuid: string,
-    uid: string,
-    data: UpdateClientDetailsFormData
-  ) {
-    try {
-      const result = await axios.patch(
-        `${this.baseUrl}/${cuid}/user_details/${uid}`,
-        data,
-        this.axiosConfig
-      );
-      return result.data.data;
-    } catch (error) {
-      console.error("Error updating user details:", error);
       throw error;
     }
   }
@@ -146,6 +129,57 @@ class UsersService {
       return result.data;
     } catch (error) {
       console.error("Error fetching property managers:", error);
+      throw error;
+    }
+  }
+
+  async getProfileDetails(cuid: string, uid: string | undefined) {
+    try {
+      const queryParams = new URLSearchParams();
+      if (uid) queryParams.append("uid", uid);
+
+      let url = `${this.baseUrl}/${cuid}/profile_details/`;
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const result = await axios.get(url, {
+        ...this.axiosConfig,
+      });
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching user - profile details:", error);
+      throw error;
+    }
+  }
+
+  async updateUserProfile(
+    cuid: string,
+    uid: string,
+    data: UpdateClientDetailsFormData | any
+  ) {
+    try {
+      const { data: requestData, headers } = prepareRequestData(data);
+
+      const config = {
+        ...this.axiosConfig,
+        headers: {
+          ...headers,
+        },
+      };
+
+      const queryParams = new URLSearchParams();
+      if (uid) queryParams.append("uid", uid);
+
+      let url = `${this.baseUrl}/${cuid}/update_profile/`;
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const result = await axios.patch(url, requestData, config);
+      return result.data.data;
+    } catch (error) {
+      console.error("Error updating user details:", error);
       throw error;
     }
   }
