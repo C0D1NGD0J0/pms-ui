@@ -137,8 +137,8 @@ const documentSchema = z.object({
   uploadedAt: z.date().optional(),
   expiryDate: z.date().nullable().optional(),
   status: z
-    .enum(["valid", "expiring", "expired", "uploaded"])
-    .default("uploaded"),
+    .enum(["valid", "expiring", "expired", "uploaded", "pending"])
+    .default("pending"),
 });
 
 const documentsSchema = z.object({

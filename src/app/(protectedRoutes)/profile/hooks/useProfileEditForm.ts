@@ -23,9 +23,8 @@ export function useProfileEditForm({
   const [originalValues, setOriginalValues] =
     useState<ProfileFormValues | null>(null);
 
-  const targetUid = uid || user?.uid || "";
+  let targetUid = uid || user?.uid || "";
 
-  // Use existing profile data hook
   const {
     data: profileApiData,
     isLoading: isDataLoading,
@@ -122,6 +121,9 @@ export function useProfileEditForm({
     mutationFn: (data: Partial<ProfileFormValues>) => {
       if (!client?.cuid) {
         throw new Error("Client ID is required");
+      }
+      if (targetUid === user?.uid) {
+        targetUid = "";
       }
       return userService.updateUserProfile(client.cuid, targetUid, data as any);
     },

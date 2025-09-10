@@ -8,7 +8,6 @@ interface FileInputProps {
   onChange: (files: File | File[] | null) => void;
   instructionText?: string;
   maxFiles?: number;
-  showPreview?: boolean;
 }
 
 export function FileInput({
@@ -17,7 +16,6 @@ export function FileInput({
   instructionText,
   multiImage = false,
   maxFiles = 5,
-  showPreview = false,
 }: FileInputProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -89,24 +87,9 @@ export function FileInput({
             <div className="files-grid">
               {selectedFiles.map((file, index) => (
                 <div key={`${file.name}-${index}`} className="file-item">
-                  {showPreview && file.type.startsWith("image/") ? (
-                    <div className="file-preview">
-                      <img
-                        src={URL.createObjectURL(file)}
-                        alt={file.name}
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "contain",
-                          borderRadius: "4px",
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="file-icon">
-                      <i className="bx bx-file"></i>
-                    </div>
-                  )}
+                  <div className="file-icon">
+                    <i className="bx bx-file"></i>
+                  </div>
                   <div className="file-info">
                     <span className="file-name" title={file.name}>
                       {file.name.length > 15
@@ -137,24 +120,9 @@ export function FileInput({
           ) : (
             // Single file display
             <div className="selected-file">
-              {showPreview && selectedFiles[0].type.startsWith("image/") ? (
-                <div className="file-preview">
-                  <img
-                    src={URL.createObjectURL(selectedFiles[0])}
-                    alt={selectedFiles[0].name}
-                    style={{
-                      width: "60px",
-                      height: "60px",
-                      objectFit: "contain",
-                      borderRadius: "4px",
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="file-icon">
-                  <i className="bx bx-file"></i>
-                </div>
-              )}
+              <div className="file-icon">
+                <i className="bx bx-file"></i>
+              </div>
               <div className="file-info">
                 <span className="file-name">{selectedFiles[0].name}</span>
                 <span className="file-size">

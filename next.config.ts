@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         hostname: "lorempixel.com",
       },
       {
+        protocol: "http",
+        hostname: "lorempixel.com",
+      },
+      {
         protocol: "https",
         hostname: "*.s3.amazonaws.com",
       },

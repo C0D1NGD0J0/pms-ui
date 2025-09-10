@@ -27,7 +27,6 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   const personalInfo = profileForm.values
     .personalInfo as PersonalInfoFormValues;
@@ -35,7 +34,6 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
 
   const cleanAvatarUrl = avatarUrl ? decodeURIComponent(avatarUrl.trim()) : "";
 
-  // Date change handler for DatePicker
   const handleDateChange = (value: string, field?: string) => {
     if (field === "personalInfo.dob") {
       const dateValue = value ? new Date(value) : null;
@@ -57,22 +55,16 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
         return;
       }
 
-      setIsUploading(true);
-
       const previewUrl = URL.createObjectURL(file);
       setImagePreview(previewUrl);
       setImageError(false);
 
-      // Update form with file info
       handleNestedChange("personalInfo", "avatar", {
         ...personalInfo.avatar,
-        filename: file.name,
         url: previewUrl,
       });
 
       handleProfilePhotoChange(file);
-
-      setIsUploading(false);
     } else {
       setImagePreview(null);
       setImageError(false);
@@ -146,7 +138,6 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
           <div style={{ flex: 1, minWidth: 0 }}>
             <FileInput
               accept="image/*"
-              showPreview={true}
               onChange={(file) => {
                 if (file && !Array.isArray(file)) {
                   handlePhotoChangeWithPreview(file);
