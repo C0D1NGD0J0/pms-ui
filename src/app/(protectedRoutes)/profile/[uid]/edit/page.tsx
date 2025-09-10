@@ -1,148 +1,48 @@
 "use client";
+import React, { use } from "react";
 import { useRouter } from "next/navigation";
-import React, { useState, use } from "react";
-import { Button } from "@components/FormElements";
+import { Loading } from "@components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
+import { Button, Form } from "@components/FormElements";
 import { TabContainer } from "@components/Tab/components";
 
+import { useProfileFormBase } from "../../hooks/useProfileFormBase";
+import { useProfileEditForm } from "../../hooks/useProfileEditForm";
 import {
   IdentificationTab,
   PersonalInfoTab,
   DocumentsTab,
   SecurityTab,
   SettingsTab,
-} from "./components/index";
+} from "../components/index";
 
 const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
   params,
 }) => {
-  const { uid } = use(params);
   const router = useRouter();
-  console.log("Editing profile for UID:", uid);
-  const [activeTab, setActiveTab] = useState("personal");
+  const { uid } = use(params);
 
-  // TODO: Replace with API call to fetch user profile data
-  // const { data: profileData, isLoading, error } = useGetUserProfile(uid);
+  const {
+    activeTab,
+    profileForm,
+    handleOnChange,
+    handleNestedChange,
+    handleProfilePhotoChange,
+    setActiveTab,
+    themeOptions,
+    loginTypeOptions,
+    idTypeOptions,
+    dataRetentionOptions,
+    languageOptions,
+    timezoneOptions,
+    documentTypeOptions,
+  } = useProfileFormBase();
 
-  // TODO: Populate formData with actual API data when available
-  // useEffect(() => {
-  //   if (profileData) {
-  //     setFormData(profileData);
-  //   }
-  // }, [profileData]);
-
-  const [formData, setFormData] = useState({
-    userInfo: {
-      email: "",
-    },
-    personalInfo: {
-      firstName: "",
-      lastName: "",
-      displayName: "",
-      location: "",
-      dob: null as Date | null,
-      avatar: {
-        url: "",
-        filename: "",
-        key: "",
-      },
-      phoneNumber: "",
-      bio: "",
-      headline: "",
-    },
-    settings: {
-      theme: "light" as "light" | "dark",
-      loginType: "password" as "otp" | "password",
-      notifications: {
-        messages: false,
-        comments: false,
-        announcements: false,
-      },
-      gdprSettings: {
-        dataRetentionPolicy: "standard" as "standard" | "extended" | "minimal",
-        dataProcessingConsent: false,
-      },
-    },
-    identification: {
-      idType: "passport" as
-        | "passport"
-        | "drivers-license"
-        | "national-id"
-        | "corporation-license",
-      issueDate: null as Date | null,
-      expiryDate: null as Date | null,
-      idNumber: "",
-      authority: "",
-      issuingState: "",
-    },
-    profileMeta: {
-      timeZone: "",
-      lang: "en",
-    },
-    employeeInfo: {
-      jobTitle: "",
-      department: "",
-      reportsTo: "",
-      employeeId: "",
-      startDate: null as Date | null,
-      permissions: [] as string[],
-    },
-    vendorInfo: {
-      vendorId: "",
-      linkedVendorUid: "",
-      isLinkedAccount: false,
-    },
+  const { isDataLoading, isSubmitting, handleUpdate } = useProfileEditForm({
+    profileForm,
+    uid,
   });
-
-  const handleInputChange = (section: string, field: string, value: any) => {
-    if (section.includes(".")) {
-      // Handle nested objects like 'settings.notifications' or 'personalInfo.avatar'
-      const [mainSection, subSection] = section.split(".");
-      setFormData((prev) => ({
-        ...prev,
-        [mainSection]: {
-          ...(prev[mainSection as keyof typeof prev] as any),
-          [subSection]: {
-            ...(prev[mainSection as keyof typeof prev] as any)[subSection],
-            [field]: value,
-          },
-        },
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [section]: {
-          ...(prev[section as keyof typeof prev] as any),
-          [field]: value,
-        },
-      }));
-    }
-  };
-
-  const handleProfilePhotoChange = (file: File | null) => {
-    console.log("Profile photo selected:", file);
-
-    if (file) {
-      // In a real implementation, you would:
-      // 1. Upload file to S3/storage service
-      // 2. Get back the URL, key, and filename
-      // 3. Update the avatar object with the response
-
-      // For now, just update the filename for demonstration
-      const updatedAvatar = {
-        ...formData.personalInfo.avatar,
-        filename: file.name,
-        // url and key would be set after successful upload
-      };
-
-      handleInputChange("personalInfo", "avatar", updatedAvatar);
-    }
-  };
-
-  const handleTabChange = (tabId: string) => {
-    setActiveTab(tabId);
-  };
 
   const handleBack = () => {
     router.back();
@@ -155,8 +55,8 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       icon: <i className="bx bx-user"></i>,
       content: (
         <PersonalInfoTab
-          formData={formData}
-          handleInputChange={handleInputChange}
+          profileForm={profileForm}
+          handleNestedChange={handleNestedChange}
           handleProfilePhotoChange={handleProfilePhotoChange}
         />
       ),
@@ -167,8 +67,9 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       icon: <i className="bx bx-id-card"></i>,
       content: (
         <IdentificationTab
-          formData={formData}
-          handleInputChange={handleInputChange}
+          profileForm={profileForm}
+          handleNestedChange={handleNestedChange}
+          idTypeOptions={idTypeOptions}
         />
       ),
     },
@@ -178,8 +79,14 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       icon: <i className="bx bx-cog"></i>,
       content: (
         <SettingsTab
-          formData={formData}
-          handleInputChange={handleInputChange}
+          profileForm={profileForm}
+          handleOnChange={handleOnChange}
+          handleNestedChange={handleNestedChange}
+          themeOptions={themeOptions}
+          loginTypeOptions={loginTypeOptions}
+          dataRetentionOptions={dataRetentionOptions}
+          languageOptions={languageOptions}
+          timezoneOptions={timezoneOptions}
         />
       ),
     },
@@ -189,8 +96,10 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       icon: <i className="bx bx-file"></i>,
       content: (
         <DocumentsTab
-          formData={formData}
-          handleInputChange={handleInputChange}
+          profileForm={profileForm}
+          handleOnChange={handleOnChange}
+          handleNestedChange={handleNestedChange}
+          documentTypeOptions={documentTypeOptions}
         />
       ),
     },
@@ -200,12 +109,17 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       icon: <i className="bx bx-shield"></i>,
       content: (
         <SecurityTab
-          formData={formData}
-          handleInputChange={handleInputChange}
+          profileForm={profileForm}
+          handleOnChange={handleOnChange}
+          handleNestedChange={handleNestedChange}
         />
       ),
     },
   ];
+
+  if (isDataLoading) {
+    return <Loading size="regular" description="Loading profile data..." />;
+  }
 
   return (
     <div className="page profile-edit">
@@ -213,24 +127,50 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
         title="Edit Profile"
         withBreadcrumb={true}
         headerBtn={
-          <Button
-            className="btn btn-default"
-            label="Back"
-            icon={<i className="bx bx-arrow-back"></i>}
-            onClick={handleBack}
-          />
+          <div className="flex-row">
+            <Button
+              className="btn btn-default"
+              label="Back"
+              icon={<i className="bx bx-arrow-back"></i>}
+              onClick={handleBack}
+            />
+            <Button
+              type="submit"
+              form="profile-form"
+              label="Save Changes"
+              onClick={handleUpdate}
+              className="btn-primary"
+              icon={<i className="bx bx-save"></i>}
+              disabled={!profileForm.isValid() || isSubmitting}
+            />
+          </div>
         }
       />
 
-      <div className="scroll">
-        <TabContainer
-          variant="profile"
-          tabItems={tabItems}
-          defaultTab={activeTab}
-          onChange={handleTabChange}
-          scrollOnChange={false}
-          ariaLabel="Profile settings tabs"
-        />
+      <div className="resource-form">
+        <Form id="profile-form" onSubmit={handleUpdate} disabled={isSubmitting}>
+          <TabContainer
+            variant="profile"
+            tabItems={tabItems}
+            defaultTab={activeTab}
+            onChange={setActiveTab}
+            scrollOnChange={false}
+            ariaLabel="Profile settings tabs"
+          />
+          <div className="form-actions">
+            <Button
+              className="btn btn-default btn-grow"
+              label="Cancel"
+              onClick={handleBack}
+            />
+            <Button
+              type="submit"
+              label="Save Profile"
+              className="btn btn-primary btn-grow"
+              disabled={!profileForm.isValid() || isSubmitting}
+            />
+          </div>
+        </Form>
       </div>
     </div>
   );

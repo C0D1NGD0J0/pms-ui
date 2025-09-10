@@ -1,5 +1,7 @@
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout/formSection";
+import { ProfileFormValues } from "@validations/profile.validations";
 import {
   FormField,
   FormInput,
@@ -8,17 +10,22 @@ import {
 } from "@components/FormElements";
 
 interface SecurityTabProps {
-  formData: any;
-  handleInputChange: (section: string, field: string, value: any) => void;
+  profileForm: UseFormReturnType<ProfileFormValues>;
+  handleOnChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | string,
+    field?: string
+  ) => void;
+  handleNestedChange: (section: string, field: string, value: any) => void;
 }
 
 export const SecurityTab: React.FC<SecurityTabProps> = ({
-  formData,
-  handleInputChange,
+  profileForm,
+  handleOnChange,
+  handleNestedChange,
 }) => {
   const [securityForm, setSecurityForm] = React.useState({
     currentPassword: "",
-    newEmail: formData.userInfo.email || "",
+    newEmail: profileForm.values.personalInfo.email || "",
     newPassword: "",
     confirmPassword: "",
   });
@@ -37,7 +44,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
     
     // Also update the main form data for email
     if (field === "newEmail") {
-      handleInputChange("userInfo", "email", value);
+      handleNestedChange("personalInfo", "email", value);
     }
   };
 
@@ -68,7 +75,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
     }
 
     // Check if any changes were made
-    const emailChanged = securityForm.newEmail !== formData.userInfo.email;
+    const emailChanged = securityForm.newEmail !== profileForm.values.personalInfo.email;
     const passwordChanged = securityForm.newPassword.length > 0;
 
     if (!emailChanged && !passwordChanged) {
@@ -86,7 +93,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
   };
 
   const hasChanges = () => {
-    const emailChanged = securityForm.newEmail !== formData.userInfo.email;
+    const emailChanged = securityForm.newEmail !== profileForm.values.personalInfo.email;
     const passwordChanged = securityForm.newPassword.length > 0;
     return emailChanged || passwordChanged;
   };

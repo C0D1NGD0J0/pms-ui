@@ -11,6 +11,7 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   moduleNameMapper: {
     "^@services/(.*)$": "<rootDir>/src/services/$1",
     "^@services$": "<rootDir>/src/services",
@@ -29,6 +30,7 @@ const config: Config = {
     "^@store$": "<rootDir>/src/store",
     "^@bootstrap/(.*)$": "<rootDir>/src/bootstrap/$1",
     "^@theme/(.*)$": "<rootDir>/src/theme/$1",
+    "^@src/(.*)$": "<rootDir>/src/$1",
     "^@/(.*)$": "<rootDir>/$1",
   },
 };
