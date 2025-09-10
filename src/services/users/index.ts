@@ -159,11 +159,7 @@ class UsersService {
     data: UpdateClientDetailsFormData | any
   ) {
     try {
-      const {
-        sendAsFormData,
-        data: requestData,
-        headers,
-      } = prepareRequestData(data);
+      const { data: requestData, headers } = prepareRequestData(data);
 
       const config = {
         ...this.axiosConfig,

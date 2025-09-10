@@ -26,10 +26,7 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
   const { uid } = React.use(params);
   const { user } = useAuth();
   const router = useRouter();
-  const { data, isLoading, error } = useGetProfileInfo(
-    user?.client.cuid ?? "",
-    ""
-  );
+  const { isLoading } = useGetProfileInfo(user?.client.cuid ?? "", "");
 
   const profileData = {
     personalInfo: {

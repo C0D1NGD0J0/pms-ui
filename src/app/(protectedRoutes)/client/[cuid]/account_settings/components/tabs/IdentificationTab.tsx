@@ -177,7 +177,10 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
               accept="image/*,.pdf"
               onChange={(file) =>
                 isEditMode
-                  ? handleIdentificationChange("idimage", file)
+                  ? handleIdentificationChange(
+                      "idimage",
+                      Array.isArray(file) ? file[0] : file
+                    )
                   : void 0
               }
               instructionText="Upload a clear photo or scan of your ID document (JPG, PNG, PDF)"

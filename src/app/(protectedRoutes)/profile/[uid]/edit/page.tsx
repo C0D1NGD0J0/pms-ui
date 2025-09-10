@@ -26,17 +26,10 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
   const {
     activeTab,
     profileForm,
-    handleOnChange,
     handleNestedChange,
     handleProfilePhotoChange,
     setActiveTab,
-    themeOptions,
-    loginTypeOptions,
     idTypeOptions,
-    dataRetentionOptions,
-    languageOptions,
-    timezoneOptions,
-    documentTypeOptions,
   } = useProfileFormBase();
 
   const { isDataLoading, isSubmitting, handleUpdate } = useProfileEditForm({
@@ -80,13 +73,7 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       content: (
         <SettingsTab
           profileForm={profileForm}
-          handleOnChange={handleOnChange}
           handleNestedChange={handleNestedChange}
-          themeOptions={themeOptions}
-          loginTypeOptions={loginTypeOptions}
-          dataRetentionOptions={dataRetentionOptions}
-          languageOptions={languageOptions}
-          timezoneOptions={timezoneOptions}
         />
       ),
     },
@@ -97,9 +84,7 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       content: (
         <DocumentsTab
           profileForm={profileForm}
-          handleOnChange={handleOnChange}
           handleNestedChange={handleNestedChange}
-          documentTypeOptions={documentTypeOptions}
         />
       ),
     },
@@ -110,7 +95,6 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
       content: (
         <SecurityTab
           profileForm={profileForm}
-          handleOnChange={handleOnChange}
           handleNestedChange={handleNestedChange}
         />
       ),

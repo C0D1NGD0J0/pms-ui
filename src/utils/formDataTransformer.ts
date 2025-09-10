@@ -30,11 +30,7 @@ export function hasFiles(obj: any): boolean {
  * @param options - Optional configuration
  * @param parentKey - Internal: used for recursion
  */
-export function transformToFormData(
-  data: any,
-  options: FormDataOptions = {},
-  parentKey = ""
-): FormData {
+export function transformToFormData(data: any, parentKey = ""): FormData {
   const formData = new FormData();
 
   function appendToFormData(value: any, key: string) {
@@ -80,13 +76,13 @@ export function transformToFormData(
  * @param data - The data to check
  * @returns Object with sendAsFormData flag and transformed data
  */
-export function prepareRequestData(data: any, options?: FormDataOptions) {
+export function prepareRequestData(data: any) {
   const shouldUseFormData = hasFiles(data);
 
   if (shouldUseFormData) {
     return {
       sendAsFormData: true,
-      data: transformToFormData(data, options),
+      data: transformToFormData(data),
       headers: {
         "Content-Type": "multipart/form-data",
       },

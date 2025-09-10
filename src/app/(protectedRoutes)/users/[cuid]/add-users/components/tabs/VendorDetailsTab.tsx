@@ -334,14 +334,17 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                       accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                       instructionText="Upload insurance certificate or policy document (PDF, JPG, PNG, DOC, DOCX)"
                       onChange={(file) => {
-                        if (file) {
+                        const selectedFile = Array.isArray(file)
+                          ? file[0]
+                          : file;
+                        if (selectedFile) {
                           onFieldChange(
                             "vendorInfo.insuranceInfo.documentName",
-                            file.name
+                            selectedFile.name
                           );
                           onFieldChange(
                             "vendorInfo.insuranceInfo.documentUrl",
-                            URL.createObjectURL(file)
+                            URL.createObjectURL(selectedFile)
                           );
                         } else {
                           onFieldChange(

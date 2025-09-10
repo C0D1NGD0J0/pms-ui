@@ -308,7 +308,12 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
                 <FileInput
                   accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt,.csv,.xlsx"
                   instructionText="Upload document (PDF, JPG, PNG, DOC, DOCX, TXT, CSV, XLSX)"
-                  onChange={(file) => handleFileUpload(file, index)}
+                  onChange={(file) =>
+                    handleFileUpload(
+                      Array.isArray(file) ? file[0] : file,
+                      index
+                    )
+                  }
                 />
                 {uploadedFiles[index] && (
                   <div className="uploaded-file-info">

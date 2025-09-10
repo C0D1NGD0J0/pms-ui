@@ -11,16 +11,11 @@ import {
 
 interface SecurityTabProps {
   profileForm: UseFormReturnType<ProfileFormValues>;
-  handleOnChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | string,
-    field?: string
-  ) => void;
   handleNestedChange: (section: string, field: string, value: any) => void;
 }
 
 export const SecurityTab: React.FC<SecurityTabProps> = ({
   profileForm,
-  handleOnChange,
   handleNestedChange,
 }) => {
   const [securityForm, setSecurityForm] = React.useState({
@@ -37,11 +32,11 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
   });
 
   const handleSecurityChange = (field: string, value: string) => {
-    setSecurityForm(prev => ({
+    setSecurityForm((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
-    
+
     // Also update the main form data for email
     if (field === "newEmail") {
       handleNestedChange("personalInfo", "email", value);
@@ -49,9 +44,9 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
   };
 
   const togglePasswordVisibility = (field: "current" | "new" | "confirm") => {
-    setShowPasswords(prev => ({
+    setShowPasswords((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
@@ -75,7 +70,8 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
     }
 
     // Check if any changes were made
-    const emailChanged = securityForm.newEmail !== profileForm.values.personalInfo.email;
+    const emailChanged =
+      securityForm.newEmail !== profileForm.values.personalInfo.email;
     const passwordChanged = securityForm.newPassword.length > 0;
 
     if (!emailChanged && !passwordChanged) {
@@ -93,17 +89,26 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
   };
 
   const hasChanges = () => {
-    const emailChanged = securityForm.newEmail !== profileForm.values.personalInfo.email;
+    const emailChanged =
+      securityForm.newEmail !== profileForm.values.personalInfo.email;
     const passwordChanged = securityForm.newPassword.length > 0;
     return emailChanged || passwordChanged;
   };
 
   const isFormValid = () => {
     const hasCurrentPassword = securityForm.currentPassword.length > 0;
-    const passwordsMatch = securityForm.newPassword === securityForm.confirmPassword;
-    const passwordLengthValid = securityForm.newPassword.length === 0 || securityForm.newPassword.length >= 8;
-    
-    return hasCurrentPassword && hasChanges() && passwordsMatch && passwordLengthValid;
+    const passwordsMatch =
+      securityForm.newPassword === securityForm.confirmPassword;
+    const passwordLengthValid =
+      securityForm.newPassword.length === 0 ||
+      securityForm.newPassword.length >= 8;
+
+    return (
+      hasCurrentPassword &&
+      hasChanges() &&
+      passwordsMatch &&
+      passwordLengthValid
+    );
   };
 
   return (
@@ -124,7 +129,7 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
               placeholder="Enter email address"
             />
           </FormField>
-          
+
           <FormField>
             <FormLabel htmlFor="currentPassword" label="Current Password *" />
             <div className="password-input-wrapper">
@@ -133,7 +138,9 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
                 name="currentPassword"
                 type={showPasswords.current ? "text" : "password"}
                 value={securityForm.currentPassword}
-                onChange={(e) => handleSecurityChange("currentPassword", e.target.value)}
+                onChange={(e) =>
+                  handleSecurityChange("currentPassword", e.target.value)
+                }
                 placeholder="Required to save any changes"
               />
               <button
@@ -141,12 +148,16 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
                 className="password-toggle-btn"
                 onClick={() => togglePasswordVisibility("current")}
               >
-                <i className={`bx ${showPasswords.current ? "bx-hide" : "bx-show"}`}></i>
+                <i
+                  className={`bx ${
+                    showPasswords.current ? "bx-hide" : "bx-show"
+                  }`}
+                ></i>
               </button>
             </div>
           </FormField>
         </div>
-        
+
         <div className="form-fields">
           <FormField>
             <FormLabel htmlFor="newPassword" label="New Password (Optional)" />
@@ -156,7 +167,9 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
                 name="newPassword"
                 type={showPasswords.new ? "text" : "password"}
                 value={securityForm.newPassword}
-                onChange={(e) => handleSecurityChange("newPassword", e.target.value)}
+                onChange={(e) =>
+                  handleSecurityChange("newPassword", e.target.value)
+                }
                 placeholder="Leave blank to keep current password"
               />
               <button
@@ -164,11 +177,13 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
                 className="password-toggle-btn"
                 onClick={() => togglePasswordVisibility("new")}
               >
-                <i className={`bx ${showPasswords.new ? "bx-hide" : "bx-show"}`}></i>
+                <i
+                  className={`bx ${showPasswords.new ? "bx-hide" : "bx-show"}`}
+                ></i>
               </button>
             </div>
           </FormField>
-          
+
           <FormField>
             <FormLabel htmlFor="confirmPassword" label="Confirm New Password" />
             <div className="password-input-wrapper">
@@ -177,7 +192,9 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
                 name="confirmPassword"
                 type={showPasswords.confirm ? "text" : "password"}
                 value={securityForm.confirmPassword}
-                onChange={(e) => handleSecurityChange("confirmPassword", e.target.value)}
+                onChange={(e) =>
+                  handleSecurityChange("confirmPassword", e.target.value)
+                }
                 placeholder="Confirm new password"
                 disabled={!securityForm.newPassword}
               />
@@ -187,7 +204,11 @@ export const SecurityTab: React.FC<SecurityTabProps> = ({
                 onClick={() => togglePasswordVisibility("confirm")}
                 disabled={!securityForm.newPassword}
               >
-                <i className={`bx ${showPasswords.confirm ? "bx-hide" : "bx-show"}`}></i>
+                <i
+                  className={`bx ${
+                    showPasswords.confirm ? "bx-hide" : "bx-show"
+                  }`}
+                ></i>
               </button>
             </div>
           </FormField>

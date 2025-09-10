@@ -12,27 +12,12 @@ import {
 
 interface SettingsTabProps {
   profileForm: UseFormReturnType<ProfileFormValues>;
-  handleOnChange: (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | string,
-    field?: string
-  ) => void;
   handleNestedChange: (section: string, field: string, value: any) => void;
-  themeOptions: Array<{ value: string; label: string }>;
-  loginTypeOptions: Array<{ value: string; label: string }>;
-  dataRetentionOptions: Array<{ value: string; label: string }>;
-  languageOptions: Array<{ value: string; label: string }>;
-  timezoneOptions: Array<{ value: string; label: string }>;
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({
   profileForm,
-  handleOnChange,
   handleNestedChange,
-  themeOptions,
-  loginTypeOptions,
-  dataRetentionOptions,
-  languageOptions,
-  timezoneOptions,
 }) => {
   return (
     <div className="resource-form">
@@ -135,11 +120,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               ]
             }
             onChange={(newState) =>
-              handleNestedChange(
-                "settings.notifications",
-                item.key,
-                newState
-              )
+              handleNestedChange("settings.notifications", item.key, newState)
             }
             name={`settings.notifications.${item.key}`}
           />
@@ -152,11 +133,16 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       >
         <div className="form-fields">
           <FormField>
-            <FormLabel htmlFor="dataRetentionPolicy" label="Data Retention Policy" />
+            <FormLabel
+              htmlFor="dataRetentionPolicy"
+              label="Data Retention Policy"
+            />
             <Select
               id="dataRetentionPolicy"
               name="dataRetentionPolicy"
-              value={profileForm.values.settings.gdprSettings.dataRetentionPolicy}
+              value={
+                profileForm.values.settings.gdprSettings.dataRetentionPolicy
+              }
               onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                 handleNestedChange(
                   "settings.gdprSettings",
@@ -172,12 +158,14 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             />
           </FormField>
         </div>
-        
+
         <ToggleListItem
           title="Data Processing Consent"
           description="I consent to the processing of my personal data"
           icon="bx-shield-check"
-          initialState={profileForm.values.settings.gdprSettings.dataProcessingConsent}
+          initialState={
+            profileForm.values.settings.gdprSettings.dataProcessingConsent
+          }
           onChange={(newState) =>
             handleNestedChange(
               "settings.gdprSettings",
