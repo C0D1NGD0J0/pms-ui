@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { FormSection } from "@components/FormLayout";
 import { useNotification } from "@hooks/useNotification";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
@@ -25,57 +25,29 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
   onFieldChange,
   onMessageCountChange,
 }) => {
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [totalFileSize, setTotalFileSize] = useState(0);
   const { message } = useNotification();
 
-  const handleFileUpload = (file: File | null, index: number) => {
-    if (file) {
-      const newFiles = [...uploadedFiles];
-      const currentFile = newFiles[index];
+  const handleFileUpload = (files: File | File[] | null) => {
+    if (files) {
+      const fileArray = Array.isArray(files) ? files : [files];
 
-      // Calculate new total size
-      const currentFileSize = currentFile ? currentFile.size : 0;
-      const newTotalSize = totalFileSize - currentFileSize + file.size;
-
-      // Check if total size exceeds 10MB
-      if (newTotalSize > 10 * 1024 * 1024) {
-        message.warning("Total file size cannot exceed 10MB");
-        return;
-      }
-
-      newFiles[index] = file;
-      setUploadedFiles(newFiles);
-      setTotalFileSize(newTotalSize);
-
-      // Update form data
-      onFieldChange(`metadata.attachments.${index}`, {
+      // Update form data with all attachments
+      const attachmentsData = fileArray.map((file) => ({
         name: file.name,
         size: file.size,
         type: file.type,
         url: URL.createObjectURL(file),
-      });
-    } else {
-      // Remove file
-      const newFiles = [...uploadedFiles];
-      const removedFile = newFiles[index];
-      if (removedFile) {
-        setTotalFileSize(totalFileSize - removedFile.size);
-      }
-      newFiles.splice(index, 1);
-      setUploadedFiles(newFiles);
+      }));
 
-      // Update form data
-      onFieldChange(`metadata.attachments.${index}`, null);
+      onFieldChange("metadata.attachments", attachmentsData);
+    } else {
+      // Clear all files
+      onFieldChange("metadata.attachments", null);
     }
   };
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return "0 B";
-    const k = 1024;
-    const sizes = ["B", "KB", "MB"];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  const handleFileError = (errorMessage: string) => {
+    message.warning(errorMessage);
   };
 
   return (
@@ -290,42 +262,18 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
         description="Attach relevant documents to share with the vendor (3 files max, 10MB total)"
       >
         <div className="form-fields">
-          <div className="file-upload-section">
-            <div className="file-upload-info">
-              <p>
-                <strong>Files uploaded:</strong> {uploadedFiles.length}/3 |
-                <strong> Total size:</strong> {formatFileSize(totalFileSize)}
-                /10MB
-              </p>
-            </div>
-
-            {[0, 1, 2].map((index) => (
-              <FormField key={index}>
-                <FormLabel
-                  htmlFor={`attachment-${index}`}
-                  label={`Attachment ${index + 1}`}
-                />
-                <FileInput
-                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt,.csv,.xlsx"
-                  instructionText="Upload document (PDF, JPG, PNG, DOC, DOCX, TXT, CSV, XLSX)"
-                  onChange={(file) =>
-                    handleFileUpload(
-                      Array.isArray(file) ? file[0] : file,
-                      index
-                    )
-                  }
-                />
-                {uploadedFiles[index] && (
-                  <div className="uploaded-file-info">
-                    <small style={{ color: "#28a745" }}>
-                      ✓ {uploadedFiles[index].name} (
-                      {formatFileSize(uploadedFiles[index].size)})
-                    </small>
-                  </div>
-                )}
-              </FormField>
-            ))}
-          </div>
+          <FormField>
+            <FormLabel htmlFor="attachments" label="Attachments" />
+            <FileInput
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt,.csv,.xlsx"
+              instructionText="Upload documents (PDF, JPG, PNG, DOC, DOCX, TXT, CSV, XLSX)"
+              multiImage={true}
+              maxFiles={3}
+              totalSizeAllowed={10}
+              onError={handleFileError}
+              onChange={handleFileUpload}
+            />
+          </FormField>
         </div>
       </FormSection>
     </>
