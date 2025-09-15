@@ -204,9 +204,7 @@ export default function PropertyShow() {
   if (units) {
     if ("pages" in units && Array.isArray(units.pages)) {
       savedUnits = units.pages.flatMap((page: any) => page?.items || []) || [];
-    }
-    // handle direct data structure (when enabled is false)
-    else if ("items" in units && Array.isArray(units.items)) {
+    } else if ("items" in units && Array.isArray(units.items)) {
       savedUnits = units.items;
     }
   }
@@ -233,6 +231,10 @@ export default function PropertyShow() {
       content: (
         <CurrentTenantTab
           tenant={null}
+          unitsInfo={{
+            availableSpaces: data?.unitInfo?.availableSpaces ?? 0,
+            maxAllowedUnits: data?.unitInfo?.maxAllowedUnits ?? 0,
+          }}
           property={data?.property}
           isMultiUnit={isMultiUnit}
         />

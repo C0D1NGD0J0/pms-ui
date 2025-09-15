@@ -1,4 +1,5 @@
 import axios from "@configs/axios";
+import { prepareRequestData } from "@utils/formDataTransformer";
 import { postTransformPropertiesData } from "@/src/models/property";
 import {
   IServerResponseWithPagination,
@@ -153,10 +154,20 @@ class PropertyService {
     propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
+      // Use the same FormData preparation utility as profile service
+      const { data: requestData, headers } = prepareRequestData(propertyData);
+
+      const config = {
+        ...this.axiosConfig,
+        headers: {
+          ...headers,
+        },
+      };
+
       const result = await axios.patch(
         `${this.baseUrl}/${cuid}/client_properties/${pid}`,
-        propertyData,
-        this.axiosConfig
+        requestData,
+        config
       );
       return result;
     } catch (error) {

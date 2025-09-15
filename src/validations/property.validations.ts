@@ -113,7 +113,7 @@ export const propertySchema = z
             .enum(["deed", "tax", "insurance", "inspection", "other", "lease"])
             .optional(),
           description: z.string().optional(),
-          externalUrl: z.string().url().optional(),
+          externalUrl: z.union([z.string().url(), z.literal("")]).optional(),
           file: z.any().optional(),
         })
       )

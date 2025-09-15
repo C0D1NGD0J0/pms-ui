@@ -136,6 +136,7 @@ export default function EditProperty() {
   if (!propertyData) {
     return <Loading size="regular" description="Property data not found." />;
   }
+
   return (
     <div className="page edit-property">
       <PageHeader

@@ -20,17 +20,21 @@ export interface TenantData {
 }
 
 export interface CurrentTenantTabProps {
-  tenant?: TenantData | null;
   isMultiUnit?: boolean;
+  unitsInfo?: {
+    availableSpaces: number;
+    maxAllowedUnits: number;
+  } | null;
+  tenant?: TenantData | null;
   property?: IPropertyDocument;
 }
 
 export function CurrentTenantTab({
   tenant,
   property,
+  unitsInfo,
   isMultiUnit,
 }: CurrentTenantTabProps) {
-  // If no tenant, show property details
   if (!tenant && property) {
     const oocupanyStatus =
       property.unitInfo?.availableSpaces === 0 ? "Fully occupied" : "Vacant";
@@ -46,7 +50,7 @@ export function CurrentTenantTab({
             <p>Type: {property.propertyType}</p>
             <p>Property status: {property.status}</p>
             {isMultiUnit ? (
-              <p>Total Units: {property.unitInfo?.maxAllowedUnits}</p>
+              <p>Total Units: {unitsInfo?.maxAllowedUnits}</p>
             ) : null}
           </div>
         </div>
