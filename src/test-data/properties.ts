@@ -1046,7 +1046,7 @@ export const defaultFormData = {
         doorman: false,
       },
       documents: [],
-      propertyImages: [],
+      images: [],
     },
     commercial: {
       name: "Downtown Business Center",
@@ -1121,7 +1121,7 @@ export const defaultFormData = {
         doorman: true,
       },
       documents: [],
-      propertyImages: [],
+      images: [],
     },
   },
 

@@ -192,7 +192,7 @@ export type PropertyFormValues = Omit<
   propertyType?: PropertyTypesEnum;
   status?: PropertyStatusEnum;
   occupancyStatus?: PropertyOccupancyStatusEnum;
-  propertyImages: any[];
+  images: any[];
 };
 
 export type EditPropertyFormValues = PropertyFormValues & { cuid?: string };
@@ -356,5 +356,5 @@ export const defaultPropertyValues: PropertyFormValues = {
   },
   maxAllowedUnits: 0,
   documents: [],
-  propertyImages: [],
+  images: [],
 };

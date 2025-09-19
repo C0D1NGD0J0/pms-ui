@@ -26,6 +26,7 @@ interface FileUploaderProps {
   uploadInstructions?: string;
   documentTypeField?: React.ReactNode;
   descriptionField?: React.ReactNode;
+  onInputMethodChange?: (method: "file" | "url" | null) => void;
 }
 
 export function FileUploader({
@@ -35,6 +36,7 @@ export function FileUploader({
   uploadInstructions,
   documentTypeField,
   descriptionField,
+  onInputMethodChange,
 }: FileUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [inputMethod, setInputMethod] = useState<"file" | "url" | null>(null);
@@ -100,6 +102,7 @@ export function FileUploader({
             onClick={() => {
               setInputMethod("file");
               setExternalUrl("");
+              onInputMethodChange?.("file");
             }}
             className={`btn-default ${inputMethod === "file" ? "active" : ""}`}
             icon={<i className="bx bx-upload"></i>}
@@ -112,6 +115,7 @@ export function FileUploader({
               if (fileInputRef.current) {
                 fileInputRef.current.value = "";
               }
+              onInputMethodChange?.("url");
             }}
             className={`btn-default ${inputMethod === "url" ? "active" : ""}`}
             icon={<i className="bx bx-link"></i>}

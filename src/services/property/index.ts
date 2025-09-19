@@ -24,16 +24,20 @@ class PropertyService {
     cuid: string,
     propertyData: Partial<PropertyFormValues>
   ) {
-    const formData = this.preProcessPropertyData(propertyData);
     try {
+      const { data: requestData, headers } = prepareRequestData(propertyData);
+
+      const config = {
+        ...this.axiosConfig,
+        headers: {
+          ...headers,
+        },
+      };
+
       const result = await axios.post(
         `${this.baseUrl}/${cuid}/add_property`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        requestData,
+        config
       );
       return result;
     } catch (error) {
@@ -117,7 +121,7 @@ class PropertyService {
       );
       return result.data;
     } catch (error) {
-      console.error("Error fetching clientproperty:", error);
+      console.error("Error fetching client property:", error);
       throw error;
     }
   }
@@ -154,7 +158,7 @@ class PropertyService {
     propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
-      // Use the same FormData preparation utility as profile service
+      console.log("Updating property with data:", propertyData);
       const { data: requestData, headers } = prepareRequestData(propertyData);
 
       const config = {
@@ -163,7 +167,7 @@ class PropertyService {
           ...headers,
         },
       };
-
+      console.log(config, requestData);
       const result = await axios.patch(
         `${this.baseUrl}/${cuid}/client_properties/${pid}`,
         requestData,
@@ -188,166 +192,6 @@ class PropertyService {
       console.error("Error updating client property:", error);
       throw error;
     }
-  }
-
-  private preProcessPropertyData(propertyData: Partial<PropertyFormValues>) {
-    const formData = new FormData();
-
-    if (propertyData.name) formData.append("name", propertyData.name);
-    if (propertyData.maxAllowedUnits)
-      formData.append(
-        "maxAllowedUnits",
-        propertyData.maxAllowedUnits.toString()
-      );
-    if (propertyData.propertyType)
-      formData.append("propertyType", propertyData.propertyType);
-    if (propertyData.status) formData.append("status", propertyData.status);
-    if (propertyData.managedBy)
-      formData.append("managedBy", propertyData.managedBy);
-    if (propertyData.yearBuilt !== undefined)
-      formData.append("yearBuilt", propertyData.yearBuilt.toString());
-    if (propertyData.address?.fullAddress)
-      formData.append("address.fullAddress", propertyData.address.fullAddress);
-
-    if (propertyData.occupancyStatus)
-      formData.append("occupancyStatus", propertyData.occupancyStatus);
-
-    if (propertyData.financialDetails) {
-      const { financialDetails } = propertyData;
-      if (financialDetails.purchasePrice !== undefined)
-        formData.append(
-          "financialDetails[purchasePrice]",
-          financialDetails.purchasePrice.toString()
-        );
-      if (financialDetails.purchaseDate)
-        formData.append(
-          "financialDetails[purchaseDate]",
-          financialDetails.purchaseDate
-        );
-      if (financialDetails.marketValue !== undefined)
-        formData.append(
-          "financialDetails[marketValue]",
-          financialDetails.marketValue.toString()
-        );
-      if (financialDetails.propertyTax !== undefined)
-        formData.append(
-          "financialDetails[propertyTax]",
-          financialDetails.propertyTax.toString()
-        );
-      if (financialDetails.lastAssessmentDate)
-        formData.append(
-          "financialDetails[lastAssessmentDate]",
-          financialDetails.lastAssessmentDate
-        );
-    }
-
-    if (propertyData.specifications) {
-      const { specifications } = propertyData;
-      if (specifications.totalArea !== undefined)
-        formData.append(
-          "specifications[totalArea]",
-          specifications.totalArea.toString()
-        );
-      if (specifications.lotSize !== undefined)
-        formData.append(
-          "specifications[lotSize]",
-          specifications.lotSize.toString()
-        );
-      if (specifications.bedrooms !== undefined)
-        formData.append(
-          "specifications[bedrooms]",
-          specifications.bedrooms.toString()
-        );
-      if (specifications.bathrooms !== undefined)
-        formData.append(
-          "specifications[bathrooms]",
-          specifications.bathrooms.toString()
-        );
-      if (specifications.floors !== undefined)
-        formData.append(
-          "specifications[floors]",
-          specifications.floors.toString()
-        );
-      if (specifications.garageSpaces !== undefined)
-        formData.append(
-          "specifications[garageSpaces]",
-          specifications.garageSpaces.toString()
-        );
-      if (specifications.maxOccupants !== undefined)
-        formData.append(
-          "specifications[maxOccupants]",
-          specifications.maxOccupants.toString()
-        );
-    }
-
-    if (propertyData.utilities) {
-      const { utilities } = propertyData;
-      if (utilities.water !== undefined)
-        formData.append("utilities[water]", utilities.water.toString());
-      if (utilities.gas !== undefined)
-        formData.append("utilities[gas]", utilities.gas.toString());
-      if (utilities.electricity !== undefined)
-        formData.append(
-          "utilities[electricity]",
-          utilities.electricity.toString()
-        );
-      if (utilities.internet !== undefined)
-        formData.append("utilities[internet]", utilities.internet.toString());
-      if (utilities.trash !== undefined)
-        formData.append("utilities[trash]", utilities.trash.toString());
-      if (utilities.cableTV !== undefined)
-        formData.append("utilities[cableTV]", utilities.cableTV.toString());
-    }
-
-    if (propertyData.description) {
-      if (propertyData.description.text)
-        formData.append("description[text]", propertyData.description.text);
-      if (propertyData.description.html)
-        formData.append("description[html]", propertyData.description.html);
-    }
-
-    if (propertyData.interiorAmenities) {
-      const { interiorAmenities } = propertyData;
-      Object.entries(interiorAmenities).forEach(([key, value]) => {
-        if (value !== undefined)
-          formData.append(`interiorAmenities[${key}]`, value.toString());
-      });
-    }
-
-    if (propertyData.communityAmenities) {
-      const { communityAmenities } = propertyData;
-      Object.entries(communityAmenities).forEach(([key, value]) => {
-        if (value !== undefined)
-          formData.append(`communityAmenities[${key}]`, value.toString());
-      });
-    }
-
-    if (propertyData.propertyImages && propertyData.propertyImages.length > 0) {
-      propertyData.propertyImages.forEach((file) => {
-        if (file instanceof File) {
-          formData.append(`propertyImages`, file);
-        }
-      });
-    }
-
-    if (propertyData.documents && propertyData.documents.length > 0) {
-      propertyData.documents.forEach((doc, index) => {
-        if (doc.documentType)
-          formData.append(
-            `documents[${index}][documentType]`,
-            doc.documentType
-          );
-        if (doc.description)
-          formData.append(`documents[${index}][description]`, doc.description);
-        if (doc.externalUrl)
-          formData.append(`documents[${index}][externalUrl]`, doc.externalUrl);
-        if (doc.file instanceof File) {
-          formData.append(`documents[${index}][file]`, doc.file);
-        }
-      });
-    }
-
-    return formData;
   }
 
   private buildQueryString(

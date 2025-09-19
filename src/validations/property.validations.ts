@@ -119,7 +119,7 @@ export const propertySchema = z
       )
       .default([]),
 
-    propertyImages: z.array(z.any()).default([]),
+    images: z.array(z.any()).default([]),
   })
   .superRefine((data, ctx) => {
     const propertyType = data.propertyType || "house";
