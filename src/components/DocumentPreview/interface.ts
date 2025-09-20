@@ -1,5 +1,5 @@
 export type DocumentType = "html" | "pdf" | "url" | "image";
-export type RenderMode = "iframe" | "direct" | "embed" | "object";
+export type RenderMode = "direct" | "embed" | "object" | "image" | "iframe";
 
 export interface DocumentPreviewProps {
   // Content source - only one should be provided

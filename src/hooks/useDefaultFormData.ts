@@ -115,7 +115,7 @@ export function usePropertyFormDefaults<T = any>(
   return useDefaultFormData(form, {
     path: `property.${propertyType}`,
     autoPopulate: true,
-    excludeFields: ["documents", "propertyImages"], // Exclude file fields
+    excludeFields: ["documents", "images"], // Exclude file fields
   });
 }
 

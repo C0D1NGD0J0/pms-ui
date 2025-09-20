@@ -72,7 +72,7 @@ const BASE_FIELDS = {
     "managementFees",
     "securityDeposit",
   ],
-  documents: ["propertyImages", "documents"],
+  documents: ["images", "documents"],
   baseSpecifications: ["totalArea", "floors"],
   residentialSpecifications: ["lotSize", "garageSpaces", "maxOccupants"],
   singleFamilySpecifications: ["bedrooms", "bathrooms"],

@@ -6,6 +6,10 @@ import { DocumentType } from "../interface";
 export function isExternalUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
+    // blob: and data: URLs are considered local/internal
+    if (urlObj.protocol === "blob:" || urlObj.protocol === "data:") {
+      return false;
+    }
     return urlObj.protocol === "http:" || urlObj.protocol === "https:";
   } catch {
     return false; // Relative URLs are internal
@@ -13,14 +17,57 @@ export function isExternalUrl(url: string): boolean {
 }
 
 /**
- * Creates a blob URL from HTML content for iframe rendering
+ * Creates a blob URL from content for iframe rendering
  */
-export function createBlobUrl(
-  content: string,
-  type: string = "text/html"
-): string {
-  const blob = new Blob([content], { type });
+export function createBlobUrl(content: string | File, type?: string): string {
+  if (content instanceof File) {
+    // Use the file's natural MIME type or detect it
+    const mimeType = type || content.type || detectMimeType(content.name);
+    return URL.createObjectURL(
+      new File([content], content.name, { type: mimeType })
+    );
+  }
+
+  const mimeType = type || "text/html";
+  const blob = new Blob([content], { type: mimeType });
   return URL.createObjectURL(blob);
+}
+
+/**
+ * Detects MIME type from file extension
+ */
+export function detectMimeType(filename: string): string {
+  const ext = filename.toLowerCase().split(".").pop() || "";
+
+  const mimeTypes: Record<string, string> = {
+    pdf: "application/pdf",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    gif: "image/gif",
+    html: "text/html",
+    htm: "text/html",
+    txt: "text/plain",
+  };
+
+  return mimeTypes[ext] || "application/octet-stream";
+}
+
+/**
+ * Determines if a file is a PDF based on extension or MIME type
+ */
+export function isPdfFile(filename: string, mimeType?: string): boolean {
+  const ext = filename.toLowerCase().split(".").pop() || "";
+  return ext === "pdf" || mimeType === "application/pdf";
+}
+
+/**
+ * Determines if a file is an image based on extension or MIME type
+ */
+export function isImageFile(filename: string, mimeType?: string): boolean {
+  const ext = filename.toLowerCase().split(".").pop() || "";
+  const imageExts = ["jpg", "jpeg", "png", "gif"];
+  return imageExts.includes(ext) || mimeType?.startsWith("image/") || false;
 }
 
 /**
@@ -88,7 +135,8 @@ export function getSandboxAttributes(
   }
 
   if (isExternal) {
-    return "allow-scripts allow-same-origin allow-popups allow-forms";
+    // For external PDFs, we need permissive sandbox but no downloads
+    return "allow-same-origin allow-scripts allow-popups allow-forms";
   }
 
   switch (type) {
@@ -99,4 +147,20 @@ export function getSandboxAttributes(
     default:
       return "allow-same-origin";
   }
+}
+
+/**
+ * For external PDFs, use Google Docs viewer via object mode
+ */
+export function getOptimalRenderMode(
+  type: DocumentType,
+  isExternal: boolean,
+  requestedMode: string
+): string {
+  // For external PDFs, use object mode (which will render with Google Docs viewer)
+  if (type === "pdf" && isExternal) {
+    return "object";
+  }
+
+  return requestedMode;
 }

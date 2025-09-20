@@ -1,4 +1,3 @@
- 
 "use client";
 
 import type { ChangeEvent, FocusEvent } from "react";
@@ -105,6 +104,7 @@ export const GooglePlacesAutocomplete = forwardRef<
           "place_id",
         ],
       },
+      libraries: ["places"],
     });
 
     useEffect(() => {
