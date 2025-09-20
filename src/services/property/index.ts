@@ -167,7 +167,6 @@ class PropertyService {
           ...headers,
         },
       };
-      console.log(config, requestData);
       const result = await axios.patch(
         `${this.baseUrl}/${cuid}/client_properties/${pid}`,
         requestData,
