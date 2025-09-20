@@ -1,13 +1,15 @@
 "use client";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 
-import { DocumentPreviewProps } from "./interface";
+import { DocumentPreviewProps, RenderMode } from "./interface";
 import {
   getSandboxAttributes,
+  getOptimalRenderMode,
   resolveContent,
-  createBlobUrl,
   isExternalUrl,
   validateUrl,
+  isImageFile,
+  isPdfFile,
 } from "./utils/contentResolver";
 
 export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
@@ -17,8 +19,6 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   url,
   isExternalUrl: forceExternal,
   allowExternalContent = true,
-  sandbox,
-  referrerPolicy = "no-referrer-when-downgrade",
   className = "",
   height = "600px",
   width = "100%",
@@ -27,13 +27,30 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
   onLoad,
   onLoadError,
 }) => {
-  const [blobUrl, setBlobUrl] = useState<string | null>(null);
-
   // Determine if URL is external
   const external = useMemo(() => {
     if (forceExternal !== undefined) return forceExternal;
     return url ? isExternalUrl(url) : false;
   }, [url, forceExternal]);
+
+  // Determine if content is PDF based on URL/filename
+  const contentIsPdf = useMemo(() => {
+    if (type === "pdf") return true;
+    if (url) {
+      const filename = url.split("/").pop() || "";
+      return isPdfFile(filename);
+    }
+    return false;
+  }, [type, url]);
+
+  // Use optimal render mode for external PDFs
+  const optimalRenderMode = useMemo(() => {
+    return getOptimalRenderMode(type, external, renderMode) as RenderMode;
+  }, [type, external, renderMode]);
+
+  const [currentRenderMode, setCurrentRenderMode] =
+    useState<RenderMode>(optimalRenderMode);
+  const [hasError, setHasError] = useState(false);
 
   // Validate URL if provided
   const urlValid = useMemo(() => {
@@ -49,28 +66,54 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     return resolveContent(type, content, url);
   }, [type, content, url, urlValid]);
 
-  // Create blob URL for direct rendering
-  useEffect(() => {
-    if (renderMode === "iframe" && type === "html" && resolvedContent) {
-      const blob = createBlobUrl(resolvedContent);
-      setBlobUrl(blob);
-
-      return () => {
-        if (blob) {
-          URL.revokeObjectURL(blob);
-        }
-      };
+  const contentIsImage = useMemo(() => {
+    if (type === "image") return true;
+    if (url) {
+      const filename = url.split("/").pop() || "";
+      return isImageFile(filename);
     }
-  }, [renderMode, type, resolvedContent]);
+    return false;
+  }, [type, url]);
+
+  // PDF fallback chain: iframe -> embed -> object -> download link
+  const pdfFallbackChain: RenderMode[] = ["iframe", "embed", "object"];
 
   // Handle load events
   const handleLoad = () => {
+    setHasError(false);
     onLoad?.();
   };
 
-  const handleLoadError = (err: Error) => {
-    onLoadError?.(err);
-  };
+  const handleLoadError = useCallback(
+    (err: Error) => {
+      if (contentIsPdf && !hasError) {
+        const currentIndex = pdfFallbackChain.indexOf(currentRenderMode);
+        const nextMode = pdfFallbackChain[currentIndex + 1];
+
+        if (nextMode) {
+          setCurrentRenderMode(nextMode);
+          setHasError(false);
+          return;
+        }
+      }
+
+      setHasError(true);
+      onLoadError?.(err);
+    },
+    [contentIsPdf, hasError, currentRenderMode, pdfFallbackChain, onLoadError]
+  );
+
+  // For external PDFs, set a timeout to detect iframe loading issues
+  React.useEffect(() => {
+    if (currentRenderMode === "iframe" && external && contentIsPdf) {
+      const timer = setTimeout(() => {
+        // Auto-fallback to object for external PDFs that don't load in iframe
+        handleLoadError(new Error("Iframe load timeout for external PDF"));
+      }, 3000); // 3 second timeout
+
+      return () => clearTimeout(timer);
+    }
+  }, [currentRenderMode, external, contentIsPdf, handleLoadError]);
 
   if (external && !allowExternalContent) {
     return (
@@ -104,25 +147,61 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     );
   }
 
-  const sandboxAttr = getSandboxAttributes(type, external, sandbox);
-
   const renderContent = () => {
-    switch (renderMode) {
-      case "iframe":
-        const src = blobUrl || resolvedContent;
+    // If all PDF rendering methods failed, show unavailable message
+    if (hasError && contentIsPdf) {
+      return (
+        <div
+          className="pdf-fallback"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            height: "100%",
+            padding: "2rem",
+            backgroundColor: "#f8f9fa",
+            border: "2px dashed #dee2e6",
+            borderRadius: "8px",
+          }}
+        >
+          <i
+            className="bx bx-file-blank"
+            style={{ fontSize: "3rem", marginBottom: "1rem", color: "#6c757d" }}
+          />
+          <h4 style={{ marginBottom: "0.5rem", color: "#495057" }}>
+            PDF Preview Unavailable
+          </h4>
+          <p
+            style={{
+              marginBottom: "1rem",
+              color: "#6c757d",
+              textAlign: "center",
+            }}
+          >
+            This PDF cannot be displayed at the moment. Please try again later.
+          </p>
+        </div>
+      );
+    }
+
+    switch (currentRenderMode) {
+      case "image":
         return (
-          <iframe
-            src={src}
-            title={title}
-            width={width}
-            height={"100%"}
-            sandbox={sandboxAttr}
-            referrerPolicy={referrerPolicy}
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={resolvedContent}
+            alt={title || "Preview"}
+            decoding="async"
+            fetchPriority="high"
+            loading="eager"
             onLoad={handleLoad}
-            onError={() =>
-              handleLoadError(new Error("Failed to load iframe content"))
-            }
-            style={{ border: "none" }}
+            onError={() => handleLoadError(new Error("Failed to load image"))}
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              objectFit: contentIsImage ? "contain" : "cover",
+            }}
           />
         );
 
@@ -139,7 +218,7 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
         return (
           <embed
             src={resolvedContent}
-            type="application/pdf"
+            type={contentIsPdf ? "application/pdf" : undefined}
             width={width}
             height={height}
             onLoad={handleLoad}
@@ -150,10 +229,31 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
         );
 
       case "object":
+        // For external PDFs, use Google Docs viewer as it handles CORS better
+        if (external && contentIsPdf) {
+          const googleDocsUrl = `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(
+            resolvedContent
+          )}`;
+          return (
+            <iframe
+              src={googleDocsUrl}
+              width={width}
+              height={height}
+              title={title || "Document Preview"}
+              onLoad={handleLoad}
+              onError={() =>
+                handleLoadError(new Error("Failed to load Google Docs viewer"))
+              }
+              style={{ border: "none" }}
+            />
+          );
+        }
+
+        // For local PDFs, use object element
         return (
           <object
             data={resolvedContent}
-            type="application/pdf"
+            type={contentIsPdf ? "application/pdf" : undefined}
             width={width}
             height={height}
             onLoad={handleLoad}
@@ -161,14 +261,30 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
               handleLoadError(new Error("Failed to load object content"))
             }
           >
-            <p>Your browser does not support embedded content.</p>
+            <p>This PDF cannot be displayed in your browser.</p>
           </object>
+        );
+
+      case "iframe":
+        return (
+          <iframe
+            src={resolvedContent}
+            width={width}
+            height={height}
+            title={title || "Document Preview"}
+            sandbox={getSandboxAttributes(type, external)}
+            onLoad={handleLoad}
+            onError={() =>
+              handleLoadError(new Error("Failed to load iframe content"))
+            }
+            style={{ border: "none" }}
+          />
         );
 
       default:
         return (
           <div className="unsupported-mode">
-            <p>Unsupported render mode: {renderMode}</p>
+            <p>Unsupported render mode: {currentRenderMode}</p>
           </div>
         );
     }
@@ -176,8 +292,10 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
 
   return (
     <div
-      className={`document-preview ${className}`}
-      style={{ height: "40rem", width }}
+      className={`document-preview ${
+        type === "image" ? "document-preview--image" : ""
+      } ${className}`}
+      style={renderMode === "image" ? { width: "100%" } : { height, width }}
     >
       {renderContent()}
     </div>

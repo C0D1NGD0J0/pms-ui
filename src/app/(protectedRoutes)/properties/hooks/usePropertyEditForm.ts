@@ -33,19 +33,24 @@ export function usePropertyEditForm({
 
   useEffect(() => {
     if (propertyData) {
+      // Normalize date fields to empty strings consistently for both form and original values
+      const normalizedFinancialDetails = {
+        ...propertyData.property.financialDetails,
+        lastAssessmentDate:
+          propertyData.property.financialDetails?.lastAssessmentDate || "",
+        purchaseDate:
+          propertyData.property.financialDetails?.purchaseDate || "",
+      };
+
       propertyForm.setValues({
         ...propertyData.property,
-        financialDetails: {
-          ...propertyData.property.financialDetails,
-          lastAssessmentDate:
-            propertyData.property.financialDetails?.lastAssessmentDate || "",
-          purchaseDate:
-            propertyData.property.financialDetails?.purchaseDate || "",
-        },
+        financialDetails: normalizedFinancialDetails,
         unitInfo: propertyData?.unitInfo,
       });
+
       setOriginalValues({
         ...propertyData.property,
+        financialDetails: normalizedFinancialDetails,
         unitInfo: propertyData?.unitInfo,
       });
     }
