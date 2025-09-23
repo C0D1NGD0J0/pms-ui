@@ -52,7 +52,6 @@ export const useGetFilteredUsers = (
         ...(queryParams.department && { department: queryParams.department }),
         ...(queryParams.status && { status: queryParams.status }),
       };
-
       const resp = await userService.getFilteredUsers(cuid, userQuery);
       return resp;
     },

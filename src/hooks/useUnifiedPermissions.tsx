@@ -26,12 +26,9 @@ import { useCurrentUser } from "./useCurrentUser";
 export const useUnifiedPermissions = () => {
   const { user: currentUser } = useCurrentUser();
 
-  // Get user role from current user
   const currentRole = useMemo((): UserRole | null => {
     if (!currentUser?.client?.role) return null;
     const roleString = currentUser.client.role.toLowerCase();
-
-    // Map string roles to enum values
     const roleMap: Record<string, UserRole> = {
       admin: UserRole.ADMIN,
       manager: UserRole.MANAGER,
