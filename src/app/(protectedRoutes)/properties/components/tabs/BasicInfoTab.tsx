@@ -1,7 +1,8 @@
 "use client";
-import React, { ChangeEvent } from "react";
+import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import { getComponentValue } from "@components/FormElements/GooglePlacesAutocomplete";
 import {
   EditPropertyFormValues,
@@ -16,6 +17,7 @@ import {
 } from "@components/FormElements";
 
 interface Props {
+  permission?: ReturnType<typeof useUnifiedPermissions>;
   saveAddress: (address: EditPropertyFormValues["address"]) => void;
   propertyForm: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
   propertyManagers: { value: string; label: string }[];
@@ -33,6 +35,7 @@ export function BasicInfoTab({
   propertyTypeOptions,
   propertyStatusOptions,
   handleOnChange,
+  permission,
 }: Props) {
   return (
     <>
@@ -101,6 +104,7 @@ export function BasicInfoTab({
               msg: (form.errors["managedBy"] as string) || "",
               touched: form.isTouched("managedBy"),
             }}
+            hideChildren={!permission?.isAdmin}
           >
             <FormLabel htmlFor="managedBy" label="Property Manager" />
             <Select
@@ -158,6 +162,7 @@ export function BasicInfoTab({
             </div>
             <GooglePlacesAutocomplete
               id="address"
+              disabled={!permission?.isAdmin}
               onChange={handleOnChange}
               name="address.fullAddress"
               placeholder="Enter street address"

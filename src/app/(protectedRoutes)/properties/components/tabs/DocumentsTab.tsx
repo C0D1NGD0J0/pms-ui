@@ -8,6 +8,7 @@ import { useNotification } from "@hooks/useNotification";
 import { PreviewModal } from "@components/DocumentPreview";
 import { FileUploader, FileItem } from "@components/FileUploader";
 import { PropertyFormValues } from "@interfaces/property.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   FormInput,
   FormLabel,
@@ -17,6 +18,7 @@ import {
 } from "@components/FormElements";
 
 interface Props {
+  permission: ReturnType<typeof useUnifiedPermissions>;
   propertyForm: UseFormReturnType<PropertyFormValues>;
   documentTypeOptions: {
     value: "deed" | "tax" | "insurance" | "inspection" | "other" | "lease";
@@ -26,6 +28,7 @@ interface Props {
 
 export function DocumentsTab({
   propertyForm: form,
+  permission,
   documentTypeOptions,
 }: Props) {
   const [currentDocType, setCurrentDocType] = useState<
@@ -267,13 +270,13 @@ export function DocumentsTab({
       title: "Actions",
       dataIndex: "actions",
       render: (value: any, record: any) => {
-        const isDisabled = ["deleted", "processing"].includes(record.status);
-        const canDelete = !["deleted", "processing"].includes(record.status);
+        const isDisabled = ["deleted"].includes(record.status);
+        const canDelete = permission.isManagerOrAbove;
 
         return (
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <Button
-              className="btn btn-sm btn-outline-primary"
+              className="btn-sm btn-outline-primary"
               label=""
               icon={<i className="bx bx-show"></i>}
               onClick={() => handleViewFile(record, record.displayName)}
@@ -281,7 +284,7 @@ export function DocumentsTab({
             />
             {canDelete && (
               <Button
-                className="btn btn-sm btn-outline-danger"
+                className="btn-sm btn-outline-danger"
                 label=""
                 icon={<i className="bx bx-trash"></i>}
                 onClick={() => handleRemoveFile(record, record.type)}

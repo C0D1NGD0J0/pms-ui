@@ -6,6 +6,7 @@ import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
 import {
   PanelsWrapper,
@@ -45,6 +46,7 @@ export default function EditProperty() {
       propertyForm,
       pid,
     });
+  const permission = useUnifiedPermissions();
 
   const tabs = [
     {
@@ -53,6 +55,7 @@ export default function EditProperty() {
       tabLabel: "Basic information",
       content: (
         <BasicInfoTab
+          permission={permission}
           saveAddress={saveAddress}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
@@ -69,6 +72,7 @@ export default function EditProperty() {
       content: (
         <FinancialTab
           form={propertyForm}
+          permission={permission}
           handleOnChange={handleOnChange}
           currencyOptions={formConfig?.currencies || []}
         />
@@ -83,6 +87,7 @@ export default function EditProperty() {
           formConfig={formConfig}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
+          permission={permission}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
         />
@@ -105,6 +110,7 @@ export default function EditProperty() {
       tabLabel: "Photos & Documents",
       content: (
         <DocumentsTab
+          permission={permission}
           propertyForm={propertyForm}
           documentTypeOptions={
             documentTypeOptions as {

@@ -116,7 +116,7 @@ class PropertyService {
   ): Promise<ClientPropertyResponse> {
     try {
       const result = await axios.get<IServerResponse<ClientPropertyResponse>>(
-        `${this.baseUrl}/${cuid}/client_properties/${propertyPid}?q`,
+        `${this.baseUrl}/${cuid}/client_property/${propertyPid}?q`,
         this.axiosConfig
       );
       return result.data;
@@ -158,7 +158,6 @@ class PropertyService {
     propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
-      console.log("Updating property with data:", propertyData);
       const { data: requestData, headers } = prepareRequestData(propertyData);
 
       const config = {

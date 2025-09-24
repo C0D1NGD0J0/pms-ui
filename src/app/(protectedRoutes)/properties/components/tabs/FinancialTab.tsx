@@ -2,6 +2,7 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   EditPropertyFormValues,
   PropertyFormValues,
@@ -15,6 +16,7 @@ import {
 } from "@components/FormElements";
 
 interface Props {
+  permission: ReturnType<typeof useUnifiedPermissions>;
   currencyOptions: { value: string; label: string }[];
   form: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
   handleOnChange: (

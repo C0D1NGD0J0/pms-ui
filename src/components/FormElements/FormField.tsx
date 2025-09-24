@@ -6,6 +6,7 @@ interface FormFieldProps {
   className?: string;
   fullWidth?: boolean;
   inline?: boolean;
+  hideChildren?: boolean;
   error?: { msg: string; touched: boolean };
 }
 
@@ -15,6 +16,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   fullWidth = false,
   inline = false,
   error,
+  hideChildren = false,
 }) => {
   const baseClass = "form-field";
 
@@ -26,6 +28,10 @@ export const FormField: React.FC<FormFieldProps> = ({
   ]
     .filter(Boolean)
     .join(" ");
+
+  if (hideChildren) {
+    return null;
+  }
 
   return (
     <div className={fieldClasses}>
