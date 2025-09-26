@@ -79,6 +79,14 @@ export interface IPropertyInteriorAmenities {
   storageSpace: boolean;
 }
 
+export type IPendingChanges = Partial<
+  Omit<IPropertyDocument, "cuid" | "pid" | "id" | "_id">
+> & {
+  updatedAt: Date;
+  updatedBy: string;
+  displayName: string;
+};
+
 export interface IPropertyCommunityAmenities {
   swimmingPool: boolean;
   fitnessCenter: boolean;
@@ -117,6 +125,14 @@ export interface IPropertyDocument {
   propertyType: PropertyTypesEnum;
   status: PropertyStatusEnum;
   managedBy: any;
+  images: {
+    filename: string;
+    key: string;
+    uploadedAt: string;
+    uploadedBy: string;
+    url: string;
+    _id: string;
+  }[];
   yearBuilt: number;
   occupancyStatus: PropertyOccupancyStatusEnum;
   maxAllowedUnits: number;
@@ -125,6 +141,7 @@ export interface IPropertyDocument {
   pid: string;
   documents: any[];
   __v: number;
+  pendingChanges?: IPendingChanges | null;
   createdAt: string;
   updatedAt: string;
   id: string;
@@ -143,47 +160,6 @@ export type ClientPropertyResponse = {
   unitInfo: IUnitInfo;
 };
 
-// Business methods interface (no data properties)
-export interface IPropertyModelMethods {
-  // Occupancy status methods
-  isVacant(): boolean;
-  isOccupied(): boolean;
-  isUnderMaintenance(): boolean;
-
-  // Unit type methods
-  isMultiUnit(): boolean;
-  isSingleFamily(): boolean;
-  getMinUnits(): number;
-  getDefaultUnits(): number;
-  shouldValidateBedBath(): boolean;
-  isValidUnitCount(): boolean;
-
-  // Financial and validation methods
-  hasFinancialInfo(): boolean;
-  hasAddress(): boolean;
-  getMonthlyRental(): number;
-  getSecurityDeposit(): number;
-  getTotalValue(): number;
-
-  // Property type classification methods
-  isCommercialType(): boolean;
-  isResidentialType(): boolean;
-  isMixedUseType(): boolean;
-
-  // Calculated property methods
-  getPropertyAge(): number | null;
-  getTotalBedrooms(): number;
-  getTotalBathrooms(): number;
-  getTotalArea(): number;
-
-  // Utility methods
-  hasAmenity(amenityCategory: string, amenityName: string): boolean;
-  getRawData(): IPropertyDocument;
-  toJSON(): IPropertyDocument;
-}
-
-// propertyModel becomes data + methods via intersection
-export type IPropertyModel = IPropertyDocument & IPropertyModelMethods;
 
 export type PropertyFormValues = Omit<
   IPropertyDocument,
@@ -314,12 +290,12 @@ export const defaultPropertyValues: PropertyFormValues = {
     securityDeposit: "0.00",
   },
   specifications: {
-    totalArea: 0,
-    lotSize: 0,
-    bedrooms: 0,
-    bathrooms: 0,
+    totalArea: undefined as any,
+    lotSize: undefined as any,
+    bedrooms: undefined as any,
+    bathrooms: undefined as any,
     floors: 1,
-    garageSpaces: 0,
+    garageSpaces: undefined as any,
     maxOccupants: 1,
   },
   utilities: {
@@ -354,7 +330,7 @@ export const defaultPropertyValues: PropertyFormValues = {
     laundryFacility: false,
     doorman: false,
   },
-  maxAllowedUnits: 0,
+  maxAllowedUnits: 1,
   documents: [],
   images: [],
 };

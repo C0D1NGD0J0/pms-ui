@@ -64,7 +64,7 @@ export function PropertyInfoTab({
       value: status,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
     })) || [];
-
+  console.log(form.errors, "------", form.values);
   return (
     <>
       <FormSection
@@ -368,7 +368,10 @@ export function PropertyInfoTab({
                 value={form.values.maxAllowedUnits?.toString() || "1"}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  const defaultUnits =
+                    PropertyTypeManager.getDefaultUnits(propertyType);
+                  const numValue =
+                    value === "" ? defaultUnits : parseInt(value, 10);
                   form.setFieldValue("maxAllowedUnits", numValue);
                 }}
                 placeholder="Enter total building units"

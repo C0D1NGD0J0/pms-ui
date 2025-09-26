@@ -581,7 +581,6 @@ export const USER_QUERY_KEYS = {
     uid,
   ],
 };
-
 export const VENDOR_QUERY_KEYS = {
   getClientVendors: (cuid: string, pagination: unknown) => [
     `/vendors/${cuid}/vendors/filteredVendors`,
@@ -601,5 +600,4 @@ export const VENDOR_QUERY_KEYS = {
     filterParams,
   ],
 };
-
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];
