@@ -84,6 +84,6 @@
 
 .bell-ring {
   color: hsla(39, 73%, 49%, 1);
-  animation: bell-ring 4s infinite ease-in-out;
+  animation: bell-ring 3s ease-in-out infinite;
   transform-origin: top center; // Makes it rotate from the top like a real bell
 }
