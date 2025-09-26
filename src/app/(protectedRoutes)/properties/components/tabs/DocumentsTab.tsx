@@ -182,8 +182,7 @@ export function DocumentsTab({
     const images = (form.values.images || []).map((img) => ({
       ...img,
       type: "image" as const,
-      displayName: img.fileName || img.filename,
-      fileSize: img.fileSize || img.size,
+      displayName: img.filename,
     }));
 
     const documents = form.values.documents.map((doc) => ({

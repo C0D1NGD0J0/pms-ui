@@ -139,7 +139,7 @@ export default function Properties() {
       render: (pid: string, record: any) => {
         const show =
           permissions.isManagerOrAbove ||
-          permissions.isOwner("sub", record.data.createdBy);
+          permissions.isOwner("sub", record.createdBy);
         return (
           <div className="action-icons">
             <Link

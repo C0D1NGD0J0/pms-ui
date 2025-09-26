@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { Loading } from "@components/Loading";
+import { Badge } from "@src/components/Badge";
 import { TabContainer } from "@components/Tab";
 import { IUnit } from "@interfaces/unit.interface";
 import { TabItem } from "@components/Tab/interface";
@@ -10,6 +11,7 @@ import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
 import { useParams, useRouter } from "next/navigation";
 import { ImageGallery } from "@components/ImageGallery";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
   PanelContent,
@@ -184,6 +186,7 @@ const reportColumns = [
 ];
 
 export default function PropertyShow() {
+  const permission = useUnifiedPermissions();
   const [activeTab, setActiveTab] = useState("tenant");
   const [searchTerm, setSearchTerm] = useState("");
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
@@ -192,7 +195,6 @@ export default function PropertyShow() {
   let savedUnits: IUnit[] = [];
   const { data, isLoading, error } = usePropertyData(params.pid);
 
-  // Add approval and rejection functionality
   const approvePropertyMutation = useApproveProperty(
     data?.property?.cuid || ""
   );
@@ -201,19 +203,6 @@ export default function PropertyShow() {
   const handleViewChanges = () => {
     // Open modal to view changes instead of navigating
     setIsChangesModalOpen(true);
-  };
-
-  const handleQuickApprove = () => {
-    if (!data?.property?.pid) return;
-    approvePropertyMutation.mutate(
-      { pid: data.property.pid },
-      {
-        onSuccess: () => {
-          // Refresh the page to show updated data
-          router.refresh();
-        },
-      }
-    );
   };
 
   const handleApprove = (notes?: string) => {
@@ -327,6 +316,10 @@ export default function PropertyShow() {
     },
   ];
 
+  const canEditWithPendingChanges =
+    Object.keys(data.property?.pendingChanges || []).length > 0 &&
+    permission.isManagerOrAbove;
+
   return (
     <div className="page property-show">
       <PageHeader
@@ -336,16 +329,20 @@ export default function PropertyShow() {
         }`}
         headerBtn={
           <div className="flex-row">
-            <Link
-              href={{
-                pathname: `/properties/${data?.property?.pid}/edit`,
-                query: { activeTab: "basic" },
-              }}
-              className="btn btn-outline"
-            >
-              <i className="bx bx-edit btn-icon"></i>
-              <strong>Edit Property</strong>
-            </Link>
+            {canEditWithPendingChanges ? (
+              <Link
+                href={{
+                  pathname: `/properties/${data?.property?.pid}/edit`,
+                  query: { activeTab: "basic" },
+                }}
+                className="btn btn-outline"
+              >
+                <i className="bx bx-edit btn-icon"></i>
+                <strong>Edit Property</strong>
+              </Link>
+            ) : (
+              <Badge variant="danger" text="Pending changes under review..." />
+            )}
             {data?.unitInfo?.canAddUnit && (
               <Link
                 href={{
@@ -362,12 +359,12 @@ export default function PropertyShow() {
         }
       />
 
-      {(data?.property as any)?.pendingChangesPreview && (
+      {data?.property?.pendingChangesPreview && (
         <PendingChangesBanner
           property={data.property}
-          pendingChanges={(data.property as any).pendingChangesPreview}
+          pendingChanges={data.property.pendingChangesPreview}
           requesterName={
-            (data.property as any).pendingChanges.displayName || "Unknown User"
+            data.property?.pendingChanges?.displayName || "Unknown User"
           }
           onViewChanges={handleViewChanges}
         />

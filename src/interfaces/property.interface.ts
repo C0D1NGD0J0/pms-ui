@@ -141,6 +141,7 @@ export interface IPropertyDocument {
   pid: string;
   documents: any[];
   __v: number;
+  pendingChangesPreview?: any;
   pendingChanges?: IPendingChanges | null;
   createdAt: string;
   updatedAt: string;
@@ -159,7 +160,6 @@ export type ClientPropertyResponse = {
   property: IPropertyDocument;
   unitInfo: IUnitInfo;
 };
-
 
 export type PropertyFormValues = Omit<
   IPropertyDocument,

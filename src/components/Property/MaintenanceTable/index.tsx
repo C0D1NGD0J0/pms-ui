@@ -17,7 +17,6 @@ export interface MaintenanceRecord {
 export interface MaintenanceTableProps {
   viewType: "landlord" | "tenant";
   data: MaintenanceRecord[];
-  onAddRequest?: () => void;
   onViewDetails?: (id: string) => void;
   className?: string;
 }
@@ -25,7 +24,6 @@ export interface MaintenanceTableProps {
 export function MaintenanceTable({
   viewType,
   data,
-  onAddRequest,
   onViewDetails,
   className = "",
 }: MaintenanceTableProps) {
