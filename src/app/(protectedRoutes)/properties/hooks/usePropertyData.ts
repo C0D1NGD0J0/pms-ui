@@ -13,12 +13,74 @@ export function usePropertyData(pid: string) {
     queryFn: () => propertyService.getClientProperty(client!.cuid, pid),
   });
 
+  const hasPendingChanges = (): boolean => {
+    return !!(query.data?.property as any)?.pendingChangesPreview;
+  };
+
+  const getPendingChangesCount = (): number => {
+    const pendingChanges = (query.data?.property as any)?.pendingChangesPreview
+      ?.changes;
+    if (!pendingChanges) return 0;
+
+    // Filter out system fields like updatedBy, updatedAt
+    const changes = Object.entries(pendingChanges).filter(
+      ([key]) => !["updatedBy", "updatedAt", "displayName"].includes(key)
+    );
+    return changes.length;
+  };
+
+  const getPendingChangesInfo = () => {
+    const pendingData = (query.data?.property as any)?.pendingChangesPreview;
+    if (!pendingData) return null;
+
+    const changes = Object.entries(pendingData.changes || {}).filter(
+      ([key]) => !["updatedBy", "updatedAt"].includes(key)
+    );
+
+    return {
+      requesterName: pendingData.displayName || "Unknown User",
+      requestedAt: query.data?.property?.updatedAt,
+      changesCount: changes.length,
+      hasChanges: changes.length > 0,
+      changes: changes,
+    };
+  };
+
+  const canEditProperty = (userPermissions: any): boolean => {
+    // If there are pending changes, only approvers can edit
+    if (hasPendingChanges()) {
+      return userPermissions.isManagerOrAbove;
+    }
+
+    // Normal edit permissions apply
+    return userPermissions.canEditProperty?.() ?? true;
+  };
+
+  const getEditBlockedMessage = (userPermissions: any): string | null => {
+    if (canEditProperty(userPermissions)) return null;
+
+    if (hasPendingChanges() && userPermissions.isStaff) {
+      const pendingInfo = getPendingChangesInfo();
+      return `Changes are pending approval by your manager. Contact them for urgent updates. (${pendingInfo?.changesCount} changes pending)`;
+    }
+
+    return "You don't have permission to edit this property.";
+  };
+
   return {
+    // Original query returns
     data: query.data,
     isLoading: query.isLoading,
     error: query.error,
     isError: query.isError,
     isSuccess: query.isSuccess,
     refetch: query.refetch,
+
+    // New helper methods
+    hasPendingChanges,
+    getPendingChangesCount,
+    getPendingChangesInfo,
+    canEditProperty,
+    getEditBlockedMessage,
   };
 }

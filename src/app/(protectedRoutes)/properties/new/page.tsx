@@ -69,6 +69,7 @@ export default function CreateProperty() {
       tabLabel: "Property Details",
       content: (
         <PropertyInfoTab
+          permission={permission}
           propertyForm={propertyForm}
           formConfig={formConfig}
           handleOnChange={handleOnChange}
@@ -92,6 +93,7 @@ export default function CreateProperty() {
       tabLabel: "Photos & Documents",
       content: (
         <DocumentsTab
+          permission={permission}
           propertyForm={propertyForm}
           documentTypeOptions={
             documentTypeOptions as {

@@ -5,15 +5,22 @@ import { useAuth } from "@store/auth.store";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
-import { useGetAllProperties } from "@properties/hooks";
 import { CsvUploadModal } from "@properties/components";
 import { PanelsWrapper, Panel } from "@components/Panel";
+import { PropertyChangesModal } from "@components/Property";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import {
+  useGetAllProperties,
+  useApproveProperty,
+  useRejectProperty,
+} from "@properties/hooks";
 
 export default function Properties() {
   const { client } = useAuth();
   const permissions = useUnifiedPermissions();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
+  const [selectedProperty, setSelectedProperty] = useState<any>(null);
+  const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
 
   const {
     filterOptions,
@@ -25,12 +32,50 @@ export default function Properties() {
     handleSortByChange,
   } = useGetAllProperties(client?.cuid || "");
 
+  // Approval/rejection mutations
+  const approvePropertyMutation = useApproveProperty(client?.cuid || "");
+  const rejectPropertyMutation = useRejectProperty(client?.cuid || "");
+
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
   };
 
   const closeCsvModal = () => {
     setIsCsvModalOpen(false);
+  };
+
+  const openChangesModal = (property: any) => {
+    setSelectedProperty(property);
+    setIsChangesModalOpen(true);
+  };
+
+  const closeChangesModal = () => {
+    setSelectedProperty(null);
+    setIsChangesModalOpen(false);
+  };
+
+  const handleApprove = (notes?: string) => {
+    if (!selectedProperty) return;
+    approvePropertyMutation.mutate(
+      { pid: selectedProperty.pid, notes },
+      {
+        onSuccess: () => {
+          closeChangesModal();
+        },
+      }
+    );
+  };
+
+  const handleReject = (reason: string) => {
+    if (!selectedProperty) return;
+    rejectPropertyMutation.mutate(
+      { pid: selectedProperty.pid, reason },
+      {
+        onSuccess: () => {
+          closeChangesModal();
+        },
+      }
+    );
   };
 
   const propertyColumns = [
@@ -69,13 +114,32 @@ export default function Properties() {
       },
     },
     { title: "Status", dataIndex: "status", isStatus: true },
+    ...(permissions.isManagerOrAbove
+      ? [
+          {
+            title: "Review",
+            dataIndex: "pendingChangesPreview",
+            render: (pendingChanges: any, record: any) => {
+              if (!pendingChanges || !permissions.isManagerOrAbove) return null;
+              return (
+                <div className="flex items-center gap-2">
+                  <i
+                    className="bx bx-search-alt"
+                    onClick={() => openChangesModal(record)}
+                  ></i>
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
     {
       title: "Action",
       dataIndex: "pid",
       render: (pid: string, record: any) => {
         const show =
           permissions.isManagerOrAbove ||
-          permissions.isOwner("sub", record.data.createdBy);
+          permissions.isOwner("sub", record.createdBy);
         return (
           <div className="action-icons">
             <Link
@@ -164,6 +228,24 @@ export default function Properties() {
         </PanelsWrapper>
       </div>
       <CsvUploadModal isOpen={isCsvModalOpen} onClose={closeCsvModal} />
+      {selectedProperty && (
+        <PropertyChangesModal
+          visible={isChangesModalOpen}
+          property={selectedProperty}
+          pendingChanges={selectedProperty.pendingChangesPreview}
+          requesterName={
+            selectedProperty.approvalDetails?.requestedBy?.name ||
+            "Unknown User"
+          }
+          onApprove={handleApprove}
+          onReject={handleReject}
+          onCancel={closeChangesModal}
+          isLoading={
+            approvePropertyMutation.isPending ||
+            rejectPropertyMutation.isPending
+          }
+        />
+      )}
     </div>
   );
 }

@@ -43,7 +43,6 @@ class UsersService {
   ): Promise<IListResponseWithPagination> {
     try {
       const queryParams = new URLSearchParams();
-
       if (params?.role) {
         if (Array.isArray(params.role)) {
           params.role = params.role.join(",") as any;

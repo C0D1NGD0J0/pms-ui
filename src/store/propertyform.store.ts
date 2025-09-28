@@ -21,7 +21,7 @@ export const usePropertyFormStore = create<PropertyFormState>()((set) => ({
   validationStatus: {
     basic: false,
     property: false,
-    amenities: true, // valid by default as they are optional
+    amenities: true,
     documents: true,
   },
   actions: {

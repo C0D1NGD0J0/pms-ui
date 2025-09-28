@@ -2,13 +2,16 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { Table } from "@components/Table";
-import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
+import { Badge } from "@src/components/Badge";
+import { TabContainer } from "@components/Tab";
 import { IUnit } from "@interfaces/unit.interface";
+import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
+import { useParams, useRouter } from "next/navigation";
 import { ImageGallery } from "@components/ImageGallery";
-import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
   PanelContent,
@@ -16,19 +19,26 @@ import {
   Panel,
 } from "@components/Panel";
 import {
+  PendingChangesBanner,
+  PropertyChangesModal,
   PropertyManager,
   PropertyMetrics,
   PropertySidebar,
   UnitsList,
 } from "@components/Property";
 
-import { useGetPropertyUnits, usePropertyData } from "../hooks";
 import {
   MaintenanceLogTab,
   PaymentHistoryTab,
   CurrentTenantTab,
   DocumentsTab,
 } from "./components";
+import {
+  useGetPropertyUnits,
+  useApproveProperty,
+  useRejectProperty,
+  usePropertyData,
+} from "../hooks";
 
 const propertyData = {
   id: "BRK001",
@@ -176,11 +186,54 @@ const reportColumns = [
 ];
 
 export default function PropertyShow() {
+  const permission = useUnifiedPermissions();
   const [activeTab, setActiveTab] = useState("tenant");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
   const params = useParams<{ pid: string }>();
+  const router = useRouter();
   let savedUnits: IUnit[] = [];
   const { data, isLoading, error } = usePropertyData(params.pid);
+
+  const approvePropertyMutation = useApproveProperty(
+    data?.property?.cuid || ""
+  );
+  const rejectPropertyMutation = useRejectProperty(data?.property?.cuid || "");
+
+  const handleViewChanges = () => {
+    // Open modal to view changes instead of navigating
+    setIsChangesModalOpen(true);
+  };
+
+  const handleApprove = (notes?: string) => {
+    if (!data?.property?.pid) return;
+    approvePropertyMutation.mutate(
+      { pid: data.property.pid, notes },
+      {
+        onSuccess: () => {
+          setIsChangesModalOpen(false);
+          router.refresh();
+        },
+      }
+    );
+  };
+
+  const handleReject = (reason: string) => {
+    if (!data?.property?.pid) return;
+    rejectPropertyMutation.mutate(
+      { pid: data.property.pid, reason },
+      {
+        onSuccess: () => {
+          setIsChangesModalOpen(false);
+          router.refresh();
+        },
+      }
+    );
+  };
+
+  const closeChangesModal = () => {
+    setIsChangesModalOpen(false);
+  };
 
   const isMultiUnit = data?.property?.propertyType
     ? propertyTypeRules[data.property.propertyType]?.isMultiUnit ?? false
@@ -224,10 +277,11 @@ export default function PropertyShow() {
     );
   }
 
-  const tabs = [
+  const tabItems: TabItem[] = [
     {
-      key: "tenant",
+      id: "tenant",
       label: "Current Tenant",
+      icon: <i className="bx bx-user"></i>,
       content: (
         <CurrentTenantTab
           tenant={null}
@@ -241,21 +295,30 @@ export default function PropertyShow() {
       ),
     },
     {
-      key: "maintenance",
+      id: "maintenance",
       label: "Maintenance Log",
+      icon: <i className="bx bx-wrench"></i>,
       content: <MaintenanceLogTab />,
     },
     {
-      key: "payments",
+      id: "payments",
       label: "Payment History",
+      icon: <i className="bx bx-credit-card"></i>,
       content: <PaymentHistoryTab />,
     },
     {
-      key: "documents",
+      id: "documents",
       label: "Documents",
-      content: <DocumentsTab />,
+      icon: <i className="bx bx-file"></i>,
+      content: (
+        <DocumentsTab propertyDocuments={data.property.documents || []} />
+      ),
     },
   ];
+
+  const canEditWithPendingChanges =
+    Object.keys(data.property?.pendingChanges || []).length > 0 &&
+    permission.isManagerOrAbove;
 
   return (
     <div className="page property-show">
@@ -266,16 +329,20 @@ export default function PropertyShow() {
         }`}
         headerBtn={
           <div className="flex-row">
-            <Link
-              href={{
-                pathname: `/properties/${data?.property?.pid}/edit`,
-                query: { activeTab: "basic" },
-              }}
-              className="btn btn-outline"
-            >
-              <i className="bx bx-edit btn-icon"></i>
-              <strong>Edit Property</strong>
-            </Link>
+            {canEditWithPendingChanges ? (
+              <Link
+                href={{
+                  pathname: `/properties/${data?.property?.pid}/edit`,
+                  query: { activeTab: "basic" },
+                }}
+                className="btn btn-outline"
+              >
+                <i className="bx bx-edit btn-icon"></i>
+                <strong>Edit Property</strong>
+              </Link>
+            ) : (
+              <Badge variant="danger" text="Pending changes under review..." />
+            )}
             {data?.unitInfo?.canAddUnit && (
               <Link
                 href={{
@@ -292,41 +359,32 @@ export default function PropertyShow() {
         }
       />
 
+      {data?.property?.pendingChangesPreview && (
+        <PendingChangesBanner
+          property={data.property}
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={
+            data.property?.pendingChanges?.displayName || "Unknown User"
+          }
+          onViewChanges={handleViewChanges}
+        />
+      )}
+
       <div className="property-layout">
         <div className="property-main-content">
-          <PropertyMetrics metrics={[]} />
+          <PropertyMetrics metrics={propertyData["metrics"]} />
 
           <PanelsWrapper>
             <Panel>
-              <PanelHeader
-                headerTitleComponent={
-                  <TabContainer
-                    onChange={setActiveTab}
-                    defaultTab={activeTab}
-                    scrollOnChange={false}
-                  >
-                    <TabList>
-                      {tabs.map((tab) => (
-                        <TabListItem
-                          id={tab.key}
-                          key={tab.key}
-                          label={tab.label}
-                        />
-                      ))}
-                    </TabList>
-                  </TabContainer>
-                }
-              />
-              {tabs.map((tab) => (
-                <PanelContent
-                  key={tab.key}
-                  className={`tab-content ${
-                    activeTab === tab.key ? "active" : ""
-                  }`}
-                >
-                  {activeTab === tab.key && tab.content}
-                </PanelContent>
-              ))}
+              <PanelContent>
+                <TabContainer
+                  tabItems={tabItems}
+                  defaultTab={activeTab}
+                  onChange={setActiveTab}
+                  scrollOnChange={false}
+                  ariaLabel="Property management tabs"
+                />
+              </PanelContent>
             </Panel>
           </PanelsWrapper>
 
@@ -353,7 +411,10 @@ export default function PropertyShow() {
         </div>
 
         <PropertySidebar>
-          <ImageGallery images={propertyData.images} title="Property Gallery" />
+          <ImageGallery
+            images={data.property.images}
+            title="Property Gallery"
+          />
           {(data.unitInfo?.currentUnits ?? 0) > 0 && isMultiUnit && (
             <UnitsList
               units={savedUnits}
@@ -365,6 +426,25 @@ export default function PropertyShow() {
           <PropertyManager manager={propertyData.manager} />
         </PropertySidebar>
       </div>
+
+      {(data?.property as any)?.pendingChangesPreview && (
+        <PropertyChangesModal
+          visible={isChangesModalOpen}
+          property={data.property}
+          pendingChanges={(data.property as any).pendingChangesPreview}
+          requesterName={
+            (data.property as any).approvalDetails?.requestedBy?.name ||
+            "Unknown User"
+          }
+          onApprove={handleApprove}
+          onReject={handleReject}
+          onCancel={closeChangesModal}
+          isLoading={
+            approvePropertyMutation.isPending ||
+            rejectPropertyMutation.isPending
+          }
+        />
+      )}
     </div>
   );
 }

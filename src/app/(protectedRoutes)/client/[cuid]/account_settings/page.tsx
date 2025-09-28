@@ -5,6 +5,7 @@ import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { Button } from "@src/components/FormElements";
 import { PageHeader } from "@components/PageElements/Header";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 import { AccountTabs } from "./components/AccountTabs";
 import { AccountOverview } from "./components/AccountOverview";
@@ -12,6 +13,7 @@ import { useGetClientDetails, useClientForm } from "./hook/index";
 
 const AccountPage: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
+  const permissions = useUnifiedPermissions();
   const params = useParams<{ cuid: string }>();
   const {
     data: clientInfo,
@@ -93,12 +95,14 @@ const AccountPage: React.FC = () => {
                 />
               </>
             ) : (
-              <Button
-                label="Edit"
-                onClick={() => setIsEditMode(true)}
-                className="btn-grow btn-primary"
-                icon={<i className="bx bx-pencil"></i>}
-              />
+              permissions.isAdmin && (
+                <Button
+                  label="Edit"
+                  onClick={() => setIsEditMode(true)}
+                  className="btn-grow btn-primary"
+                  icon={<i className="bx bx-pencil"></i>}
+                />
+              )
             )}
           </div>
         }

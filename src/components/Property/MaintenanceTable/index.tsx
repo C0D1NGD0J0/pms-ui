@@ -17,7 +17,6 @@ export interface MaintenanceRecord {
 export interface MaintenanceTableProps {
   viewType: "landlord" | "tenant";
   data: MaintenanceRecord[];
-  onAddRequest?: () => void;
   onViewDetails?: (id: string) => void;
   className?: string;
 }
@@ -25,7 +24,6 @@ export interface MaintenanceTableProps {
 export function MaintenanceTable({
   viewType,
   data,
-  onAddRequest,
   onViewDetails,
   className = "",
 }: MaintenanceTableProps) {
@@ -70,28 +68,9 @@ export function MaintenanceTable({
     return baseColumns;
   };
 
-  const getAddButtonLabel = () => {
-    return viewType === "landlord"
-      ? "Add Maintenance Request"
-      : "Submit New Request";
-  };
-
   return (
     <div className={`maintenance-table ${className}`}>
       <Table dataSource={data} columns={getColumns()} pagination={true} />
-      {onAddRequest && (
-        <div
-          className="form-actions"
-          style={{ marginTop: "1rem", justifyContent: "flex-end" }}
-        >
-          <Button
-            className="btn btn-primary"
-            label={getAddButtonLabel()}
-            icon={<i className="bx bx-plus"></i>}
-            onClick={onAddRequest}
-          />
-        </div>
-      )}
     </div>
   );
 }

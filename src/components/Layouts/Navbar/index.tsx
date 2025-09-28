@@ -1,7 +1,12 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
 import { useAuthActions, useAuth } from "@store/auth.store";
+import React, { useCallback, useState, useRef } from "react";
+import { INotification } from "@interfaces/notification.interface";
+
+import NotificationDropdown from "./NotificationDropdown";
+import { mockNotifications } from "../../../data/mockNotifications";
+
 interface MenuItem {
   icon: string;
   label: string;
@@ -14,6 +19,12 @@ export const Navbar: React.FC = () => {
   const { logout } = useAuthActions();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
+    useState(false);
+  const [notifications, setNotifications] =
+    useState<INotification[]>(mockNotifications);
+
+  const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const menuItems: MenuItem[] = [
     {
@@ -28,9 +39,28 @@ export const Navbar: React.FC = () => {
       href: "/register",
       authRequired: false,
     },
-    { icon: "bx-bell", label: "", href: "/notifications", authRequired: true },
     { icon: "bx-envelope", label: "", href: "/messages", authRequired: true },
   ];
+
+  const handleNotificationMouseEnter = useCallback(() => {
+    if (notificationTimeoutRef.current) {
+      clearTimeout(notificationTimeoutRef.current);
+    }
+    notificationTimeoutRef.current = setTimeout(() => {
+      setIsNotificationDropdownOpen(true);
+    }, 200);
+  }, []);
+
+  const handleNotificationMouseLeave = useCallback(() => {
+    if (notificationTimeoutRef.current) {
+      clearTimeout(notificationTimeoutRef.current);
+    }
+    notificationTimeoutRef.current = setTimeout(() => {
+      setIsNotificationDropdownOpen(false);
+    }, 300);
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -78,6 +108,41 @@ export const Navbar: React.FC = () => {
             </li>
           );
         })}
+
+        {isLoggedIn && (
+          <li
+            className={`navbar-menu__item navbar-notification-item ${
+              unreadCount > 0 ? "has-unread" : ""
+            }`}
+            onMouseEnter={handleNotificationMouseEnter}
+            onMouseLeave={handleNotificationMouseLeave}
+          >
+            <span>
+              <i className="bx bx-bell"></i>
+              {unreadCount > 0 && (
+                <span
+                  className="notification-badge"
+                  aria-label={`${unreadCount} unread notifications`}
+                >
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </span>
+
+            <div
+              className={`navbar-notification-dropdown-wrapper ${
+                isNotificationDropdownOpen ? "show" : ""
+              }`}
+              onMouseEnter={handleNotificationMouseEnter}
+              onMouseLeave={handleNotificationMouseLeave}
+            >
+              <NotificationDropdown
+                notifications={notifications}
+                onNotificationUpdate={setNotifications}
+              />
+            </div>
+          </li>
+        )}
 
         <li
           className="navbar-menu__item user-avatar"

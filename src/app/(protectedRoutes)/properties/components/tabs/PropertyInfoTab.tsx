@@ -5,6 +5,7 @@ import { FormSection } from "@components/FormLayout";
 import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { PropertyFormValues } from "@interfaces/property.interface";
 import { usePropertyFormActions } from "@src/store/propertyform.store";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   FormField,
   FormInput,
@@ -16,6 +17,7 @@ import {
 } from "@components/FormElements";
 
 interface Props {
+  permission: ReturnType<typeof useUnifiedPermissions>;
   formConfig: any;
   propertyForm: UseFormReturnType<PropertyFormValues>;
   propertyTypeOptions: { value: string; label: string }[];
@@ -62,7 +64,7 @@ export function PropertyInfoTab({
       value: status,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
     })) || [];
-  console.log(form.values);
+  console.log(form.errors, "------", form.values);
   return (
     <>
       <FormSection
@@ -366,7 +368,10 @@ export function PropertyInfoTab({
                 value={form.values.maxAllowedUnits?.toString() || "1"}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
+                  const defaultUnits =
+                    PropertyTypeManager.getDefaultUnits(propertyType);
+                  const numValue =
+                    value === "" ? defaultUnits : parseInt(value, 10);
                   form.setFieldValue("maxAllowedUnits", numValue);
                 }}
                 placeholder="Enter total building units"

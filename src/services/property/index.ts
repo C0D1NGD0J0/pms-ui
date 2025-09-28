@@ -1,6 +1,5 @@
 import axios from "@configs/axios";
 import { prepareRequestData } from "@utils/formDataTransformer";
-import { postTransformPropertiesData } from "@/src/models/property";
 import {
   IServerResponseWithPagination,
   IPaginationQuery,
@@ -99,13 +98,91 @@ class PropertyService {
         `${this.baseUrl}/${cuid}/client_properties?${queryString}`,
         this.axiosConfig
       );
-      const transformedData = postTransformPropertiesData(result.data.items);
-      return {
-        ...result.data,
-        items: transformedData,
-      };
+      return result.data;
     } catch (error) {
       console.error("Error fetching client properties:", error);
+      throw error;
+    }
+  }
+
+  async getPendingApprovals(cuid: string, pagination: IPaginationQuery) {
+    try {
+      const queryString = new URLSearchParams({
+        page: pagination.page.toString(),
+        limit: pagination.limit.toString(),
+        ...(pagination.sort && { sort: pagination.sort }),
+        ...(pagination.sortBy && { sortBy: pagination.sortBy }),
+      }).toString();
+
+      const result = await axios.get<
+        IServerResponseWithPagination<IPropertyDocument[]>
+      >(
+        `${this.baseUrl}/${cuid}/properties/pending?${queryString}`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching pending approvals:", error);
+      throw error;
+    }
+  }
+
+  async approveProperty(cuid: string, pid: string, notes?: string) {
+    try {
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/properties/${pid}/approve`,
+        { notes },
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      console.error("Error approving property:", error);
+      throw error;
+    }
+  }
+
+  async rejectProperty(cuid: string, pid: string, reason: string) {
+    try {
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/properties/${pid}/reject`,
+        { reason },
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      console.error("Error rejecting property:", error);
+      throw error;
+    }
+  }
+
+  async bulkApproveProperties(cuid: string, propertyIds: string[]) {
+    try {
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/properties/bulk-approve`,
+        { propertyIds },
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      console.error("Error bulk approving properties:", error);
+      throw error;
+    }
+  }
+
+  async bulkRejectProperties(
+    cuid: string,
+    propertyIds: string[],
+    reason: string
+  ) {
+    try {
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/properties/bulk-reject`,
+        { propertyIds, reason },
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      console.error("Error bulk rejecting properties:", error);
       throw error;
     }
   }
@@ -116,7 +193,7 @@ class PropertyService {
   ): Promise<ClientPropertyResponse> {
     try {
       const result = await axios.get<IServerResponse<ClientPropertyResponse>>(
-        `${this.baseUrl}/${cuid}/client_properties/${propertyPid}?q`,
+        `${this.baseUrl}/${cuid}/client_property/${propertyPid}?q`,
         this.axiosConfig
       );
       return result.data;
@@ -158,7 +235,6 @@ class PropertyService {
     propertyData: Partial<EditPropertyFormValues>
   ) {
     try {
-      console.log("Updating property with data:", propertyData);
       const { data: requestData, headers } = prepareRequestData(propertyData);
 
       const config = {

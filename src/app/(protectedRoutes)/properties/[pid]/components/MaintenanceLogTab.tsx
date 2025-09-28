@@ -50,10 +50,6 @@ const maintenanceData: MaintenanceRecord[] = [
 ];
 
 export function MaintenanceLogTab() {
-  const handleAddRequest = () => {
-    console.log("Add maintenance request");
-  };
-
   const handleViewDetails = (id: string) => {
     console.log("View details for:", id);
   };
@@ -62,7 +58,6 @@ export function MaintenanceLogTab() {
     <MaintenanceTable
       viewType="landlord"
       data={maintenanceData}
-      onAddRequest={handleAddRequest}
       onViewDetails={handleViewDetails}
     />
   );

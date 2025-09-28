@@ -247,18 +247,6 @@
       }
     }
 
-    // Text and Typography
-    p,
-    h1,
-    h2,
-    h3,
-    h4,
-    h5 {
-      @if map.has-key($theme-colors, "primary-text") {
-        color: hslaGen(map.get($theme-colors, "primary-text"));
-      }
-    }
-
     // Status and Utility Classes
     .primary {
       @if map.has-key($theme-colors, "primary-text") {
