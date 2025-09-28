@@ -67,8 +67,6 @@ class AxiosService implements IAxiosService {
   private setupInterceptors() {
     this.axios.interceptors.request.use(
       (config) => {
-        // Server uses cookies only, no Authorization header needed
-        // Cookies are automatically sent via withCredentials: true
         return config;
       },
       (error) => {
