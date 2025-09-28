@@ -1,10 +1,12 @@
 "use client";
 import React from "react";
 import { useParams } from "next/navigation";
+import Banner from "@src/components/Banner";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
+import { usePropertyData } from "@properties/hooks/usePropertyData";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
@@ -48,6 +50,17 @@ export default function EditProperty() {
     });
   const permission = useUnifiedPermissions();
 
+  const {
+    hasPendingChanges,
+    getPendingChangesInfo,
+    canEditProperty,
+    getEditBlockedMessage,
+  } = usePropertyData(pid);
+
+  const editBlockedMessage = getEditBlockedMessage(permission);
+  const pendingChangesInfo = getPendingChangesInfo();
+  const canEdit = canEditProperty(permission);
+
   const tabs = [
     {
       key: "basic",
@@ -56,6 +69,7 @@ export default function EditProperty() {
       content: (
         <BasicInfoTab
           permission={permission}
+          canEditProperty={canEdit}
           saveAddress={saveAddress}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
@@ -145,6 +159,35 @@ export default function EditProperty() {
 
   return (
     <div className="page edit-property">
+      {/* Dynamic banner based on pending changes status */}
+      {hasPendingChanges() && (
+        <Banner
+          type="error"
+          title={editBlockedMessage || "Property edit restrictions apply"}
+          description={
+            pendingChangesInfo && (
+              <div className="pending-changes-info">
+                <p>
+                  <strong>Requested by:</strong>{" "}
+                  {pendingChangesInfo.requesterName}
+                </p>
+                <p>
+                  <strong>Changes pending:</strong>{" "}
+                  {pendingChangesInfo.changesCount}
+                </p>
+                {pendingChangesInfo.requestedAt && (
+                  <p>
+                    <strong>Submitted:</strong>{" "}
+                    {new Date(
+                      pendingChangesInfo.requestedAt
+                    ).toLocaleDateString()}
+                  </p>
+                )}
+              </div>
+            )
+          }
+        />
+      )}
       <PageHeader
         title={`Edit property ${activeTab === "units" ? "units" : ""}`}
         headerBtn={
@@ -157,7 +200,7 @@ export default function EditProperty() {
                 onClick={handleUpdate}
                 className="btn-primary"
                 icon={<i className="bx bx-save"></i>}
-                disabled={!propertyForm.isValid() || false}
+                disabled={!propertyForm.isValid() || !canEdit || isSubmitting}
               />
             )}
           </div>
@@ -244,7 +287,9 @@ export default function EditProperty() {
                       type="submit"
                       label="Update Property"
                       className="btn btn-primary btn-grow"
-                      disabled={!propertyForm.isValid() || isSubmitting}
+                      disabled={
+                        !propertyForm.isValid() || !canEdit || isSubmitting
+                      }
                     />
                   )}
                 </div>

@@ -1,5 +1,4 @@
 import APIError from "@utils/errorHandler";
-import CookieManager from "@utils/cookieManager";
 import { EventTypes, events } from "@services/events";
 import axios, {
   AxiosRequestConfig,
@@ -68,10 +67,8 @@ class AxiosService implements IAxiosService {
   private setupInterceptors() {
     this.axios.interceptors.request.use(
       (config) => {
-        const token = CookieManager.getCookie("cuid");
-        if (token && config.headers) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
+        // Server uses cookies only, no Authorization header needed
+        // Cookies are automatically sent via withCredentials: true
         return config;
       },
       (error) => {
@@ -88,22 +85,21 @@ class AxiosService implements IAxiosService {
           _retry?: boolean;
         };
 
-        // Check for token expired specifically by message
+        // Check for 401 errors that aren't already retried
         if (
           error.response?.status === 401 &&
-          (error.response?.data as any)?.message?.includes("token expired") &&
           !originalRequest?._retry &&
           originalRequest?.url !== "/api/v1/auth/refresh_token"
         ) {
           originalRequest._retry = true;
 
           try {
-            // Use existing refresh logic instead of reimplementing
             await this.axios.post("/api/v1/auth/refresh_token");
             triggerUserRefresh();
+
+            // Retry original request - new cookies will be used automatically
             return this.axios(originalRequest);
           } catch (refreshError) {
-            // Let existing event system handle auth failure
             handleAuthFailure();
             return Promise.reject(
               new APIError().init(refreshError as AxiosError)
@@ -116,6 +112,7 @@ class AxiosService implements IAxiosService {
           originalRequest?.url === "/api/v1/auth/refresh_token" &&
           error.response?.status === 401
         ) {
+          console.log("Refresh token expired, logging out");
           handleAuthFailure();
         }
 

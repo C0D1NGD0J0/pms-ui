@@ -18,6 +18,7 @@ import {
 
 interface Props {
   permission?: ReturnType<typeof useUnifiedPermissions>;
+  canEditProperty?: boolean;
   saveAddress: (address: EditPropertyFormValues["address"]) => void;
   propertyForm: UseFormReturnType<PropertyFormValues | EditPropertyFormValues>;
   propertyManagers: { value: string; label: string }[];
@@ -36,6 +37,7 @@ export function BasicInfoTab({
   propertyStatusOptions,
   handleOnChange,
   permission,
+  canEditProperty,
 }: Props) {
   return (
     <>
@@ -55,6 +57,7 @@ export function BasicInfoTab({
               id="name"
               name="name"
               required
+              disabled={canEditProperty === false}
               value={form.values.name}
               onChange={handleOnChange}
               hasError={!!form.errors.name}

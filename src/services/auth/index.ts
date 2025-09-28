@@ -104,7 +104,8 @@ class AuthService {
   };
   refreshToken = async () => {
     try {
-      const res = await axios.get(`${this.baseUrl}/refresh_token`);
+      // Cookies are automatically sent via withCredentials: true
+      const res = await axios.post(`${this.baseUrl}/refresh_token`);
       return res;
     } catch (error) {
       throw error;
