@@ -41,7 +41,7 @@ export default function StaffPage({ params }: StaffPageProps) {
   const permission = useUnifiedPermissions();
 
   const { stats, isLoading: statsLoading } = useGetUserStats(cuid, {
-    role: ["staff"],
+    role: ["staff", "manager"],
   });
 
   const departmentStats = useMemo(() => {
