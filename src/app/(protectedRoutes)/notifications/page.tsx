@@ -28,9 +28,7 @@ const NotificationsPage = () => {
   const { user } = useCurrentUser();
   const cuid = user?.client?.cuid;
 
-  const { notifications, announcements, isConnected, isConnecting, hasError } =
-    useSSENotifications();
-
+  const { notifications, announcements } = useSSENotifications();
   const { markAsRead, reconnect } = useSSENotificationActions();
   const [activeFilter, setActiveFilter] = useState("all");
 
@@ -121,29 +119,6 @@ const NotificationsPage = () => {
             Notifications{" "}
             {unreadCount > 0 && (
               <span className="notification-counter">{unreadCount}</span>
-            )}
-            {isConnecting && (
-              <span
-                className="connection-status connecting"
-                title="Connecting..."
-              >
-                ⏳
-              </span>
-            )}
-            {isConnected && (
-              <span className="connection-status connected" title="Connected">
-                🟢
-              </span>
-            )}
-            {hasError && (
-              <span
-                className="connection-status error"
-                title="Connection error - Click to retry"
-                onClick={handleReconnect}
-                style={{ cursor: "pointer" }}
-              >
-                🔴
-              </span>
             )}
           </h2>
           <small>Stay updated with important alerts and information</small>
