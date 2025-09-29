@@ -2,10 +2,9 @@
 import Link from "next/link";
 import { useAuthActions, useAuth } from "@store/auth.store";
 import React, { useCallback, useState, useRef } from "react";
-import { INotification } from "@interfaces/notification.interface";
+import { useSSENotifications } from "@hooks/useSSENotifications";
 
 import NotificationDropdown from "./NotificationDropdown";
-import { mockNotifications } from "../../../data/mockNotifications";
 
 interface MenuItem {
   icon: string;
@@ -21,8 +20,15 @@ export const Navbar: React.FC = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
     useState(false);
-  const [notifications, setNotifications] =
-    useState<INotification[]>(mockNotifications);
+  const {
+    notifications,
+    announcements,
+    markAsRead,
+    isConnected,
+    isConnecting,
+    hasError,
+    reconnect,
+  } = useSSENotifications();
 
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -60,7 +66,8 @@ export const Navbar: React.FC = () => {
     }, 300);
   }, []);
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  const allNotifications = [...notifications, ...announcements];
+  const unreadCount = allNotifications.filter((n) => !n.isRead).length;
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -138,7 +145,12 @@ export const Navbar: React.FC = () => {
             >
               <NotificationDropdown
                 notifications={notifications}
-                onNotificationUpdate={setNotifications}
+                announcements={announcements}
+                markAsRead={markAsRead}
+                isConnected={isConnected}
+                isConnecting={isConnecting}
+                hasError={hasError}
+                reconnect={reconnect}
               />
             </div>
           </li>

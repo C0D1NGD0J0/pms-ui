@@ -4,3 +4,4 @@ export * from "./utils.interface";
 export * from "./client.interface";
 export * from "./invitation.interface";
 export * from "./vendor.interface";
+export * from "./notification.interface";

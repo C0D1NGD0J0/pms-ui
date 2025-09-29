@@ -1,18 +1,23 @@
 export interface INotification {
-  id: string;
+  nuid: string;
   title: string;
   message: string;
-  timestamp: Date;
-  isRead: boolean;
-  type: "info" | "warning" | "success" | "message" | "system";
-  actionUrl?: string;
-  avatar?: string;
+  type: "system" | "property" | "user";
   priority: "high" | "medium" | "low";
+  recipientType: "individual" | "announcement";
+  isRead: boolean;
+  recipientId?: string;
+  createdAt: string;
+  updatedAt?: string;
+  actionUrl?: string;
+  metadata?: Record<string, any>;
+  id: string;
 }
 
-export interface INotificationDropdownProps {
-  notifications: INotification[];
-  onMarkAsRead: (id: string) => void;
-  onMarkAllAsRead: () => void;
-  onViewAll: () => void;
+export interface NotificationFilters {
+  type?: string;
+  priority?: "low" | "medium" | "high";
+  isRead?: boolean;
+  last7days?: boolean;
+  last30days?: boolean;
 }

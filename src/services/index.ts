@@ -5,4 +5,5 @@ export * from "./users";
 export * from "./vendors";
 export * from "./client";
 export * from "./property";
+export * from "./notification";
 export * from "./propertyUnit";
