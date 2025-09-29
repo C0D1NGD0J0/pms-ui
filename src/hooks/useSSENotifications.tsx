@@ -42,10 +42,14 @@ export const useSSENotifications = (filters?: NotificationFilters) => {
     setState((prev) => ({ ...prev, connectionStatus: "connecting" }));
 
     personalSourceRef.current =
-      notificationService.createPersonalNotificationsStream(cuid, filters);
+      notificationService.createPersonalNotificationsStream(cuid, {
+        page: 1,
+        limit: 1,
+      });
 
     personalSourceRef.current.addEventListener("my-notifications", (event) => {
       const data = JSON.parse(event.data);
+      console.log("Personal notifications SSE data:", data);
       setState((prev) => ({
         ...prev,
         notifications: data.notifications,

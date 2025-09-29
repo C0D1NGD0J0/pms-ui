@@ -1,8 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useAuthActions, useAuth } from "@store/auth.store";
-import React, { useCallback, useState, useRef } from "react";
-import { useSSENotifications } from "@hooks/useSSENotifications";
+import React, { useCallback, useEffect, useState, useRef } from "react";
+import {
+  useSSENotificationActions,
+  useSSENotifications,
+} from "@src/store/sseNotification.store";
 
 import NotificationDropdown from "./NotificationDropdown";
 
@@ -20,17 +23,40 @@ export const Navbar: React.FC = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
     useState(false);
-  const {
-    notifications,
-    announcements,
-    markAsRead,
-    isConnected,
-    isConnecting,
-    hasError,
-    reconnect,
-  } = useSSENotifications();
+
+  // Use Zustand notification store
+  const { notifications, announcements, isConnected, isConnecting, hasError } =
+    useSSENotifications();
+
+  const { initializeConnection, markAsRead, reconnect, disconnectStreams } =
+    useSSENotificationActions();
 
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const cuid = user?.client?.cuid;
+
+  // Initialize notification connection when user is logged in
+  useEffect(() => {
+    if (cuid && isLoggedIn) {
+      initializeConnection(cuid);
+    } else if (!isLoggedIn) {
+      disconnectStreams();
+    }
+  }, [cuid, isLoggedIn, initializeConnection, disconnectStreams]);
+
+  const handleMarkAsRead = useCallback(
+    (nuid: string) => {
+      if (cuid) {
+        markAsRead(cuid, nuid);
+      }
+    },
+    [cuid, markAsRead]
+  );
+
+  const handleReconnect = useCallback(() => {
+    if (cuid) {
+      reconnect(cuid);
+    }
+  }, [cuid, reconnect]);
 
   const menuItems: MenuItem[] = [
     {
@@ -146,11 +172,11 @@ export const Navbar: React.FC = () => {
               <NotificationDropdown
                 notifications={notifications}
                 announcements={announcements}
-                markAsRead={markAsRead}
+                markAsRead={handleMarkAsRead}
                 isConnected={isConnected}
                 isConnecting={isConnecting}
                 hasError={hasError}
-                reconnect={reconnect}
+                reconnect={handleReconnect}
               />
             </div>
           </li>
