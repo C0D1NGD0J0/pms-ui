@@ -3,12 +3,12 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { Loading } from "@components/Loading";
-import { Badge } from "@src/components/Badge";
 import { TabContainer } from "@components/Tab";
 import { IUnit } from "@interfaces/unit.interface";
 import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
+import { Button } from "@src/components/FormElements";
 import { useParams, useRouter } from "next/navigation";
 import { ImageGallery } from "@components/ImageGallery";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
@@ -248,6 +248,7 @@ export default function PropertyShow() {
     params.pid,
     {
       limit: 10,
+      page: 1,
     },
     {
       enabled: isMultiUnit && !!data?.property?.cuid && !!params.pid,
@@ -316,10 +317,13 @@ export default function PropertyShow() {
     },
   ];
 
-  const canEditWithPendingChanges =
-    Object.keys(data.property?.pendingChanges || []).length > 0 &&
-    permission.isManagerOrAbove;
-
+  const hasPendingChanges =
+    Object.keys(data.property?.pendingChanges || []).length > 0;
+  console.log(
+    data.property.pendingChangesPreview,
+    "hasPendingChanges",
+    hasPendingChanges
+  );
   return (
     <div className="page property-show">
       <PageHeader
@@ -329,7 +333,15 @@ export default function PropertyShow() {
         }`}
         headerBtn={
           <div className="flex-row">
-            {canEditWithPendingChanges ? (
+            <Button
+              label="Back"
+              className="btn-md btn-outline"
+              icon={<i className="bx bx-arrow-back"></i>}
+              onClick={() => {
+                router.back();
+              }}
+            />
+            {hasPendingChanges && permission.isManagerOrAbove ? (
               <Link
                 href={{
                   pathname: `/properties/${data?.property?.pid}/edit`,
@@ -340,10 +352,15 @@ export default function PropertyShow() {
                 <i className="bx bx-edit btn-icon"></i>
                 <strong>Edit Property</strong>
               </Link>
-            ) : (
-              <Badge variant="danger" text="Pending changes under review..." />
-            )}
-            {data?.unitInfo?.canAddUnit && (
+            ) : hasPendingChanges ? (
+              <Button
+                label="Pending Review..."
+                disabled
+                className="btn-md btn-outline-danger"
+                icon={<i className="bx bx-edit"></i>}
+              />
+            ) : null}
+            {data?.unitInfo?.canAddUnit && permission.isStaffOrAbove && (
               <Link
                 href={{
                   pathname: `/properties/${data?.property?.pid}/edit`,

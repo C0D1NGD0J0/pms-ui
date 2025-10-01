@@ -125,6 +125,9 @@ a.btn {
   }
 
   &-outline-danger {
+    border: 1px solid hslaGen($danger-color);
+    background-color: hslaGen($white-color);
+    color: hslaGen($blue-ink-color);
     i {
       color: hslaGen($danger-color);
     }

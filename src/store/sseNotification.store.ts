@@ -73,12 +73,22 @@ const useSSENotificationStore = create<NotificationState>()(
 
           newPersonalSource.addEventListener("my-notifications", (event) => {
             const data = JSON.parse(event.data);
-            set({
-              notifications: data.notifications,
-              connectionStatus: "connected",
-              error: undefined,
-              reconnectAttempts: 0,
-            });
+
+            if (data.isInitial) {
+              set({
+                notifications: data.notifications,
+                connectionStatus: "connected",
+                error: undefined,
+                reconnectAttempts: 0,
+              });
+            } else {
+              set((state) => ({
+                notifications: [...data.notifications, ...state.notifications],
+                connectionStatus: "connected",
+                error: undefined,
+                reconnectAttempts: 0,
+              }));
+            }
           });
 
           newPersonalSource.onerror = () => {
@@ -106,7 +116,17 @@ const useSSENotificationStore = create<NotificationState>()(
 
           newAnnouncementsSource.addEventListener("announcements", (event) => {
             const data = JSON.parse(event.data);
-            set({ announcements: data.notifications || [] });
+
+            if (data.isInitial) {
+              set({ announcements: data.notifications || [] });
+            } else {
+              set((state) => ({
+                announcements: [
+                  ...(data.notifications || []),
+                  ...state.announcements,
+                ],
+              }));
+            }
           });
 
           newAnnouncementsSource.onerror = (error) => {
