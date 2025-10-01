@@ -56,9 +56,7 @@ export default function EditProperty() {
       pid,
     });
   const permission = useUnifiedPermissions();
-
-  const { data, isLoading, error } = usePropertyData(pid);
-
+  const { data } = usePropertyData(pid);
   const approvePropertyMutation = useApproveProperty(
     data?.property?.cuid || ""
   );
@@ -98,8 +96,6 @@ export default function EditProperty() {
     setIsChangesModalOpen(false);
   };
 
-  // Keep backward compatibility with existing logic
-  const hasPendingChanges = () => !!data?.property?.pendingChangesPreview;
   const canEdit = data?.property
     ? Object.keys(data.property?.pendingChanges || []).length === 0 ||
       permission.isManagerOrAbove
@@ -203,7 +199,6 @@ export default function EditProperty() {
 
   return (
     <div className="page edit-property">
-      {/* Dynamic banner based on pending changes status */}
       {data?.property?.pendingChangesPreview && (
         <PendingChangesBanner
           property={data.property}
@@ -218,6 +213,12 @@ export default function EditProperty() {
         title={`Edit property ${activeTab === "units" ? "units" : ""}`}
         headerBtn={
           <div className="flex-row">
+            <Button
+              className="btn btn-default mr-2"
+              label="Back"
+              onClick={() => router.back()}
+              icon={<i className="bx bx-arrow-back"></i>}
+            />
             {activeTab !== "units" && (
               <Button
                 type="submit"
