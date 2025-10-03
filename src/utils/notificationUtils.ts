@@ -77,27 +77,22 @@ export const getNotificationCategory = (
 export const buildNotificationActionUrl = (
   notification: INotification
 ): string | null => {
-  const { resourceInfo, cuid, title } = notification;
+  const { resourceInfo, title, metadata } = notification;
 
   if (!resourceInfo) return null;
 
   const { resourceName, resourceUid } = resourceInfo;
-
   switch (resourceName) {
     case "property":
-      if (title.includes("Approval Required")) {
-        // Take user to property edit page for approval
-        return `/properties/${resourceUid}/edit`;
-      }
-      // For other property notifications, go to view page
-      return `/properties/${resourceUid}`;
+      const isPendingApproval =
+        title.toLowerCase().includes("approval") ||
+        title.toLowerCase().includes("pending") ||
+        metadata?.type === "pending_approval";
 
+      const baseUrl = `/properties/${resourceUid}/`;
+      return isPendingApproval ? `${baseUrl}?showChanges=true` : baseUrl;
     case "maintenance":
       return `/maintenance/${resourceUid}`;
-
-    case "user":
-      return `/users/${cuid}/staff/${resourceUid}`;
-
     default:
       return null;
   }

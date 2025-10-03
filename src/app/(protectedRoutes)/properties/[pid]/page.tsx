@@ -1,16 +1,16 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { Loading } from "@components/Loading";
 import { TabContainer } from "@components/Tab";
+import React, { useEffect, useState } from "react";
 import { IUnit } from "@interfaces/unit.interface";
 import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
 import { Button } from "@src/components/FormElements";
-import { useParams, useRouter } from "next/navigation";
 import { ImageGallery } from "@components/ImageGallery";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
@@ -27,18 +27,13 @@ import {
   UnitsList,
 } from "@components/Property";
 
+import { useGetPropertyUnits, usePropertyData } from "../hooks";
 import {
   MaintenanceLogTab,
   PaymentHistoryTab,
   CurrentTenantTab,
   DocumentsTab,
 } from "./components";
-import {
-  useGetPropertyUnits,
-  useApproveProperty,
-  useRejectProperty,
-  usePropertyData,
-} from "../hooks";
 
 const propertyData = {
   id: "BRK001",
@@ -192,47 +187,40 @@ export default function PropertyShow() {
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
   const params = useParams<{ pid: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   let savedUnits: IUnit[] = [];
   const { data, isLoading, error } = usePropertyData(params.pid);
 
-  const approvePropertyMutation = useApproveProperty(
-    data?.property?.cuid || ""
-  );
-  const rejectPropertyMutation = useRejectProperty(data?.property?.cuid || "");
+  useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      data?.property?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    data?.property?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
 
   const handleViewChanges = () => {
-    // Open modal to view changes instead of navigating
     setIsChangesModalOpen(true);
-  };
-
-  const handleApprove = (notes?: string) => {
-    if (!data?.property?.pid) return;
-    approvePropertyMutation.mutate(
-      { pid: data.property.pid, notes },
-      {
-        onSuccess: () => {
-          setIsChangesModalOpen(false);
-          router.refresh();
-        },
-      }
-    );
-  };
-
-  const handleReject = (reason: string) => {
-    if (!data?.property?.pid) return;
-    rejectPropertyMutation.mutate(
-      { pid: data.property.pid, reason },
-      {
-        onSuccess: () => {
-          setIsChangesModalOpen(false);
-          router.refresh();
-        },
-      }
-    );
   };
 
   const closeChangesModal = () => {
     setIsChangesModalOpen(false);
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
   };
 
   const isMultiUnit = data?.property?.propertyType
@@ -451,13 +439,8 @@ export default function PropertyShow() {
             (data.property as any).approvalDetails?.requestedBy?.name ||
             "Unknown User"
           }
-          onApprove={handleApprove}
-          onReject={handleReject}
+          onSuccess={handleModalSuccess}
           onCancel={closeChangesModal}
-          isLoading={
-            approvePropertyMutation.isPending ||
-            rejectPropertyMutation.isPending
-          }
         />
       )}
     </div>

@@ -6,14 +6,10 @@ import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
 import { CsvUploadModal } from "@properties/components";
+import { useGetAllProperties } from "@properties/hooks";
 import { PanelsWrapper, Panel } from "@components/Panel";
 import { PropertyChangesModal } from "@components/Property";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import {
-  useGetAllProperties,
-  useApproveProperty,
-  useRejectProperty,
-} from "@properties/hooks";
 
 export default function Properties() {
   const { client } = useAuth();
@@ -30,10 +26,8 @@ export default function Properties() {
     handleSortChange,
     handlePageChange,
     handleSortByChange,
+    refetch,
   } = useGetAllProperties(client?.cuid || "");
-
-  const approvePropertyMutation = useApproveProperty(client?.cuid || "");
-  const rejectPropertyMutation = useRejectProperty(client?.cuid || "");
 
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
@@ -53,28 +47,9 @@ export default function Properties() {
     setIsChangesModalOpen(false);
   };
 
-  const handleApprove = (notes?: string) => {
-    if (!selectedProperty) return;
-    approvePropertyMutation.mutate(
-      { pid: selectedProperty.pid, notes },
-      {
-        onSuccess: () => {
-          closeChangesModal();
-        },
-      }
-    );
-  };
-
-  const handleReject = (reason: string) => {
-    if (!selectedProperty) return;
-    rejectPropertyMutation.mutate(
-      { pid: selectedProperty.pid, reason },
-      {
-        onSuccess: () => {
-          closeChangesModal();
-        },
-      }
-    );
+  const handleModalSuccess = () => {
+    closeChangesModal();
+    refetch(); // Refresh the properties list
   };
 
   const propertyColumns = [
@@ -237,13 +212,8 @@ export default function Properties() {
             selectedProperty.approvalDetails?.requestedBy?.name ||
             "Unknown User"
           }
-          onApprove={handleApprove}
-          onReject={handleReject}
+          onSuccess={handleModalSuccess}
           onCancel={closeChangesModal}
-          isLoading={
-            approvePropertyMutation.isPending ||
-            rejectPropertyMutation.isPending
-          }
         />
       )}
     </div>

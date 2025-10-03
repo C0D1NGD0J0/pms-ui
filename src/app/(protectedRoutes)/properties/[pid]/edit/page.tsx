@@ -2,13 +2,12 @@
 import React, { useState } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
-import { useParams, useRouter } from "next/navigation";
-import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
+import { Button, Form } from "@components/FormElements";
 import { usePropertyData } from "@properties/hooks/usePropertyData";
-import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
-import { useApproveProperty, useRejectProperty } from "@properties/hooks";
+import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
 import {
   PendingChangesBanner,
@@ -33,6 +32,7 @@ export default function EditProperty() {
   const params = useParams();
   const pid = params.pid as string;
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
 
@@ -56,44 +56,42 @@ export default function EditProperty() {
       pid,
     });
   const permission = useUnifiedPermissions();
-  const { data } = usePropertyData(pid);
-  const approvePropertyMutation = useApproveProperty(
-    data?.property?.cuid || ""
-  );
-  const rejectPropertyMutation = useRejectProperty(data?.property?.cuid || "");
+  const { data, refetch } = usePropertyData(pid);
+
+  // Auto-open changes modal if URL parameter is present
+  React.useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      data?.property?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
+
+      // Clean up URL by removing the parameter
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    data?.property?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
 
   const handleViewChanges = () => {
     setIsChangesModalOpen(true);
   };
 
-  const handleApprove = (notes?: string) => {
-    if (!data?.property?.pid) return;
-    approvePropertyMutation.mutate(
-      { pid: data.property.pid, notes },
-      {
-        onSuccess: () => {
-          setIsChangesModalOpen(false);
-          router.refresh();
-        },
-      }
-    );
-  };
-
-  const handleReject = (reason: string) => {
-    if (!data?.property?.pid) return;
-    rejectPropertyMutation.mutate(
-      { pid: data.property.pid, reason },
-      {
-        onSuccess: () => {
-          setIsChangesModalOpen(false);
-          router.refresh();
-        },
-      }
-    );
-  };
-
   const closeChangesModal = () => {
     setIsChangesModalOpen(false);
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
+    router.refresh();
+    refetch(); // Refresh property data
   };
 
   const canEdit = data?.property
@@ -337,13 +335,8 @@ export default function EditProperty() {
             data.property?.pendingChanges?.displayName ||
             "Unknown User"
           }
-          onApprove={handleApprove}
-          onReject={handleReject}
+          onSuccess={handleModalSuccess}
           onCancel={closeChangesModal}
-          isLoading={
-            approvePropertyMutation.isPending ||
-            rejectPropertyMutation.isPending
-          }
         />
       )}
     </div>
