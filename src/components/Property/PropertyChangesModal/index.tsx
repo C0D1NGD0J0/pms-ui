@@ -5,10 +5,11 @@ import { Badge } from "@components/Badge/Badge";
 import { Modal } from "@components/FormElements/Modal";
 import { Button } from "@components/FormElements/Button";
 import { Textarea } from "@components/FormElements/TextArea";
-import { IPropertyDocument } from "@interfaces/property.interface";
+import { IUnifiedPermissions, IPropertyDocument } from "@src/interfaces";
 
 interface PropertyChangesModalProps {
   visible: boolean;
+  permission: IUnifiedPermissions;
   property: IPropertyDocument | null;
   pendingChanges: any;
   requesterName: string;
@@ -68,6 +69,7 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
   onApprove,
   onReject,
   onCancel,
+  permission,
   isLoading = false,
 }) => {
   const [notes, setNotes] = useState("");
@@ -98,9 +100,8 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
     return null;
   }
 
-  // Extract field changes
   const changes = Object.entries(pendingChanges.changes || {}).filter(
-    ([key]) => !["updatedBy", "updatedAt"].includes(key)
+    ([key]) => !["updatedBy", "updatedAt", "displayName"].includes(key)
   );
 
   const formatFieldLabel = (key: string): string => {
@@ -134,14 +135,12 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
     return path.split(".").reduce((current, key) => current?.[key], obj);
   };
 
-  console.log("Rendering PropertyChangesModal with changes:", property);
   return (
     <Modal isOpen={visible} onClose={handleCancel} size="large">
       <Modal.Header title="Property Changes Review" onClose={handleCancel} />
 
       <Modal.Content>
         <div className="property-changes-modal">
-          {/* Header Info */}
           <div className="header-info">
             <h3>{property.name}</h3>
             <p className="requester-info">
@@ -153,15 +152,11 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
           </div>
 
           <div className="changes-summary">
-            <Badge
-              variant="warning"
-              text={`${changes.length} field${
-                changes.length !== 1 ? "s" : ""
-              } changed`}
-            />
+            <p>{`${changes.length} field${
+              changes.length !== 1 ? "s" : ""
+            } changed`}</p>
           </div>
 
-          {/* Changes List */}
           <div className="changes-list">
             {changes.map(([key, proposedValue]) => (
               <FieldChange
@@ -173,23 +168,23 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
             ))}
           </div>
 
-          {/* Action Area */}
           {!showRejectForm ? (
-            <div className="action-area">
-              {/* Optional Approval Notes */}
-              <div className="approval-notes">
-                <label>Approval Notes (Optional)</label>
-                <Textarea
-                  id="approval-notes"
-                  name="approvalNotes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Add any notes about this approval..."
-                  rows={3}
-                  maxLength={500}
-                />
+            permission.isManagerOrAbove && (
+              <div className="action-area">
+                <div className="approval-notes">
+                  <label>Approval Notes (Optional)</label>
+                  <Textarea
+                    id="approval-notes"
+                    name="approvalNotes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any notes about this approval..."
+                    rows={3}
+                    maxLength={500}
+                  />
+                </div>
               </div>
-            </div>
+            )
           ) : (
             <div className="reject-form">
               <label>
@@ -219,18 +214,22 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
               disabled={isLoading}
               className="btn-default"
             />
-            <Button
-              label="Reject Changes"
-              onClick={() => setShowRejectForm(true)}
-              disabled={isLoading}
-              className="btn-danger"
-            />
-            <Button
-              label="Approve Changes"
-              onClick={handleApprove}
-              disabled={isLoading}
-              className="btn-primary"
-            />
+            {permission.isManagerOrAbove && (
+              <>
+                <Button
+                  label="Reject Changes"
+                  onClick={() => setShowRejectForm(true)}
+                  disabled={isLoading}
+                  className="btn-danger"
+                />
+                <Button
+                  label="Approve Changes"
+                  onClick={handleApprove}
+                  disabled={isLoading}
+                  className="btn-primary"
+                />
+              </>
+            )}
           </>
         ) : (
           <>

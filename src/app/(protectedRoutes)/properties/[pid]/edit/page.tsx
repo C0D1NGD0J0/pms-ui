@@ -326,11 +326,11 @@ export default function EditProperty() {
         </PanelsWrapper>
       </div>
 
-      {/* Property Changes Modal */}
       {data?.property?.pendingChangesPreview && (
         <PropertyChangesModal
-          visible={isChangesModalOpen}
           property={data.property}
+          permission={permission}
+          visible={isChangesModalOpen}
           pendingChanges={data.property.pendingChangesPreview}
           requesterName={
             (data.property as any).approvalDetails?.requestedBy?.name ||

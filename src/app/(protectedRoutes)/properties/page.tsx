@@ -32,7 +32,6 @@ export default function Properties() {
     handleSortByChange,
   } = useGetAllProperties(client?.cuid || "");
 
-  // Approval/rejection mutations
   const approvePropertyMutation = useApproveProperty(client?.cuid || "");
   const rejectPropertyMutation = useRejectProperty(client?.cuid || "");
 
@@ -232,6 +231,7 @@ export default function Properties() {
         <PropertyChangesModal
           visible={isChangesModalOpen}
           property={selectedProperty}
+          permission={permissions}
           pendingChanges={selectedProperty.pendingChangesPreview}
           requesterName={
             selectedProperty.approvalDetails?.requestedBy?.name ||

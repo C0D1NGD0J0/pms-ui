@@ -319,11 +319,7 @@ export default function PropertyShow() {
 
   const hasPendingChanges =
     Object.keys(data.property?.pendingChanges || []).length > 0;
-  console.log(
-    data.property.pendingChangesPreview,
-    "hasPendingChanges",
-    hasPendingChanges
-  );
+
   return (
     <div className="page property-show">
       <PageHeader
@@ -341,7 +337,8 @@ export default function PropertyShow() {
                 router.back();
               }}
             />
-            {hasPendingChanges && permission.isManagerOrAbove ? (
+            {(hasPendingChanges && permission.isManagerOrAbove) ||
+            permission.isStaffOrAbove ? (
               <Link
                 href={{
                   pathname: `/properties/${data?.property?.pid}/edit`,
@@ -448,6 +445,7 @@ export default function PropertyShow() {
         <PropertyChangesModal
           visible={isChangesModalOpen}
           property={data.property}
+          permission={permission}
           pendingChanges={(data.property as any).pendingChangesPreview}
           requesterName={
             (data.property as any).approvalDetails?.requestedBy?.name ||

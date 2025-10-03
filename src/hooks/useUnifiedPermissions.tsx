@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import { IUnifiedPermissions } from "@interfaces/permission.interface";
 import {
   getAccessibleNavigation as getAccessibleNavigationItems,
   belongsToDepartment,
@@ -19,11 +20,7 @@ import {
 
 import { useCurrentUser } from "./useCurrentUser";
 
-/**
- * Unified Permission Hook
- * Simple, contextual permission checking with helper methods
- */
-export const useUnifiedPermissions = () => {
+export const useUnifiedPermissions = (): IUnifiedPermissions => {
   const { user: currentUser } = useCurrentUser();
 
   const currentRole = useMemo((): UserRole | null => {
@@ -33,7 +30,7 @@ export const useUnifiedPermissions = () => {
       admin: UserRole.ADMIN,
       manager: UserRole.MANAGER,
       staff: UserRole.STAFF,
-      employee: UserRole.STAFF, // Alternative naming
+      employee: UserRole.STAFF, // alternative naming
       tenant: UserRole.TENANT,
       vendor: UserRole.VENDOR,
     };
