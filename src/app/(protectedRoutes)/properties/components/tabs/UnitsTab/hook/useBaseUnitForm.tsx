@@ -48,6 +48,7 @@ export function useBaseUnitForm({
     isFetchingNextPage,
   } = useGetPropertyUnits(client?.cuid || "", property.pid, {
     limit: 2,
+    page: 1,
     sortBy: "floor",
   });
 

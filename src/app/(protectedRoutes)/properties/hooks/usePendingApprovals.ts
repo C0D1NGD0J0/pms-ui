@@ -1,20 +1,6 @@
 import { propertyService } from "@services/property";
 import { useNotification } from "@hooks/useNotification";
-import { IPaginationQuery } from "@interfaces/utils.interface";
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-
-export const useGetPendingApprovals = (
-  cuid: string,
-  pagination: IPaginationQuery,
-  isManagerOrAbove: boolean = false
-) => {
-  return useQuery({
-    queryKey: ["pending-approvals", cuid, pagination],
-    queryFn: () => propertyService.getPendingApprovals(cuid, pagination),
-    enabled: !!cuid && isManagerOrAbove,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-  });
-};
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export const useApproveProperty = (cuid: string) => {
   const queryClient = useQueryClient();
@@ -25,10 +11,6 @@ export const useApproveProperty = (cuid: string) => {
       propertyService.approveProperty(cuid, pid, notes),
     onSuccess: (data, variables) => {
       message.success("Property approved successfully");
-      // Invalidate pending approvals queries
-      queryClient.invalidateQueries({
-        queryKey: ["pending-approvals", cuid],
-      });
       // Invalidate property details
       queryClient.invalidateQueries({
         queryKey: ["property", cuid, variables.pid],

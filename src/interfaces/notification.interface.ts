@@ -1,18 +1,35 @@
 export interface INotification {
   id: string;
+  nuid: string;
   title: string;
   message: string;
-  timestamp: Date;
-  isRead: boolean;
-  type: "info" | "warning" | "success" | "message" | "system";
-  actionUrl?: string;
-  avatar?: string;
+  type: "system" | "property" | "user";
   priority: "high" | "medium" | "low";
+  recipientType: "individual" | "announcement";
+  recipient?: string;
+  cuid?: string; // Client UID for routing
+  isRead: boolean;
+  readAt?: string | null;
+  recipientId?: string;
+  createdAt: string;
+  updatedAt?: string;
+  expiresAt?: string;
+  deletedAt?: string | null;
+  actionUrl?: string; // This will be computed dynamically
+  resourceInfo?: {
+    resourceName: string;
+    resourceUid: string;
+    resourceId: string;
+  };
+  metadata?: Record<string, any>;
 }
 
-export interface INotificationDropdownProps {
-  notifications: INotification[];
-  onMarkAsRead: (id: string) => void;
-  onMarkAllAsRead: () => void;
-  onViewAll: () => void;
+export interface NotificationFilters {
+  type?: string;
+  page?: number;
+  limit?: number;
+  priority?: "low" | "medium" | "high";
+  isRead?: boolean;
+  last7days?: boolean;
+  last30days?: boolean;
 }

@@ -24,7 +24,7 @@ export const useTableData = <TData,>({
   } = useTablePagination(paginationConfig);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: [...queryKeys, pagination],
+    queryKey: [...queryKeys, pagination.page],
     queryFn: () => fetchFn(pagination),
     refetchInterval,
     placeholderData: keepPreviousData,

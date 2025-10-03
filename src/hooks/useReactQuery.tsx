@@ -13,6 +13,8 @@ const RectQueryProvider = ({ children }: { children: React.ReactNode }) => {
             refetchOnReconnect: false,
             refetchOnMount: false,
             retry: false,
+            staleTime: 2 * 60 * 1000, // 2 minutes
+            // gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
           },
         },
       })

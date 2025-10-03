@@ -1,16 +1,16 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { Loading } from "@components/Loading";
-import { Badge } from "@src/components/Badge";
 import { TabContainer } from "@components/Tab";
+import React, { useEffect, useState } from "react";
 import { IUnit } from "@interfaces/unit.interface";
 import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
-import { useParams, useRouter } from "next/navigation";
+import { Button } from "@src/components/FormElements";
 import { ImageGallery } from "@components/ImageGallery";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
@@ -27,18 +27,13 @@ import {
   UnitsList,
 } from "@components/Property";
 
+import { useGetPropertyUnits, usePropertyData } from "../hooks";
 import {
   MaintenanceLogTab,
   PaymentHistoryTab,
   CurrentTenantTab,
   DocumentsTab,
 } from "./components";
-import {
-  useGetPropertyUnits,
-  useApproveProperty,
-  useRejectProperty,
-  usePropertyData,
-} from "../hooks";
 
 const propertyData = {
   id: "BRK001",
@@ -192,47 +187,40 @@ export default function PropertyShow() {
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
   const params = useParams<{ pid: string }>();
   const router = useRouter();
+  const searchParams = useSearchParams();
   let savedUnits: IUnit[] = [];
   const { data, isLoading, error } = usePropertyData(params.pid);
 
-  const approvePropertyMutation = useApproveProperty(
-    data?.property?.cuid || ""
-  );
-  const rejectPropertyMutation = useRejectProperty(data?.property?.cuid || "");
+  useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      data?.property?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    data?.property?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
 
   const handleViewChanges = () => {
-    // Open modal to view changes instead of navigating
     setIsChangesModalOpen(true);
-  };
-
-  const handleApprove = (notes?: string) => {
-    if (!data?.property?.pid) return;
-    approvePropertyMutation.mutate(
-      { pid: data.property.pid, notes },
-      {
-        onSuccess: () => {
-          setIsChangesModalOpen(false);
-          router.refresh();
-        },
-      }
-    );
-  };
-
-  const handleReject = (reason: string) => {
-    if (!data?.property?.pid) return;
-    rejectPropertyMutation.mutate(
-      { pid: data.property.pid, reason },
-      {
-        onSuccess: () => {
-          setIsChangesModalOpen(false);
-          router.refresh();
-        },
-      }
-    );
   };
 
   const closeChangesModal = () => {
     setIsChangesModalOpen(false);
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
   };
 
   const isMultiUnit = data?.property?.propertyType
@@ -248,6 +236,7 @@ export default function PropertyShow() {
     params.pid,
     {
       limit: 10,
+      page: 1,
     },
     {
       enabled: isMultiUnit && !!data?.property?.cuid && !!params.pid,
@@ -316,9 +305,8 @@ export default function PropertyShow() {
     },
   ];
 
-  const canEditWithPendingChanges =
-    Object.keys(data.property?.pendingChanges || []).length > 0 &&
-    permission.isManagerOrAbove;
+  const hasPendingChanges =
+    Object.keys(data.property?.pendingChanges || []).length > 0;
 
   return (
     <div className="page property-show">
@@ -329,7 +317,16 @@ export default function PropertyShow() {
         }`}
         headerBtn={
           <div className="flex-row">
-            {canEditWithPendingChanges ? (
+            <Button
+              label="Back"
+              className="btn-md btn-outline"
+              icon={<i className="bx bx-arrow-back"></i>}
+              onClick={() => {
+                router.back();
+              }}
+            />
+            {(hasPendingChanges && permission.isManagerOrAbove) ||
+            permission.isStaffOrAbove ? (
               <Link
                 href={{
                   pathname: `/properties/${data?.property?.pid}/edit`,
@@ -340,10 +337,15 @@ export default function PropertyShow() {
                 <i className="bx bx-edit btn-icon"></i>
                 <strong>Edit Property</strong>
               </Link>
-            ) : (
-              <Badge variant="danger" text="Pending changes under review..." />
-            )}
-            {data?.unitInfo?.canAddUnit && (
+            ) : hasPendingChanges ? (
+              <Button
+                label="Pending Review..."
+                disabled
+                className="btn-md btn-outline-danger"
+                icon={<i className="bx bx-edit"></i>}
+              />
+            ) : null}
+            {data?.unitInfo?.canAddUnit && permission.isStaffOrAbove && (
               <Link
                 href={{
                   pathname: `/properties/${data?.property?.pid}/edit`,
@@ -431,18 +433,14 @@ export default function PropertyShow() {
         <PropertyChangesModal
           visible={isChangesModalOpen}
           property={data.property}
+          permission={permission}
           pendingChanges={(data.property as any).pendingChangesPreview}
           requesterName={
             (data.property as any).approvalDetails?.requestedBy?.name ||
             "Unknown User"
           }
-          onApprove={handleApprove}
-          onReject={handleReject}
+          onSuccess={handleModalSuccess}
           onCancel={closeChangesModal}
-          isLoading={
-            approvePropertyMutation.isPending ||
-            rejectPropertyMutation.isPending
-          }
         />
       )}
     </div>

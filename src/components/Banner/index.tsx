@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Button } from "@components/FormElements/Button";
 
 interface BannerAction {
@@ -15,6 +15,8 @@ interface BannerProps {
   icon?: string; // boxicon class name (e.g., "bx-time-five")
   actions?: BannerAction[];
   dismissible?: boolean;
+  autoDismissible?: boolean;
+  autoDismissDelay?: number; // in milliseconds, default 5000
   onDismiss?: () => void;
   className?: string;
 }
@@ -26,9 +28,35 @@ export const Banner: React.FC<BannerProps> = ({
   icon,
   actions = [],
   dismissible = false,
+  autoDismissible = false,
+  autoDismissDelay = 5000,
   onDismiss,
   className = "",
 }) => {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (autoDismissible && onDismiss) {
+      timeoutRef.current = setTimeout(() => {
+        onDismiss();
+      }, autoDismissDelay);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [autoDismissible, autoDismissDelay, onDismiss]);
+
+  const handleManualDismiss = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    if (onDismiss) {
+      onDismiss();
+    }
+  };
   return (
     <div
       className={`banner banner-${type} ${className}`}
@@ -63,7 +91,7 @@ export const Banner: React.FC<BannerProps> = ({
             <button
               type="button"
               className="dismiss-btn"
-              onClick={onDismiss}
+              onClick={handleManualDismiss}
               aria-label="Dismiss banner"
             >
               <i className="bx bx-x"></i>

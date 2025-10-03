@@ -11,6 +11,7 @@ export function usePropertyData(pid: string) {
     enabled: !!pid && !!client?.cuid,
     queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client?.cuid || "", pid),
     queryFn: () => propertyService.getClientProperty(client!.cuid, pid),
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const hasPendingChanges = (): boolean => {
@@ -22,7 +23,6 @@ export function usePropertyData(pid: string) {
       ?.changes;
     if (!pendingChanges) return 0;
 
-    // Filter out system fields like updatedBy, updatedAt
     const changes = Object.entries(pendingChanges).filter(
       ([key]) => !["updatedBy", "updatedAt", "displayName"].includes(key)
     );
@@ -47,12 +47,10 @@ export function usePropertyData(pid: string) {
   };
 
   const canEditProperty = (userPermissions: any): boolean => {
-    // If there are pending changes, only approvers can edit
     if (hasPendingChanges()) {
       return userPermissions.isManagerOrAbove;
     }
 
-    // Normal edit permissions apply
     return userPermissions.canEditProperty?.() ?? true;
   };
 
@@ -68,15 +66,12 @@ export function usePropertyData(pid: string) {
   };
 
   return {
-    // Original query returns
     data: query.data,
     isLoading: query.isLoading,
     error: query.error,
     isError: query.isError,
     isSuccess: query.isSuccess,
     refetch: query.refetch,
-
-    // New helper methods
     hasPendingChanges,
     getPendingChangesCount,
     getPendingChangesInfo,

@@ -1,15 +1,18 @@
 "use client";
-import React from "react";
-import { useParams } from "next/navigation";
-import Banner from "@src/components/Banner";
+import React, { useState } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
-import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
+import { Button, Form } from "@components/FormElements";
 import { usePropertyData } from "@properties/hooks/usePropertyData";
-import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
+import {
+  PendingChangesBanner,
+  PropertyChangesModal,
+} from "@components/Property";
 import {
   PanelsWrapper,
   PanelContent,
@@ -28,6 +31,10 @@ import {
 export default function EditProperty() {
   const params = useParams();
   const pid = params.pid as string;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
 
   const {
     activeTab,
@@ -49,17 +56,48 @@ export default function EditProperty() {
       pid,
     });
   const permission = useUnifiedPermissions();
+  const { data, refetch } = usePropertyData(pid);
 
-  const {
-    hasPendingChanges,
-    getPendingChangesInfo,
-    canEditProperty,
-    getEditBlockedMessage,
-  } = usePropertyData(pid);
+  // Auto-open changes modal if URL parameter is present
+  React.useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      data?.property?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
 
-  const editBlockedMessage = getEditBlockedMessage(permission);
-  const pendingChangesInfo = getPendingChangesInfo();
-  const canEdit = canEditProperty(permission);
+      // Clean up URL by removing the parameter
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    data?.property?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
+
+  const handleViewChanges = () => {
+    setIsChangesModalOpen(true);
+  };
+
+  const closeChangesModal = () => {
+    setIsChangesModalOpen(false);
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
+    router.refresh();
+    refetch(); // Refresh property data
+  };
+
+  const canEdit = data?.property
+    ? Object.keys(data.property?.pendingChanges || []).length === 0 ||
+      permission.isManagerOrAbove
+    : true;
 
   const tabs = [
     {
@@ -159,39 +197,26 @@ export default function EditProperty() {
 
   return (
     <div className="page edit-property">
-      {/* Dynamic banner based on pending changes status */}
-      {hasPendingChanges() && (
-        <Banner
-          type="error"
-          title={editBlockedMessage || "Property edit restrictions apply"}
-          description={
-            pendingChangesInfo && (
-              <div className="pending-changes-info">
-                <p>
-                  <strong>Requested by:</strong>{" "}
-                  {pendingChangesInfo.requesterName}
-                </p>
-                <p>
-                  <strong>Changes pending:</strong>{" "}
-                  {pendingChangesInfo.changesCount}
-                </p>
-                {pendingChangesInfo.requestedAt && (
-                  <p>
-                    <strong>Submitted:</strong>{" "}
-                    {new Date(
-                      pendingChangesInfo.requestedAt
-                    ).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-            )
+      {data?.property?.pendingChangesPreview && (
+        <PendingChangesBanner
+          property={data.property}
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={
+            data.property?.pendingChanges?.displayName || "Unknown User"
           }
+          onViewChanges={handleViewChanges}
         />
       )}
       <PageHeader
         title={`Edit property ${activeTab === "units" ? "units" : ""}`}
         headerBtn={
           <div className="flex-row">
+            <Button
+              className="btn btn-default mr-2"
+              label="Back"
+              onClick={() => router.back()}
+              icon={<i className="bx bx-arrow-back"></i>}
+            />
             {activeTab !== "units" && (
               <Button
                 type="submit"
@@ -298,6 +323,22 @@ export default function EditProperty() {
           </Panel>
         </PanelsWrapper>
       </div>
+
+      {data?.property?.pendingChangesPreview && (
+        <PropertyChangesModal
+          property={data.property}
+          permission={permission}
+          visible={isChangesModalOpen}
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={
+            (data.property as any).approvalDetails?.requestedBy?.name ||
+            data.property?.pendingChanges?.displayName ||
+            "Unknown User"
+          }
+          onSuccess={handleModalSuccess}
+          onCancel={closeChangesModal}
+        />
+      )}
     </div>
   );
 }

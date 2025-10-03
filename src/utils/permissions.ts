@@ -168,7 +168,6 @@ export const canAccessNavigation = (
   navigationKey: keyof typeof NAVIGATION_PERMISSIONS
 ): boolean => {
   const requiredRole = NAVIGATION_PERMISSIONS[navigationKey];
-  console.log(userRole, "Required Role for", navigationKey, ":", requiredRole);
   return hasRoleLevel(userRole, requiredRole);
 };
 

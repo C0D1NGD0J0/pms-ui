@@ -1,21 +1,23 @@
 "use client";
 import React, { useState } from "react";
+import { useAuth } from "@store/auth.store";
 import { formatDistanceToNow } from "date-fns";
-import { Badge } from "@components/Badge/Badge";
+import { useQueryClient } from "@tanstack/react-query";
 import { Modal } from "@components/FormElements/Modal";
 import { Button } from "@components/FormElements/Button";
 import { Textarea } from "@components/FormElements/TextArea";
-import { IPropertyDocument } from "@interfaces/property.interface";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { IUnifiedPermissions, IPropertyDocument } from "@src/interfaces";
+import { useApproveProperty, useRejectProperty } from "@properties/hooks";
 
 interface PropertyChangesModalProps {
   visible: boolean;
   property: IPropertyDocument | null;
   pendingChanges: any;
   requesterName: string;
-  onApprove: (notes?: string) => void;
-  onReject: (reason: string) => void;
+  onSuccess: () => void;
   onCancel: () => void;
-  isLoading?: boolean;
+  permission?: IUnifiedPermissions; // Optional, will get from hook if not provided
 }
 
 interface FieldChangeProps {
@@ -65,26 +67,64 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
   property,
   pendingChanges,
   requesterName,
-  onApprove,
-  onReject,
+  onSuccess,
   onCancel,
-  isLoading = false,
 }) => {
   const [notes, setNotes] = useState("");
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
 
+  const permission = useUnifiedPermissions();
+  const queryClient = useQueryClient();
+
+  const { client } = useAuth();
+  const cuid = client?.cuid || "";
+
+  const approvePropertyMutation = useApproveProperty(cuid);
+  const rejectPropertyMutation = useRejectProperty(cuid);
+
+  const isLoading =
+    approvePropertyMutation.isPending || rejectPropertyMutation.isPending;
+
+  const invalidatePropertyQueries = () => {
+    queryClient.invalidateQueries({
+      queryKey: ["/properties", cuid],
+    });
+    queryClient.invalidateQueries({
+      queryKey: ["property", cuid, property?.pid],
+    });
+  };
+
   const handleApprove = () => {
-    onApprove(notes.trim() || undefined);
-    setNotes("");
-    setShowRejectForm(false);
+    if (!property?.pid) return;
+
+    approvePropertyMutation.mutate(
+      { pid: property.pid, notes: notes.trim() || undefined },
+      {
+        onSuccess: () => {
+          setNotes("");
+          setShowRejectForm(false);
+          invalidatePropertyQueries();
+          onSuccess();
+        },
+      }
+    );
   };
 
   const handleReject = () => {
-    if (!rejectReason.trim()) return;
-    onReject(rejectReason.trim());
-    setRejectReason("");
-    setShowRejectForm(false);
+    if (!rejectReason.trim() || !property?.pid) return;
+
+    rejectPropertyMutation.mutate(
+      { pid: property.pid, reason: rejectReason.trim() },
+      {
+        onSuccess: () => {
+          setRejectReason("");
+          setShowRejectForm(false);
+          invalidatePropertyQueries();
+          onSuccess();
+        },
+      }
+    );
   };
 
   const handleCancel = () => {
@@ -98,50 +138,129 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
     return null;
   }
 
-  // Extract field changes
   const changes = Object.entries(pendingChanges.changes || {}).filter(
-    ([key]) => !["updatedBy", "updatedAt"].includes(key)
+    ([key]) => !["updatedBy", "updatedAt", "displayName"].includes(key)
   );
 
   const formatFieldLabel = (key: string): string => {
-    const fieldLabels: Record<string, string> = {
+    if (key.includes(".")) {
+      const parts = key.split(".");
+      const parent = parts[0];
+      const field = parts[parts.length - 1];
+
+      switch (parent) {
+        case "specifications":
+          return formatSpecificationField(field);
+        case "fees":
+          return formatFeeField(field);
+        case "address":
+          return formatAddressField(field);
+        case "financialDetails":
+          return formatFinancialField(field);
+        case "amenities":
+          return formatAmenityField(field);
+        default:
+          return formatGenericNestedField(field);
+      }
+    }
+
+    return formatPrimitiveField(key);
+  };
+
+  const formatSpecificationField = (field: string): string => {
+    const specLabels: Record<string, string> = {
+      bedrooms: "Bedrooms",
+      bathrooms: "Bathrooms",
+      totalArea: "Total Area",
+      lotSize: "Lot Size",
+      floors: "Number of Floors",
+      garageSpaces: "Garage Spaces",
+      maxOccupants: "Maximum Occupants",
+      rooms: "Total Rooms",
+    };
+    return specLabels[field] || formatGenericField(field);
+  };
+
+  const formatFeeField = (field: string): string => {
+    const feeLabels: Record<string, string> = {
+      rentalAmount: "Rental Amount",
+      taxAmount: "Tax Amount",
+      managementFees: "Management Fees",
+      securityDeposit: "Security Deposit",
+      currency: "Currency",
+    };
+    return feeLabels[field] || formatGenericField(field);
+  };
+
+  const formatAddressField = (field: string): string => {
+    const addressLabels: Record<string, string> = {
+      fullAddress: "Full Address",
+      street: "Street Address",
+      city: "City",
+      state: "State/Province",
+      country: "Country",
+      zipCode: "ZIP/Postal Code",
+    };
+    return addressLabels[field] || formatGenericField(field);
+  };
+
+  const formatFinancialField = (field: string): string => {
+    const financialLabels: Record<string, string> = {
+      marketValue: "Market Value",
+      purchasePrice: "Purchase Price",
+      assessedValue: "Assessed Value",
+      annualTax: "Annual Property Tax",
+    };
+    return financialLabels[field] || formatGenericField(field);
+  };
+
+  const formatAmenityField = (field: string): string => {
+    const amenityLabels: Record<string, string> = {
+      parking: "Parking Available",
+      pool: "Swimming Pool",
+      gym: "Fitness Center",
+      laundry: "Laundry Facilities",
+      elevator: "Elevator",
+      balcony: "Balcony/Patio",
+      storage: "Storage Unit",
+      petFriendly: "Pet Friendly",
+    };
+    return amenityLabels[field] || formatGenericField(field);
+  };
+
+  const formatGenericNestedField = (field: string): string => {
+    return formatGenericField(field);
+  };
+
+  const formatPrimitiveField = (key: string): string => {
+    const primitiveLabels: Record<string, string> = {
       name: "Property Name",
       description: "Description",
       propertyType: "Property Type",
       status: "Status",
       occupancyStatus: "Occupancy Status",
       yearBuilt: "Year Built",
-      "fees.rentalAmount": "Rental Amount",
-      "fees.taxAmount": "Tax Amount",
-      "fees.managementFees": "Management Fees",
-      "fees.securityDeposit": "Security Deposit",
-      "specifications.bedrooms": "Bedrooms",
-      "specifications.bathrooms": "Bathrooms",
-      "specifications.totalArea": "Total Area",
-      "specifications.lotSize": "Lot Size",
-      "address.fullAddress": "Address",
-      "financialDetails.marketValue": "Market Value",
-      "financialDetails.purchasePrice": "Purchase Price",
     };
+    return primitiveLabels[key] || formatGenericField(key);
+  };
 
-    return (
-      fieldLabels[key] ||
-      key.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
-    );
+  const formatGenericField = (field: string): string => {
+    return field
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase())
+      .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
   const getNestedValue = (obj: any, path: string): any => {
     return path.split(".").reduce((current, key) => current?.[key], obj);
   };
 
-  console.log("Rendering PropertyChangesModal with changes:", property);
   return (
     <Modal isOpen={visible} onClose={handleCancel} size="large">
       <Modal.Header title="Property Changes Review" onClose={handleCancel} />
 
       <Modal.Content>
         <div className="property-changes-modal">
-          {/* Header Info */}
           <div className="header-info">
             <h3>{property.name}</h3>
             <p className="requester-info">
@@ -153,15 +272,11 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
           </div>
 
           <div className="changes-summary">
-            <Badge
-              variant="warning"
-              text={`${changes.length} field${
-                changes.length !== 1 ? "s" : ""
-              } changed`}
-            />
+            <p>{`${changes.length} field${
+              changes.length !== 1 ? "s" : ""
+            } changed`}</p>
           </div>
 
-          {/* Changes List */}
           <div className="changes-list">
             {changes.map(([key, proposedValue]) => (
               <FieldChange
@@ -173,23 +288,23 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
             ))}
           </div>
 
-          {/* Action Area */}
           {!showRejectForm ? (
-            <div className="action-area">
-              {/* Optional Approval Notes */}
-              <div className="approval-notes">
-                <label>Approval Notes (Optional)</label>
-                <Textarea
-                  id="approval-notes"
-                  name="approvalNotes"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Add any notes about this approval..."
-                  rows={3}
-                  maxLength={500}
-                />
+            permission.isManagerOrAbove && (
+              <div className="action-area">
+                <div className="approval-notes">
+                  <label>Approval Notes (Optional)</label>
+                  <Textarea
+                    id="approval-notes"
+                    name="approvalNotes"
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Add any notes about this approval..."
+                    rows={3}
+                    maxLength={500}
+                  />
+                </div>
               </div>
-            </div>
+            )
           ) : (
             <div className="reject-form">
               <label>
@@ -219,18 +334,22 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
               disabled={isLoading}
               className="btn-default"
             />
-            <Button
-              label="Reject Changes"
-              onClick={() => setShowRejectForm(true)}
-              disabled={isLoading}
-              className="btn-danger"
-            />
-            <Button
-              label="Approve Changes"
-              onClick={handleApprove}
-              disabled={isLoading}
-              className="btn-primary"
-            />
+            {permission.isManagerOrAbove && (
+              <>
+                <Button
+                  label="Reject Changes"
+                  onClick={() => setShowRejectForm(true)}
+                  disabled={isLoading}
+                  className="btn-danger"
+                />
+                <Button
+                  label="Approve Changes"
+                  onClick={handleApprove}
+                  disabled={isLoading}
+                  className="btn-primary"
+                />
+              </>
+            )}
           </>
         ) : (
           <>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+import { IUnifiedPermissions } from "@interfaces/permission.interface";
 import {
   getAccessibleNavigation as getAccessibleNavigationItems,
   belongsToDepartment,
@@ -19,11 +20,7 @@ import {
 
 import { useCurrentUser } from "./useCurrentUser";
 
-/**
- * Unified Permission Hook
- * Simple, contextual permission checking with helper methods
- */
-export const useUnifiedPermissions = () => {
+export const useUnifiedPermissions = (): IUnifiedPermissions => {
   const { user: currentUser } = useCurrentUser();
 
   const currentRole = useMemo((): UserRole | null => {
@@ -33,7 +30,7 @@ export const useUnifiedPermissions = () => {
       admin: UserRole.ADMIN,
       manager: UserRole.MANAGER,
       staff: UserRole.STAFF,
-      employee: UserRole.STAFF, // Alternative naming
+      employee: UserRole.STAFF, // alternative naming
       tenant: UserRole.TENANT,
       vendor: UserRole.VENDOR,
     };
@@ -41,7 +38,6 @@ export const useUnifiedPermissions = () => {
     return roleMap[roleString] || null;
   }, [currentUser?.client?.role]);
 
-  // User context for permission checks with flexible key selection
   const getUserContext = useCallback(
     (key: "id" | "uid" | "sub" = "sub"): PermissionContext => ({
       userId: key === "sub" ? currentUser?.sub : currentUser?.uid,
@@ -51,9 +47,6 @@ export const useUnifiedPermissions = () => {
     [currentUser]
   );
 
-  /**
-   * Core permission checker - main entry point
-   */
   const can = useCallback(
     (permission: string, context?: PermissionContext): boolean => {
       if (!currentRole) return false;
@@ -64,9 +57,6 @@ export const useUnifiedPermissions = () => {
     [currentRole]
   );
 
-  /**
-   * Navigation access checker
-   */
   const canAccess = useCallback(
     (navigationKey: NavigationKey): boolean => {
       if (!currentRole) return false;
@@ -403,7 +393,6 @@ export const useUnifiedPermissions = () => {
   const isManagerOrAbove = useMemo(() => hasRole(UserRole.MANAGER), [hasRole]);
 
   return {
-    // Core methods
     can,
     canAccess,
     canAccessPage,
@@ -415,13 +404,11 @@ export const useUnifiedPermissions = () => {
     canManage,
     getUserContext,
 
-    // Property methods
     canCreateProperty,
     canViewProperty,
     canEditProperty,
     canDeleteProperty,
 
-    // User methods
     canCreateUser,
     canViewUsers,
     canEditUser,
@@ -434,33 +421,27 @@ export const useUnifiedPermissions = () => {
     canEditLease,
     canDeleteLease,
 
-    // Maintenance methods
     canCreateMaintenance,
     canViewMaintenance,
     canEditMaintenance,
     canDeleteMaintenance,
 
-    // Client/Settings methods
     canViewClient,
     canEditClient,
     canManageClientSettings,
 
-    // Report methods
     canCreateReport,
     canViewReports,
     canEditReport,
     canDeleteReport,
 
-    // Field-level methods
     canEditField,
     isFieldDisabled,
 
-    // Utility methods
     getAccessibleNavigation,
     getRoleTitle,
     isAuthenticated,
 
-    // Convenience properties
     currentUser,
     currentRole,
     isAdmin,
