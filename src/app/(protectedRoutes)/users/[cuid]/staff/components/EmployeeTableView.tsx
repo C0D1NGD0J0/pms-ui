@@ -109,14 +109,11 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
       ),
     },
     {
-      title: "Phone",
-      dataIndex: "phoneNumber",
-      render: (_, record) => record.phoneNumber || "N/A",
-    },
-    {
       title: "Start Date",
       dataIndex: "startDate",
-      render: (_, record) => formatStartDate(record.employeeInfo?.startDate),
+      render: (_, record) => {
+        return formatStartDate(record.employeeInfo?.startDate);
+      },
     },
     {
       title: "Status",
@@ -138,7 +135,6 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
           id: record.uid,
           key: "uid",
         });
-        console.log("Edit permissions:", isResourceOwner, hasPermission);
         return (
           <div className="table-actions">
             <Button

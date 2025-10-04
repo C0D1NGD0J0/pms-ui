@@ -1,4 +1,5 @@
 import { propertyService } from "@services/property";
+import { CLIENT_QUERY_KEYS } from "@utils/constants";
 import { useTableData } from "@components/Table/hook";
 import { IPaginationQuery } from "@interfaces/utils.interface";
 
@@ -19,7 +20,7 @@ export const useGetAllProperties = (cuid: string) => {
     propertyService.getClientProperties(cuid, pagination);
 
   const tableData = useTableData({
-    queryKeys: ["/properties", cuid],
+    queryKeys: CLIENT_QUERY_KEYS.getClientProperties(cuid),
     fetchFn: fetchProperties,
     paginationConfig: {
       initialLimit: 5,

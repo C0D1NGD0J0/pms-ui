@@ -1,14 +1,17 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
 import { Table } from "@components/Table";
-import { useParams } from "next/navigation";
 import { Loading } from "@components/Loading";
+import { TabContainer } from "@components/Tab";
+import React, { useEffect, useState } from "react";
 import { IUnit } from "@interfaces/unit.interface";
+import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
+import { Button } from "@src/components/FormElements";
 import { ImageGallery } from "@components/ImageGallery";
-import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
   PanelContent,
@@ -16,6 +19,8 @@ import {
   Panel,
 } from "@components/Panel";
 import {
+  PendingChangesBanner,
+  PropertyChangesModal,
   PropertyManager,
   PropertyMetrics,
   PropertySidebar,
@@ -176,11 +181,47 @@ const reportColumns = [
 ];
 
 export default function PropertyShow() {
+  const permission = useUnifiedPermissions();
   const [activeTab, setActiveTab] = useState("tenant");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
   const params = useParams<{ pid: string }>();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   let savedUnits: IUnit[] = [];
   const { data, isLoading, error } = usePropertyData(params.pid);
+
+  useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      data?.property?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    data?.property?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
+
+  const handleViewChanges = () => {
+    setIsChangesModalOpen(true);
+  };
+
+  const closeChangesModal = () => {
+    setIsChangesModalOpen(false);
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
+  };
 
   const isMultiUnit = data?.property?.propertyType
     ? propertyTypeRules[data.property.propertyType]?.isMultiUnit ?? false
@@ -195,6 +236,7 @@ export default function PropertyShow() {
     params.pid,
     {
       limit: 10,
+      page: 1,
     },
     {
       enabled: isMultiUnit && !!data?.property?.cuid && !!params.pid,
@@ -224,10 +266,11 @@ export default function PropertyShow() {
     );
   }
 
-  const tabs = [
+  const tabItems: TabItem[] = [
     {
-      key: "tenant",
+      id: "tenant",
       label: "Current Tenant",
+      icon: <i className="bx bx-user"></i>,
       content: (
         <CurrentTenantTab
           tenant={null}
@@ -241,21 +284,29 @@ export default function PropertyShow() {
       ),
     },
     {
-      key: "maintenance",
+      id: "maintenance",
       label: "Maintenance Log",
+      icon: <i className="bx bx-wrench"></i>,
       content: <MaintenanceLogTab />,
     },
     {
-      key: "payments",
+      id: "payments",
       label: "Payment History",
+      icon: <i className="bx bx-credit-card"></i>,
       content: <PaymentHistoryTab />,
     },
     {
-      key: "documents",
+      id: "documents",
       label: "Documents",
-      content: <DocumentsTab />,
+      icon: <i className="bx bx-file"></i>,
+      content: (
+        <DocumentsTab propertyDocuments={data.property.documents || []} />
+      ),
     },
   ];
+
+  const hasPendingChanges =
+    Object.keys(data.property?.pendingChanges || []).length > 0;
 
   return (
     <div className="page property-show">
@@ -266,17 +317,35 @@ export default function PropertyShow() {
         }`}
         headerBtn={
           <div className="flex-row">
-            <Link
-              href={{
-                pathname: `/properties/${data?.property?.pid}/edit`,
-                query: { activeTab: "basic" },
+            <Button
+              label="Back"
+              className="btn-md btn-outline"
+              icon={<i className="bx bx-arrow-back"></i>}
+              onClick={() => {
+                router.back();
               }}
-              className="btn btn-outline"
-            >
-              <i className="bx bx-edit btn-icon"></i>
-              <strong>Edit Property</strong>
-            </Link>
-            {data?.unitInfo?.canAddUnit && (
+            />
+            {(hasPendingChanges && permission.isManagerOrAbove) ||
+            permission.isStaffOrAbove ? (
+              <Link
+                href={{
+                  pathname: `/properties/${data?.property?.pid}/edit`,
+                  query: { activeTab: "basic" },
+                }}
+                className="btn btn-outline"
+              >
+                <i className="bx bx-edit btn-icon"></i>
+                <strong>Edit Property</strong>
+              </Link>
+            ) : hasPendingChanges ? (
+              <Button
+                label="Pending Review..."
+                disabled
+                className="btn-md btn-outline-danger"
+                icon={<i className="bx bx-edit"></i>}
+              />
+            ) : null}
+            {data?.unitInfo?.canAddUnit && permission.isStaffOrAbove && (
               <Link
                 href={{
                   pathname: `/properties/${data?.property?.pid}/edit`,
@@ -292,41 +361,32 @@ export default function PropertyShow() {
         }
       />
 
+      {data?.property?.pendingChangesPreview && (
+        <PendingChangesBanner
+          property={data.property}
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={
+            data.property?.pendingChanges?.displayName || "Unknown User"
+          }
+          onViewChanges={handleViewChanges}
+        />
+      )}
+
       <div className="property-layout">
         <div className="property-main-content">
-          <PropertyMetrics metrics={[]} />
+          <PropertyMetrics metrics={propertyData["metrics"]} />
 
           <PanelsWrapper>
             <Panel>
-              <PanelHeader
-                headerTitleComponent={
-                  <TabContainer
-                    onChange={setActiveTab}
-                    defaultTab={activeTab}
-                    scrollOnChange={false}
-                  >
-                    <TabList>
-                      {tabs.map((tab) => (
-                        <TabListItem
-                          id={tab.key}
-                          key={tab.key}
-                          label={tab.label}
-                        />
-                      ))}
-                    </TabList>
-                  </TabContainer>
-                }
-              />
-              {tabs.map((tab) => (
-                <PanelContent
-                  key={tab.key}
-                  className={`tab-content ${
-                    activeTab === tab.key ? "active" : ""
-                  }`}
-                >
-                  {activeTab === tab.key && tab.content}
-                </PanelContent>
-              ))}
+              <PanelContent>
+                <TabContainer
+                  tabItems={tabItems}
+                  defaultTab={activeTab}
+                  onChange={setActiveTab}
+                  scrollOnChange={false}
+                  ariaLabel="Property management tabs"
+                />
+              </PanelContent>
             </Panel>
           </PanelsWrapper>
 
@@ -353,7 +413,10 @@ export default function PropertyShow() {
         </div>
 
         <PropertySidebar>
-          <ImageGallery images={propertyData.images} title="Property Gallery" />
+          <ImageGallery
+            images={data.property.images}
+            title="Property Gallery"
+          />
           {(data.unitInfo?.currentUnits ?? 0) > 0 && isMultiUnit && (
             <UnitsList
               units={savedUnits}
@@ -365,6 +428,21 @@ export default function PropertyShow() {
           <PropertyManager manager={propertyData.manager} />
         </PropertySidebar>
       </div>
+
+      {(data?.property as any)?.pendingChangesPreview && (
+        <PropertyChangesModal
+          visible={isChangesModalOpen}
+          property={data.property}
+          permission={permission}
+          pendingChanges={(data.property as any).pendingChangesPreview}
+          requesterName={
+            (data.property as any).approvalDetails?.requestedBy?.name ||
+            "Unknown User"
+          }
+          onSuccess={handleModalSuccess}
+          onCancel={closeChangesModal}
+        />
+      )}
     </div>
   );
 }

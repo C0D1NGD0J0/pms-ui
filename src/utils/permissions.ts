@@ -40,7 +40,7 @@ export const NAVIGATION_PERMISSIONS = {
   "users.add": UserRole.MANAGER, // Manager and above
   reports: UserRole.STAFF, // Staff and above
   "settings.client": UserRole.ADMIN, // Admin only
-  "settings.account": UserRole.VENDOR, // Everyone can access their account
+  "settings.profile": UserRole.VENDOR, // Everyone can access their profile
   wallet: UserRole.TENANT, // Tenants and above
   viewings: UserRole.TENANT, // Tenants and above
   service_requests: UserRole.VENDOR, // Vendors and above

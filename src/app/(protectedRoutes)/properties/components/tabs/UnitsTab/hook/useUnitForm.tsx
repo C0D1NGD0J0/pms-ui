@@ -49,7 +49,9 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
           client.cuid,
           property.pid,
           {
-            limit: 2,
+            page: 1,
+            limit: 10,
+            sort: "",
             sortBy: "floor",
           }
         ),
@@ -104,7 +106,9 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
           client.cuid,
           property.pid,
           {
-            limit: 2,
+            page: 1,
+            limit: 10,
+            sort: "",
             sortBy: "floor",
           }
         ),
@@ -147,7 +151,9 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
           client.cuid,
           property.pid,
           {
-            limit: 2,
+            page: 1,
+            limit: 10,
+            sort: "",
             sortBy: "floor",
           }
         ),

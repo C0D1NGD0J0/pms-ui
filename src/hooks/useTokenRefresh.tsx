@@ -23,7 +23,6 @@ export const useTokenRefresh = () => {
 
       if (response) {
         console.log("Manual token refresh successful");
-        // Trigger user data refresh using proper event system
         publish(EventTypes.TOKEN_REFRESHED, {
           timestamp: new Date().toISOString(),
         });

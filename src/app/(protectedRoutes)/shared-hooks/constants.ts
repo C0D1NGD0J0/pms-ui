@@ -19,9 +19,6 @@ export const COMMON_DEPARTMENT_OPTIONS: FilterOption[] = [
   { label: "Operations", value: "operations" },
   { label: "Accounting", value: "accounting" },
   { label: "Leasing", value: "leasing" },
-  { label: "Marketing", value: "marketing" },
-  { label: "Security", value: "security" },
-  { label: "Other", value: "other" },
 ];
 
 export const COMMON_STATUS_OPTIONS: FilterOption[] = [

@@ -523,18 +523,17 @@ export const formFieldVisibilityMap = {
 };
 
 export const PROPERTY_QUERY_KEYS = {
-  getAllProperties: (cuid: string, pid: string, pagination: unknown) => [
-    "/getProperties",
-    cuid,
-    pagination,
-    pid,
-  ],
+  getAllProperties: (
+    cuid: string,
+    pid: string,
+    pagination: IPaginationQuery
+  ) => ["/getProperties", cuid, `page=${pagination.page}`, pid],
   getPropertyByPid: (pid: string, cuid: string) => ["/getProperty", cuid, pid],
   getPropertyUnits: (
     pid: string,
     cuid: string,
-    pagination: Omit<IPaginationQuery, "page">
-  ) => ["/getPropertyUnits", cuid, pid, pagination],
+    pagination: IPaginationQuery
+  ) => ["/getPropertyUnits", cuid, pid, `page=${pagination.page}`],
   getPropertyUnitByPuid: (pid: string, cuid: string, puid: string) => [
     "/getPropertyUnit",
     cuid,
@@ -544,11 +543,7 @@ export const PROPERTY_QUERY_KEYS = {
 };
 export const CLIENT_QUERY_KEYS = {
   getClientBycuid: (cuid: string) => ["/getClientDetails", cuid],
-  getClientProperties: (cuid: string, pagination: unknown) => [
-    "/getClientProperties",
-    cuid,
-    pagination,
-  ],
+  getClientProperties: (cuid: string) => ["/getClientProperties", cuid],
 };
 export const INVITE_QUERY_KEYS = {
   validateInviteToken: (cuid: string, token: string) => [
@@ -565,9 +560,9 @@ export const INVITE_QUERY_KEYS = {
   ],
 };
 export const USER_QUERY_KEYS = {
-  getClientUsers: (cuid: string, pagination: unknown) => [
+  getClientUsers: (cuid: string, pagination: IPaginationQuery) => [
     `/users/${cuid}/filtered-users`,
-    pagination,
+    `page=${pagination.page}`,
   ],
   getUserProfile: (cuid: string, uid: string) => [
     `/users/${cuid}/profile_details/${uid}`,
@@ -581,7 +576,6 @@ export const USER_QUERY_KEYS = {
     uid,
   ],
 };
-
 export const VENDOR_QUERY_KEYS = {
   getClientVendors: (cuid: string, pagination: unknown) => [
     `/vendors/${cuid}/vendors/filteredVendors`,
@@ -601,5 +595,4 @@ export const VENDOR_QUERY_KEYS = {
     filterParams,
   ],
 };
-
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];

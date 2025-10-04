@@ -1,0 +1,124 @@
+@use "../abstract/index" as *;
+
+// Notification badge - using existing animations
+.notification-badge {
+  top: -0.4rem;
+  display: flex;
+  right: -0.4rem;
+  height: 1.4rem;
+  font-size: 1rem !important;
+  min-width: 1.4rem;
+  position: absolute;
+  border-radius: 50%;
+  align-items: center;
+  font-weight: $fw-bold;
+  justify-content: center;
+  color: hslaGen($white-color, 1);
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.navbar-notification-item {
+  position: relative;
+  cursor: pointer;
+
+  &:hover span i {
+    color: hslaGen($secondary-color, 0.8);
+  }
+
+  &.has-unread .bx-bell {
+    animation: bell-ring 2s ease-in-out infinite;
+    transform-origin: top center;
+    color: hslaGen($secondary-color, 1);
+  }
+
+  &:hover .bx-bell {
+    animation: bell-ring 1s ease-in-out;
+    transform-origin: top center;
+  }
+}
+
+.navbar-notification-dropdown-wrapper {
+  z-index: 250;
+  top: 4.4rem;
+  right: -1.3rem;
+  display: none;
+  padding: 1rem;
+  min-width: 28rem;
+  position: absolute;
+  transition: $transition;
+  background: hslaGen($blue-ink-color, 1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &.show {
+    display: block;
+  }
+
+  .navbar-notification-dropdown {
+    max-height: 30rem;
+    overflow-y: auto;
+
+    &__header {
+      padding: 0.5rem 0 1rem 0;
+      border-bottom: 1px solid hslaGen($light-grey-color, 0.2);
+
+      h4 {
+        margin: 0;
+        font-size: $fs-md;
+        color: hslaGen($white-color, 1);
+      }
+    }
+
+    &__item {
+      padding: 1rem 0;
+      border-bottom: 1px solid hslaGen($light-grey-color, 0.1);
+
+      &.unread {
+        background: hslaGen($secondary-color, 0.1);
+      }
+
+      h5 {
+        margin: 0 0 0.5rem 0;
+        font-size: $fs-sm;
+        color: hslaGen($white-color, 1);
+      }
+
+      p {
+        margin: 0;
+        font-size: $fs-xsm;
+        color: hslaGen($light-grey-color, 1);
+      }
+    }
+
+    &__footer {
+      padding: 1rem 0 0 0;
+      border-top: 1px solid hslaGen($light-grey-color, 0.2);
+      display: flex;
+      gap: 0.5rem;
+
+      button {
+        flex: 1;
+        padding: 0.6rem 0.8rem;
+        border: none;
+        font-size: $fs-sm;
+        cursor: pointer;
+        transition: $transition;
+        background: hslaGen($secondary-color, 1);
+        color: hslaGen($white-color, 1);
+
+        &:hover {
+          background: hslaGen($secondary-color, 0.8);
+        }
+
+        &:first-child {
+          background: transparent;
+          color: hslaGen($light-grey-color, 1);
+
+          &:hover {
+            background: hslaGen($light-grey-color, 0.1);
+            color: hslaGen($white-color, 1);
+          }
+        }
+      }
+    }
+  }
+}

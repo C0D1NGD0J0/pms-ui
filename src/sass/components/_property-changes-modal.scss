@@ -1,0 +1,126 @@
+@use "../abstract/index" as *;
+
+.property-changes-modal {
+  .header-info {
+    margin-bottom: $space-xl;
+
+    h3 {
+      margin: 0 0 $space-sm 0;
+      font-size: $fs-lg;
+      font-weight: $fw-bold;
+      color: hslaGen($primary-color, 1);
+    }
+
+    .requester-info {
+      margin: 0;
+      color: hslaGen($grey-color, 1);
+      font-size: $fs-sm;
+    }
+  }
+
+  .changes-summary {
+    margin-bottom: $space-xl;
+  }
+
+  .changes-list {
+    overflow-y: auto;
+    margin-bottom: $space-xl;
+
+    .field-change {
+      margin-bottom: $space-lg;
+      padding: $space-lg;
+      border: 1px solid hslaGen($light-grey-color, 0.5);
+      border-radius: $border-radius-md;
+      background-color: hslaGen($off-white-color, 0.7);
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .field-label {
+        margin-bottom: $space-md;
+        font-size: $fs-sm;
+        font-weight: $fw-bold;
+        color: hslaGen($dark-grey-color, 1);
+      }
+
+      .field-comparison {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: $space-lg;
+        align-items: stretch;
+
+        @media (max-width: 768px) {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto auto auto;
+        }
+      }
+
+      .current-value,
+      .proposed-value {
+        min-width: 0;
+
+        .value-label {
+          font-size: $fs-xsm;
+          font-weight: $fw-bold;
+          margin-bottom: $space-sm;
+          text-transform: uppercase;
+          color: hslaGen($grey-color, 1);
+          letter-spacing: $base-letter-spacing;
+        }
+
+        .value-content {
+          padding: $space-md;
+          border-radius: $border-radius-sm;
+          font-family: monospace;
+          font-size: $fs-sm;
+          line-height: 1.4;
+          white-space: pre-wrap;
+          word-break: break-word;
+          min-height: 4rem;
+          border: 1px solid;
+
+          &.current {
+            background-color: hslaGen($danger-color, 0.1);
+            border-color: hslaGen($danger-color, 0.3);
+            color: hslaGen($danger-color, 0.8);
+          }
+
+          &.proposed {
+            background-color: hslaGen($success-color, 0.1);
+            border-color: hslaGen($success-color, 0.3);
+            color: hslaGen($success-color, 0.8);
+          }
+        }
+      }
+
+      .arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $fs-lg;
+        color: hslaGen($primary-color, 1);
+        font-weight: $fw-bold;
+
+        @media (max-width: 768px) {
+          transform: rotate(90deg);
+          margin: $space-sm 0;
+        }
+      }
+    }
+  }
+
+  .action-area,
+  .reject-form {
+    .approval-notes,
+    .reject-form {
+      label {
+        display: block;
+        margin-bottom: $space-sm;
+        font-weight: $fw-bold;
+        font-size: $fs-sm;
+        color: hslaGen($primary-color, 1);
+      }
+    }
+  }
+}

@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { Button } from "@components/FormElements";
 import { IPropertyDocument } from "@interfaces/property.interface";
 
@@ -45,10 +44,10 @@ export function CurrentTenantTab({
             <i className="bx bx-home" style={{ fontSize: "2rem" }}></i>
           </div>
           <div className="tenant-details">
-            <h4>Property Currently Vacant</h4>
+            <h4>
+              Property currently <span>{property.status}</span>
+            </h4>
             <p>Occupancy status: {oocupanyStatus}</p>
-            <p>Type: {property.propertyType}</p>
-            <p>Property status: {property.status}</p>
             {isMultiUnit ? (
               <p>Total Units: {unitsInfo?.maxAllowedUnits}</p>
             ) : null}
@@ -59,43 +58,57 @@ export function CurrentTenantTab({
           <h5>Property Details</h5>
           <div
             className="property-features"
-            style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
+            style={{
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            }}
           >
-            <div className="feature-item">
-              <i className="bx bx-bed"></i>
-              <div>
-                <h5>Rooms</h5>
-                <span>{property.specifications?.bedrooms || 0}</span>
+            {property.specifications?.bedrooms > 0 && (
+              <div className="feature-item">
+                <i className="bx bx-bed"></i>
+                <div>
+                  <h5>Rooms</h5>
+                  <span>{property.specifications.bedrooms}</span>
+                </div>
               </div>
-            </div>
-            <div className="feature-item">
-              <i className="bx bx-bath"></i>
-              <div>
-                <h5>Bathrooms</h5>
-                <span>{property.specifications?.bathrooms || 0}</span>
+            )}
+            {property.specifications?.bathrooms > 0 && (
+              <div className="feature-item">
+                <i className="bx bx-bath"></i>
+                <div>
+                  <h5>Bathrooms</h5>
+                  <span>{property.specifications.bathrooms}</span>
+                </div>
               </div>
-            </div>
-            <div className="feature-item">
-              <i className="bx bx-area-chart"></i>
-              <div>
-                <h5>Square Feet</h5>
-                <span>{property.specifications?.totalArea || 0} sq ft</span>
+            )}
+            {property.specifications?.totalArea > 0 && (
+              <div className="feature-item">
+                <i className="bx bx-area-chart"></i>
+                <div>
+                  <h5>Square Feet</h5>
+                  <span>{property.specifications.totalArea} sq ft</span>
+                </div>
               </div>
-            </div>
-            <div className="feature-item">
-              <i className="bx bx-dollar-circle"></i>
-              <div>
-                <h5>Target Rent</h5>
-                <span>${property.fees?.rentalAmount || 0}/month</span>
-              </div>
-            </div>
-            <div className="feature-item">
-              <i className="bx bx-shield"></i>
-              <div>
-                <h5>Security Deposit</h5>
-                <span>${property.fees?.securityDeposit || 0}</span>
-              </div>
-            </div>
+            )}
+            {property.fees?.rentalAmount &&
+              parseFloat(property.fees.rentalAmount) > 0 && (
+                <div className="feature-item">
+                  <i className="bx bx-dollar-circle"></i>
+                  <div>
+                    <h5>Target Rent</h5>
+                    <span>${property.fees.rentalAmount}/month</span>
+                  </div>
+                </div>
+              )}
+            {property.fees?.securityDeposit &&
+              parseFloat(property.fees.securityDeposit) > 0 && (
+                <div className="feature-item">
+                  <i className="bx bx-shield"></i>
+                  <div>
+                    <h5>Security Deposit</h5>
+                    <span>${property.fees.securityDeposit}</span>
+                  </div>
+                </div>
+              )}
             <div className="feature-item">
               <i className="bx bx-building"></i>
               <div>
@@ -106,15 +119,6 @@ export function CurrentTenantTab({
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="form-actions" style={{ marginTop: "1.5rem" }}>
-          <Link
-            href={`/properties/${property.pid}/edit`}
-            className="btn btn-outline"
-          >
-            <i className="bx bx-edit"></i>Edit Property
-          </Link>
         </div>
       </div>
     );

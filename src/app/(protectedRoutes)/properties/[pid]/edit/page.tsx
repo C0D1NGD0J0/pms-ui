@@ -1,12 +1,18 @@
 "use client";
-import React from "react";
-import { useParams } from "next/navigation";
+import React, { useState } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
-import { Button, Form } from "@components/FormElements";
 import { usePropertyFormBase } from "@properties/hooks";
+import { Button, Form } from "@components/FormElements";
+import { usePropertyData } from "@properties/hooks/usePropertyData";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
+import { useSearchParams, useParams, useRouter } from "next/navigation";
 import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
+import {
+  PendingChangesBanner,
+  PropertyChangesModal,
+} from "@components/Property";
 import {
   PanelsWrapper,
   PanelContent,
@@ -25,6 +31,10 @@ import {
 export default function EditProperty() {
   const params = useParams();
   const pid = params.pid as string;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
 
   const {
     activeTab,
@@ -45,6 +55,49 @@ export default function EditProperty() {
       propertyForm,
       pid,
     });
+  const permission = useUnifiedPermissions();
+  const { data, refetch } = usePropertyData(pid);
+
+  // Auto-open changes modal if URL parameter is present
+  React.useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      data?.property?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
+
+      // Clean up URL by removing the parameter
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    data?.property?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
+
+  const handleViewChanges = () => {
+    setIsChangesModalOpen(true);
+  };
+
+  const closeChangesModal = () => {
+    setIsChangesModalOpen(false);
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
+    router.refresh();
+    refetch(); // Refresh property data
+  };
+
+  const canEdit = data?.property
+    ? Object.keys(data.property?.pendingChanges || []).length === 0 ||
+      permission.isManagerOrAbove
+    : true;
 
   const tabs = [
     {
@@ -53,6 +106,8 @@ export default function EditProperty() {
       tabLabel: "Basic information",
       content: (
         <BasicInfoTab
+          permission={permission}
+          canEditProperty={canEdit}
           saveAddress={saveAddress}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
@@ -69,6 +124,7 @@ export default function EditProperty() {
       content: (
         <FinancialTab
           form={propertyForm}
+          permission={permission}
           handleOnChange={handleOnChange}
           currencyOptions={formConfig?.currencies || []}
         />
@@ -83,6 +139,7 @@ export default function EditProperty() {
           formConfig={formConfig}
           propertyForm={propertyForm}
           handleOnChange={handleOnChange}
+          permission={permission}
           propertyTypeOptions={propertyTypeOptions}
           propertyStatusOptions={propertyStatusOptions}
         />
@@ -105,6 +162,7 @@ export default function EditProperty() {
       tabLabel: "Photos & Documents",
       content: (
         <DocumentsTab
+          permission={permission}
           propertyForm={propertyForm}
           documentTypeOptions={
             documentTypeOptions as {
@@ -139,10 +197,26 @@ export default function EditProperty() {
 
   return (
     <div className="page edit-property">
+      {data?.property?.pendingChangesPreview && (
+        <PendingChangesBanner
+          property={data.property}
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={
+            data.property?.pendingChanges?.displayName || "Unknown User"
+          }
+          onViewChanges={handleViewChanges}
+        />
+      )}
       <PageHeader
         title={`Edit property ${activeTab === "units" ? "units" : ""}`}
         headerBtn={
           <div className="flex-row">
+            <Button
+              className="btn btn-default mr-2"
+              label="Back"
+              onClick={() => router.back()}
+              icon={<i className="bx bx-arrow-back"></i>}
+            />
             {activeTab !== "units" && (
               <Button
                 type="submit"
@@ -151,7 +225,7 @@ export default function EditProperty() {
                 onClick={handleUpdate}
                 className="btn-primary"
                 icon={<i className="bx bx-save"></i>}
-                disabled={!propertyForm.isValid() || false}
+                disabled={!propertyForm.isValid() || !canEdit || isSubmitting}
               />
             )}
           </div>
@@ -238,7 +312,9 @@ export default function EditProperty() {
                       type="submit"
                       label="Update Property"
                       className="btn btn-primary btn-grow"
-                      disabled={!propertyForm.isValid() || isSubmitting}
+                      disabled={
+                        !propertyForm.isValid() || !canEdit || isSubmitting
+                      }
                     />
                   )}
                 </div>
@@ -247,6 +323,22 @@ export default function EditProperty() {
           </Panel>
         </PanelsWrapper>
       </div>
+
+      {data?.property?.pendingChangesPreview && (
+        <PropertyChangesModal
+          property={data.property}
+          permission={permission}
+          visible={isChangesModalOpen}
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={
+            (data.property as any).approvalDetails?.requestedBy?.name ||
+            data.property?.pendingChanges?.displayName ||
+            "Unknown User"
+          }
+          onSuccess={handleModalSuccess}
+          onCancel={closeChangesModal}
+        />
+      )}
     </div>
   );
 }

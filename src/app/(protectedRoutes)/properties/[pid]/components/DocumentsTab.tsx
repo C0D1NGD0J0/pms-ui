@@ -1,4 +1,5 @@
 import React from "react";
+import { IPropertyDocument } from "@src/interfaces";
 import { DocumentsList, Document } from "@components/Property";
 
 const documentsData: Document[] = [
@@ -34,7 +35,12 @@ const documentsData: Document[] = [
   },
 ];
 
-export function DocumentsTab() {
+export function DocumentsTab({
+  propertyDocuments,
+}: {
+  propertyDocuments: IPropertyDocument["documents"];
+}) {
+  console.log("Property in DocumentsTab:", propertyDocuments);
   const handleDownload = (documentId: string) => {
     console.log("Download document:", documentId);
   };
@@ -46,9 +52,9 @@ export function DocumentsTab() {
   return (
     <DocumentsList
       viewType="landlord"
-      documents={documentsData}
-      onDownload={handleDownload}
       onUpload={handleUpload}
+      onDownload={handleDownload}
+      documents={propertyDocuments || documentsData}
     />
   );
 }

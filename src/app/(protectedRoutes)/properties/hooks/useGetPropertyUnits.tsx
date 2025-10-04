@@ -14,7 +14,7 @@ type PropertyUnitsResponse = Awaited<
 export function useGetPropertyUnits(
   cuid: string,
   pid: string,
-  pagination: Omit<IPaginationQuery, "page">,
+  pagination: IPaginationQuery,
   options?: Partial<
     UseInfiniteQueryOptions<
       PropertyUnitsResponse,

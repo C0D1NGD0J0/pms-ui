@@ -26,37 +26,31 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
   const { uid } = React.use(params);
   const { user } = useAuth();
   const router = useRouter();
-  const { isLoading } = useGetProfileInfo(user?.client.cuid ?? "", "");
+  const { isLoading, data } = useGetProfileInfo(user?.client.cuid ?? "", "");
 
-  const profileData = {
+  // Use actual API data or fallback to empty values
+  const profileData = data || {
     personalInfo: {
-      fullName: "",
+      displayName: "",
+      firstName: "",
+      lastName: "",
       email: "",
-      phone: "",
-      dateOfBirth: "",
-      gender: "",
+      phoneNumber: "",
+      location: "",
+      isActive: false,
+      avatar: { url: "" },
     },
-    address: {
-      streetAddress: "",
-      city: "",
-      state: "",
-      zipCode: "",
-      country: "",
+    settings: {
+      theme: "light",
+      loginType: "password",
+      timeZone: "UTC",
+      lang: "en",
+      notifications: {},
+      gdprSettings: {},
     },
-    emergencyContact: {
-      name: "",
-      relationship: "",
-      phone: "",
-      email: "",
-    },
-    lease: {
-      property: "",
-      unit: "",
-      startDate: "",
-      endDate: "",
-      monthlyRent: "",
-      securityDeposit: "",
-    },
+    userType: "employee",
+    roles: [],
+    identification: {},
     recentActivity: [],
   };
 
@@ -69,133 +63,180 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
     />
   );
 
-  // Data arrays for each section
   const personalInfoItems = [
     {
       icon: "bx-user",
-      label: "Full Name",
-      value: profileData.personalInfo.fullName,
+      label: "Display Name",
+      value: profileData.personalInfo?.displayName || "N/A",
     },
     {
-      icon: "bx-calendar",
-      label: "Date of Birth",
-      value: profileData.personalInfo.dateOfBirth,
+      icon: "bx-user-detail",
+      label: "First Name",
+      value: profileData.personalInfo?.firstName || "N/A",
     },
     {
-      icon: "bx-male-sign",
-      label: "Gender",
-      value: profileData.personalInfo.gender,
-    },
-    {
-      icon: "bx-phone",
-      label: "Phone Number",
-      value: profileData.personalInfo.phone,
-    },
-    {
-      icon: "bx-envelope",
-      label: "Email Address",
-      value: profileData.personalInfo.email,
-    },
-  ];
-
-  const addressInfoItems = [
-    {
-      icon: "bx-home",
-      label: "Street Address",
-      value: profileData.address.streetAddress,
-    },
-    { icon: "bx-buildings", label: "City", value: profileData.address.city },
-    { icon: "bx-map", label: "State", value: profileData.address.state },
-    {
-      icon: "bx-map-pin",
-      label: "ZIP Code",
-      value: profileData.address.zipCode,
-    },
-    { icon: "bx-globe", label: "Country", value: profileData.address.country },
-  ];
-
-  const emergencyContactItems = [
-    {
-      icon: "bx-user-circle",
-      label: "Contact Name",
-      value: profileData.emergencyContact.name,
-    },
-    {
-      icon: "bx-heart",
-      label: "Relationship",
-      value: profileData.emergencyContact.relationship,
+      icon: "bx-user-detail",
+      label: "Last Name",
+      value: profileData.personalInfo?.lastName || "N/A",
     },
     {
       icon: "bx-phone",
       label: "Phone Number",
-      value: profileData.emergencyContact.phone,
+      value: profileData.personalInfo?.phoneNumber || "N/A",
     },
     {
       icon: "bx-envelope",
       label: "Email Address",
-      value: profileData.emergencyContact.email,
+      value: profileData.personalInfo?.email || "N/A",
+    },
+    {
+      icon: "bx-map",
+      label: "Location",
+      value: profileData.personalInfo?.location || "N/A",
+    },
+    {
+      icon: "bx-id-card",
+      label: "User ID",
+      value: profileData.personalInfo?.uid || "N/A",
     },
   ];
 
-  const leaseInfoItems = [
+  const roleInfoItems = [
     {
-      icon: "bx-building",
-      label: "Property",
-      value: profileData.lease.property,
+      icon: "bx-user-badge",
+      label: "User Type",
+      value: profileData.userType
+        ? profileData.userType.charAt(0).toUpperCase() +
+          profileData.userType.slice(1)
+        : "N/A",
     },
     {
-      icon: "bx-door-open",
-      label: "Unit Number",
-      value: profileData.lease.unit,
+      icon: "bx-shield-check",
+      label: "Roles",
+      value:
+        profileData.roles && profileData.roles.length > 0
+          ? profileData.roles.join(", ")
+          : "N/A",
     },
     {
-      icon: "bx-play-circle",
-      label: "Lease Start",
-      value: profileData.lease.startDate,
+      icon: "bx-check-circle",
+      label: "Account Status",
+      value: profileData.personalInfo?.isActive ? "Active" : "Inactive",
     },
     {
-      icon: "bx-stop-circle",
-      label: "Lease End",
-      value: profileData.lease.endDate,
+      icon: "bx-key",
+      label: "Login Type",
+      value: profileData.settings?.loginType || "N/A",
+    },
+  ];
+
+  const settingsItems = [
+    {
+      icon: "bx-palette",
+      label: "Theme",
+      value: profileData.settings?.theme
+        ? profileData.settings.theme.charAt(0).toUpperCase() +
+          profileData.settings.theme.slice(1)
+        : "N/A",
     },
     {
-      icon: "bx-money",
-      label: "Monthly Rent",
-      value: profileData.lease.monthlyRent,
+      icon: "bx-world",
+      label: "Language",
+      value: profileData.settings?.lang || "N/A",
     },
     {
-      icon: "bx-shield",
-      label: "Security Deposit",
-      value: profileData.lease.securityDeposit,
+      icon: "bx-time",
+      label: "Time Zone",
+      value: profileData.settings?.timeZone || "N/A",
+    },
+    {
+      icon: "bx-shield-alt",
+      label: "GDPR Consent",
+      value: profileData.settings?.gdprSettings?.dataProcessingConsent
+        ? "Granted"
+        : "Not Granted",
+    },
+  ];
+
+  const notificationItems = [
+    {
+      icon: "bx-bell",
+      label: "Email Notifications",
+      value: profileData.settings?.notifications?.emailNotifications
+        ? "Enabled"
+        : "Disabled",
+    },
+    {
+      icon: "bx-mobile",
+      label: "In-App Notifications",
+      value: profileData.settings?.notifications?.inAppNotifications
+        ? "Enabled"
+        : "Disabled",
+    },
+    {
+      icon: "bx-wrench",
+      label: "Maintenance Alerts",
+      value: profileData.settings?.notifications?.maintenance
+        ? "Enabled"
+        : "Disabled",
+    },
+    {
+      icon: "bx-credit-card",
+      label: "Payment Alerts",
+      value: profileData.settings?.notifications?.payments
+        ? "Enabled"
+        : "Disabled",
+    },
+    {
+      icon: "bx-cog",
+      label: "System Notifications",
+      value: profileData.settings?.notifications?.system
+        ? "Enabled"
+        : "Disabled",
+    },
+    {
+      icon: "bx-message",
+      label: "Announcements",
+      value: profileData.settings?.notifications?.announcements
+        ? "Enabled"
+        : "Disabled",
     },
   ];
 
   const insightCards = [
     {
-      title: "Current Property",
-      value: profileData.lease.unit || "N/A",
-      icon: <i className="bx bx-home"></i>,
-      description: profileData.lease.property || "No property assigned",
+      title: "Account Status",
+      value: profileData.personalInfo?.isActive ? "Active" : "Inactive",
+      icon: <i className="bx bx-user-check"></i>,
+      description: profileData.personalInfo?.isActive
+        ? "Account is active"
+        : "Account is inactive",
     },
     {
-      title: "Lease Status",
-      value: profileData.lease.endDate ? "Active" : "N/A",
-      icon: <i className="bx bx-calendar"></i>,
-      description: profileData.lease.endDate
-        ? `Expires ${profileData.lease.endDate}`
-        : "No lease information",
+      title: "User Type",
+      value: profileData.userType
+        ? profileData.userType.charAt(0).toUpperCase() +
+          profileData.userType.slice(1)
+        : "N/A",
+      icon: <i className="bx bx-user-badge"></i>,
+      description: `User role: ${profileData.userType || "Unknown"}`,
     },
     {
-      title: "Payment Status",
-      value: "N/A",
-      icon: <i className="bx bx-wallet"></i>,
-      description: "No payment data available",
+      title: "Theme Preference",
+      value: profileData.settings?.theme
+        ? profileData.settings.theme.charAt(0).toUpperCase() +
+          profileData.settings.theme.slice(1)
+        : "N/A",
+      icon: <i className="bx bx-palette"></i>,
+      description: `Current theme setting`,
     },
     {
-      title: "Open Requests",
-      value: "0",
-      icon: <i className="bx bx-wrench"></i>,
-      description: "No active requests",
+      title: "Notifications",
+      value: profileData.settings?.notifications?.emailNotifications
+        ? "Enabled"
+        : "Disabled",
+      icon: <i className="bx bx-bell"></i>,
+      description: "Email notification status",
     },
   ];
 
@@ -246,7 +287,10 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
               <div className="profile-header">
                 <div className="profile-header__avatar">
                   <Image
-                    src="/assets/imgs/avatar.png"
+                    src={
+                      profileData.personalInfo?.avatar?.url ||
+                      "/assets/imgs/avatar.png"
+                    }
                     alt="Profile"
                     width={100}
                     height={100}
@@ -255,18 +299,29 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
                 </div>
                 <div className="profile-header__content">
                   <h2 className="profile-header__name">
-                    {profileData.personalInfo.fullName}
+                    {profileData.personalInfo?.displayName || "N/A"}
                   </h2>
                   <p className="profile-header__email">
-                    {profileData.personalInfo.email}
+                    {profileData.personalInfo?.email || "N/A"}
                   </p>
                   <div className="profile-header__badges">
-                    <span className="status-badge status-badge-success">
-                      Active Tenant
+                    <span
+                      className={`status-badge ${
+                        profileData.personalInfo?.isActive
+                          ? "status-badge-success"
+                          : "status-badge-danger"
+                      }`}
+                    >
+                      {profileData.personalInfo?.isActive
+                        ? "Active"
+                        : "Inactive"}{" "}
+                      {profileData.userType || "User"}
                     </span>
-                    <span className="status-badge status-badge-light">
-                      Member Since Jan 2025
-                    </span>
+                    {profileData.roles && profileData.roles.length > 0 && (
+                      <span className="status-badge status-badge-light">
+                        {profileData.roles.join(", ")}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -297,10 +352,10 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
           </Panel>
 
           <Panel>
-            <PanelHeader header={{ title: "Address Information" }} />
+            <PanelHeader header={{ title: "Role & Permissions" }} />
             <PanelContent>
               <div className="info-list">
-                {addressInfoItems.map((item, index) => (
+                {roleInfoItems.map((item, index) => (
                   <ListItem
                     key={index}
                     variant="info"
@@ -318,10 +373,10 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
       <div className="flex-row">
         <PanelsWrapper>
           <Panel>
-            <PanelHeader header={{ title: "Emergency Contact" }} />
+            <PanelHeader header={{ title: "Account Settings" }} />
             <PanelContent>
               <div className="info-list">
-                {emergencyContactItems.map((item, index) => (
+                {settingsItems.map((item, index) => (
                   <ListItem
                     key={index}
                     variant="info"
@@ -335,10 +390,10 @@ const ProfileViewPage: React.FC<ProfileViewPageProps> = ({ params }) => {
           </Panel>
 
           <Panel>
-            <PanelHeader header={{ title: "Lease & Property Details" }} />
+            <PanelHeader header={{ title: "Notification Preferences" }} />
             <PanelContent>
               <div className="info-list">
-                {leaseInfoItems.map((item, index) => (
+                {notificationItems.map((item, index) => (
                   <ListItem
                     key={index}
                     variant="info"

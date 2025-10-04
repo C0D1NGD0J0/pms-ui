@@ -95,7 +95,7 @@ export const useMenuItems = () => {
           icon: "bx bx-cog",
           label: "Account",
           visible: () =>
-            permissions.canAccess("settings.account") &&
+            permissions.canAccess("settings.client") &&
             !!currentUser?.client.cuid,
         },
         {
