@@ -1,31 +1,26 @@
 import { HttpResponse, http } from "msw";
 
 export const authHandlers = [
-  // Login endpoint
+  // Login endpoint - single account
   http.post("/api/v1/auth/login", async ({ request }) => {
     const body = await request.json();
     const { email, password } = body as { email: string; password: string };
 
-    if (email === "test@example.com" && password === "password123") {
+    // Single account user
+    if (email === "single@example.com" && password === "password123") {
       return HttpResponse.json(
         {
           success: true,
-          message: "Login successful",
-          data: {
-            user: {
-              uid: "test-user-123",
-              email: "test@example.com",
-              firstName: "Test",
-              lastName: "User",
-              role: "admin",
-              isActive: true,
+          msg: "Login successful",
+          accounts: [
+            {
+              cuid: "client-123",
+              clientDisplayName: "Test Company",
             },
-            client: {
-              cuid: "test-client-123",
-              companyName: "Test Company",
-              isActive: true,
-            },
-            permissions: ["read:users", "create:properties", "edit:properties"],
+          ],
+          activeAccount: {
+            cuid: "client-123",
+            clientDisplayName: "Test Company",
           },
         },
         {
@@ -34,6 +29,32 @@ export const authHandlers = [
             "Set-Cookie": "auth-token=mock-jwt-token; HttpOnly; Path=/",
           },
         }
+      );
+    }
+
+    // Multiple accounts user
+    if (email === "multi@example.com" && password === "password123") {
+      return HttpResponse.json(
+        {
+          success: true,
+          msg: "Multiple accounts found",
+          accounts: [
+            {
+              cuid: "client-123",
+              clientDisplayName: "Company A",
+            },
+            {
+              cuid: "client-456",
+              clientDisplayName: "Company B",
+            },
+            {
+              cuid: "client-789",
+              clientDisplayName: "Company C",
+            },
+          ],
+          activeAccount: null,
+        },
+        { status: 200 }
       );
     }
 
@@ -230,33 +251,66 @@ export const authHandlers = [
   }),
 
   // Current user endpoint
-  http.get("/api/v1/auth/currentuser/:cuid", async ({ params }) => {
+  http.get("/api/v1/auth/:cuid/me", async ({ params }) => {
     const { cuid } = params;
+
+    if (cuid === "client-123") {
+      return HttpResponse.json(
+        {
+          success: true,
+          data: {
+            user: {
+              uid: "user-123",
+              email: "single@example.com",
+              firstName: "Test",
+              lastName: "User",
+              role: "admin",
+            },
+            client: {
+              cuid: "client-123",
+              companyName: "Test Company",
+            },
+            permissions: ["read:users", "create:properties"],
+          },
+        },
+        { status: 200 }
+      );
+    }
+
+    if (cuid === "client-456") {
+      return HttpResponse.json(
+        {
+          success: true,
+          data: {
+            user: {
+              uid: "user-456",
+              email: "multi@example.com",
+              firstName: "Multi",
+              lastName: "Account",
+              role: "manager",
+            },
+            client: {
+              cuid: "client-456",
+              companyName: "Company B",
+            },
+            permissions: ["read:users"],
+          },
+        },
+        { status: 200 }
+      );
+    }
 
     return HttpResponse.json(
       {
-        success: true,
-        data: {
-          user: {
-            uid: "current-user-123",
-            email: "current@example.com",
-            firstName: "Current",
-            lastName: "User",
-            role: "admin",
-          },
-          client: {
-            cuid,
-            companyName: "Test Company",
-          },
-          permissions: ["read:users", "create:properties"],
-        },
+        success: false,
+        message: "User not found",
       },
-      { status: 200 }
+      { status: 404 }
     );
   }),
 
   // Logout endpoint
-  http.post("/api/v1/auth/logout", async () => {
+  http.delete("/api/v1/auth/:cuid/logout", async () => {
     return HttpResponse.json(
       {
         success: true,
