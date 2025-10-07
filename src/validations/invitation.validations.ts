@@ -108,6 +108,55 @@ export const sanitizeInvitationFormData = (data: any) => {
     }
   }
 
+  // Sanitize tenantInfo
+  if (sanitized.tenantInfo) {
+    // Sanitize employerInfo
+    if (sanitized.tenantInfo.employerInfo) {
+      Object.keys(sanitized.tenantInfo.employerInfo).forEach((key) => {
+        if (key !== "monthlyIncome") {
+          sanitized.tenantInfo.employerInfo[key] = emptyStringToUndefined(
+            sanitized.tenantInfo.employerInfo[key]
+          );
+        }
+      });
+
+      const hasValidEmployerData = Object.values(sanitized.tenantInfo.employerInfo).some(
+        (value) => value !== undefined && value !== null && value !== ""
+      );
+      if (!hasValidEmployerData) {
+        sanitized.tenantInfo.employerInfo = undefined;
+      }
+    }
+
+    // Sanitize emergencyContact
+    if (sanitized.tenantInfo.emergencyContact) {
+      Object.keys(sanitized.tenantInfo.emergencyContact).forEach((key) => {
+        sanitized.tenantInfo.emergencyContact[key] = emptyStringToUndefined(
+          sanitized.tenantInfo.emergencyContact[key]
+        );
+      });
+
+      const hasValidEmergencyContact = Object.values(sanitized.tenantInfo.emergencyContact).some(
+        (value) => value !== undefined && value !== null && value !== ""
+      );
+      if (!hasValidEmergencyContact) {
+        sanitized.tenantInfo.emergencyContact = undefined;
+      }
+    }
+
+    const hasValidTenantData = Object.values(sanitized.tenantInfo).some(
+      (value) =>
+        value !== undefined &&
+        value !== null &&
+        (typeof value === "object" && value !== null
+          ? Object.keys(value).length > 0
+          : true)
+    );
+    if (!hasValidTenantData) {
+      sanitized.tenantInfo = undefined;
+    }
+  }
+
   if (sanitized.personalInfo) {
     sanitized.personalInfo.phoneNumber = emptyStringToUndefined(
       sanitized.personalInfo.phoneNumber
@@ -227,11 +276,44 @@ export const invitationSchema = z
           .optional(),
       })
       .optional(),
+    tenantInfo: z
+      .object({
+        employerInfo: z
+          .object({
+            companyName: z.string().optional(),
+            position: z.string().optional(),
+            monthlyIncome: z.number().min(0).optional(),
+            companyRef: z.string().optional(),
+            refContactEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+          })
+          .optional(),
+        emergencyContact: z
+          .object({
+            name: z.string().optional(),
+            phone: z.string().optional(),
+            relationship: z.string().optional(),
+            email: z.string().email("Please enter a valid email").optional(),
+          })
+          .optional(),
+        rentalReferences: z
+          .array(
+            z.object({
+              landlordName: z.string().optional(),
+              landlordEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+              landlordContact: z.string().optional(),
+              durationMonths: z.number().min(1).max(120).optional(),
+              reasonForLeaving: z.string().optional(),
+              propertyAddress: z.string().optional(),
+            })
+          )
+          .optional(),
+      })
+      .optional(),
   })
   .superRefine((data, ctx) => {
-    // For staff roles (manager, staff, tenant, admin), validate employeeInfo
+    // For staff roles (manager, staff, admin), validate employeeInfo
     if (
-      ["manager", "staff", "tenant", "admin"].includes(data.role) &&
+      ["manager", "staff", "admin"].includes(data.role) &&
       data.employeeInfo
     ) {
       if (!data.employeeInfo.jobTitle) {
@@ -298,6 +380,19 @@ export const invitationSchema = z
           path: ["vendorInfo", "insuranceInfo", "policyNumber"],
         });
       }
+    }
+
+    // Validate tenant emergency contact email if provided
+    if (
+      data.role === "tenant" &&
+      data.tenantInfo?.emergencyContact?.email &&
+      !z.string().email().safeParse(data.tenantInfo.emergencyContact.email).success
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please enter a valid emergency contact email",
+        path: ["tenantInfo", "emergencyContact", "email"],
+      });
     }
   });
 

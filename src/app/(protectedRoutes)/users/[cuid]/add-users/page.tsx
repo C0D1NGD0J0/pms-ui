@@ -77,7 +77,7 @@ const InviteUsers: React.FC = () => {
   const csvUploadConfig: CsvUploadConfig = {
     title: "Upload User Invitations via CSV",
     description:
-      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid.",
+      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid. For tenants, you can also include employer and emergency contact information.",
     templateUrl: "/templates/user-invitation.csv",
     templateName: "Download CSV Template",
     showPreview: true,
@@ -120,6 +120,51 @@ const InviteUsers: React.FC = () => {
       {
         name: "cuid",
         description: "Client unique identifier",
+        required: false,
+      },
+      {
+        name: "employerCompanyName",
+        description: "Tenant only: Company name",
+        required: false,
+      },
+      {
+        name: "employerPosition",
+        description: "Tenant only: Job position",
+        required: false,
+      },
+      {
+        name: "employerMonthlyIncome",
+        description: "Tenant only: Monthly income (numeric)",
+        required: false,
+      },
+      {
+        name: "employerCompanyRef",
+        description: "Tenant only: Company reference/contact name",
+        required: false,
+      },
+      {
+        name: "employerRefContactEmail",
+        description: "Tenant only: Reference contact email",
+        required: false,
+      },
+      {
+        name: "emergencyContactName",
+        description: "Tenant only: Emergency contact full name",
+        required: false,
+      },
+      {
+        name: "emergencyContactPhone",
+        description: "Tenant only: Emergency contact phone",
+        required: false,
+      },
+      {
+        name: "emergencyContactRelationship",
+        description: "Tenant only: Relationship (e.g., Spouse, Parent)",
+        required: false,
+      },
+      {
+        name: "emergencyContactEmail",
+        description: "Tenant only: Emergency contact email",
         required: false,
       },
     ],
@@ -285,6 +330,7 @@ const InviteUsers: React.FC = () => {
       },
       employeeInfo: invitation.employeeInfo || {},
       vendorInfo: invitation.vendorInfo || {},
+      tenantInfo: invitation.tenantInfo || {},
     });
 
     formBase.setActiveTab("details");
@@ -327,22 +373,24 @@ const InviteUsers: React.FC = () => {
         />
       )}
 
-      <InvitationTableView
-        cuid={client?.cuid || ""}
-        invitations={invitations}
-        onResend={handleResend}
-        onRevoke={handleRevoke}
-        onEdit={handleEdit}
-        filterOptions={filterOptions}
-        totalCount={totalCount}
-        pagination={pagination}
-        handleSortChange={handleSortChange}
-        handlePageChange={handlePageChange}
-        handleSortByChange={handleSortByChange}
-        isResending={resendMutation.isPending}
-        isRevoking={revokeMutation.isPending}
-        loadingItemId={loadingItemId || undefined}
-      />
+      {!isFormVisible && (
+        <InvitationTableView
+          cuid={client?.cuid || ""}
+          invitations={invitations}
+          onResend={handleResend}
+          onRevoke={handleRevoke}
+          onEdit={handleEdit}
+          filterOptions={filterOptions}
+          totalCount={totalCount}
+          pagination={pagination}
+          handleSortChange={handleSortChange}
+          handlePageChange={handlePageChange}
+          handleSortByChange={handleSortByChange}
+          isResending={resendMutation.isPending}
+          isRevoking={revokeMutation.isPending}
+          loadingItemId={loadingItemId || undefined}
+        />
+      )}
 
       <InvitationPreviewModal
         isOpen={showPreview}

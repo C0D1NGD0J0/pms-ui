@@ -14,6 +14,7 @@ import { useInvitationFormBase } from "../hooks";
 import {
   VendorInvitationTab,
   EmployeeDetailsTab,
+  TenantDetailsTab,
   RoleSelectionTab,
   ReviewTab,
 } from "../components";
@@ -83,12 +84,20 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
               onMessageCountChange={handleMessageCountChange}
             />
           )}
-          {selectedRole && selectedRole !== "vendor" && (
-            <EmployeeDetailsTab
+          {selectedRole === "tenant" && (
+            <TenantDetailsTab
               formData={invitationForm.values as any}
               onFieldChange={handleFieldChange}
             />
           )}
+          {selectedRole &&
+            selectedRole !== "vendor" &&
+            selectedRole !== "tenant" && (
+              <EmployeeDetailsTab
+                formData={invitationForm.values as any}
+                onFieldChange={handleFieldChange}
+              />
+            )}
         </>
       ),
     },
