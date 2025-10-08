@@ -1,8 +1,8 @@
-import { renderHook, waitFor } from "@testing-library/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { authService, EventTypes } from "@services/index";
+import { renderHook, waitFor } from "@testing-library/react";
 import { createTestQueryClient } from "@tests/utils/testHelpers";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 // Mock dependencies
 jest.mock("@services/index");
@@ -18,10 +18,10 @@ jest.mock("@store/auth.store", () => ({
 
 // Mock event hooks
 const mockPublish = jest.fn();
-const mockEventHandlers: Record<string, Function> = {};
+const mockEventHandlers: Record<string, (() => void) | undefined> = {};
 jest.mock("@hooks/event", () => ({
   usePublish: () => mockPublish,
-  useEvent: (eventType: string, handler: Function) => {
+  useEvent: (eventType: string, handler: () => void) => {
     mockEventHandlers[eventType] = handler;
   },
 }));

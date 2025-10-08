@@ -1,5 +1,5 @@
+import { TableColumn, Table } from "@components/Table";
 import { render, screen } from "@testing-library/react";
-import { Table, TableColumn } from "@components/Table";
 
 // Mock Panel components
 jest.mock("@components/Panel", () => ({

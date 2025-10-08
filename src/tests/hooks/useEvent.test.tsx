@@ -1,10 +1,10 @@
-import { renderHook, act } from "@testing-library/react";
-import { useEvent, usePublish } from "@hooks/event/useEvent";
 import { EventTypes, events } from "@services/events";
+import { renderHook, act } from "@testing-library/react";
+import { usePublish, useEvent } from "@hooks/event/useEvent";
 
 // Mock event system
 jest.mock("@services/events", () => {
-  const handlers = new Map<string, Set<Function>>();
+  const handlers = new Map<string, Set<any>>();
 
   return {
     EventTypes: {
@@ -126,7 +126,10 @@ describe("usePublish", () => {
       result.current(EventTypes.TEST_EVENT as any, testData);
     });
 
-    expect(events.publish).toHaveBeenCalledWith(EventTypes.TEST_EVENT, testData);
+    expect(events.publish).toHaveBeenCalledWith(
+      EventTypes.TEST_EVENT,
+      testData
+    );
   });
 
   it("should maintain stable function reference", () => {

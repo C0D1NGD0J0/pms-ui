@@ -1,5 +1,5 @@
-import { render, screen, fireEvent } from "@testing-library/react";
 import { Modal } from "@components/FormElements/Modal/Modal";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 // Mock createPortal to render in the same DOM
 jest.mock("react-dom", () => ({

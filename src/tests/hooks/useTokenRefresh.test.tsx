@@ -1,8 +1,8 @@
-import { renderHook } from "@testing-library/react";
-import { useTokenRefresh } from "@hooks/useTokenRefresh";
 import { authService } from "@services/auth";
 import { EventTypes } from "@services/events";
 import { LoadingReason } from "@store/auth.store";
+import { renderHook } from "@testing-library/react";
+import { useTokenRefresh } from "@hooks/useTokenRefresh";
 
 // Mock dependencies
 const mockSetRefreshingToken = jest.fn();

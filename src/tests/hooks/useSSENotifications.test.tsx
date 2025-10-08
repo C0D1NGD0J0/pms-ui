@@ -1,6 +1,6 @@
-import { act, renderHook, waitFor } from "@testing-library/react";
-import { useSSENotifications } from "@hooks/useSSENotifications";
 import { notificationService } from "@services/notification";
+import { useSSENotifications } from "@hooks/useSSENotifications";
+import { renderHook, waitFor, act } from "@testing-library/react";
 
 // Mock dependencies
 const mockUser = {
