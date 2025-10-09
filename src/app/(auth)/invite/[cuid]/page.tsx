@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@src/components/Skeleton";
-import { useLoadingManager } from "@hooks/useLoadingManager";
+import React, { useEffect, useState, use } from "react";
 import { IInvitationDocument } from "@src/interfaces/invitation.interface";
 
 import { useValidateInviteToken } from "./hooks";
@@ -13,21 +13,15 @@ interface InvitationPageProps {
   params: Promise<{
     cuid: string;
   }>;
-  searchParams: Promise<{
-    token?: string;
-  }>;
 }
 
-export default function InvitationPage({
-  params,
-  searchParams,
-}: InvitationPageProps) {
-  const { cuid } = React.use(params);
-  const { token } = React.use(searchParams);
-  // const { setProcessingInvite, isLoading } = useLoadingManager();
+export default function InvitationPage({ params }: InvitationPageProps) {
+  const searchParams = useSearchParams();
+  const { cuid } = use(params);
+  const token = searchParams.get("token");
   const [validationState, setValidationState] = useState<{
     status: "idle" | "loading" | "success" | "error" | "rate-limited";
-    data: IInvitationDocument | null;
+    data: { invitation: IInvitationDocument } | null;
     error: null | string;
   }>({
     status: "idle",
@@ -42,7 +36,6 @@ export default function InvitationPage({
     setValidationState({ status: "loading", data: null, error: null });
     validateToken({ cuid, token })
       .then((result) => {
-        console.log("result", result);
         if (result.success) {
           setValidationState({
             status: "success",
@@ -70,7 +63,7 @@ export default function InvitationPage({
           error,
         });
       });
-  }, [cuid, token]);
+  }, [cuid, token, validateToken]);
 
   if (isLoading) {
     return (
@@ -99,20 +92,30 @@ export default function InvitationPage({
     );
   }
 
-  if (!token || (!isLoading && validationState.status === "error")) {
+  if (
+    !token ||
+    (!isLoading && validationState.status === "error") ||
+    !validationState.data
+  ) {
     const errorType = !token ? "missing-token" : "invalid";
     return <InvalidInvitationError errorType={errorType} />;
   }
 
-  if (validationState.data && validationState.data.status === "expired") {
+  if (
+    validationState.data &&
+    validationState.data.invitation?.status === "expired"
+  ) {
     return <InvalidInvitationError errorType="expired" />;
   }
-
+  console.log(
+    "Rendering InvitationDetails with invitation:",
+    validationState.data
+  );
   return (
     <InvitationAcceptanceView
       cuid={cuid}
       token={token}
-      invitation={validationState.data!}
+      invitation={validationState.data.invitation}
     />
   );
 }

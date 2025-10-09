@@ -4,8 +4,14 @@ import React from "react";
 import { ResetPasswordView } from "./view";
 import { useResetPasswordLogic } from "./hook/useResetPasswordLogic";
 
-export default function ResetPassword() {
-  const { form, isPending, handleSubmit, token } = useResetPasswordLogic();
+interface ResetPasswordProps {
+  params: Promise<{ token: string }>;
+}
+
+export default function ResetPassword({ params }: ResetPasswordProps) {
+  const { form, isPending, handleSubmit, token } = useResetPasswordLogic({
+    params,
+  });
 
   return (
     <ResetPasswordView

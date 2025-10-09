@@ -11,8 +11,8 @@ export function useValidateInviteToken() {
 
   const validateToken = useCallback(
     async ({ cuid, token }: { cuid: string; token: string }) => {
+      setIsLoading(true);
       try {
-        setIsLoading(true);
         const result = await invitationService.validateInvitationToken(
           cuid,
           token
@@ -47,7 +47,7 @@ export function useValidateInviteToken() {
         setIsLoading(false);
       }
     },
-    []
+    [openNotification]
   );
 
   return {

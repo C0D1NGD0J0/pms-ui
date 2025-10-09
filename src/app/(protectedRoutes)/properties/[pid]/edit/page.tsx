@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { usePropertyFormBase } from "@properties/hooks";
@@ -7,7 +7,7 @@ import { Button, Form } from "@components/FormElements";
 import { usePropertyData } from "@properties/hooks/usePropertyData";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
-import { useSearchParams, useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { usePropertyEditForm } from "@properties/hooks/usePropertyEditForm";
 import {
   PendingChangesBanner,
@@ -28,9 +28,12 @@ import {
   UnitsTab,
 } from "@properties/components";
 
-export default function EditProperty() {
-  const params = useParams();
-  const pid = params.pid as string;
+interface EditPropertyProps {
+  params: Promise<{ pid: string }>;
+}
+
+export default function EditProperty({ params }: EditPropertyProps) {
+  const { pid } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
 

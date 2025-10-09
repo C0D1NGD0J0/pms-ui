@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import { useParams } from "next/navigation";
+import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { Button } from "@src/components/FormElements";
 import { PageHeader } from "@components/PageElements/Header";
@@ -11,15 +10,15 @@ import { AccountTabs } from "./components/AccountTabs";
 import { AccountOverview } from "./components/AccountOverview";
 import { useGetClientDetails, useClientForm } from "./hook/index";
 
-const AccountPage: React.FC = () => {
+const AccountPage = ({ params }: { params: Promise<{ cuid: string }> }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const permissions = useUnifiedPermissions();
-  const params = useParams<{ cuid: string }>();
+  const { cuid } = use(params);
   const {
     data: clientInfo,
     isLoading,
     isError,
-  } = useGetClientDetails(params.cuid || "");
+  } = useGetClientDetails(cuid || "");
 
   const {
     saveStatus,
@@ -30,7 +29,7 @@ const AccountPage: React.FC = () => {
     revertChanges,
   } = useClientForm({
     clientData: clientInfo ?? ({} as any),
-    cuid: params.cuid || "",
+    cuid: cuid || "",
   });
 
   if (isLoading) {

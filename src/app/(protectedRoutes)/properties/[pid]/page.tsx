@@ -3,14 +3,14 @@ import Link from "next/link";
 import { Table } from "@components/Table";
 import { Loading } from "@components/Loading";
 import { TabContainer } from "@components/Tab";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, use } from "react";
 import { IUnit } from "@interfaces/unit.interface";
 import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
 import { PageHeader } from "@components/PageElements";
 import { Button } from "@src/components/FormElements";
 import { ImageGallery } from "@components/ImageGallery";
-import { useSearchParams, useParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
@@ -180,16 +180,20 @@ const reportColumns = [
   { title: "Status", dataIndex: "status", isStatus: true },
 ];
 
-export default function PropertyShow() {
+interface PropertyShowProps {
+  params: Promise<{ pid: string }>;
+}
+
+export default function PropertyShow({ params }: PropertyShowProps) {
   const permission = useUnifiedPermissions();
   const [activeTab, setActiveTab] = useState("tenant");
   const [searchTerm, setSearchTerm] = useState("");
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
-  const params = useParams<{ pid: string }>();
+  const { pid } = use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
   let savedUnits: IUnit[] = [];
-  const { data, isLoading, error } = usePropertyData(params.pid);
+  const { data, isLoading, error } = usePropertyData(pid);
 
   useEffect(() => {
     const showChanges = searchParams.get("showChanges");
@@ -233,13 +237,13 @@ export default function PropertyShow() {
     error: unitsError,
   } = useGetPropertyUnits(
     data?.property?.cuid ?? "",
-    params.pid,
+    pid,
     {
       limit: 10,
       page: 1,
     },
     {
-      enabled: isMultiUnit && !!data?.property?.cuid && !!params.pid,
+      enabled: isMultiUnit && !!data?.property?.cuid && !!pid,
     }
   );
 
