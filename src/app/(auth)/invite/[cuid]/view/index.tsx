@@ -140,7 +140,7 @@ export function InvitationAcceptanceView({
         };
       case "account-setup":
         return {
-          title: "Create Your Account",
+          title: "Confirm Account Details",
           subtitle: "Set up your account to get started",
         };
       case "error":

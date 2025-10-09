@@ -28,7 +28,7 @@ export default function InvitationPage({ params }: InvitationPageProps) {
     data: null,
     error: null,
   });
-  const { validateToken, isLoading } = useValidateInviteToken();
+  const { validateToken } = useValidateInviteToken();
 
   useEffect(() => {
     if (!cuid || !token || validationState.status !== "idle") return;
@@ -65,7 +65,7 @@ export default function InvitationPage({ params }: InvitationPageProps) {
       });
   }, [cuid, token, validateToken]);
 
-  if (isLoading) {
+  if (validationState.status === "loading" || !validationState.data) {
     return (
       <>
         <Skeleton
@@ -92,11 +92,7 @@ export default function InvitationPage({ params }: InvitationPageProps) {
     );
   }
 
-  if (
-    !token ||
-    (!isLoading && validationState.status === "error") ||
-    !validationState.data
-  ) {
+  if (!token || (validationState.status === "error" && !validationState.data)) {
     const errorType = !token ? "missing-token" : "invalid";
     return <InvalidInvitationError errorType={errorType} />;
   }
@@ -107,10 +103,7 @@ export default function InvitationPage({ params }: InvitationPageProps) {
   ) {
     return <InvalidInvitationError errorType="expired" />;
   }
-  console.log(
-    "Rendering InvitationDetails with invitation:",
-    validationState.data
-  );
+
   return (
     <InvitationAcceptanceView
       cuid={cuid}
