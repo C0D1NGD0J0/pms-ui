@@ -1,6 +1,7 @@
 "use client";
 import { notification, message, Button } from "antd";
-import React, { createContext, useContext } from "react";
+import { EventTypes, events } from "@services/events";
+import React, { createContext, useContext, useEffect } from "react";
 
 type NotificationInstance = "info" | "warning" | "error" | "success" | "open";
 type MessageInstance =
@@ -175,6 +176,24 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       style: { whiteSpace: "pre-line" },
     });
   };
+
+  // Global rate limit event listener
+  useEffect(() => {
+    const unsubscribe = events.subscribe<{
+      url: string;
+      retryAfter: number;
+      message: string;
+    }>(EventTypes.RATE_LIMIT_EXCEEDED, (data) => {
+      openNotification(
+        "warning",
+        "Rate Limit Exceeded",
+        data.message,
+        { duration: 10 } // Show for 10 seconds
+      );
+    });
+
+    return unsubscribe;
+  }, []);
 
   return (
     <NotificationContext.Provider

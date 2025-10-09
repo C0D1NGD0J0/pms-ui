@@ -68,7 +68,12 @@ class EmailTemplateService {
       );
 
       const responseData = result.data;
-      if (!responseData.success || !responseData.data?.renderedHtml) {
+
+      // Check if renderedHtml exists in the response (could be nested in data or at root level)
+      const renderedHtml = responseData.data?.renderedHtml || responseData.renderedHtml;
+      const renderedText = responseData.data?.renderedText || responseData.renderedText;
+
+      if (!renderedHtml) {
         throw new Error(
           `Template rendering failed: ${
             responseData.error || "missing renderedHtml in response"
@@ -77,8 +82,8 @@ class EmailTemplateService {
       }
 
       return {
-        renderedHtml: responseData.data.renderedHtml,
-        renderedText: responseData.data.renderedText,
+        renderedHtml,
+        renderedText,
       };
     } catch (error) {
       console.error("Error rendering template:", error);

@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { IUnifiedPermissions } from "@src/interfaces";
 import { Button, Form } from "@components/FormElements";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import { InvitationFormValues } from "@validations/invitation.validations";
@@ -20,12 +21,15 @@ import {
 } from "../components";
 
 interface InvitationFormViewProps {
-  onSubmit: (values: InvitationFormValues) => void;
-  onSaveDraft: (values: InvitationFormValues) => void;
   onCancel: () => void;
   onPreview: () => void;
   isSubmitting?: boolean;
+  editingInvitation?: any;
+  currentUserRole?: string;
+  permission: IUnifiedPermissions;
+  onSubmit: (values: InvitationFormValues) => void;
   formBase: ReturnType<typeof useInvitationFormBase>;
+  onSaveDraft: (values: InvitationFormValues) => void;
 }
 
 export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
@@ -35,6 +39,8 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
   formBase,
   onPreview,
   isSubmitting = false,
+  permission,
+  editingInvitation,
 }) => {
   const {
     activeTab,
@@ -67,6 +73,8 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
           onFieldChange={handleFieldChange}
           onMessageCountChange={handleMessageCountChange}
           onShowInviteMessageToggle={handleShowInviteMessageToggle}
+          permission={permission}
+          editingInvitation={editingInvitation}
         />
       ),
     },

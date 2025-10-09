@@ -6,6 +6,7 @@ import { invitationService } from "@services/invite";
 import { PageHeader } from "@components/PageElements";
 import { useNotification } from "@hooks/useNotification";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
 import { InvitationFormValues } from "@src/validations/invitation.validations";
 
@@ -32,7 +33,8 @@ const InviteUsers: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const { confirm, message } = useNotification();
   const queryClient = useQueryClient();
-  const { client } = useAuth();
+  const { client, user } = useAuth();
+  const permission = useUnifiedPermissions();
 
   const {
     filterOptions,
@@ -367,9 +369,12 @@ const InviteUsers: React.FC = () => {
           onSubmit={onSubmit}
           formBase={formBase}
           onCancel={onCancel}
+          permission={permission}
           onPreview={onPreview}
           onSaveDraft={onSaveDraft}
           isSubmitting={isEditMode ? isUpdating : isSubmitting}
+          currentUserRole={user?.client?.role}
+          editingInvitation={editingInvitation}
         />
       )}
 

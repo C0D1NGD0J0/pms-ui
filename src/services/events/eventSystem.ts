@@ -8,6 +8,8 @@ export enum EventTypes {
   TOKEN_REFRESHED = "TOKEN_REFRESHED",
   AUTH_FAILURE = "AUTH_FAILURE",
   LOGOUT_INITIATED = "LOGOUT_INITIATED",
+  RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED",
+  TEST_EVENT = "TEST_EVENT",
 }
 
 export type EventSystemHandler<T = any> = (data: T) => void;

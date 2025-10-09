@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Skeleton } from "@src/components/Skeleton";
 import { useLoadingManager } from "@hooks/useLoadingManager";
 import { IInvitationDocument } from "@src/interfaces/invitation.interface";
@@ -24,36 +24,55 @@ export default function InvitationPage({
 }: InvitationPageProps) {
   const { cuid } = React.use(params);
   const { token } = React.use(searchParams);
-  const { setProcessingInvite, isLoading } = useLoadingManager();
-  const [invite, setInvite] = React.useState<{
-    isValid: boolean;
+  // const { setProcessingInvite, isLoading } = useLoadingManager();
+  const [validationState, setValidationState] = useState<{
+    status: "idle" | "loading" | "success" | "error" | "rate-limited";
     data: IInvitationDocument | null;
+    error: null | string;
   }>({
-    isValid: false,
+    status: "idle",
     data: null,
+    error: null,
   });
-  const { validateToken, isLoading: isValidatingToken } = useValidateInviteToken();
+  const { validateToken, isLoading } = useValidateInviteToken();
 
   useEffect(() => {
-    if (cuid && token) {
-      setProcessingInvite(true);
-      validateToken({ cuid, token })
-        .then((resp) => {
-          console.log("Token validation response:", resp);
-          if (resp.success) {
-            setInvite({ isValid: resp.isValid, data: resp.invitation });
-          }
-          setProcessingInvite(false);
-        })
-        .catch(() => {
-          setInvite({ isValid: false, data: null });
-          setProcessingInvite(false);
+    if (!cuid || !token || validationState.status !== "idle") return;
+
+    setValidationState({ status: "loading", data: null, error: null });
+    validateToken({ cuid, token })
+      .then((result) => {
+        console.log("result", result);
+        if (result.success) {
+          setValidationState({
+            status: "success",
+            data: result,
+            error: null,
+          });
+        } else if (result.rateLimited) {
+          setValidationState({
+            status: "rate-limited",
+            data: null,
+            error: "Rate limited",
+          });
+        } else {
+          setValidationState({
+            status: "error",
+            data: null,
+            error: "Invalid token",
+          });
+        }
+      })
+      .catch((error) => {
+        setValidationState({
+          status: "error",
+          data: null,
+          error,
         });
-    }
-     
+      });
   }, [cuid, token]);
 
-  if (isLoading || isValidatingToken) {
+  if (isLoading) {
     return (
       <>
         <Skeleton
@@ -80,12 +99,12 @@ export default function InvitationPage({
     );
   }
 
-  if (!token || (!isValidatingToken && !invite.isValid)) {
+  if (!token || (!isLoading && validationState.status === "error")) {
     const errorType = !token ? "missing-token" : "invalid";
     return <InvalidInvitationError errorType={errorType} />;
   }
 
-  if (invite.data && invite.data.status === "expired") {
+  if (validationState.data && validationState.data.status === "expired") {
     return <InvalidInvitationError errorType="expired" />;
   }
 
@@ -93,7 +112,7 @@ export default function InvitationPage({
     <InvitationAcceptanceView
       cuid={cuid}
       token={token}
-      invitation={invite.data!}
+      invitation={validationState.data!}
     />
   );
 }

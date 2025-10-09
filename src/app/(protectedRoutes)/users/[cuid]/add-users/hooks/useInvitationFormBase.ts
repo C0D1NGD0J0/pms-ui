@@ -231,6 +231,8 @@ export function useInvitationFormBase({
         const getDataPath = (role: IUserRole) => {
           if (role === "vendor") {
             return "invitation.vendors";
+          } else if (role === "tenant") {
+            return "invitation.tenants";
           } else {
             return "invitation.employees";
           }
@@ -247,10 +249,10 @@ export function useInvitationFormBase({
                 .split("T")[0];
           }
 
-          invitationForm.setValues(transformedData);
-          if (transformedData.metadata?.inviteMessage) {
-            setMessageCount(transformedData.metadata.inviteMessage.length);
-          }
+          // invitationForm.setValues(transformedData);
+          // if (transformedData.metadata?.inviteMessage) {
+          //   setMessageCount(transformedData.metadata.inviteMessage.length);
+          // }
         }
       } catch (error) {
         console.warn("Failed to populate default data:", error);
@@ -339,7 +341,10 @@ export function useInvitationFormBase({
     (show: boolean) => {
       setShowInviteMessage(show);
       if (!show) {
-        handleFieldChange("metadata.inviteMessage", "");
+        handleFieldChange(
+          "metadata.inviteMessage",
+          invitationForm.values.metadata?.inviteMessage || ""
+        );
         setMessageCount(0);
       }
     },

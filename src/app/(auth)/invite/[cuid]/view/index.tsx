@@ -204,7 +204,7 @@ export function InvitationAcceptanceView({
           />
         );
       default:
-        return null;
+        return <h2>FUCK</h2>;
     }
   };
 

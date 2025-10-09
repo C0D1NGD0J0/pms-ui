@@ -24,7 +24,6 @@ export const PreviewModal: React.FC<PreviewModalProps> = ({
       <Modal.Content className="preview-modal-content">
         <DocumentPreview
           {...previewProps}
-          height="100%"
           width="100%"
           className="modal-document-preview"
         />

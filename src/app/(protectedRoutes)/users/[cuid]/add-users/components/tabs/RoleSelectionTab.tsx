@@ -1,7 +1,8 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { RoleTile } from "@components/RoleTile";
 import { FormSection } from "@components/FormLayout";
+import { IUnifiedPermissions } from "@interfaces/index";
 import { Textarea, Checkbox } from "@components/FormElements";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 import {
@@ -13,11 +14,13 @@ interface RoleSelectionTabProps {
   formData: IInvitationFormData;
   selectedRole: IUserRole | null;
   messageCount: number;
+  permission: IUnifiedPermissions;
   showInviteMessage: boolean;
   onRoleSelect: (role: IUserRole) => void;
   onFieldChange: (field: string, value: any) => void;
   onMessageCountChange: (count: number) => void;
   onShowInviteMessageToggle: (show: boolean) => void;
+  editingInvitation?: any;
 }
 
 export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
@@ -29,7 +32,19 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
   onFieldChange,
   onMessageCountChange,
   onShowInviteMessageToggle,
+  permission,
+  editingInvitation,
 }) => {
+  useEffect(() => {
+    if (!!formData.metadata?.inviteMessage) {
+      onShowInviteMessageToggle(true);
+      onMessageCountChange(formData.metadata.inviteMessage.length);
+    }
+  }, [formData.metadata?.inviteMessage]);
+
+  const isRoleSelectionDisabled =
+    editingInvitation?.iuid && !permission.isManagerOrAbove;
+
   const roles = [
     {
       value: "manager",
@@ -78,6 +93,7 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
               icon={role.icon}
               value={role.value}
               isSelected={selectedRole === role.value}
+              disabled={isRoleSelectionDisabled && selectedRole !== role.value}
               onClick={() => {
                 onRoleSelect(role.value as IUserRole);
               }}
