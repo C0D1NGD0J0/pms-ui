@@ -132,7 +132,7 @@ export function InvitationAcceptanceView({
   const getHeaderContent = () => {
     switch (currentStep) {
       case "loading":
-        return null; // No header during loading
+        return null;
       case "invitation-details":
         return {
           title: "You're Invited!",
@@ -144,7 +144,7 @@ export function InvitationAcceptanceView({
           subtitle: "Set up your account to get started",
         };
       case "error":
-        return null; // Error state has its own title
+        return null;
       default:
         return {
           title: "Invitation",

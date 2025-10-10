@@ -24,7 +24,6 @@ export const Navbar: React.FC = () => {
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
     useState(false);
 
-  // Use Zustand notification store
   const { notifications, announcements, isConnected, isConnecting, hasError } =
     useSSENotifications();
 
@@ -34,7 +33,6 @@ export const Navbar: React.FC = () => {
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const cuid = user?.client?.cuid;
 
-  // Initialize notification connection when user is logged in
   useEffect(() => {
     if (cuid && isLoggedIn) {
       initializeConnection(cuid);
@@ -134,7 +132,7 @@ export const Navbar: React.FC = () => {
 
           return (
             <li key={index} className="navbar-menu__item">
-              <span>
+              <span className="item-icon">
                 <i className={`bx ${item.icon}`}></i>
               </span>
               <Link href={item.href}>{item.label}</Link>
@@ -150,7 +148,7 @@ export const Navbar: React.FC = () => {
             onMouseEnter={handleNotificationMouseEnter}
             onMouseLeave={handleNotificationMouseLeave}
           >
-            <span>
+            <span className="item-icon">
               <i className="bx bx-bell"></i>
               {unreadCount > 0 && (
                 <span
@@ -186,7 +184,7 @@ export const Navbar: React.FC = () => {
           className="navbar-menu__item user-avatar"
           onClick={(e) => toggleUserDropdown(e, !isUserDropdownOpen)}
         >
-          <span>
+          <span className="item-icon">
             <i className="bx bx-user"></i>
           </span>
           <ul

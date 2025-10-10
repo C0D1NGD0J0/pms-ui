@@ -91,6 +91,72 @@ const useSSENotificationStore = create<NotificationState>()(
             }
           });
 
+          newPersonalSource.addEventListener("job-notification", (event) => {
+            const jobUpdate = JSON.parse(event.data);
+            console.log("🔔 Job notification received:", jobUpdate);
+
+            // Generate user-friendly title based on job type and stage
+            const getJobTitle = () => {
+              const jobTypeLabel = jobUpdate.jobType === 'csv_validation'
+                ? 'CSV validation'
+                : jobUpdate.jobType === 'csv_invitation'
+                ? 'CSV import'
+                : jobUpdate.jobType.replace(/_/g, ' ');
+
+              if (jobUpdate.stage === 'started') {
+                return `${jobTypeLabel} started`;
+              } else if (jobUpdate.stage === 'completed') {
+                return `${jobTypeLabel} completed`;
+              } else if (jobUpdate.stage === 'failed') {
+                return `${jobTypeLabel} failed`;
+              }
+              return jobTypeLabel;
+            };
+
+            // Convert job notification to INotification format
+            const notification: INotification = {
+              id: jobUpdate.jobId,
+              nuid: `job-${jobUpdate.jobId}`,
+              title: getJobTitle(),
+              message: jobUpdate.message || jobUpdate.metadata?.message || '',
+              type: "system",
+              priority: jobUpdate.stage === 'failed' ? 'high' : 'medium',
+              recipientType: "individual",
+              isRead: false,
+              createdAt: new Date().toISOString(),
+              metadata: {
+                jobId: jobUpdate.jobId,
+                jobType: jobUpdate.jobType,
+                stage: jobUpdate.stage,
+                progress: jobUpdate.progress,
+                isTransient: true, // Mark as transient (not stored in DB)
+                errors: jobUpdate.errors, // Include errors from root level
+                errorCount: jobUpdate.errorCount,
+                totalRows: jobUpdate.totalRows,
+                validCount: jobUpdate.validCount,
+                totalItems: jobUpdate.totalItems,
+                ...jobUpdate.metadata
+              }
+            };
+
+            // Add to notifications state
+            set((state) => ({
+              notifications: [notification, ...state.notifications],
+            }));
+
+            // Show console messages based on job stage
+            if (jobUpdate.stage === 'started') {
+              console.info(`📤 ${jobUpdate.message}`);
+            } else if (jobUpdate.stage === 'completed') {
+              console.log(`✅ ${jobUpdate.message}`);
+            } else if (jobUpdate.stage === 'failed') {
+              console.error(`❌ ${jobUpdate.message}`);
+              if (jobUpdate.metadata?.errors) {
+                console.error("Errors:", jobUpdate.metadata.errors);
+              }
+            }
+          });
+
           newPersonalSource.onerror = () => {
             if (newPersonalSource.readyState === EventSource.CLOSED) {
               set({ connectionStatus: "error" });

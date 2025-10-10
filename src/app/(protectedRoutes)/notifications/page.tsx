@@ -1,19 +1,14 @@
 "use client";
-import Link from "next/link";
-import { format } from "date-fns";
 import { Button } from "@components/FormElements";
 import DaySeparator from "@components/DaySeparator";
 import { useCurrentUser } from "@hooks/useCurrentUser";
+import { NotificationItem } from "@components/Notifications";
 import React, { useCallback, useState, useMemo } from "react";
+import { groupNotificationsByDate } from "@utils/notificationUtils";
 import {
   useSSENotificationActions,
   useSSENotifications,
 } from "@store/sseNotification.store";
-import {
-  getNotificationActionUrl,
-  groupNotificationsByDate,
-  getNotificationIcon,
-} from "@utils/notificationUtils";
 
 const filterOptions = [
   { value: "all", label: "All" },
@@ -73,9 +68,10 @@ const NotificationsPage = () => {
   }, [filteredNotifications]);
 
   const unreadCount = allNotifications.filter((n) => !n.isRead).length;
+
   const handleMarkAsRead = useCallback(
-    async (nuid: string) => {
-      if (cuid) {
+    async (nuid: string, isTransient: boolean = false) => {
+      if (cuid && !isTransient) {
         await markAsRead(cuid, nuid);
       }
     },
@@ -89,26 +85,16 @@ const NotificationsPage = () => {
   }, [cuid, reconnect]);
 
   const handleMarkAllAsRead = async () => {
-    const unreadNotifications = allNotifications.filter((n) => !n.isRead);
+    const unreadNotifications = allNotifications.filter(
+      (n) => !n.isRead && !n.metadata?.isTransient
+    );
     for (const notification of unreadNotifications) {
-      await handleMarkAsRead(notification.nuid);
+      await handleMarkAsRead(notification.nuid, false);
     }
   };
 
   const handleDeleteNotification = (nuid: string) => {
-    // For now, just mark as read since we don't have delete service yet
     handleMarkAsRead(nuid);
-  };
-
-  const formatTime = (createdAt: string) => {
-    const date = new Date(createdAt);
-    const now = new Date();
-
-    if (date.toDateString() === now.toDateString()) {
-      return format(date, "h:mm a");
-    }
-
-    return format(date, "MMM dd, yyyy");
   };
 
   return (
@@ -166,81 +152,24 @@ const NotificationsPage = () => {
           />
         </div>
       ) : (
-        groupedNotifications.map(([dateKey, dayNotifications]) => (
-          <React.Fragment key={dateKey}>
-            <DaySeparator date={new Date(dateKey)} />
+        groupedNotifications.map(([dateKey, dayNotifications]) => {
+          return (
+            <React.Fragment key={dateKey}>
+              <DaySeparator date={new Date(dateKey)} />
 
-            <div className="notifications-container">
-              {dayNotifications.map((notification) => (
-                <div
-                  key={notification.nuid}
-                  className={`notification-item ${
-                    !notification.isRead ? "unread" : ""
-                  }`}
-                  data-type={
-                    notification.metadata?.category || notification.type
-                  }
-                >
-                  <div
-                    className={`notification-icon ${
-                      notification.metadata?.category || notification.type
-                    }`}
-                  >
-                    <i
-                      className={`bx ${getNotificationIcon(
-                        notification.metadata?.category || notification.type
-                      )}`}
-                    ></i>
-                  </div>
-
-                  <div className="notification-content">
-                    <div className="notification-header">
-                      <div className="notification-title">
-                        {notification.title}
-                      </div>
-                      <div className="notification-time">
-                        {formatTime(notification.createdAt)}
-                      </div>
-                    </div>
-
-                    <div className="notification-message">
-                      {notification.message}
-                    </div>
-
-                    <div className="notification-actions">
-                      {getNotificationActionUrl(notification) && (
-                        <Link
-                          href={getNotificationActionUrl(notification)!}
-                          className="action-button primary"
-                        >
-                          <i className="bx bx-glasses"></i> View Details
-                        </Link>
-                      )}
-
-                      {!notification.isRead ? (
-                        <Button
-                          className="action-button secondary"
-                          label="Mark as Read"
-                          onClick={() => handleMarkAsRead(notification.nuid)}
-                          icon={<i className="bx bx-check"></i>}
-                        />
-                      ) : (
-                        <Button
-                          className="action-button secondary"
-                          label="Delete"
-                          onClick={() =>
-                            handleDeleteNotification(notification.nuid)
-                          }
-                          icon={<i className="bx bx-trash"></i>}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </React.Fragment>
-        ))
+              <div className="notifications-container">
+                {dayNotifications.map((notification) => (
+                  <NotificationItem
+                    key={notification.nuid}
+                    notification={notification}
+                    onMarkAsRead={handleMarkAsRead}
+                    onDelete={handleDeleteNotification}
+                  />
+                ))}
+              </div>
+            </React.Fragment>
+          );
+        })
       )}
     </div>
   );
