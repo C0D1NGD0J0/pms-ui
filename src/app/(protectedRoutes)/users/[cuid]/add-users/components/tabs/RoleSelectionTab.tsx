@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import { RoleTile } from "@components/RoleTile";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import { IUnifiedPermissions } from "@interfaces/index";
 import { Textarea, Checkbox } from "@components/FormElements";
@@ -11,7 +12,7 @@ import {
 } from "@interfaces/invitation.interface";
 
 interface RoleSelectionTabProps {
-  formData: IInvitationFormData;
+  formData: UseFormReturnType<IInvitationFormData>;
   selectedRole: IUserRole | null;
   messageCount: number;
   permission: IUnifiedPermissions;
@@ -23,7 +24,7 @@ interface RoleSelectionTabProps {
   editingInvitation?: any;
 }
 
-export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
+export const RoleSelectionTab = ({
   formData,
   selectedRole,
   messageCount,
@@ -32,18 +33,19 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
   onFieldChange,
   onMessageCountChange,
   onShowInviteMessageToggle,
-  permission,
   editingInvitation,
-}) => {
+}: RoleSelectionTabProps) => {
   useEffect(() => {
-    if (!!formData.metadata?.inviteMessage) {
+    if (!!formData.values.metadata?.inviteMessage) {
       onShowInviteMessageToggle(true);
-      onMessageCountChange(formData.metadata.inviteMessage.length);
+      onMessageCountChange(formData.values.metadata.inviteMessage.length);
     }
-  }, [formData.metadata?.inviteMessage]);
+  }, [formData.values.metadata?.inviteMessage]);
 
   const isRoleSelectionDisabled =
-    editingInvitation?.iuid && !permission.isManagerOrAbove;
+    editingInvitation?.iuid &&
+    (formData.values.status === "draft" ||
+      formData.values.status === "pending");
 
   const roles = [
     {
@@ -108,7 +110,12 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
           description="Enter the essential contact details for the invitation"
         >
           <div className="form-fields">
-            <FormField>
+            <FormField
+              error={{
+                msg: (formData.errors["inviteeEmail"] as string) || "",
+                touched: formData.isTouched("inviteeEmail"),
+              }}
+            >
               <FormLabel htmlFor="inviteeEmail" label="Email Address *" />
               <FormInput
                 required
@@ -116,35 +123,46 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
                 id="inviteeEmail"
                 name="inviteeEmail"
                 placeholder="Enter email address"
-                value={formData.inviteeEmail}
+                value={formData.values.inviteeEmail}
                 onChange={(e) => onFieldChange("inviteeEmail", e.target.value)}
               />
             </FormField>
           </div>
 
           <div className="form-fields">
-            <FormField>
+            <FormField
+              error={{
+                msg:
+                  (formData.errors["personalInfo.firstName"] as string) || "",
+                touched: formData.isTouched("personalInfo.firstName"),
+              }}
+            >
               <FormLabel htmlFor="firstName" label="First Name *" />
               <FormInput
                 id="firstName"
                 type="text"
                 name="firstName"
                 placeholder="Enter first name"
-                value={formData.personalInfo.firstName}
+                value={formData.values.personalInfo.firstName}
                 onChange={(e) =>
                   onFieldChange("personalInfo.firstName", e.target.value)
                 }
                 required
               />
             </FormField>
-            <FormField>
+            <FormField
+              error={{
+                msg: (formData.errors["personalInfo.lastName"] as string) || "",
+                touched: formData.isTouched("personalInfo.lastName"),
+              }}
+            >
               <FormLabel htmlFor="lastName" label="Last Name *" />
               <FormInput
                 id="lastName"
                 type="text"
                 name="lastName"
                 placeholder="Enter last name"
-                value={formData.personalInfo.lastName}
+                value={formData.values.personalInfo.lastName}
                 onChange={(e) =>
                   onFieldChange("personalInfo.lastName", e.target.value)
                 }
@@ -154,14 +172,20 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
           </div>
 
           <div className="form-fields">
-            <FormField>
+            <FormField
+              error={{
+                msg:
+                  (formData.errors["personalInfo.phoneNumber"] as string) || "",
+                touched: formData.isTouched("personalInfo.phoneNumber"),
+              }}
+            >
               <FormLabel htmlFor="phoneNumber" label="Phone Number" />
               <FormInput
                 id="phoneNumber"
                 type="tel"
                 name="phoneNumber"
                 placeholder="+1 (555) 123-4567"
-                value={formData.personalInfo.phoneNumber || ""}
+                value={formData.values.personalInfo.phoneNumber || ""}
                 onChange={(e) =>
                   onFieldChange("personalInfo.phoneNumber", e.target.value)
                 }
@@ -183,14 +207,20 @@ export const RoleSelectionTab: React.FC<RoleSelectionTabProps> = ({
 
           {showInviteMessage && (
             <div className="form-fields">
-              <FormField>
+              <FormField
+                error={{
+                  msg:
+                    (formData.errors["metadata.inviteMessage"] as string) || "",
+                  touched: formData.isTouched("metadata.inviteMessage"),
+                }}
+              >
                 <FormLabel htmlFor="inviteMessage" label="Personal Message" />
                 <Textarea
                   id="inviteMessage"
                   name="inviteMessage"
                   rows={5}
                   placeholder="Add a personal message to the invitation (optional)"
-                  value={formData.metadata?.inviteMessage || ""}
+                  value={formData.values.metadata?.inviteMessage || ""}
                   onChange={(e: any) => {
                     onFieldChange("metadata.inviteMessage", e.target.value);
                     onMessageCountChange(e.target.value.length);

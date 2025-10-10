@@ -1,10 +1,11 @@
 "use client";
 import { useAuth } from "@store/index";
-import React, { useState } from "react";
 import { Button } from "@components/FormElements";
+import React, { useEffect, useState } from "react";
 import { invitationService } from "@services/invite";
 import { PageHeader } from "@components/PageElements";
 import { useNotification } from "@hooks/useNotification";
+import { useSSENotifications } from "@store/sseNotification.store";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
@@ -35,6 +36,7 @@ const InviteUsers: React.FC = () => {
   const queryClient = useQueryClient();
   const { client, user } = useAuth();
   const permission = useUnifiedPermissions();
+  const { notifications } = useSSENotifications();
 
   const {
     filterOptions,
@@ -59,18 +61,47 @@ const InviteUsers: React.FC = () => {
   } = useInvitationPreview();
   const formBase = useInvitationFormBase();
 
+  // Listen for CSV validation and import completion notifications
+  useEffect(() => {
+    const latestNotification = notifications[0];
+    if (!latestNotification) return;
+
+    const { metadata } = latestNotification;
+    if (!metadata?.isTransient) return;
+
+    // Handle CSV validation notifications
+    if (metadata.jobType === "csv_validation") {
+      console.log("Received CSV validation notification:", latestNotification);
+      // if validation completed successfully and has valid data
+      if (metadata.stage === "completed" && metadata.validData) {
+        setCsvPreviewData(metadata.validData);
+      }
+      // clear preview if validation failed
+      if (metadata.stage === "failed") {
+        setCsvPreviewData([]);
+      }
+    }
+
+    // Handle CSV import completion - refresh invitation list
+    if (metadata.jobType === "csv_invitation" && metadata.stage === "completed") {
+      setCsvPreviewData([]); // Clear preview if showing
+      queryClient.invalidateQueries({
+        queryKey: [`/invitations/${client?.cuid}`, client?.cuid],
+      });
+    }
+  }, [notifications, queryClient, client?.cuid]);
+
   const handleOpenCSVModal = () => {
     setIsCSVModalOpen(true);
   };
 
   const handleCloseCSVModal = () => {
     setIsCSVModalOpen(false);
-    setCsvPreviewData([]);
   };
 
-  const handlePreviewData = (data: any[]) => {
-    setCsvPreviewData(data);
-  };
+  // const handlePreviewData = (data: any[]) => {
+  //   setCsvPreviewData(data);
+  // };
 
   const toggleFormVisibility = () => {
     setIsFormVisible(!isFormVisible);
@@ -82,7 +113,7 @@ const InviteUsers: React.FC = () => {
       "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid. For tenants, you can also include employer and emergency contact information.",
     templateUrl: "/templates/user-invitation.csv",
     templateName: "Download CSV Template",
-    showPreview: true,
+    // showPreview: true,
     columns: [
       {
         name: "inviteeEmail",
@@ -173,8 +204,8 @@ const InviteUsers: React.FC = () => {
     serviceMethods: {
       validateCsv: (file: File) =>
         invitationService.validateInvitationCsv(client?.cuid || "", file),
-      processCsv: (processId: string) =>
-        invitationService.processValidatedCsv(client?.cuid || "", processId),
+      importCsv: (file: File) =>
+        invitationService.importInvitationsFromCsv(client?.cuid || "", file),
     },
   };
 
@@ -410,7 +441,6 @@ const InviteUsers: React.FC = () => {
         isOpen={isCSVModalOpen}
         onClose={handleCloseCSVModal}
         config={csvUploadConfig}
-        onPreviewData={handlePreviewData}
       />
 
       {csvPreviewData.length > 0 && <InvitationPreview data={csvPreviewData} />}

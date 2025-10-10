@@ -93,34 +93,32 @@ const useSSENotificationStore = create<NotificationState>()(
 
           newPersonalSource.addEventListener("job-notification", (event) => {
             const jobUpdate = JSON.parse(event.data);
-            console.log("🔔 Job notification received:", jobUpdate);
-
-            // Generate user-friendly title based on job type and stage
             const getJobTitle = () => {
-              const jobTypeLabel = jobUpdate.jobType === 'csv_validation'
-                ? 'CSV validation'
-                : jobUpdate.jobType === 'csv_invitation'
-                ? 'CSV import'
-                : jobUpdate.jobType.replace(/_/g, ' ');
+              const jobTypeLabel =
+                jobUpdate.jobType === "csv_validation"
+                  ? "CSV validation"
+                  : jobUpdate.jobType === "csv_invitation"
+                  ? "CSV import"
+                  : jobUpdate.jobType.replace(/_/g, " ");
 
-              if (jobUpdate.stage === 'started') {
+              if (jobUpdate.stage === "started") {
                 return `${jobTypeLabel} started`;
-              } else if (jobUpdate.stage === 'completed') {
+              } else if (jobUpdate.stage === "completed") {
                 return `${jobTypeLabel} completed`;
-              } else if (jobUpdate.stage === 'failed') {
+              } else if (jobUpdate.stage === "failed") {
                 return `${jobTypeLabel} failed`;
               }
               return jobTypeLabel;
             };
 
-            // Convert job notification to INotification format
+            // convert job notification to INotification format
             const notification: INotification = {
               id: jobUpdate.jobId,
               nuid: `job-${jobUpdate.jobId}`,
               title: getJobTitle(),
-              message: jobUpdate.message || jobUpdate.metadata?.message || '',
+              message: jobUpdate.message || jobUpdate.metadata?.message || "",
               type: "system",
-              priority: jobUpdate.stage === 'failed' ? 'high' : 'medium',
+              priority: jobUpdate.stage === "failed" ? "high" : "medium",
               recipientType: "individual",
               isRead: false,
               createdAt: new Date().toISOString(),
@@ -135,26 +133,14 @@ const useSSENotificationStore = create<NotificationState>()(
                 totalRows: jobUpdate.totalRows,
                 validCount: jobUpdate.validCount,
                 totalItems: jobUpdate.totalItems,
-                ...jobUpdate.metadata
-              }
+                validData: jobUpdate.validData, // Include validData from root level
+                ...jobUpdate.metadata,
+              },
             };
 
-            // Add to notifications state
             set((state) => ({
               notifications: [notification, ...state.notifications],
             }));
-
-            // Show console messages based on job stage
-            if (jobUpdate.stage === 'started') {
-              console.info(`📤 ${jobUpdate.message}`);
-            } else if (jobUpdate.stage === 'completed') {
-              console.log(`✅ ${jobUpdate.message}`);
-            } else if (jobUpdate.stage === 'failed') {
-              console.error(`❌ ${jobUpdate.message}`);
-              if (jobUpdate.metadata?.errors) {
-                console.error("Errors:", jobUpdate.metadata.errors);
-              }
-            }
           });
 
           newPersonalSource.onerror = () => {

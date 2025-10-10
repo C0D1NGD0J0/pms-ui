@@ -120,9 +120,9 @@ export const sanitizeInvitationFormData = (data: any) => {
         }
       });
 
-      const hasValidEmployerData = Object.values(sanitized.tenantInfo.employerInfo).some(
-        (value) => value !== undefined && value !== null && value !== ""
-      );
+      const hasValidEmployerData = Object.values(
+        sanitized.tenantInfo.employerInfo
+      ).some((value) => value !== undefined && value !== null && value !== "");
       if (!hasValidEmployerData) {
         sanitized.tenantInfo.employerInfo = undefined;
       }
@@ -136,9 +136,9 @@ export const sanitizeInvitationFormData = (data: any) => {
         );
       });
 
-      const hasValidEmergencyContact = Object.values(sanitized.tenantInfo.emergencyContact).some(
-        (value) => value !== undefined && value !== null && value !== ""
-      );
+      const hasValidEmergencyContact = Object.values(
+        sanitized.tenantInfo.emergencyContact
+      ).some((value) => value !== undefined && value !== null && value !== "");
       if (!hasValidEmergencyContact) {
         sanitized.tenantInfo.emergencyContact = undefined;
       }
@@ -197,8 +197,8 @@ export const invitationSchema = z
       required_error: "Please select a role",
     }),
     status: z
-      .enum(["draft", "pending"], {
-        errorMap: () => ({ message: "Status must be either draft or pending" }),
+      .enum(["pending", "accepted", "expired", "revoked", "sent", "draft"], {
+        errorMap: () => ({ message: "Invalid status value" }),
       })
       .optional()
       .default("pending"),
@@ -244,14 +244,12 @@ export const invitationSchema = z
         servicesOffered: z.record(z.string(), z.boolean()).optional(),
         serviceArea: z
           .object({
-            maxDistance: z
-              .union([
-                z.literal(10),
-                z.literal(15),
-                z.literal(25),
-                z.literal(50),
-              ])
-              .optional(),
+            maxDistance: z.union([
+              z.literal(10),
+              z.literal(15),
+              z.literal(25),
+              z.literal(50),
+            ]),
           })
           .optional(),
         insuranceInfo: z
@@ -284,7 +282,11 @@ export const invitationSchema = z
             position: z.string().optional(),
             monthlyIncome: z.number().min(0).optional(),
             companyRef: z.string().optional(),
-            refContactEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+            refContactEmail: z
+              .string()
+              .email("Please enter a valid email")
+              .optional()
+              .or(z.literal("")),
           })
           .optional(),
         emergencyContact: z
@@ -299,7 +301,11 @@ export const invitationSchema = z
           .array(
             z.object({
               landlordName: z.string().optional(),
-              landlordEmail: z.string().email("Please enter a valid email").optional().or(z.literal("")),
+              landlordEmail: z
+                .string()
+                .email("Please enter a valid email")
+                .optional()
+                .or(z.literal("")),
               landlordContact: z.string().optional(),
               durationMonths: z.number().min(1).max(120).optional(),
               reasonForLeaving: z.string().optional(),
@@ -386,7 +392,8 @@ export const invitationSchema = z
     if (
       data.role === "tenant" &&
       data.tenantInfo?.emergencyContact?.email &&
-      !z.string().email().safeParse(data.tenantInfo.emergencyContact.email).success
+      !z.string().email().safeParse(data.tenantInfo.emergencyContact.email)
+        .success
     ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

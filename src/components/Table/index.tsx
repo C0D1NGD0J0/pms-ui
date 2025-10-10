@@ -32,6 +32,7 @@ export interface TableProps<T> {
   pagination?: boolean | Partial<TablePaginationConfig>;
   tableVariant?: "default" | "alt-2";
   showRowNumbers?: boolean;
+  maxHeight?: string | number;
   rowSelection?: {
     type?: "checkbox" | "radio";
     selectedRowKeys?: React.Key[];
@@ -55,6 +56,7 @@ export function Table<T extends object>({
   rowSelection,
   tableVariant = "default",
   showRowNumbers = false,
+  maxHeight,
 }: TableProps<T>) {
   const [searchValue, setSearchValue] = useState(searchOpts?.value || "");
 
@@ -213,6 +215,13 @@ export function Table<T extends object>({
   BodyRow.displayName = "BodyRow";
   BodyCell.displayName = "BodyCell";
 
+  const scrollConfig = maxHeight
+    ? {
+        y: typeof maxHeight === "number" ? maxHeight : maxHeight,
+        x: "max-content",
+      }
+    : undefined;
+
   const tableComponent = (
     <AntTable
       columns={tableColumns}
@@ -222,6 +231,7 @@ export function Table<T extends object>({
       pagination={paginationConfig}
       locale={{ emptyText }}
       rowSelection={rowSelection}
+      scroll={scrollConfig}
       className="panel-content-table custom-table-wrapper"
       {...antTableProps}
       components={{

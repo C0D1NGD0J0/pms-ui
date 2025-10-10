@@ -65,7 +65,7 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
       isVisible: isTabVisible("role"),
       content: (
         <RoleSelectionTab
-          formData={invitationForm.values as any}
+          formData={invitationForm}
           selectedRole={selectedRole}
           messageCount={messageCount}
           showInviteMessage={showInviteMessage}
