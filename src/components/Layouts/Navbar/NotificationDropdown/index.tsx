@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
@@ -16,6 +16,37 @@ interface INotificationDropdownProps {
   reconnect: () => void;
 }
 
+// Helper functions moved outside component to avoid recreation
+const formatTime = (createdAt: string) => {
+  return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
+};
+
+const getNotificationIcon = (type: string) => {
+  switch (type) {
+    case "system":
+      return "⚙️";
+    case "property":
+      return "🏠";
+    case "user":
+      return "👤";
+    default:
+      return "📧";
+  }
+};
+
+const getPriorityClass = (priority: string) => {
+  switch (priority) {
+    case "high":
+      return "high-priority";
+    case "medium":
+      return "medium-priority";
+    case "low":
+      return "low-priority";
+    default:
+      return "";
+  }
+};
+
 const NotificationDropdown = ({
   notifications,
   announcements,
@@ -27,60 +58,45 @@ const NotificationDropdown = ({
 }: INotificationDropdownProps) => {
   const router = useRouter();
 
-  const allNotifications = [...notifications, ...announcements].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  // Memoize sorted notifications to avoid re-sorting on every render
+  const allNotifications = useMemo(
+    () =>
+      [...notifications, ...announcements].sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      ),
+    [notifications, announcements]
   );
-  const unreadCount = allNotifications.filter((n) => !n.isRead).length;
 
-  const handleMarkAsRead = (nuid: string, isTransient: boolean) => {
-    // Don't mark transient notifications as read (they're not in DB)
-    if (!isTransient) {
-      markAsRead(nuid);
-    }
-  };
+  // Memoize unread count calculation
+  const unreadCount = useMemo(
+    () => allNotifications.filter((n) => !n.isRead).length,
+    [allNotifications]
+  );
 
-  const handleMarkAllAsRead = () => {
+  // Memoize callbacks to prevent re-creating functions
+  const handleMarkAsRead = useCallback(
+    (nuid: string, isTransient: boolean) => {
+      // Don't mark transient notifications as read (they're not in DB)
+      if (!isTransient) {
+        markAsRead(nuid);
+      }
+    },
+    [markAsRead]
+  );
+
+  const handleMarkAllAsRead = useCallback(() => {
     const unreadNotifications = allNotifications.filter(
       (n) => !n.isRead && !n.metadata?.isTransient
     );
     unreadNotifications.forEach((notification) => {
       markAsRead(notification.nuid);
     });
-  };
+  }, [allNotifications, markAsRead]);
 
-  const handleViewAll = () => {
+  const handleViewAll = useCallback(() => {
     router.push("/notifications");
-  };
-
-  const formatTime = (createdAt: string) => {
-    return formatDistanceToNow(new Date(createdAt), { addSuffix: true });
-  };
-
-  const getNotificationIcon = (type: string) => {
-    switch (type) {
-      case "system":
-        return "⚙️";
-      case "property":
-        return "🏠";
-      case "user":
-        return "👤";
-      default:
-        return "📧";
-    }
-  };
-
-  const getPriorityClass = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "high-priority";
-      case "medium":
-        return "medium-priority";
-      case "low":
-        return "low-priority";
-      default:
-        return "";
-    }
-  };
+  }, [router]);
 
   return (
     <div className="navbar-notification-dropdown">

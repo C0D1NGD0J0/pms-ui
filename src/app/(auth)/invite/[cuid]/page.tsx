@@ -65,7 +65,11 @@ export default function InvitationPage({ params }: InvitationPageProps) {
       });
   }, [cuid, token, validateToken]);
 
-  if (validationState.status === "loading" || !validationState.data) {
+  if (
+    (validationState.status === "loading" ||
+      validationState.status === "idle") &&
+    !validationState.data
+  ) {
     return (
       <>
         <Skeleton
@@ -103,12 +107,12 @@ export default function InvitationPage({ params }: InvitationPageProps) {
   ) {
     return <InvalidInvitationError errorType="expired" />;
   }
-
+  console.log("Rendering InvitationAcceptanceView with:", validationState);
   return (
     <InvitationAcceptanceView
       cuid={cuid}
       token={token}
-      invitation={validationState.data.invitation}
+      invitation={validationState.data?.invitation || null}
     />
   );
 }

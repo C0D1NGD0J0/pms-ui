@@ -160,7 +160,7 @@
   }
 
   &__dropdown-menu {
-    z-index: 10;
+    z-index: 250;
     top: 4.4rem;
     display: none;
     padding: 1rem;
@@ -172,12 +172,23 @@
     background: hslaGen($blue-ink-color, 1);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
+    &.show {
+      display: block;
+    }
+
     li {
-      padding: 0.5rem 1rem;
       text-align: left;
+      padding: 0.5rem 1rem;
+      transition: $transition;
+
+      &:hover {
+        background: hslaGen($blue-ink-color, 0.8);
+      }
 
       a {
-        font-size: $fs-md;
+        gap: 0.5rem;
+        display: flex;
+        font-size: $fs-base;
         text-decoration: none;
         transition: $transition;
         color: hslaGen($white-color, 1);
@@ -188,32 +199,40 @@
         }
       }
     }
-
-    &:hover {
-      display: block;
-    }
   }
 }
 
 /* Avatar Styles */
 .user-avatar {
   position: relative;
-  display: flex;
   align-items: center;
   cursor: pointer;
+  display: flex;
 
+  > .item-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: hslaGen($secondary-color, 0.8);
+    }
+
+    i {
+      font-size: $fs-lg;
+    }
+  }
+
+  .user-avatar__image,
   .avatar {
     width: 3rem;
     height: 3rem;
     object-fit: cover;
     border-radius: 50%;
     transition: transform 0.3s ease;
-    border: 0.1rem solid hslaGen($white-color, 1);
+    border: 0.2rem solid hslaGen($white-color, 1);
+    margin-left: 0.4rem;
   }
-
-  // &:hover .navbar__dropdown-menu {
-  //   display: block;
-  // }
 }
 
 // DASHBOARD SIDEBAR-NAV

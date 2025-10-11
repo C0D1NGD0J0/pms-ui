@@ -28,7 +28,7 @@ export type ErrorType = "expired" | "invalid" | "accepted";
 interface InvitationAcceptanceViewProps {
   cuid: string;
   token: string;
-  invitation: IInvitationDocument;
+  invitation: IInvitationDocument | null;
 }
 
 export function InvitationAcceptanceView({
