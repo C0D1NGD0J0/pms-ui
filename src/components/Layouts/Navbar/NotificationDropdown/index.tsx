@@ -1,8 +1,8 @@
 "use client";
-import React, { useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
+import React, { useCallback, useMemo } from "react";
 import { Button } from "@src/components/FormElements";
 import { INotification } from "@src/interfaces/notification.interface";
 

@@ -211,6 +211,10 @@ export interface FilteredUserTenantInfo {
   unitNumber?: string;
   leaseStatus?: string;
   rentStatus?: string;
+  propertyName?: string;
+  leaseStartDate?: string | Date;
+  leaseEndDate?: string | Date;
+  monthlyRent?: number;
 }
 
 /**
