@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Footer Component matches snapshot 1`] = `
+<footer
+  class="footer"
+>
+  <p>
+    © 2025 Property Management Application
+  </p>
+</footer>
+`;

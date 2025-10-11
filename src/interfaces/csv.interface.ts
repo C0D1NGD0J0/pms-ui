@@ -2,25 +2,17 @@ export interface CsvValidationResult {
   success: boolean;
   data?: {
     processId: string;
+    jobId: string;
     validRecords: number;
     invalidRecords: number;
     validData?: any[];
-  };
-  message: string;
-  errors?: Array<{ row: number; message: string }>;
-}
-
-export interface CsvProcessResult {
-  success: boolean;
-  data: {
-    processed: number;
   };
   message: string;
 }
 
 export interface CsvServiceMethods {
   validateCsv: (file: File) => Promise<CsvValidationResult>;
-  processCsv: (processId: string) => Promise<CsvProcessResult>;
+  importCsv: (file: File) => Promise<{ success: boolean; message: string }>;
 }
 
 export interface CsvUploadConfig {
@@ -33,6 +25,5 @@ export interface CsvUploadConfig {
     description: string;
     required?: boolean;
   }>;
-  showPreview?: boolean;
   serviceMethods: CsvServiceMethods;
 }

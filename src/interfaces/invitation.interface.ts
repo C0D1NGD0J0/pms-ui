@@ -59,6 +59,29 @@ export interface IInvitationFormData {
       department?: string;
     };
   };
+  tenantInfo?: {
+    employerInfo?: {
+      companyName?: string;
+      position?: string;
+      monthlyIncome?: number;
+      companyRef?: string;
+      refContactEmail?: string;
+    };
+    emergencyContact?: {
+      name?: string;
+      phone?: string;
+      relationship?: string;
+      email?: string;
+    };
+    rentalReferences?: Array<{
+      landlordName?: string;
+      landlordEmail?: string;
+      landlordContact?: string;
+      durationMonths?: number;
+      reasonForLeaving?: string;
+      propertyAddress?: string;
+    }>;
+  };
   status: "pending" | "accepted" | "expired" | "revoked" | "sent" | "draft";
 }
 

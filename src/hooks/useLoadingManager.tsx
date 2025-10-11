@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { useAuthActions, LoadingReason, useAuth } from "@store/auth.store";
 
 /**
@@ -9,58 +9,50 @@ export const useLoadingManager = () => {
   const { currentLoadingState, isLoading, loadingMessage } = useAuth();
   const { setLoadingState } = useAuthActions();
 
-  // Helper functions for different loading states
-  const setAuthenticating = useCallback(
-    (loading: boolean) => {
+  // Memoize helper functions to prevent unnecessary recreations
+  const loadingHelpers = useMemo(() => {
+    const setAuthenticating = (loading: boolean) => {
       setLoadingState(loading ? LoadingReason.AUTHENTICATING : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const setRefreshingToken = useCallback(
-    (loading: boolean) => {
+    const setRefreshingToken = (loading: boolean) => {
       setLoadingState(loading ? LoadingReason.REFRESHING_TOKEN : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const setFetchingUser = useCallback(
-    (loading: boolean) => {
+    const setFetchingUser = (loading: boolean) => {
       setLoadingState(loading ? LoadingReason.FETCHING_USER : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const setProcessingInvite = useCallback(
-    (loading: boolean) => {
+    const setProcessingInvite = (loading: boolean) => {
       setLoadingState(loading ? LoadingReason.PROCESSING_INVITE : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const setIdleSession = useCallback(
-    (idle: boolean) => {
+    const setIdleSession = (idle: boolean) => {
       setLoadingState(idle ? LoadingReason.IDLE_SESSION : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const setLoggingOut = useCallback(
-    (loading: boolean) => {
+    const setLoggingOut = (loading: boolean) => {
       setLoadingState(loading ? LoadingReason.LOGGING_OUT : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const setInitializing = useCallback(
-    (loading: boolean) => {
+    const setInitializing = (loading: boolean) => {
       setLoadingState(loading ? LoadingReason.INITIALIZING : null);
-    },
-    [setLoadingState]
-  );
+    };
 
-  const clearLoadingState = useCallback(() => {
-    setLoadingState(null);
+    const clearLoadingState = () => {
+      setLoadingState(null);
+    };
+
+    return {
+      setAuthenticating,
+      setRefreshingToken,
+      setFetchingUser,
+      setProcessingInvite,
+      setIdleSession,
+      setLoggingOut,
+      setInitializing,
+      clearLoadingState,
+    };
   }, [setLoadingState]);
 
   return {
@@ -69,16 +61,7 @@ export const useLoadingManager = () => {
     loadingMessage,
     currentLoadingState,
 
-    // Individual loading setters
-    setAuthenticating,
-    setRefreshingToken,
-    setFetchingUser,
-    setProcessingInvite,
-    setIdleSession,
-    setLoggingOut,
-    setInitializing,
-
-    // Utility
-    clearLoadingState,
+    // Individual loading setters (spread from memoized helpers)
+    ...loadingHelpers,
   };
 };

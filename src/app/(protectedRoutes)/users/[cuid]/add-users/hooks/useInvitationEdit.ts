@@ -32,6 +32,11 @@ const transformFormDataToAPIFormat = (
     };
   }
 
+  // Handle tenant info
+  if (formData.tenantInfo) {
+    transformed.tenantInfo = formData.tenantInfo;
+  }
+
   return transformed;
 };
 

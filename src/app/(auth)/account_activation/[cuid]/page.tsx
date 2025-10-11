@@ -4,7 +4,11 @@ import React from "react";
 import { AccountActivationView } from "./view";
 import { useAccountActivationLogic } from "./hook/useAccountActivationLogic";
 
-export default function AccountActivation() {
+interface AccountActivationProps {
+  params: Promise<{ cuid: string }>;
+}
+
+export default function AccountActivation({ params }: AccountActivationProps) {
   const {
     form,
     isPending,
@@ -19,7 +23,7 @@ export default function AccountActivation() {
     showResendActivation,
     handleResendActivation,
     setEmailError,
-  } = useAccountActivationLogic();
+  } = useAccountActivationLogic({ params });
 
   return (
     <AccountActivationView

@@ -30,6 +30,10 @@ export const ResendInvitationModal: React.FC<ResendInvitationModalProps> = ({
     if (!isOpen) {
       setCustomMessage("");
     }
+
+    if (isOpen && invitation) {
+      setCustomMessage(invitation.metadata?.inviteMessage || "");
+    }
   }, [isOpen]);
 
   const handleConfirm = () => {
@@ -38,7 +42,6 @@ export const ResendInvitationModal: React.FC<ResendInvitationModalProps> = ({
       setCustomMessage("");
     }
   };
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="medium">
       <Modal.Header title="Resend Invitation" onClose={onClose} />

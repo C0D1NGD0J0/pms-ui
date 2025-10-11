@@ -82,6 +82,20 @@
       align-items: center;
       justify-content: center;
     }
+
+    &.preview-modal-content {
+      padding: 0;
+      overflow: hidden;
+
+      .document-preview {
+        height: calc(90vh - 140px); // Match modal content max-height
+
+        iframe {
+          display: block;
+          height: 100vh;
+        }
+      }
+    }
   }
 
   &-footer {

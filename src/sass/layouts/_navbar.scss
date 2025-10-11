@@ -62,19 +62,19 @@
         transform-origin: left;
       }
 
-      span {
+      .item-icon {
         font-size: $fs-lg;
         font-weight: $fw-bold;
         transition: $transition;
         color: hslaGen($white-color, 1);
       }
 
-      &:hover span {
+      &:hover .item-icon {
         transition: $transition;
         color: hslaGen($secondary-color, 0.8);
       }
 
-      &.active span {
+      &.active .item-icon {
         color: hslaGen($secondary-color, 1);
       }
 
