@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import React, { useState, useMemo } from "react";
 import { Loading } from "@src/components/Loading";
-import { ChartContainer } from "@components/Charts";
-import { generateLegendColors } from "@utils/employeeUtils";
-import { PageHeader } from "@components/PageElements/Header";
-import { FilteredUserTableData } from "@interfaces/user.interface";
-import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import { Button } from "@components/FormElements";
+import { ChartContainer } from "@components/Charts";
 import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
 import { AddUserModal } from "@components/UserManagement";
+import { generateLegendColors } from "@utils/employeeUtils";
+import { PageHeader } from "@components/PageElements/Header";
+import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import {
   PanelsWrapper,
   PanelContent,
@@ -69,8 +69,7 @@ export default function StaffPage({ params }: StaffPageProps) {
   }, [stats?.roleDistribution]);
 
   const handleEditEmployee = (employee: FilteredUserTableData) => {
-    console.log("Edit employee:", employee);
-    // TODO: Implement edit employee modal/form
+    router.push(`/users/${cuid}/user-edit/${employee.uid}?type=employee`);
   };
 
   const handleViewEmployeeDetails = (employee: FilteredUserTableData) => {

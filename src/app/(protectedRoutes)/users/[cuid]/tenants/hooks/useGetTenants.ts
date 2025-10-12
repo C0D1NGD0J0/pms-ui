@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { userService } from "@src/services";
 import { USER_QUERY_KEYS } from "@src/utils";
 import { useQuery } from "@tanstack/react-query";
-import { IFilteredTenantsParams, tenantService } from "@src/services";
+import { IFilteredTenantsParams } from "@src/interfaces/user.interface";
 import {
   COMMON_STATUS_OPTIONS,
   COMMON_SORT_OPTIONS,
@@ -34,7 +35,7 @@ export const useGetTenants = (
         ...(queryParams.search && { search: queryParams.search }),
         ...(queryParams.status && { status: queryParams.status }),
       };
-      const resp = await tenantService.getTenants(cuid, tenantQuery);
+      const resp = await userService.getTenants(cuid, tenantQuery);
       return resp;
     },
   });

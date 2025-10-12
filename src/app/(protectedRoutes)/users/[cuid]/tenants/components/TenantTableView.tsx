@@ -11,7 +11,6 @@ import {
   getRentStatusBadgeClass,
   getLeaseStatusText,
   getRentStatusText,
-  formatLeaseDate,
   formatRent,
 } from "@utils/tenantUtils";
 
@@ -76,13 +75,10 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
       ),
     },
     {
-      title: "Property/Unit",
+      title: "Property",
       dataIndex: "property",
       render: (_, record) => (
         <div>
-          <div className="table-primary-text">
-            Unit {record.tenantInfo?.unitNumber || "N/A"}
-          </div>
           <div className="table-secondary-text">
             {record.tenantInfo?.propertyName || "N/A"}
           </div>
@@ -108,7 +104,7 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
       title: "Rent Status",
       dataIndex: "rentStatus",
       render: (_, record) => {
-        const status = record.tenantInfo?.rentStatus || "current";
+        const status = record.tenantInfo?.rentStatus || "n/a";
         const badgeClass = getRentStatusBadgeClass(status);
         const statusText = getRentStatusText(status);
         return <span className={`badge ${badgeClass}`}>{statusText}</span>;

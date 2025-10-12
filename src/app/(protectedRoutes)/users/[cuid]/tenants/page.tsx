@@ -119,8 +119,7 @@ export default function TenantsPage({ params }: TenantsPageProps) {
   }, [tenantStatusDistribution.length]);
 
   const handleEditTenant = (tenant: FilteredUserTableData) => {
-    console.log("Edit tenant:", tenant);
-    // TODO: Implement edit tenant modal/form
+    router.push(`/users/${cuid}/tenants/${tenant.uid}/edit`);
   };
 
   const handleViewTenantDetails = (tenant: FilteredUserTableData) => {

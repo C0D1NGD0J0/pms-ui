@@ -1,2 +1,3 @@
-export * from "./useGetEmployees";
-export * from "./useGetEmployee";
+export { useGetEmployees } from "./useGetEmployees";
+export type { EmployeeQueryParams } from "./useGetEmployees";
+export { useGetEmployeeInfo, useUpdateEmployee } from "./useGetEmployee";
