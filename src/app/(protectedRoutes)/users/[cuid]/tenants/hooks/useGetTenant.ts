@@ -2,7 +2,9 @@ import { useMemo } from "react";
 import { ITenantDetailInfo } from "@interfaces/user.interface";
 
 // Mock tenant detail data generator
-const generateMockTenantDetail = (uid: string): ITenantDetailInfo & {
+const generateMockTenantDetail = (
+  uid: string
+): ITenantDetailInfo & {
   profile: {
     uid: string;
     firstName: string;
@@ -29,7 +31,14 @@ const generateMockTenantDetail = (uid: string): ITenantDetailInfo & {
   // Parse tenant number from uid (e.g., TEN-2023-0001 -> 1)
   const tenantNum = parseInt(uid.split("-").pop() || "1");
 
-  const firstNames = ["James", "Sarah", "Michael", "Emily", "Robert", "Jennifer"];
+  const firstNames = [
+    "James",
+    "Sarah",
+    "Michael",
+    "Emily",
+    "Robert",
+    "Jennifer",
+  ];
   const lastNames = ["Wilson", "Williams", "Chen", "Johnson", "Davis", "Lopez"];
   const firstName = firstNames[tenantNum % firstNames.length];
   const lastName = lastNames[tenantNum % lastNames.length];
@@ -44,15 +53,29 @@ const generateMockTenantDetail = (uid: string): ITenantDetailInfo & {
     "Thompson St",
   ];
   const propertyName = properties[tenantNum % properties.length];
-  const unitNumber = `${Math.floor(tenantNum / 4) + 1}${String.fromCharCode(65 + (tenantNum % 4))}`;
+  const unitNumber = `${Math.floor(tenantNum / 4) + 1}${String.fromCharCode(
+    65 + (tenantNum % 4)
+  )}`;
 
-  const leaseStart = new Date(2023, Math.floor(tenantNum / 4), 1 + (tenantNum % 28));
+  const leaseStart = new Date(
+    2023,
+    Math.floor(tenantNum / 4),
+    1 + (tenantNum % 28)
+  );
   const leaseDurationMonths = [12, 12, 12, 24, 18, 12][tenantNum % 6];
   const leaseEnd = new Date(leaseStart);
   leaseEnd.setMonth(leaseEnd.getMonth() + leaseDurationMonths);
 
   const monthlyRent = 1500 + Math.floor(tenantNum / 2) * 250;
-
+  console.log(
+    firstName,
+    lastName,
+    propertyName,
+    unitNumber,
+    leaseStart,
+    leaseEnd,
+    monthlyRent
+  );
   return {
     profile: {
       uid,

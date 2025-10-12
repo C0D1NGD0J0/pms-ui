@@ -16,7 +16,6 @@ import {
   PaymentHistoryTab,
   LeaseDetailsTab,
   MaintenanceTab,
-  OverviewTab,
 } from "../components/tabs";
 
 interface TenantDetailPageProps {
@@ -29,7 +28,7 @@ interface TenantDetailPageProps {
 export default function TenantDetailPage({ params }: TenantDetailPageProps) {
   const router = useRouter();
   const { cuid, uid } = React.use(params);
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("lease");
   const { tenant, isLoading } = useGetTenant(cuid, uid);
 
   const handleBack = () => {
@@ -124,12 +123,6 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
     : 0;
 
   const tabItems: TabItem[] = [
-    {
-      id: "overview",
-      label: "Overview",
-      icon: <i className="bx bx-user"></i>,
-      content: <OverviewTab tenant={tenant} />,
-    },
     {
       id: "lease",
       label: "Lease Details",

@@ -107,7 +107,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
   };
 
   const handleCancel = () => {
-    // Reset form data based on user type
     const resetData =
       userType === "employee"
         ? {
@@ -152,7 +151,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
         <ModalHeader title={modalTitle} onClose={handleCancel} />
 
         <ModalContent className="user-modal-content">
-          {/* Personal Information Section for both types */}
           <FormSection
             title={
               userType === "employee"
@@ -230,7 +228,6 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
             </div>
           </FormSection>
 
-          {/* Use the actual tab components */}
           {userType === "employee" ? (
             <EmployeeDetailsTab
               formData={formData}
