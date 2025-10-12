@@ -1,2 +1,1 @@
-export { useGetTenant, useUpdateTenant } from "./useGetTenant";
-export { useGetTenants } from "./useGetTenants";
+export { useGetTenant, useUpdateTenant, useGetTenants } from "./tenantHooks";
