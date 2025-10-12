@@ -121,6 +121,20 @@ class VendorService {
       throw error;
     }
   }
+
+  async updateVendor(cuid: string, vuid: string, data: any) {
+    try {
+      const result = await axios.patch(
+        `${this.baseUrl}/${cuid}/vendor/${vuid}`,
+        data,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error updating vendor:", error);
+      throw error;
+    }
+  }
 }
 
 export const vendorService = new VendorService();

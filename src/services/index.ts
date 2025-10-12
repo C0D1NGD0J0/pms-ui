@@ -7,4 +7,3 @@ export * from "./client";
 export * from "./property";
 export * from "./notification";
 export * from "./propertyUnit";
-export * from "./tenants";
