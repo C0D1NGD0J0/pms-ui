@@ -560,6 +560,10 @@ export const INVITE_QUERY_KEYS = {
   ],
 };
 export const USER_QUERY_KEYS = {
+  getClientTenants: (cuid: string, pagination: IPaginationQuery) => [
+    `/users/${cuid}/filtered-tenants`,
+    `page=${pagination.page}`,
+  ],
   getClientUsers: (cuid: string, pagination: IPaginationQuery) => [
     `/users/${cuid}/filtered-users`,
     `page=${pagination.page}`,

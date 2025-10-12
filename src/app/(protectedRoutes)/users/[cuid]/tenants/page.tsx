@@ -7,7 +7,10 @@ import { ChartContainer } from "@components/Charts";
 import { PageHeader } from "@components/PageElements/Header";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { calculateLeaseDuration, generateLegendColors } from "@utils/tenantUtils";
+import {
+  calculateLeaseDuration,
+  generateLegendColors,
+} from "@utils/tenantUtils";
 import {
   PanelsWrapper,
   PanelContent,
@@ -38,8 +41,6 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     isLoading,
   } = useGetTenants(cuid);
   const permission = useUnifiedPermissions();
-
-  // Note: Stats calculation removed - can be re-added when needed for metrics display
 
   // Tenant Status Distribution
   const tenantStatusDistribution = useMemo(() => {
@@ -86,7 +87,10 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     };
 
     tenants.forEach((tenant) => {
-      if (tenant.tenantInfo?.leaseStartDate && tenant.tenantInfo?.leaseEndDate) {
+      if (
+        tenant.tenantInfo?.leaseStartDate &&
+        tenant.tenantInfo?.leaseEndDate
+      ) {
         const months = calculateLeaseDuration(
           tenant.tenantInfo.leaseStartDate,
           tenant.tenantInfo.leaseEndDate
@@ -172,11 +176,13 @@ export default function TenantsPage({ params }: TenantsPageProps) {
                           donutchart: { showTotal: true, showTooltip: true },
                         }}
                         showLegend={true}
-                        legend={tenantStatusDistribution.map((status, index) => ({
-                          name: status.name,
-                          color: legendColors[index],
-                          percentage: status.percentage,
-                        }))}
+                        legend={tenantStatusDistribution.map(
+                          (status, index) => ({
+                            name: status.name,
+                            color: legendColors[index],
+                            percentage: status.percentage,
+                          })
+                        )}
                         emptyStateMessage="No tenant data available"
                         emptyStateIcon={<i className="bx bx-user"></i>}
                       />

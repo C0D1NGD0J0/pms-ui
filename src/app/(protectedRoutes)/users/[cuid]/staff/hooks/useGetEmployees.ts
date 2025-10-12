@@ -37,6 +37,7 @@ export const useGetEmployees = (
   };
 
   const baseHook = useGetFilteredUsers(cuid, baseParams);
+
   const handleRoleFilter = (role: IUserRoleType | "") => {
     if (role) {
       baseHook.updateQueryParams({ role: [role], page: 1 });

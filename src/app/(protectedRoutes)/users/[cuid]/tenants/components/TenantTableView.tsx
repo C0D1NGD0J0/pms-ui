@@ -90,17 +90,6 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
       ),
     },
     {
-      title: "Lease Start",
-      dataIndex: "leaseStart",
-      render: (_, record) =>
-        formatLeaseDate(record.tenantInfo?.leaseStartDate),
-    },
-    {
-      title: "Lease End",
-      dataIndex: "leaseEnd",
-      render: (_, record) => formatLeaseDate(record.tenantInfo?.leaseEndDate),
-    },
-    {
       title: "Monthly Rent",
       dataIndex: "rent",
       render: (_, record) => formatRent(record.tenantInfo?.monthlyRent),

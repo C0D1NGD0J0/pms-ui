@@ -84,7 +84,8 @@ export const useGetFilteredUsers = (
     updateQueryParams({ search, page: 1 });
   };
 
-  const handleTypeFilter = (type: "employee" | "tenant" | "vendor" | "") => {
+  const handleTypeFilter = (type: "employee" | "vendor" | "") => {
+    if (type === "") return;
     updateQueryParams({ type: type || undefined, page: 1 });
   };
 
