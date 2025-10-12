@@ -2,15 +2,6 @@ import axios from "@configs/axios";
 import { VendorQueryParams } from "@src/interfaces";
 import { IListResponseWithPagination } from "@interfaces/user.interface";
 
-export interface IFilteredVendorsParams {
-  status?: "active" | "inactive";
-  businessType?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sort?: "asc" | "desc";
-}
-
 class VendorService {
   private axiosConfig = {};
   private readonly baseUrl = `/api/v1/vendors`;

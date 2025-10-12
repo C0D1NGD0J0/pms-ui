@@ -55,3 +55,8 @@ export interface ParsedError {
   statusCode?: number;
   hasValidationErrors?: boolean;
 }
+
+export interface FilterOption {
+  label: string;
+  value: string;
+}

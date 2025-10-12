@@ -467,3 +467,36 @@ export function isTenant(
 ): user is FilteredUser & { tenantInfo: TenantInfo } {
   return user.userType === "tenant" && user.tenantInfo !== undefined;
 }
+
+export interface IFilteredTenantsParams {
+  status?: "active" | "inactive";
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc";
+}
+
+export interface VendorQueryParams {
+  status?: "active" | "inactive";
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc";
+}
+
+export interface EmployeeQueryParams {
+  role?: IUserRoleType;
+  department?: string;
+  status?: "active" | "inactive";
+  search?: string;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc";
+}
+
+export interface UserStatsQueryParams {
+  role?: IUserRoleType | IUserRoleType[];
+  department?: string;
+}

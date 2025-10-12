@@ -82,13 +82,14 @@ export const getLeaseStatusText = (status: string): string => {
  */
 export const getRentStatusBadgeClass = (
   status: string
-): "success" | "warning" | "danger" => {
+): "success" | "warning" | "danger" | "n/a" => {
   switch (status) {
     case "current":
       return "success";
     case "pending":
       return "warning";
     case "overdue":
+    case "n/a":
       return "danger";
     default:
       return "danger";
@@ -106,6 +107,8 @@ export const getRentStatusText = (status: string): string => {
       return "Pending";
     case "overdue":
       return "Overdue";
+    case "n/a":
+      return "unavailable";
     default:
       return "Unknown";
   }
