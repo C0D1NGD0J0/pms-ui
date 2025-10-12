@@ -1,6 +1,6 @@
-import { IFilterQuery } from "./utils.interface";
+import { FilterQuery as IFilterQuery, UserRole } from "./common.interface";
 
-export type IUserRole = "manager" | "vendor" | "tenant" | "staff" | "admin";
+export type IUserRole = UserRole;
 
 export interface IInvitationFormData {
   personalInfo: {

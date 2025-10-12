@@ -1,38 +1,19 @@
-export interface VendorQueryParams {
-  status?: "active" | "inactive";
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sort?: "asc" | "desc";
-}
+import { StatsDistribution } from "./common.interface";
+
+// Re-export QueryParams as VendorQueryParams for backward compatibility
+export type { QueryParams as VendorQueryParams } from "./common.interface";
 
 export interface VendorStatsQueryParams {
   status?: "active" | "inactive";
 }
 
 export interface VendorStats {
-  businessTypeDistribution: Array<{
-    name: string;
-    value: number;
-    percentage: number;
-  }>;
-  servicesDistribution: Array<{
-    name: string;
-    value: number;
-    percentage: number;
-  }>;
+  businessTypeDistribution: StatsDistribution[];
+  servicesDistribution: StatsDistribution[];
   totalVendors: number;
   // Legacy compatibility fields
-  departmentDistribution: Array<{
-    name: string;
-    value: number;
-    percentage: number;
-  }>;
-  roleDistribution: Array<{
-    name: string;
-    value: number;
-    percentage: number;
-  }>;
+  departmentDistribution: StatsDistribution[];
+  roleDistribution: StatsDistribution[];
   totalFilteredUsers: number;
 }
 

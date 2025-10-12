@@ -1,6 +1,6 @@
 import axios from "@configs/axios";
-import { VendorQueryParams } from "@src/interfaces";
 import { IListResponseWithPagination } from "@interfaces/user.interface";
+import { IFilteredVendorsParams, VendorQueryParams } from "@src/interfaces";
 
 class VendorService {
   private axiosConfig = {};
