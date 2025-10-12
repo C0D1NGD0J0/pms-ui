@@ -69,8 +69,9 @@ export default function VendorsPage({ params }: VendorsPageProps) {
   }, [servicesData.length]);
 
   const handleEditVendor = (vendor: FilteredUserTableData) => {
-    console.log("Edit vendor:", vendor);
-    // TODO: Implement edit vendor modal/form
+    router.push(
+      `/users/${cuid}/user-edit/${vendor.vendorInfo?.vuid}?type=vendor`
+    );
   };
 
   const handleViewVendorDetails = (vendor: FilteredUserTableData) => {

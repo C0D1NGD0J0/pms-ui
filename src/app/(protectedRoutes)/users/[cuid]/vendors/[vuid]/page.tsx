@@ -1,15 +1,19 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
 import { TabContainer } from "@components/Tab/components";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
-import { PerformanceTab, DocumentsTab, ContactTab } from "@components/UserDetail";
+import {
+  PerformanceTab,
+  DocumentsTab,
+  ContactTab,
+} from "@components/UserDetail";
 
 import { useGetVendor } from "../hooks";
 import {
@@ -18,6 +22,7 @@ import {
   ProjectsTab,
   ReviewsTab,
 } from "../components/tabs";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 interface VendorDetailPageProps {
   params: Promise<{
@@ -28,9 +33,12 @@ interface VendorDetailPageProps {
 
 export default function VendorDetailPage({ params }: VendorDetailPageProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { cuid, vuid } = React.use(params);
+  const permission = useUnifiedPermissions();
   const [activeTab, setActiveTab] = useState("services");
-  const { vendor, isLoading, error } = useGetVendor(cuid, vuid);
+  const isTeamMember = searchParams.get("isTeamMember") === "true";
+  const { vendor, isLoading, error } = useGetVendor(cuid, vuid, isTeamMember);
 
   const handleBack = () => {
     router.back();
@@ -105,43 +113,6 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
       content: <VendorServicesTab vendor={vendor} />,
     },
     {
-      id: "contact",
-      label: "Contact",
-      icon: <i className="bx bx-phone"></i>,
-      content: (
-        <ContactTab
-          userType="vendor"
-          contactInfo={{
-            primary: {
-              name: getVendorProperty("profile.fullName"),
-              phone: getVendorProperty("profile.phoneNumber"),
-              email: getVendorProperty("profile.email"),
-            },
-            office: {
-              address: getVendorProperty("vendorInfo.businessAddress"),
-              city: getVendorProperty("vendorInfo.serviceAreas.baseLocation"),
-              hours: getVendorProperty("vendorInfo.businessHours"),
-            },
-            emergency: vendor.vendorInfo?.contactPerson
-              ? {
-                  name: getVendorProperty("vendorInfo.contactPerson.name"),
-                  phone: getVendorProperty("vendorInfo.contactPerson.phone"),
-                  relationship: getVendorProperty(
-                    "vendorInfo.contactPerson.jobTitle"
-                  ),
-                }
-              : undefined,
-            manager: {
-              name: "Property Management",
-              title: "Service Coordinator",
-              phone: "",
-              email: "",
-            },
-          }}
-        />
-      ),
-    },
-    {
       id: "performance",
       label: "Performance",
       icon: <i className="bx bx-trending-up"></i>,
@@ -170,6 +141,8 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
       id: "users",
       label: "Team Members",
       icon: <i className="bx bx-users"></i>,
+      isHidden:
+        vendor.userType === "vendor" && vendor.vendorInfo?.isLinkedAccount,
       content: <VendorUsersTab cuid={cuid} vuid={vuid} />,
     },
     {
@@ -189,6 +162,38 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
       label: "Documents",
       icon: <i className="bx bx-file"></i>,
       content: <DocumentsTab userType="vendor" />,
+    },
+    {
+      id: "contact",
+      label: "Contact",
+      icon: <i className="bx bx-phone"></i>,
+      content: (
+        <ContactTab
+          userType="vendor"
+          contactInfo={{
+            primary: {
+              name: getVendorProperty("profile.fullName"),
+              phone: getVendorProperty("profile.phoneNumber"),
+              email: getVendorProperty("profile.email"),
+            },
+            emergency: vendor.vendorInfo?.contactPerson
+              ? {
+                  name: getVendorProperty("vendorInfo.contactPerson.name"),
+                  phone: getVendorProperty("vendorInfo.contactPerson.phone"),
+                  relationship: getVendorProperty(
+                    "vendorInfo.contactPerson.jobTitle"
+                  ),
+                }
+              : undefined,
+            manager: {
+              name: "Property Management",
+              title: "Service Coordinator",
+              phone: "",
+              email: "",
+            },
+          }}
+        />
+      ),
     },
   ];
 
@@ -276,12 +281,14 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
           }}
           primaryAction={{
             label: "Create Work Order",
+            isDisabled: permission.isOwner("uid", vendor.profile.uid),
             icon: <i className="bx bx-plus"></i>,
             onClick: handleCreateWorkOrder,
           }}
           secondaryAction={{
             label: "Send Message",
             icon: <i className="bx bx-message"></i>,
+            isDisabled: permission.isOwner("uid", vendor.profile.uid),
             onClick: handleSendMessage,
           }}
           showRating={{

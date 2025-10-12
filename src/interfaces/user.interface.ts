@@ -255,6 +255,7 @@ export interface IUserDetailResponse {
   employeeInfo?: IEmployeeDetailInfo;
   vendorInfo?: IVendorDetailInfo;
   tenantInfo?: ITenantDetailInfo;
+  userType: "vendor" | "employee";
   properties: any[];
   documents: any[];
   status: string;

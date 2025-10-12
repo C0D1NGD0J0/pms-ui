@@ -9,13 +9,14 @@ export interface UserMetaInfo {
 }
 
 export interface UserTag {
-  type: 'employment' | 'achievement' | 'permission';
+  type: "employment" | "achievement" | "permission";
   label: string;
   icon?: string;
 }
 
 export interface UserAction {
   label: string;
+  isDisabled?: boolean;
   icon: React.ReactNode;
   onClick: () => void;
 }
@@ -32,7 +33,7 @@ export interface UserProfileHeaderProps {
       initials: string;
       avatar?: string;
     };
-    status: 'active' | 'inactive';
+    status: "active" | "inactive";
     metaInfo: UserMetaInfo;
     tags: UserTag[];
     statistics: Record<string, string | number>;
@@ -66,7 +67,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
           {hasHalfStar && <i className="bx bxs-star-half"></i>}
         </div>
         <span className="rating-text">
-          {rating} ({reviewCount} review{reviewCount !== 1 ? 's' : ''})
+          {rating} ({reviewCount} review{reviewCount !== 1 ? "s" : ""})
         </span>
       </div>
     );
@@ -75,7 +76,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
   const renderMetaInfo = () => (
     <div className="employee-meta">
       <span className="employee-role">{metaInfo.primary}</span>
-      
+
       {metaInfo.secondary && !showRating && (
         <div className="employee-department">
           <DepartmentTag
@@ -86,9 +87,9 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
           </DepartmentTag>
         </div>
       )}
-      
+
       {showRating && renderRating()}
-      
+
       {metaInfo.tertiary && (
         <span className="employee-tenure">{metaInfo.tertiary}</span>
       )}
@@ -99,9 +100,10 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
   const statisticsArray = Object.entries(statistics).map(([key, value]) => ({
     key,
     value,
-    label: key.replace(/([A-Z])/g, ' $1')
-      .replace(/^./, str => str.toUpperCase())
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
+    label: key
+      .replace(/([A-Z])/g, " $1")
+      .replace(/^./, (str) => str.toUpperCase())
+      .replace(/([a-z])([A-Z])/g, "$1 $2"),
   }));
 
   return (
@@ -115,7 +117,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
               variant="text"
               className="employee-status"
             >
-              {status === 'active' ? 'Active' : 'Inactive'}
+              {status === "active" ? "Active" : "Inactive"}
             </StatusBadge>
           </div>
 
@@ -138,6 +140,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
 
           <div className="employee-actions">
             <Button
+              disabled={primaryAction.isDisabled || false}
               className="btn-primary"
               onClick={primaryAction.onClick}
               icon={primaryAction.icon}
@@ -148,6 +151,7 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
               onClick={secondaryAction.onClick}
               icon={secondaryAction.icon}
               label={secondaryAction.label}
+              disabled={secondaryAction.isDisabled || false}
             />
           </div>
         </div>
@@ -165,4 +169,4 @@ export const UserProfileHeader: React.FC<UserProfileHeaderProps> = ({
   );
 };
 
-UserProfileHeader.displayName = 'UserProfileHeader';
+UserProfileHeader.displayName = "UserProfileHeader";

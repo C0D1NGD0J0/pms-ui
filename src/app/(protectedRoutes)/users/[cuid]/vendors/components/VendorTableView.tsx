@@ -3,10 +3,8 @@ import { Panel } from "@components/Panel";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
-import { IPaginationQuery } from "@interfaces/utils.interface";
 import { FilteredUserTableData } from "@interfaces/user.interface";
-
-import { FilterOption } from "../hooks/useGetVendors";
+import { IPaginationQuery, FilterOption } from "@interfaces/utils.interface";
 
 interface VendorTableViewProps {
   vendors: FilteredUserTableData[];

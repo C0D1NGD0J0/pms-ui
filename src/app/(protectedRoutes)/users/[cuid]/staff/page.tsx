@@ -14,7 +14,6 @@ import { PageHeader } from "@components/PageElements/Header";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import {
   PanelsWrapper,
   PanelContent,
@@ -23,6 +22,7 @@ import {
 } from "@components/Panel";
 
 import { useGetEmployees } from "./hooks";
+import { useGetUserStats } from "../../shared-hooks";
 import { EmployeeTableView } from "./components/EmployeeTableView";
 
 interface StaffPageProps {

@@ -24,10 +24,16 @@ export const useGetVendor = (
   isTeamMember: boolean = false
 ) => {
   const query = useQuery<VendorDetailResponse>({
-    enabled: !!cuid && !!vuid && !isTeamMember,
+    enabled: !!cuid && !!vuid,
     queryKey: VENDOR_QUERY_KEYS.getVendorByUid(cuid, vuid),
     queryFn: async () => {
-      const response = await vendorService.getVendorDetails(cuid, vuid);
+      let response;
+      console.log("isTeamMember:", isTeamMember);
+      if (isTeamMember) {
+        response = await userService.getUserEmployeeDetails(cuid, vuid);
+      } else {
+        response = await vendorService.getVendorDetails(cuid, vuid);
+      }
       return response;
     },
   });

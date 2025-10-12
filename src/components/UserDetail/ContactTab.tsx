@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ContactInfo {
   primary: {
@@ -6,7 +6,7 @@ interface ContactInfo {
     phone: string;
     email: string;
   };
-  office: {
+  office?: {
     address: string;
     city: string;
     hours: string;
@@ -25,24 +25,25 @@ interface ContactInfo {
 }
 
 interface ContactTabProps {
-  userType: 'employee' | 'vendor';
+  userType: "employee" | "vendor";
   contactInfo: ContactInfo;
 }
 
 export const ContactTab: React.FC<ContactTabProps> = ({
   userType,
-  contactInfo
+  contactInfo,
 }) => {
+  console.log("ContactInfo:", contactInfo);
   const getManagerTitle = () => {
-    return userType === 'employee' ? 'Direct Manager' : 'Account Manager';
+    return userType === "employee" ? "Direct Manager" : "Account Manager";
   };
 
   return (
     <div className="employee-contact">
-      <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
+      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
         Contact Information
       </h3>
-      
+
       <div className="contact-grid">
         <div className="contact-card">
           <h4>Primary Contact</h4>
@@ -60,21 +61,23 @@ export const ContactTab: React.FC<ContactTabProps> = ({
           </div>
         </div>
 
-        <div className="contact-card">
-          <h4>Office Information</h4>
-          <div className="contact-item">
-            <i className="bx bx-map"></i>
-            <span>{contactInfo.office.address}</span>
-          </div>
-          <div className="contact-item">
-            <i className="bx bx-city"></i>
-            <span>{contactInfo.office.city}</span>
-          </div>
-          <div className="contact-item">
-            <i className="bx bx-time-five"></i>
-            <span>{contactInfo.office.hours}</span>
-          </div>
-        </div>
+        {contactInfo.office && (
+          <>
+            <h4>Office Information</h4>
+            <div className="contact-item">
+              <i className="bx bx-map"></i>
+              <span>{contactInfo.office.address}</span>
+            </div>
+            <div className="contact-item">
+              <i className="bx bx-city"></i>
+              <span>{contactInfo.office.city}</span>
+            </div>
+            <div className="contact-item">
+              <i className="bx bx-time-five"></i>
+              <span>{contactInfo.office.hours}</span>
+            </div>
+          </>
+        )}
 
         {contactInfo.emergency && (
           <div className="contact-card">
@@ -94,21 +97,23 @@ export const ContactTab: React.FC<ContactTabProps> = ({
           </div>
         )}
 
-        <div className="contact-card">
-          <h4>{getManagerTitle()}</h4>
-          <div className="contact-item">
-            <i className="bx bx-user-check"></i>
-            <span>{contactInfo.manager.name}</span>
+        {contactInfo?.manager.email && (
+          <div className="contact-card">
+            <h4>{getManagerTitle()}</h4>
+            <div className="contact-item">
+              <i className="bx bx-user-check"></i>
+              <span>{contactInfo.manager.name}</span>
+            </div>
+            <div className="contact-item">
+              <i className="bx bx-phone"></i>
+              <span>{contactInfo.manager.phone}</span>
+            </div>
+            <div className="contact-item">
+              <i className="bx bx-envelope"></i>
+              <span>{contactInfo.manager.email}</span>
+            </div>
           </div>
-          <div className="contact-item">
-            <i className="bx bx-phone"></i>
-            <span>{contactInfo.manager.phone}</span>
-          </div>
-          <div className="contact-item">
-            <i className="bx bx-envelope"></i>
-            <span>{contactInfo.manager.email}</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
