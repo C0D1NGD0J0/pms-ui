@@ -211,7 +211,7 @@ class UsersService {
     }
   }
 
-  async getTenant(cuid: string, uid: string) {
+  async getClientTenantDetails(cuid: string, uid: string) {
     try {
       const result = await axios.get(
         `${this.baseUrl}/${cuid}/client_tenant/${uid}`,

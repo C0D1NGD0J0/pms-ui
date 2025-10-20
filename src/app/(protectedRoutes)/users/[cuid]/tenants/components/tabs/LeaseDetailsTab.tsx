@@ -1,8 +1,7 @@
 import React from "react";
-import { ITenantDetailInfo } from "@interfaces/user.interface";
 
 interface LeaseDetailsTabProps {
-  tenant: ITenantDetailInfo & { profile: any };
+  tenant: any;
 }
 
 export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
@@ -23,108 +22,148 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount);
+    }).format(amount || 0);
   };
 
-  const calculateLeaseDuration = () => {
-    if (!tenant.leaseInfo.startDate || !tenant.leaseInfo.endDate) return "N/A";
-    const start = new Date(tenant.leaseInfo.startDate);
-    const end = new Date(tenant.leaseInfo.endDate);
-    const months = Math.round(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24 * 30)
-    );
-    return `${months} months`;
-  };
+  // Extract active leases from nested tenantInfo
+  const activeLeases = tenant.tenantInfo?.activeLeases || [];
+  const hasActiveLease = activeLeases.length > 0;
 
-  const calculateDaysRemaining = () => {
-    if (!tenant.leaseInfo.endDate) return "N/A";
-    const end = new Date(tenant.leaseInfo.endDate);
-    const today = new Date();
-    const days = Math.ceil(
-      (end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    return days > 0 ? `${days} days` : "Expired";
-  };
-
-  const getLeaseStatusBadge = () => {
-    const status = tenant.leaseInfo.status;
+  // If no active lease, show informational message
+  if (!hasActiveLease) {
     return (
-      <span className={`badge ${status === "active" ? "success" : "warning"}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
+      <div className="user-detail-tab">
+        <div className="detail-empty-state">
+          <i className="bx bx-info-circle"></i>
+          <h3>No Active Lease</h3>
+          <p>
+            This tenant does not have any active lease information at this time.
+          </p>
+          <p>
+            Lease details will be available once the lease management system is
+            implemented and leases are created.
+          </p>
+        </div>
+      </div>
     );
-  };
+  }
 
-  const getRentStatusBadge = () => {
-    const status = tenant.rentStatus;
-    return (
-      <span className={`badge ${status === "current" ? "success" : "warning"}`}>
-        {status.charAt(0).toUpperCase() + status.slice(1)}
-      </span>
-    );
-  };
+  // For now, show basic info about active leases
+  // Full lease details will come from Lease entity once implemented
+  const activeLease = activeLeases[0];
 
-  const leaseMetrics = [
-    { label: "Lease Status", value: getLeaseStatusBadge() },
-    { label: "Rent Status", value: getRentStatusBadge() },
-    { label: "Lease Duration", value: calculateLeaseDuration() },
-    { label: "Days Remaining", value: calculateDaysRemaining() },
+  const leaseBasicInfo = [
+    { label: "Lease Status", value: <span className="badge success">Active</span> },
     {
-      label: "Lease Start Date",
-      value: formatDate(tenant.leaseInfo.startDate),
-    },
-    { label: "Lease End Date", value: formatDate(tenant.leaseInfo.endDate) },
-    {
-      label: "Monthly Rent",
-      value: formatCurrency(tenant.leaseInfo.monthlyRent),
+      label: "Rent Status",
+      value: (
+        <span
+          className={`badge ${
+            tenant.tenantMetrics?.currentRentStatus === "current"
+              ? "success"
+              : "warning"
+          }`}
+        >
+          {tenant.tenantMetrics?.currentRentStatus
+            ?.charAt(0)
+            .toUpperCase() +
+            tenant.tenantMetrics?.currentRentStatus?.slice(1).replace("_", " ") ||
+            "Unknown"}
+        </span>
+      ),
     },
     {
-      label: "Annual Rent",
-      value: formatCurrency(tenant.leaseInfo.monthlyRent * 12),
+      label: "Lease ID",
+      value: activeLease?.leaseId || "N/A",
+    },
+    {
+      label: "Confirmed",
+      value: activeLease?.confirmed ? "Yes" : "No",
+    },
+    {
+      label: "Confirmed Date",
+      value: formatDate(activeLease?.confirmedDate),
+    },
+    {
+      label: "Days in Current Lease",
+      value: `${tenant.tenantMetrics?.daysCurrentLease || 0} days`,
     },
   ];
 
-  const propertyDetails = [
-    { label: "Property Name", value: tenant.unit.propertyName },
-    { label: "Unit Number", value: tenant.unit.unitNumber },
-    { label: "Full Address", value: tenant.unit.address },
+  const paymentInfo = [
+    {
+      label: "Total Rent Paid",
+      value: formatCurrency(tenant.tenantMetrics?.totalRentPaid || 0),
+    },
+    {
+      label: "On-Time Payment Rate",
+      value: `${tenant.tenantMetrics?.onTimePaymentRate || 0}%`,
+    },
+    {
+      label: "Average Payment Delay",
+      value: `${tenant.tenantMetrics?.averagePaymentDelay || 0} days`,
+    },
   ];
 
   return (
-    <div className="employee-performance">
-      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
-        Lease Information
-      </h3>
+    <div className="user-detail-tab">
+      <h3 className="detail-section-title">Active Lease Information</h3>
 
-      <div className="performance-grid">
-        {leaseMetrics.map((metric, index) => (
-          <div key={index} className="performance-card">
-            <span className="performance-value">{metric.value}</span>
-            <span className="performance-label">{metric.label}</span>
+      <div className="metrics-grid">
+        {leaseBasicInfo.map((info, index) => (
+          <div key={index} className="metric-card">
+            <span className="metric-value">{info.value}</span>
+            <span className="metric-label">{info.label}</span>
           </div>
         ))}
       </div>
 
-      <h3
-        style={{
-          marginTop: "2rem",
-          marginBottom: "1.5rem",
-          color: "hsl(194, 66%, 24%)",
-        }}
-      >
-        Property & Unit Details
-      </h3>
+      <h3 className="detail-section-title">Payment Information</h3>
 
-      <div
-        className="performance-grid"
-        style={{ gridTemplateColumns: "repeat(3, 1fr)" }}
-      >
-        {propertyDetails.map((detail, index) => (
-          <div key={index} className="performance-card">
-            <span className="performance-value">{detail.value}</span>
-            <span className="performance-label">{detail.label}</span>
+      <div className="metrics-grid cols-3">
+        {paymentInfo.map((info, index) => (
+          <div key={index} className="metric-card">
+            <span className="metric-value">{info.value}</span>
+            <span className="metric-label">{info.label}</span>
           </div>
         ))}
+      </div>
+
+      {tenant.tenantInfo?.leaseHistory &&
+        tenant.tenantInfo.leaseHistory.length > 0 && (
+          <>
+            <h3 className="detail-section-title">Lease History</h3>
+            <div className="metrics-grid">
+              {tenant.tenantInfo.leaseHistory.map(
+                (lease: any, index: number) => (
+                  <div key={index} className="metric-card">
+                    <span className="metric-value">
+                      {lease.propertyName}
+                    </span>
+                    <span className="metric-label">
+                      Unit {lease.unitNumber} • {lease.status}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "12px",
+                        color: "#666",
+                        marginTop: "0.25rem",
+                      }}
+                    >
+                      {formatDate(lease.leaseStart)} - {formatDate(lease.leaseEnd)}
+                    </span>
+                  </div>
+                )
+              )}
+            </div>
+          </>
+        )}
+
+      <div className="detail-info-box">
+        <i className="bx bx-info-circle"></i>
+        <strong>Note:</strong> Full lease details including property information,
+        unit details, lease dates, rent amount, and lease documents will be
+        available once the lease management system is implemented.
       </div>
     </div>
   );

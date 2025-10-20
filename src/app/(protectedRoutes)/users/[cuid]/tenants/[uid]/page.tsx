@@ -11,7 +11,7 @@ import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
 import { DocumentsTab, ContactTab } from "@components/UserDetail";
 
-import { useGetTenant } from "../hooks";
+import { useGetClientTenant } from "../hooks";
 import {
   PaymentHistoryTab,
   LeaseDetailsTab,
@@ -29,7 +29,7 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
   const router = useRouter();
   const { cuid, uid } = React.use(params);
   const [activeTab, setActiveTab] = useState("lease");
-  const { tenant, isLoading } = useGetTenant(cuid, uid);
+  const { tenant, isLoading } = useGetClientTenant(cuid, uid);
 
   const handleBack = () => {
     router.back();
@@ -92,6 +92,7 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
   }
 
   const formatDate = (dateString: string | Date) => {
+    if (!dateString) return "N/A";
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
         year: "numeric",
@@ -99,7 +100,7 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
         day: "numeric",
       });
     } catch {
-      return dateString.toString();
+      return "N/A";
     }
   };
 
@@ -107,20 +108,18 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount);
+    }).format(amount || 0);
   };
 
-  // lease duration
-  const leaseStartDate = new Date(tenant.leaseInfo.startDate);
-  const leaseEndDate = tenant.leaseInfo.endDate
-    ? new Date(tenant.leaseInfo.endDate)
-    : null;
-  const leaseDurationMonths = leaseEndDate
-    ? Math.round(
-        (leaseEndDate.getTime() - leaseStartDate.getTime()) /
-          (1000 * 60 * 60 * 24 * 30)
-      )
-    : 0;
+  // Extract active lease info (if available)
+  const activeLeases = tenant.tenantInfo?.activeLeases || [];
+  const hasActiveLease = activeLeases.length > 0;
+
+  // Get first active lease data (will be from Lease entity when implemented)
+  // For now, this will be empty arrays as lease data comes from separate service
+  const activeLease = activeLeases[0];
+
+  console.log("Tenant data:", tenant);
 
   const tabItems: TabItem[] = [
     {
@@ -147,18 +146,20 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
       icon: <i className="bx bx-phone"></i>,
       content: (
         <ContactTab
-          userType="vendor"
+          userType="tenant"
           contactInfo={{
             primary: {
-              name: tenant.profile.fullName,
-              phone: tenant.profile.phoneNumber,
-              email: tenant.profile.email,
+              name: tenant.profile?.fullName,
+              phone: tenant.profile?.phoneNumber,
+              email: tenant.profile?.email,
             },
-            office: {
-              address: tenant.unit.address,
-              city: tenant.unit.propertyName,
-              hours: "N/A",
-            },
+            emergency: tenant.tenantInfo?.emergencyContact
+              ? {
+                  name: tenant.tenantInfo.emergencyContact.name,
+                  phone: tenant.tenantInfo.emergencyContact.phone,
+                  relationship: tenant.tenantInfo.emergencyContact.relationship,
+                }
+              : undefined,
             manager: {
               name: "Property Management",
               phone: "",
@@ -175,49 +176,81 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
       icon: <i className="bx bx-file"></i>,
       content: (
         <DocumentsTab
-          userType="vendor"
+          userType="tenant"
           documents={
-            tenant.documents
-              ? tenant.documents.map((doc: any) => ({
-                  id: doc.id,
-                  title: doc.name,
-                  type: doc.type,
-                  subtitle: doc.size,
-                  icon: "bx-file",
-                  status: "valid" as const,
-                }))
-              : []
+            tenant.tenantInfo?.leaseHistory && tenant.tenantInfo.leaseHistory.length > 0
+              ? tenant.tenantInfo.leaseHistory.map(
+                  (lease: any, index: number) => ({
+                    id: `lease-${index}`,
+                    title: `Lease Agreement - ${lease.propertyName}`,
+                    type: "lease",
+                    subtitle: `Unit ${lease.unitNumber} • ${lease.status.charAt(0).toUpperCase() + lease.status.slice(1)} • ${new Date(lease.leaseStart).toLocaleDateString()} - ${new Date(lease.leaseEnd).toLocaleDateString()}`,
+                    icon: "lease", // Will be mapped to bx-home
+                    status:
+                      lease.status === "active"
+                        ? ("valid" as const)
+                        : lease.status === "completed"
+                        ? ("expired" as const)
+                        : ("expired" as const),
+                    expiryDate: lease.leaseEnd,
+                  })
+                )
+              : undefined
           }
         />
       ),
     },
   ];
 
+  // Build tenant tags based on real data
   const tenantTags = [
-    ...tenant.profile.roles.map((role: string) => ({
-      type: "employment" as const,
-      label: role.charAt(0).toUpperCase() + role.slice(1),
-      icon: "bx bx-user-check",
-    })),
     {
-      type: "achievement" as const,
-      label:
-        tenant.leaseInfo.status.charAt(0).toUpperCase() +
-        tenant.leaseInfo.status.slice(1),
-      icon: "bx bx-check-circle",
+      type: "employment" as const,
+      label: "Tenant",
+      icon: "bx bx-user-check",
     },
+    ...(tenant.tenantMetrics?.currentRentStatus &&
+    tenant.tenantMetrics.currentRentStatus !== "no_lease"
+      ? [
+          {
+            type: "achievement" as const,
+            label:
+              tenant.tenantMetrics.currentRentStatus.charAt(0).toUpperCase() +
+              tenant.tenantMetrics.currentRentStatus.slice(1).replace("_", " "),
+            icon:
+              tenant.tenantMetrics.currentRentStatus === "current"
+                ? "bx bx-check-circle"
+                : "bx bx-error-circle",
+          },
+        ]
+      : []),
+    ...(tenant.tenantInfo?.backgroundChecks &&
+    tenant.tenantInfo.backgroundChecks.length > 0
+      ? [
+          {
+            type: "achievement" as const,
+            label:
+              "Background Check: " +
+              tenant.tenantInfo.backgroundChecks[0].status
+                .charAt(0)
+                .toUpperCase() +
+              tenant.tenantInfo.backgroundChecks[0].status.slice(1),
+            icon: "bx bx-shield-check",
+          },
+        ]
+      : []),
   ];
 
+  // Build statistics based on real API data
   const statistics = {
-    "Monthly Rent": formatCurrency(tenant.leaseInfo.monthlyRent),
-    "Lease Duration": `${leaseDurationMonths} months`,
-    "Rent Status":
-      tenant.rentStatus.charAt(0).toUpperCase() + tenant.rentStatus.slice(1),
-    "Lease Start": formatDate(tenant.leaseInfo.startDate),
-    "Lease End": tenant.leaseInfo.endDate
-      ? formatDate(tenant.leaseInfo.endDate)
-      : "N/A",
-    "Maintenance Requests": tenant.maintenanceRequests?.length || 0,
+    "Tenant Since": formatDate(tenant.joinedDate),
+    "Total Rent Paid": formatCurrency(tenant.tenantMetrics?.totalRentPaid || 0),
+    "On-Time Rate": `${tenant.tenantMetrics?.onTimePaymentRate || 0}%`,
+    "Avg Payment Delay": `${
+      tenant.tenantMetrics?.averagePaymentDelay || 0
+    } days`,
+    "Maintenance Requests": tenant.tenantMetrics?.totalMaintenanceRequests || 0,
+    "Active Leases": activeLeases.length,
   };
 
   return (
@@ -245,15 +278,16 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
               initials: `${tenant.profile.firstName?.[0] || ""}${
                 tenant.profile.lastName?.[0] || ""
               }`,
-              avatar: tenant.profile.avatar?.url,
+              avatar: tenant.profile.avatar,
             },
-            status: tenant.profile.isActive ? "active" : "inactive",
+            status: tenant.status?.toLowerCase() || "inactive",
             metaInfo: {
-              primary: tenant.unit.propertyName,
-              secondary: `Unit ${tenant.unit.unitNumber}`,
-              tertiary: `Tenant since ${formatDate(
-                tenant.leaseInfo.startDate
-              )}`,
+              primary: hasActiveLease ? "Active Lease" : "No Active Lease",
+              secondary:
+                hasActiveLease && activeLease?.leaseId
+                  ? `Lease ID: ${activeLease.leaseId}`
+                  : "Lease details available when lease system is implemented",
+              tertiary: `Tenant since ${formatDate(tenant.joinedDate)}`,
             },
             tags: tenantTags,
             statistics: statistics,

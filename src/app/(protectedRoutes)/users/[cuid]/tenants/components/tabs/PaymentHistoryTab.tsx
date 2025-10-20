@@ -1,24 +1,23 @@
 import React from "react";
 import { TableColumn, Table } from "@components/Table";
-import { ITenantDetailInfo } from "@interfaces/user.interface";
 
 interface PaymentRecord {
-  id: string;
-  month: string;
+  date: Date;
   amount: number;
-  status: string;
-  paidDate: string;
-  dueDate: string;
+  type: "rent" | "fee" | "deposit";
+  status: "paid" | "late" | "pending";
+  dueDate: Date;
 }
 
 interface PaymentHistoryTabProps {
-  tenant: ITenantDetailInfo & { profile: any };
+  tenant: any;
 }
 
 export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
   tenant,
 }) => {
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString: string | Date) => {
+    if (!dateString) return "N/A";
     try {
       return new Date(dateString).toLocaleDateString("en-US", {
         year: "numeric",
@@ -26,7 +25,7 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
         day: "numeric",
       });
     } catch {
-      return dateString;
+      return "N/A";
     }
   };
 
@@ -34,29 +33,29 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(amount);
+    }).format(amount || 0);
   };
 
-  const paymentHistory: PaymentRecord[] = tenant.paymentHistory || [];
+  // Access payment history from nested tenantInfo
+  const paymentHistory: PaymentRecord[] = tenant.tenantInfo?.paymentHistory || [];
 
-  // Calculate summary stats
-  const totalPaid = paymentHistory
-    .filter((p) => p.status === "paid")
-    .reduce((sum, p) => sum + p.amount, 0);
-  const paidOnTime = paymentHistory.filter((p) => {
-    if (p.status !== "paid") return false;
-    return new Date(p.paidDate) <= new Date(p.dueDate);
-  }).length;
-  const onTimeRate =
-    paymentHistory.length > 0
-      ? Math.round((paidOnTime / paymentHistory.length) * 100)
-      : 0;
+  // Calculate summary stats from tenant metrics and payment history
+  const totalPaid = tenant.tenantMetrics?.totalRentPaid || 0;
+  const onTimeRate = tenant.tenantMetrics?.onTimePaymentRate || 0;
+  const avgDelay = tenant.tenantMetrics?.averagePaymentDelay || 0;
 
   const paymentColumns: TableColumn<PaymentRecord>[] = [
     {
-      title: "Period",
-      dataIndex: "month",
-      render: (month: string) => <strong>{month}</strong>,
+      title: "Date",
+      dataIndex: "date",
+      render: (date: Date) => <strong>{formatDate(date)}</strong>,
+    },
+    {
+      title: "Type",
+      dataIndex: "type",
+      render: (type: string) => (
+        <span style={{ textTransform: "capitalize" }}>{type}</span>
+      ),
     },
     {
       title: "Amount",
@@ -68,32 +67,25 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
     {
       title: "Due Date",
       dataIndex: "dueDate",
-      render: (date: string) => formatDate(date),
-    },
-    {
-      title: "Paid Date",
-      dataIndex: "paidDate",
-      render: (date: string) => formatDate(date),
+      render: (date: Date) => formatDate(date),
     },
     {
       title: "Status",
       dataIndex: "status",
-      render: (status: string, record) => {
-        const statusConfig: Record<string, { className: string; label: string }> = {
+      render: (status: string, record: PaymentRecord) => {
+        const statusConfig: Record<
+          string,
+          { className: string; label: string }
+        > = {
           paid: { className: "success", label: "Paid" },
-          overdue: { className: "danger", label: "Overdue" },
+          late: { className: "warning", label: "Paid Late" },
           pending: { className: "warning", label: "Pending" },
         };
 
-        // Check if paid late
-        let config = statusConfig[status] || { className: "default", label: status };
-
-        if (
-          status === "paid" &&
-          new Date(record.paidDate) > new Date(record.dueDate)
-        ) {
-          config = { className: "warning", label: "Paid Late" };
-        }
+        const config = statusConfig[status] || {
+          className: "default",
+          label: status,
+        };
 
         return <span className={`badge ${config.className}`}>{config.label}</span>;
       },
@@ -104,41 +96,37 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
     { label: "Total Paid", value: formatCurrency(totalPaid) },
     { label: "Total Payments", value: paymentHistory.length.toString() },
     { label: "On-Time Rate", value: `${onTimeRate}%` },
-    { label: "Monthly Rent", value: formatCurrency(tenant.leaseInfo.monthlyRent) },
+    { label: "Avg Payment Delay", value: `${avgDelay} days` },
   ];
 
   return (
-    <div className="employee-performance">
-      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
-        Payment Summary
-      </h3>
-      <div className="performance-grid">
+    <div className="user-detail-tab">
+      <h3 className="detail-section-title">Payment Summary</h3>
+      <div className="metrics-grid">
         {paymentMetrics.map((metric, index) => (
-          <div key={index} className="performance-card">
-            <span className="performance-value">{metric.value}</span>
-            <span className="performance-label">{metric.label}</span>
+          <div key={index} className="metric-card">
+            <span className="metric-value">{metric.value}</span>
+            <span className="metric-label">{metric.label}</span>
           </div>
         ))}
       </div>
 
-      <h3 style={{ marginTop: "2rem", marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
-        Payment History
-      </h3>
+      <h3 className="detail-section-title">Payment History</h3>
       {paymentHistory.length > 0 ? (
         <Table
           columns={paymentColumns}
           dataSource={paymentHistory}
-          rowKey="id"
+          rowKey={(record, index) => `payment-${index}`}
           pagination={false}
           tableVariant="default"
         />
       ) : (
-        <div className="empty-state">
-          <i
-            className="bx bx-dollar"
-            style={{ fontSize: "48px", color: "#ccc" }}
-          ></i>
+        <div className="detail-empty-state">
+          <i className="bx bx-dollar"></i>
           <p>No payment history available</p>
+          <p>
+            Payment records will appear here once the payment system is integrated.
+          </p>
         </div>
       )}
     </div>

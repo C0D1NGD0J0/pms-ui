@@ -564,6 +564,9 @@ export const USER_QUERY_KEYS = {
     `/users/${cuid}/filtered-tenants`,
     `page=${pagination.page}`,
   ],
+  getClientTenant: (cuid: string, uid: string) => [
+    `/users/${cuid}/client_tenant/${uid}`,
+  ],
   getClientUsers: (cuid: string, pagination: IPaginationQuery) => [
     `/users/${cuid}/filtered-users`,
     `page=${pagination.page}`,

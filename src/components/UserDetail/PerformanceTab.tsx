@@ -76,24 +76,24 @@ export const PerformanceTab: React.FC<PerformanceTabProps> = ({
   ];
 
   return (
-    <div className="employee-performance">
-      <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
+    <div className="user-detail-tab">
+      <h3 className="detail-section-title">
         Performance Metrics
       </h3>
-      
-      <div className="performance-grid">
+
+      <div className="metrics-grid">
         {getMetricCards().map((metric, index) => (
-          <div key={index} className="performance-card">
-            <span className="performance-value">{metric.value}</span>
-            <span className="performance-label">{metric.label}</span>
+          <div key={index} className="metric-card">
+            <span className="metric-value">{metric.value}</span>
+            <span className="metric-label">{metric.label}</span>
           </div>
         ))}
       </div>
 
-      <h4 style={{ marginTop: '2rem', marginBottom: '1rem', color: 'hsl(194, 66%, 24%)' }}>
+      <h3 className="detail-section-title">
         Monthly Performance Trend
-      </h4>
-      
+      </h3>
+
       <Table<MonthlyPerformance>
         columns={columns}
         dataSource={monthlyData}
