@@ -1,23 +1,28 @@
 import { useState } from "react";
 import { userService } from "@services/index";
 import { useNotification } from "@hooks/useNotification";
+import { IFilteredTenantsParams } from "@interfaces/user.interface";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import {
-  IFilteredTenantsParams,
-  ITenantDetailInfo,
-} from "@interfaces/user.interface";
 import {
   COMMON_STATUS_OPTIONS,
   COMMON_SORT_OPTIONS,
   USER_QUERY_KEYS,
 } from "@src/utils";
 
-export const useGetClientTenant = (cuid: string, uid: string) => {
+export const useGetClientTenant = (
+  cuid: string,
+  uid: string,
+  include?: string[]
+) => {
   const query = useQuery({
     enabled: !!cuid && !!uid,
-    queryKey: USER_QUERY_KEYS.getClientTenant(cuid, uid),
+    queryKey: [...USER_QUERY_KEYS.getClientTenant(cuid, uid), include],
     queryFn: async () => {
-      const response = await userService.getClientTenantDetails(cuid, uid);
+      const response = await userService.getClientTenantDetails(
+        cuid,
+        uid,
+        include
+      );
       return response;
     },
   });
@@ -49,6 +54,31 @@ export const useUpdateTenant = (cuid: string, uid: string) => {
         error?.response?.data?.message ||
           error?.message ||
           "Failed to update tenant"
+      );
+    },
+  });
+};
+
+export const useDeactivateTenant = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: () => userService.deactivateTenant(cuid, uid),
+    onSuccess: () => {
+      message.success("Tenant deactivated successfully!");
+      queryClient.invalidateQueries({
+        queryKey: [`/users/${cuid}/filtered-tenants`],
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getClientTenant(cuid, uid),
+      });
+    },
+    onError: (error: any) => {
+      message.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to deactivate tenant"
       );
     },
   });

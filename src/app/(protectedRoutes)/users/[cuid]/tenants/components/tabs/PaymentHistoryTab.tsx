@@ -72,7 +72,7 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
     {
       title: "Status",
       dataIndex: "status",
-      render: (status: string, record: PaymentRecord) => {
+      render: (status: string) => {
         const statusConfig: Record<
           string,
           { className: string; label: string }

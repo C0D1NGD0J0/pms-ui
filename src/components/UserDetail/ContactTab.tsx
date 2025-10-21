@@ -25,7 +25,7 @@ interface ContactInfo {
 }
 
 interface ContactTabProps {
-  userType: "employee" | "vendor";
+  userType: "employee" | "vendor" | "tenant";
   contactInfo: ContactInfo;
 }
 

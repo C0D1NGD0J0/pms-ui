@@ -1,17 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { Skeleton } from "@components/Skeleton";
+import React, { useState, useMemo } from "react";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
 import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
+import { withPageAccess } from "@src/components/PageAccessHOC";
 import { DocumentsTab, ContactTab } from "@components/UserDetail";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { useDeactivateTenant, useGetClientTenant } from "@users/tenants/hooks";
+import { DeactivateTenantModal } from "@users/tenants/components/DeactivateTenantModal";
 
-import { useGetClientTenant } from "../hooks";
 import {
   PaymentHistoryTab,
   LeaseDetailsTab,
@@ -25,11 +28,33 @@ interface TenantDetailPageProps {
   }>;
 }
 
-export default function TenantDetailPage({ params }: TenantDetailPageProps) {
+const getIncludeParamsForTab = (tabId: string): string[] => {
+  switch (tabId) {
+    case "lease":
+      return ["lease"];
+    case "payments":
+      return ["payments"];
+    case "maintenance":
+      return ["maintenance"];
+    case "documents":
+      return ["lease"];
+    case "contact":
+      return [];
+    default:
+      return ["all"];
+  }
+};
+
+const TenantDetailPage = ({ params }: TenantDetailPageProps) => {
   const router = useRouter();
   const { cuid, uid } = React.use(params);
   const [activeTab, setActiveTab] = useState("lease");
-  const { tenant, isLoading } = useGetClientTenant(cuid, uid);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const { isAdmin } = useUnifiedPermissions();
+
+  const includeParams = getIncludeParamsForTab(activeTab);
+  const { tenant, isLoading } = useGetClientTenant(cuid, uid, includeParams);
+  const deactivateTenantMutation = useDeactivateTenant(cuid, uid);
 
   const handleBack = () => {
     router.back();
@@ -37,17 +62,154 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
 
   const handleSendMessage = () => {
     console.log("Send message to tenant");
-    // TODO: Implement send message functionality
   };
 
   const handleViewPayments = () => {
     console.log("View tenant payments");
-    // TODO: Implement view payments functionality
+  };
+
+  const handleDeactivateClick = () => {
+    setShowDeactivateModal(true);
+  };
+
+  const handleConfirmDeactivate = async () => {
+    try {
+      await deactivateTenantMutation.mutateAsync();
+      setShowDeactivateModal(false);
+      router.push(`/users/${cuid}/tenants`);
+    } catch (error) {
+      console.error("Failed to deactivate tenant:", error);
+      setShowDeactivateModal(false);
+    }
+  };
+
+  const handleCancelDeactivate = () => {
+    setShowDeactivateModal(false);
   };
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId);
   };
+
+  const formatDate = (dateString: string | Date) => {
+    if (!dateString) return "N/A";
+    try {
+      return new Date(dateString).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return "N/A";
+    }
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount || 0);
+  };
+
+  const activeLeases = tenant?.tenantInfo?.activeLeases || [];
+  const hasActiveLease = activeLeases.length > 0;
+  const activeLease = activeLeases[0];
+
+  const tabItems: TabItem[] = useMemo(
+    () =>
+      tenant
+        ? [
+            {
+              id: "lease",
+              label: "Lease Details",
+              icon: <i className="bx bx-file-blank"></i>,
+              content: <LeaseDetailsTab tenant={tenant} />,
+            },
+            {
+              id: "payments",
+              label: "Payment History",
+              icon: <i className="bx bx-dollar"></i>,
+              content: <PaymentHistoryTab tenant={tenant} />,
+            },
+            {
+              id: "maintenance",
+              label: "Maintenance",
+              icon: <i className="bx bx-wrench"></i>,
+              content: <MaintenanceTab tenant={tenant} />,
+            },
+            {
+              id: "contact",
+              label: "Contact",
+              icon: <i className="bx bx-phone"></i>,
+              content: (
+                <ContactTab
+                  userType="tenant"
+                  contactInfo={{
+                    primary: {
+                      name: tenant.profile?.fullName,
+                      phone: tenant.profile?.phoneNumber,
+                      email: tenant.profile?.email,
+                    },
+                    emergency: tenant.tenantInfo?.emergencyContact
+                      ? {
+                          name: tenant.tenantInfo.emergencyContact.name,
+                          phone: tenant.tenantInfo.emergencyContact.phone,
+                          relationship:
+                            tenant.tenantInfo.emergencyContact.relationship,
+                        }
+                      : undefined,
+                    manager: {
+                      name: "Property Management",
+                      phone: "",
+                      email: "",
+                      title: "Property Manager",
+                    },
+                  }}
+                />
+              ),
+            },
+            {
+              id: "documents",
+              label: "Documents",
+              icon: <i className="bx bx-file"></i>,
+              content: (
+                <DocumentsTab
+                  userType="tenant"
+                  documents={
+                    tenant.tenantInfo?.leaseHistory &&
+                    tenant.tenantInfo.leaseHistory.length > 0
+                      ? tenant.tenantInfo.leaseHistory.map(
+                          (lease: any, index: number) => ({
+                            id: `lease-${index}`,
+                            title: `Lease Agreement - ${lease.propertyName}`,
+                            type: "lease",
+                            subtitle: `Unit ${lease.unitNumber} • ${
+                              lease.status.charAt(0).toUpperCase() +
+                              lease.status.slice(1)
+                            } • ${new Date(
+                              lease.leaseStart
+                            ).toLocaleDateString()} - ${new Date(
+                              lease.leaseEnd
+                            ).toLocaleDateString()}`,
+                            icon: "lease", // Will be mapped to bx-home
+                            status:
+                              lease.status === "active"
+                                ? ("valid" as const)
+                                : lease.status === "completed"
+                                ? ("expired" as const)
+                                : ("expired" as const),
+                            expiryDate: lease.leaseEnd,
+                          })
+                        )
+                      : undefined
+                  }
+                />
+              ),
+            },
+          ]
+        : [],
+    [tenant]
+  );
 
   const breadcrumbItems = [
     { title: "Dashboard", href: "/dashboard" },
@@ -91,118 +253,6 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
     );
   }
 
-  const formatDate = (dateString: string | Date) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-    } catch {
-      return "N/A";
-    }
-  };
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(amount || 0);
-  };
-
-  // Extract active lease info (if available)
-  const activeLeases = tenant.tenantInfo?.activeLeases || [];
-  const hasActiveLease = activeLeases.length > 0;
-
-  // Get first active lease data (will be from Lease entity when implemented)
-  // For now, this will be empty arrays as lease data comes from separate service
-  const activeLease = activeLeases[0];
-
-  console.log("Tenant data:", tenant);
-
-  const tabItems: TabItem[] = [
-    {
-      id: "lease",
-      label: "Lease Details",
-      icon: <i className="bx bx-file-blank"></i>,
-      content: <LeaseDetailsTab tenant={tenant} />,
-    },
-    {
-      id: "payments",
-      label: "Payment History",
-      icon: <i className="bx bx-dollar"></i>,
-      content: <PaymentHistoryTab tenant={tenant} />,
-    },
-    {
-      id: "maintenance",
-      label: "Maintenance",
-      icon: <i className="bx bx-wrench"></i>,
-      content: <MaintenanceTab tenant={tenant} />,
-    },
-    {
-      id: "contact",
-      label: "Contact",
-      icon: <i className="bx bx-phone"></i>,
-      content: (
-        <ContactTab
-          userType="tenant"
-          contactInfo={{
-            primary: {
-              name: tenant.profile?.fullName,
-              phone: tenant.profile?.phoneNumber,
-              email: tenant.profile?.email,
-            },
-            emergency: tenant.tenantInfo?.emergencyContact
-              ? {
-                  name: tenant.tenantInfo.emergencyContact.name,
-                  phone: tenant.tenantInfo.emergencyContact.phone,
-                  relationship: tenant.tenantInfo.emergencyContact.relationship,
-                }
-              : undefined,
-            manager: {
-              name: "Property Management",
-              phone: "",
-              email: "",
-              title: "Property Manager",
-            },
-          }}
-        />
-      ),
-    },
-    {
-      id: "documents",
-      label: "Documents",
-      icon: <i className="bx bx-file"></i>,
-      content: (
-        <DocumentsTab
-          userType="tenant"
-          documents={
-            tenant.tenantInfo?.leaseHistory && tenant.tenantInfo.leaseHistory.length > 0
-              ? tenant.tenantInfo.leaseHistory.map(
-                  (lease: any, index: number) => ({
-                    id: `lease-${index}`,
-                    title: `Lease Agreement - ${lease.propertyName}`,
-                    type: "lease",
-                    subtitle: `Unit ${lease.unitNumber} • ${lease.status.charAt(0).toUpperCase() + lease.status.slice(1)} • ${new Date(lease.leaseStart).toLocaleDateString()} - ${new Date(lease.leaseEnd).toLocaleDateString()}`,
-                    icon: "lease", // Will be mapped to bx-home
-                    status:
-                      lease.status === "active"
-                        ? ("valid" as const)
-                        : lease.status === "completed"
-                        ? ("expired" as const)
-                        : ("expired" as const),
-                    expiryDate: lease.leaseEnd,
-                  })
-                )
-              : undefined
-          }
-        />
-      ),
-    },
-  ];
-
-  // Build tenant tags based on real data
   const tenantTags = [
     {
       type: "employment" as const,
@@ -241,7 +291,6 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
       : []),
   ];
 
-  // Build statistics based on real API data
   const statistics = {
     "Tenant Since": formatDate(tenant.joinedDate),
     "Total Rent Paid": formatCurrency(tenant.tenantMetrics?.totalRentPaid || 0),
@@ -261,12 +310,23 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
         withBreadcrumb={true}
         breadcrumbItems={breadcrumbItems}
         headerBtn={
-          <Button
-            className="btn btn-default"
-            label="Back"
-            icon={<i className="bx bx-arrow-back"></i>}
-            onClick={handleBack}
-          />
+          <div className="flex-row" style={{ gap: "0.5rem" }}>
+            {isAdmin && (
+              <Button
+                className="btn btn-danger"
+                label="Deactivate"
+                icon={<i className="bx bx-user-x"></i>}
+                onClick={handleDeactivateClick}
+                disabled={deactivateTenantMutation.isPending}
+              />
+            )}
+            <Button
+              className="btn btn-default"
+              label="Back"
+              icon={<i className="bx bx-arrow-back"></i>}
+              onClick={handleBack}
+            />
+          </div>
         }
       />
 
@@ -315,6 +375,18 @@ export default function TenantDetailPage({ params }: TenantDetailPageProps) {
           />
         </div>
       </div>
+
+      <DeactivateTenantModal
+        isOpen={showDeactivateModal}
+        tenantName={tenant?.profile?.fullName || ""}
+        onClose={handleCancelDeactivate}
+        onConfirm={handleConfirmDeactivate}
+        isSubmitting={deactivateTenantMutation.isPending}
+      />
     </div>
   );
-}
+};
+
+export default withPageAccess(TenantDetailPage, {
+  requiredPermission: (p) => p.isStaffOrAbove,
+});

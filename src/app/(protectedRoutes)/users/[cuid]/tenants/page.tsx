@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import React, { useState, useMemo } from "react";
 import { Loading } from "@src/components/Loading";
 import { ChartContainer } from "@components/Charts";
 import { PageHeader } from "@components/PageElements/Header";
@@ -18,8 +18,9 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useGetTenants } from "./hooks";
+import { useDeactivateTenant, useGetTenants } from "./hooks";
 import { TenantTableView } from "./components/TenantTableView";
+import { DeactivateTenantModal } from "./components/DeactivateTenantModal";
 
 interface TenantsPageProps {
   params: Promise<{
@@ -30,6 +31,12 @@ interface TenantsPageProps {
 export default function TenantsPage({ params }: TenantsPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [selectedTenant, setSelectedTenant] = useState<{
+    uid: string;
+    name: string;
+  } | null>(null);
+
   const {
     tenants,
     sortOptions,
@@ -41,8 +48,11 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     isLoading,
   } = useGetTenants(cuid);
   const permission = useUnifiedPermissions();
+  const deactivateTenantMutation = useDeactivateTenant(
+    cuid,
+    selectedTenant?.uid || ""
+  );
 
-  // Tenant Status Distribution
   const tenantStatusDistribution = useMemo(() => {
     const statusCounts = {
       active: 0,
@@ -77,7 +87,6 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     ].filter((item) => item.value > 0);
   }, [tenants]);
 
-  // Lease Duration Distribution
   const leaseDurationDistribution = useMemo(() => {
     const durationCounts = {
       "6 Months": 0,
@@ -126,9 +135,22 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     router.push(`/users/${cuid}/tenants/${tenant.uid}`);
   };
 
-  const handleToggleTenantStatus = (tenantId: string, isActive: boolean) => {
-    console.log("Toggle tenant status:", tenantId, isActive);
-    // TODO: Implement tenant status toggle
+  const handleConfirmDeactivate = async () => {
+    if (!selectedTenant) return;
+
+    try {
+      await deactivateTenantMutation.mutateAsync();
+      setShowDeactivateModal(false);
+      setSelectedTenant(null);
+    } catch (error) {
+      console.error("Failed to deactivate tenant:", error);
+      setShowDeactivateModal(false);
+    }
+  };
+
+  const handleCancelDeactivate = () => {
+    setShowDeactivateModal(false);
+    setSelectedTenant(null);
   };
 
   return (
@@ -146,7 +168,6 @@ export default function TenantsPage({ params }: TenantsPageProps) {
                 handleSortChange={handleSortChange}
                 isLoading={isLoading}
                 onEdit={handleEditTenant}
-                onToggleStatus={handleToggleTenantStatus}
                 onViewDetails={handleViewTenantDetails}
                 pagination={pagination}
                 totalCount={totalCount}
@@ -222,6 +243,14 @@ export default function TenantsPage({ params }: TenantsPageProps) {
           </PanelsWrapper>
         </div>
       </div>
+
+      <DeactivateTenantModal
+        isOpen={showDeactivateModal}
+        tenantName={selectedTenant?.name || ""}
+        onClose={handleCancelDeactivate}
+        onConfirm={handleConfirmDeactivate}
+        isSubmitting={deactivateTenantMutation.isPending}
+      />
     </div>
   );
 }

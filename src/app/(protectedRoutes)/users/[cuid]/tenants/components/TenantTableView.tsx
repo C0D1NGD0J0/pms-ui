@@ -2,10 +2,9 @@
 import { ChangeEvent, useState } from "react";
 import { Button } from "@components/FormElements";
 import { TableColumn, Table } from "@components/Table";
-import { IPaginationQuery } from "@interfaces/utils.interface";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
+import { IPaginationQuery, FilterOption } from "@interfaces/utils.interface";
 import {
   getLeaseStatusBadgeClass,
   getRentStatusBadgeClass,
@@ -22,7 +21,6 @@ interface TenantTableViewProps {
   handleSortChange: (sort: "asc" | "desc") => void;
   isLoading?: boolean;
   onEdit: (tenant: FilteredUserTableData) => void;
-  onToggleStatus: (tenantId: string, isActive: boolean) => void;
   onViewDetails: (tenant: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
@@ -38,7 +36,6 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
   handleSortChange,
   isLoading = false,
   onEdit,
-  onToggleStatus,
   onViewDetails,
   pagination,
   totalCount,
@@ -133,18 +130,6 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
                 className="btn-sm btn-outline"
                 onClick={() => onEdit(record)}
                 title="Edit tenant information"
-              />
-            )}
-            {permissions.isAdmin && (
-              <Button
-                label={record.isActive ? "Deactivate" : "Activate"}
-                className={`btn-sm ${
-                  record.isActive ? "btn-danger" : "btn-success"
-                }`}
-                onClick={() => onToggleStatus(record.uid, !record.isActive)}
-                title={
-                  record.isActive ? "Deactivate tenant" : "Activate tenant"
-                }
               />
             )}
           </div>

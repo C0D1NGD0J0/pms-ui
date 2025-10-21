@@ -117,17 +117,75 @@ export interface FilteredVendorInfo extends VendorInfo {
   averageServiceCost?: number;
 }
 
-/**
- * Tenant information interface
- * TODO: Import from backend when available
- */
 export interface TenantInfo {
-  leaseStartDate?: Date | string;
-  leaseEndDate?: Date | string;
-  unitNumber?: string;
-  rentAmount?: number;
-  paymentStatus?: "current" | "overdue" | "pending";
-  [key: string]: any;
+  employerInfo?: Array<{
+    cuid: string;
+    companyName: string;
+    position: string;
+    monthlyIncome: number;
+    contactPerson: string;
+    companyAddress: string;
+    contactEmail: string;
+  }>;
+  activeLeases?: Array<{
+    cuid: string;
+    confirmedDate: Date | string;
+    confirmed: boolean;
+    leaseId: string;
+  }>;
+  backgroundChecks?: Array<{
+    cuid: string;
+    status: string;
+    checkedDate: Date | string;
+    expiryDate?: Date | string;
+    notes?: string;
+  }>;
+  rentalReferences?: Array<{
+    landlordName: string;
+    propertyAddress: string;
+    [key: string]: any;
+  }>;
+  pets?: Array<{
+    type: string;
+    breed: string;
+    isServiceAnimal: boolean;
+    [key: string]: any;
+  }>;
+  emergencyContact?: {
+    name: string;
+    phone: string;
+    relationship: string;
+    email: string;
+  };
+  leaseHistory?: Array<{
+    propertyName: string;
+    unitNumber: string;
+    leaseStart: Date | string;
+    leaseEnd: Date | string;
+    rentAmount: number;
+    status: "completed" | "active" | "terminated";
+  }>;
+  paymentHistory?: Array<{
+    date: Date | string;
+    amount: number;
+    type: "rent" | "fee" | "deposit";
+    status: "paid" | "late" | "pending";
+    dueDate: Date | string;
+  }>;
+  maintenanceRequests?: Array<{
+    requestId: string;
+    date: Date | string;
+    type: string;
+    status: "pending" | "in_progress" | "completed";
+    description: string;
+    priority: "low" | "medium" | "high" | "urgent";
+  }>;
+  notes?: Array<{
+    date: Date | string;
+    author: string;
+    note: string;
+    type: "general" | "payment" | "maintenance" | "lease";
+  }>;
 }
 
 export interface IEmployeeTableData {
@@ -374,35 +432,12 @@ export interface IEmployeeDetailInfo {
   tags: string[];
 }
 
-/**
- * Tenant detail information for getClientUserInfo response
- */
-export interface ITenantDetailInfo {
-  leaseInfo: {
-    status: string;
-    startDate: Date | string;
-    endDate: Date | string | null;
-    monthlyRent: number;
-  };
-  unit: {
-    propertyName: string;
-    unitNumber: string;
-    address: string;
-  };
-  maintenanceRequests: any[];
-  paymentHistory: any[];
-  rentStatus: string;
-  documents: any[];
-}
+export type ITenantDetailInfo = TenantInfo;
 
 export type VendorDetailResponse = IUserDetailResponse;
 
-/**
- * Filter options for querying users
- * Matches the backend IUserFilterOptions with additional frontend-specific fields
- */
 export interface UserFilterOptions {
-  role?: IUserRoleType | IUserRoleType[] | string; // Can be single, array, or comma-separated string
+  role?: IUserRoleType | IUserRoleType[] | string;
   type?: "employee" | "tenant" | "vendor";
   department?: string;
   status?: "active" | "inactive";

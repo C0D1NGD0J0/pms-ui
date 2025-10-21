@@ -211,12 +211,23 @@ class UsersService {
     }
   }
 
-  async getClientTenantDetails(cuid: string, uid: string) {
+  async getClientTenantDetails(
+    cuid: string,
+    uid: string,
+    include?: string[]
+  ) {
     try {
-      const result = await axios.get(
-        `${this.baseUrl}/${cuid}/client_tenant/${uid}`,
-        this.axiosConfig
-      );
+      const queryParams = new URLSearchParams();
+      if (include && include.length > 0) {
+        queryParams.append("include", include.join(","));
+      }
+
+      let url = `${this.baseUrl}/${cuid}/client_tenant/${uid}`;
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const result = await axios.get(url, this.axiosConfig);
       return result.data;
     } catch (error) {
       console.error("Error fetching tenant:", error);
@@ -234,6 +245,19 @@ class UsersService {
       return result.data;
     } catch (error) {
       console.error("Error updating tenant:", error);
+      throw error;
+    }
+  }
+
+  async deactivateTenant(cuid: string, uid: string) {
+    try {
+      const result = await axios.delete(
+        `${this.baseUrl}/${cuid}/tenant_details/${uid}`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error deactivating tenant:", error);
       throw error;
     }
   }
