@@ -79,7 +79,7 @@ export function useTenantEditForm({
       tenantForm.setValues(formValues);
       setOriginalValues(formValues);
     }
-  }, [tenant, cuid, tenantForm]);
+  }, [tenant, cuid]);
 
   const updateTenantMutation = useMutation({
     mutationFn: async (data: Partial<TenantFormValues>) =>

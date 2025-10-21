@@ -37,7 +37,8 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
   };
 
   // Access payment history from nested tenantInfo
-  const paymentHistory: PaymentRecord[] = tenant.tenantInfo?.paymentHistory || [];
+  const paymentHistory: PaymentRecord[] =
+    tenant.tenantInfo?.paymentHistory || [];
 
   // Calculate summary stats from tenant metrics and payment history
   const totalPaid = tenant.tenantMetrics?.totalRentPaid || 0;
@@ -87,7 +88,9 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
           label: status,
         };
 
-        return <span className={`badge ${config.className}`}>{config.label}</span>;
+        return (
+          <span className={`badge ${config.className}`}>{config.label}</span>
+        );
       },
     },
   ];
@@ -116,7 +119,7 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
         <Table
           columns={paymentColumns}
           dataSource={paymentHistory}
-          rowKey={(record, index) => `payment-${index}`}
+          rowKey="id"
           pagination={false}
           tableVariant="default"
         />
@@ -125,7 +128,8 @@ export const PaymentHistoryTab: React.FC<PaymentHistoryTabProps> = ({
           <i className="bx bx-dollar"></i>
           <p>No payment history available</p>
           <p>
-            Payment records will appear here once the payment system is integrated.
+            Payment records will appear here once the payment system is
+            integrated.
           </p>
         </div>
       )}

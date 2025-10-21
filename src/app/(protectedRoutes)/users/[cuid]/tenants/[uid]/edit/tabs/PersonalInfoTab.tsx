@@ -1,9 +1,9 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { FormField, FormInput, FormLabel } from "@components/FormElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
 import { TenantFormValues } from "@validations/tenant.validations";
+import { FormField, FormInput, FormLabel } from "@components/FormElements";
 
 interface PersonalInfoTabProps {
   tenantForm: UseFormReturnType<TenantFormValues>;
@@ -41,7 +41,9 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
                 {...tenantForm.getInputProps("personalInfo.lastName")}
               />
             </FormField>
+          </div>
 
+          <div className="form-fields">
             <FormField>
               <FormLabel htmlFor="email" label="Email" required />
               <FormInput

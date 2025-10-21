@@ -1,9 +1,9 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { FormField, FormInput, FormLabel } from "@components/FormElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
 import { TenantFormValues } from "@validations/tenant.validations";
+import { FormField, FormInput, FormLabel } from "@components/FormElements";
 
 interface EmergencyContactTabProps {
   tenantForm: UseFormReturnType<TenantFormValues>;
@@ -45,7 +45,9 @@ export const EmergencyContactTab: React.FC<EmergencyContactTabProps> = ({
                 )}
               />
             </FormField>
+          </div>
 
+          <div className="form-fields">
             <FormField>
               <FormLabel htmlFor="emergencyRelationship" label="Relationship" />
               <FormInput

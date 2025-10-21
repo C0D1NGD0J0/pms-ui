@@ -2,7 +2,12 @@ import React from "react";
 import { ITenantDetailInfo } from "@interfaces/user.interface";
 
 interface OverviewTabProps {
-  tenant: ITenantDetailInfo & { profile: any };
+  tenant: ITenantDetailInfo & {
+    profile: any;
+    unit?: { unitNumber?: string; propertyName?: string };
+    leaseInfo?: any;
+    rentStatus?: any;
+  };
 }
 
 export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
@@ -60,7 +65,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
           <i className="bx bx-home"></i>
           <div className="info-content">
             <div className="info-label">Unit Number</div>
-            <div className="info-value">{tenant.unit.unitNumber}</div>
+            <div className="info-value">{tenant.unit?.unitNumber || 'N/A'}</div>
           </div>
         </div>
 
@@ -68,7 +73,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
           <i className="bx bx-buildings"></i>
           <div className="info-content">
             <div className="info-label">Property</div>
-            <div className="info-value">{tenant.unit.propertyName}</div>
+            <div className="info-value">{tenant.unit?.propertyName || 'N/A'}</div>
           </div>
         </div>
 

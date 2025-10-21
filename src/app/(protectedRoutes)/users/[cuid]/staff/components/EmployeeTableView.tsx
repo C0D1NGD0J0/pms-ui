@@ -2,10 +2,10 @@
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
+import { FilterOption } from "@interfaces/common.interface";
 import { IPaginationQuery } from "@interfaces/utils.interface";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { FilterOption } from "@app/(protectedRoutes)/shared-hooks/constants";
 
 interface EmployeeTableViewProps {
   employees: FilteredUserTableData[];

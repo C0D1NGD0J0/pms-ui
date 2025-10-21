@@ -1,10 +1,9 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { Button } from "@components/FormElements";
-import { FormField, FormInput, FormLabel } from "@components/FormElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
 import { TenantFormValues } from "@validations/tenant.validations";
+import { FormField, FormInput, FormLabel, Button } from "@components/FormElements";
 
 interface EmploymentTabProps {
   tenantForm: UseFormReturnType<TenantFormValues>;
@@ -94,7 +93,9 @@ export const EmploymentTab: React.FC<EmploymentTabProps> = ({
                     )}
                   />
                 </FormField>
+              </div>
 
+              <div className="form-fields">
                 <FormField>
                   <FormLabel
                     htmlFor={`contactPerson-${index}`}

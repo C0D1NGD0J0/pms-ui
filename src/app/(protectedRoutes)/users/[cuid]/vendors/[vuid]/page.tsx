@@ -9,6 +9,7 @@ import { TabContainer } from "@components/Tab/components";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PerformanceTab,
   DocumentsTab,
@@ -22,7 +23,6 @@ import {
   ProjectsTab,
   ReviewsTab,
 } from "../components/tabs";
-import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 interface VendorDetailPageProps {
   params: Promise<{

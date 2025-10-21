@@ -2,8 +2,8 @@
 
 import { Loading } from "@components/Loading";
 import { usePathname, useRouter } from "next/navigation";
+import { ComponentType, useEffect, useState } from "react";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
-import { ComponentType, forwardRef, useEffect, useState } from "react";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
 
 export interface PageAccessOptions {
@@ -45,11 +45,11 @@ export const withPageAccess = <P extends object>(
   Component: ComponentType<P>,
   options: PageAccessOptions = {}
 ) => {
-  const WrappedComponent = forwardRef<unknown, P>((props, ref) => {
+  const WrappedComponent = (props: P) => {
     const router = useRouter();
     const pathname = usePathname();
     const permissions = useUnifiedPermissions();
-    const { canAccessPage, isAuthenticated } = permissions;
+    const { canAccessPage, isAuthenticated, currentRole } = permissions;
 
     const [isLoading, setIsLoading] = useState(true);
     const [hasAccess, setHasAccess] = useState(false);
@@ -99,15 +99,7 @@ export const withPageAccess = <P extends object>(
       };
 
       checkAccess();
-    }, [
-      pathname,
-      route,
-      canAccessPage,
-      isAuthenticated,
-      bypassPermissionCheck,
-      requiredPermission,
-      permissions,
-    ]);
+    }, [pathname, route, canAccessPage, isAuthenticated, bypassPermissionCheck, currentRole]);
 
     useEffect(() => {
       if (!isLoading && !hasAccess && redirectTo) {
@@ -143,8 +135,8 @@ export const withPageAccess = <P extends object>(
       return <Fallback />;
     }
 
-    return <Component {...(props as any)} ref={ref} />;
-  });
+    return <Component {...props} />;
+  };
 
   WrappedComponent.displayName = `withPageAccess(${
     Component.displayName || Component.name
@@ -161,7 +153,7 @@ export const usePageAccess = (
 ) => {
   const pathname = usePathname();
   const permissions = useUnifiedPermissions();
-  const { canAccessPage, isAuthenticated } = permissions;
+  const { canAccessPage, isAuthenticated, currentRole } = permissions;
   const { route, requiredPermission } = options;
 
   const [isLoading, setIsLoading] = useState(true);
@@ -195,14 +187,7 @@ export const usePageAccess = (
     };
 
     checkAccess();
-  }, [
-    pathname,
-    route,
-    canAccessPage,
-    isAuthenticated,
-    requiredPermission,
-    permissions,
-  ]);
+  }, [pathname, route, canAccessPage, isAuthenticated, currentRole]);
 
   return { hasAccess, isLoading, routeChecked: route || pathname };
 };

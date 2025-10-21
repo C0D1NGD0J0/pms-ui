@@ -7,7 +7,7 @@ import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
 import { TabContainer } from "@components/Tab/components";
-import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { withPageAccess } from "@src/components/PageAccessHOC";
 
 import { useTenantFormBase, useTenantEditForm } from "../../hooks";
 import {
@@ -25,10 +25,9 @@ interface TenantEditPageProps {
   }>;
 }
 
-export default function TenantEditPage({ params }: TenantEditPageProps) {
+const TenantEditPage = ({ params }: TenantEditPageProps) => {
   const { cuid, uid } = use(params);
   const router = useRouter();
-  const { can } = useUnifiedPermissions();
 
   const {
     tenantForm,
@@ -48,24 +47,12 @@ export default function TenantEditPage({ params }: TenantEditPageProps) {
     uid,
   });
 
-  const canUpdateUser = can("user:update");
-
-  React.useEffect(() => {
-    if (!canUpdateUser && !isDataLoading) {
-      router.back();
-    }
-  }, [canUpdateUser, isDataLoading, router]);
-
   const handleBack = () => {
     router.back();
   };
 
   if (isDataLoading) {
     return <Loading description="Loading tenant data..." />;
-  }
-
-  if (!canUpdateUser) {
-    return null;
   }
 
   const tabItems: TabItem[] = [
@@ -173,4 +160,8 @@ export default function TenantEditPage({ params }: TenantEditPageProps) {
       </div>
     </div>
   );
-}
+};
+
+export default withPageAccess(TenantEditPage, {
+  requiredPermission: (p) => p.isAdmin,
+});
