@@ -193,7 +193,7 @@ export const invitationSchema = z
         .or(z.literal("")),
     }),
     inviteeEmail: z.string().email("Please enter a valid email address"),
-    role: z.enum(["manager", "vendor", "tenant", "staff", "admin"], {
+    role: z.enum(["manager", "vendor", "tenant", "staff", "admin", "landlord"], {
       required_error: "Please select a role",
     }),
     status: z

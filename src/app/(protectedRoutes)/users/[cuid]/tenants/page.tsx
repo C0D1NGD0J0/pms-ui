@@ -1,8 +1,26 @@
 "use client";
 
-import React from "react";
-import { Breadcrumb } from "@components/Breadcrumb";
+import { useRouter } from "next/navigation";
+import React, { useState, useMemo } from "react";
+import { Loading } from "@src/components/Loading";
+import { ChartContainer } from "@components/Charts";
 import { PageHeader } from "@components/PageElements/Header";
+import { FilteredUserTableData } from "@interfaces/user.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import {
+  calculateLeaseDuration,
+  generateLegendColors,
+} from "@utils/tenantUtils";
+import {
+  PanelsWrapper,
+  PanelContent,
+  PanelHeader,
+  Panel,
+} from "@components/Panel";
+
+import { useDeactivateTenant, useGetTenants } from "./hooks";
+import { TenantTableView } from "./components/TenantTableView";
+import { DeactivateTenantModal } from "./components/DeactivateTenantModal";
 
 interface TenantsPageProps {
   params: Promise<{
@@ -12,38 +30,227 @@ interface TenantsPageProps {
 
 export default function TenantsPage({ params }: TenantsPageProps) {
   const { cuid } = React.use(params);
+  const router = useRouter();
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [selectedTenant, setSelectedTenant] = useState<{
+    uid: string;
+    name: string;
+  } | null>(null);
 
-  const breadcrumbItems = [
-    { title: "Dashboard", href: "/dashboard" },
-    { title: "Users", href: "#" },
-    { title: "Tenants", href: `/users/${cuid}/tenants` },
-  ];
+  const {
+    tenants,
+    sortOptions,
+    pagination,
+    totalCount,
+    handleSortChange,
+    handlePageChange,
+    handleSortByChange,
+    isLoading,
+  } = useGetTenants(cuid);
+  const permission = useUnifiedPermissions();
+  const deactivateTenantMutation = useDeactivateTenant(
+    cuid,
+    selectedTenant?.uid || ""
+  );
+
+  const tenantStatusDistribution = useMemo(() => {
+    const statusCounts = {
+      active: 0,
+      pending_renewal: 0,
+      inactive: 0,
+    };
+
+    tenants.forEach((tenant) => {
+      const status = tenant.tenantInfo?.leaseStatus || "inactive";
+      statusCounts[status as keyof typeof statusCounts] =
+        (statusCounts[status as keyof typeof statusCounts] || 0) + 1;
+    });
+
+    const total = tenants.length || 1;
+
+    return [
+      {
+        name: "Active",
+        value: statusCounts.active,
+        percentage: Math.round((statusCounts.active / total) * 100),
+      },
+      {
+        name: "Pending Renewal",
+        value: statusCounts.pending_renewal,
+        percentage: Math.round((statusCounts.pending_renewal / total) * 100),
+      },
+      {
+        name: "Inactive",
+        value: statusCounts.inactive,
+        percentage: Math.round((statusCounts.inactive / total) * 100),
+      },
+    ].filter((item) => item.value > 0);
+  }, [tenants]);
+
+  const leaseDurationDistribution = useMemo(() => {
+    const durationCounts = {
+      "6 Months": 0,
+      "12 Months": 0,
+      "18 Months": 0,
+      "24 Months": 0,
+    };
+
+    tenants.forEach((tenant) => {
+      if (
+        tenant.tenantInfo?.leaseStartDate &&
+        tenant.tenantInfo?.leaseEndDate
+      ) {
+        const months = calculateLeaseDuration(
+          tenant.tenantInfo.leaseStartDate,
+          tenant.tenantInfo.leaseEndDate
+        );
+
+        if (months <= 6) {
+          durationCounts["6 Months"]++;
+        } else if (months <= 12) {
+          durationCounts["12 Months"]++;
+        } else if (months <= 18) {
+          durationCounts["18 Months"]++;
+        } else {
+          durationCounts["24 Months"]++;
+        }
+      }
+    });
+
+    return Object.entries(durationCounts).map(([name, value]) => ({
+      name,
+      value,
+    }));
+  }, [tenants]);
+
+  const legendColors = useMemo(() => {
+    return generateLegendColors(tenantStatusDistribution.length);
+  }, [tenantStatusDistribution.length]);
+
+  const handleEditTenant = (tenant: FilteredUserTableData) => {
+    router.push(`/users/${cuid}/tenants/${tenant.uid}/edit`);
+  };
+
+  const handleViewTenantDetails = (tenant: FilteredUserTableData) => {
+    router.push(`/users/${cuid}/tenants/${tenant.uid}`);
+  };
+
+  const handleConfirmDeactivate = async () => {
+    if (!selectedTenant) return;
+
+    try {
+      await deactivateTenantMutation.mutateAsync();
+      setShowDeactivateModal(false);
+      setSelectedTenant(null);
+    } catch (error) {
+      console.error("Failed to deactivate tenant:", error);
+      setShowDeactivateModal(false);
+    }
+  };
+
+  const handleCancelDeactivate = () => {
+    setShowDeactivateModal(false);
+    setSelectedTenant(null);
+  };
 
   return (
     <div className="page-container">
-      <Breadcrumb items={breadcrumbItems} />
-      
-      <div className="user-management-container">
-        <PageHeader 
-          title="Tenant Management" 
-          subtitle="Manage tenant accounts, leases, and information" 
-        />
-        
-        <div className="content-placeholder">
-          <div className="placeholder-card">
-            <h3>Tenants Section</h3>
-            <p>
-              This is where tenant management functionality will be implemented.
-            </p>
-            <ul>
-              <li>View all tenants</li>
-              <li>Add new tenants</li>
-              <li>Edit tenant information</li>
-              <li>Manage tenant leases</li>
-            </ul>
-          </div>
+      <div className="page add-users-page">
+        <PageHeader title="Tenant Management" />
+        <div className="flex-row">
+          <PanelsWrapper>
+            <Panel variant="alt-2">
+              <TenantTableView
+                tenants={tenants}
+                filterOptions={sortOptions}
+                handlePageChange={handlePageChange}
+                handleSortByChange={handleSortByChange}
+                handleSortChange={handleSortChange}
+                isLoading={isLoading}
+                onEdit={handleEditTenant}
+                onViewDetails={handleViewTenantDetails}
+                pagination={pagination}
+                totalCount={totalCount}
+                permissions={permission}
+              />
+            </Panel>
+          </PanelsWrapper>
+        </div>
+
+        <div className="flex-row">
+          <PanelsWrapper>
+            <Panel variant="alt-2">
+              <PanelHeader header={{ title: "Tenant Status Distribution" }} />
+              <PanelContent>
+                {isLoading ? (
+                  <Loading description="Loading stats..." />
+                ) : (
+                  <div className="analytics-cards">
+                    <div className="analytics-card">
+                      <ChartContainer
+                        type="donut"
+                        data={tenantStatusDistribution}
+                        height={300}
+                        colors={legendColors}
+                        chartProps={{
+                          donutchart: { showTotal: true, showTooltip: true },
+                        }}
+                        showLegend={true}
+                        legend={tenantStatusDistribution.map(
+                          (status, index) => ({
+                            name: status.name,
+                            color: legendColors[index],
+                            percentage: status.percentage,
+                          })
+                        )}
+                        emptyStateMessage="No tenant data available"
+                        emptyStateIcon={<i className="bx bx-user"></i>}
+                      />
+                    </div>
+                  </div>
+                )}
+              </PanelContent>
+            </Panel>
+
+            <Panel variant="alt-2">
+              <PanelHeader header={{ title: "Lease Duration Distribution" }} />
+              <PanelContent>
+                {isLoading ? (
+                  <Loading description="Loading stats..." />
+                ) : (
+                  <div className="analytics-cards">
+                    <div className="analytics-card">
+                      <ChartContainer
+                        type="verticalBar"
+                        data={leaseDurationDistribution}
+                        height={300}
+                        chartProps={{
+                          barChart: {
+                            valueKey: "value",
+                            nameKey: "name",
+                            showAxis: true,
+                            showGrid: true,
+                          },
+                        }}
+                        emptyStateMessage="No lease duration data available"
+                        emptyStateIcon={<i className="bx bx-calendar"></i>}
+                      />
+                    </div>
+                  </div>
+                )}
+              </PanelContent>
+            </Panel>
+          </PanelsWrapper>
         </div>
       </div>
+
+      <DeactivateTenantModal
+        isOpen={showDeactivateModal}
+        tenantName={selectedTenant?.name || ""}
+        onClose={handleCancelDeactivate}
+        onConfirm={handleConfirmDeactivate}
+        isSubmitting={deactivateTenantMutation.isPending}
+      />
     </div>
   );
 }

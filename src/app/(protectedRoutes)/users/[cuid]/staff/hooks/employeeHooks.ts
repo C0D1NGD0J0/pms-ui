@@ -1,25 +1,71 @@
-import { IUserRoleType } from "@interfaces/user.interface";
+import { userService } from "@services/users";
+import { useNotification } from "@hooks/useNotification";
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import {
   FilteredUsersQueryParams,
   useGetFilteredUsers,
-} from "@app/(protectedRoutes)/shared-hooks/useGetFilteredUsers";
+} from "@app/(protectedRoutes)/users/shared-hooks";
+import {
+  EmployeeDetailResponse,
+  EmployeeQueryParams,
+  IUserRoleType,
+} from "@interfaces/user.interface";
 import {
   COMMON_DEPARTMENT_OPTIONS,
   COMMON_STATUS_OPTIONS,
   EMPLOYEE_ROLE_OPTIONS,
   COMMON_SORT_OPTIONS,
-} from "@app/(protectedRoutes)/shared-hooks/constants";
+  USER_QUERY_KEYS,
+} from "@utils/constants";
 
-export interface EmployeeQueryParams {
-  role?: IUserRoleType;
-  department?: string;
-  status?: "active" | "inactive";
-  search?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sort?: "asc" | "desc";
-}
+export const useGetEmployeeInfo = (
+  cuid: string,
+  uid: string,
+  isTeamMember: boolean = true
+) => {
+  const query = useQuery<EmployeeDetailResponse>({
+    enabled: !!cuid && !!uid && isTeamMember,
+    queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
+    queryFn: async () => {
+      const response = await userService.getUserEmployeeDetails(cuid, uid);
+      return response;
+    },
+  });
+
+  return {
+    employee: query.data,
+    isLoading: query.isLoading,
+    error: query.error,
+    isError: query.isError,
+    isSuccess: query.isSuccess,
+    refetch: query.refetch,
+  };
+};
+
+export const useUpdateEmployee = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: (data: any) => userService.updateUserProfile(cuid, uid, data),
+    onSuccess: () => {
+      message.success("Employee updated successfully!");
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
+      });
+      queryClient.invalidateQueries({
+        queryKey: [USER_QUERY_KEYS.getClientUsers, cuid],
+      });
+    },
+    onError: (error: any) => {
+      message.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to update employee"
+      );
+    },
+  });
+};
 
 export const useGetEmployees = (
   cuid: string,
@@ -37,6 +83,7 @@ export const useGetEmployees = (
   };
 
   const baseHook = useGetFilteredUsers(cuid, baseParams);
+
   const handleRoleFilter = (role: IUserRoleType | "") => {
     if (role) {
       baseHook.updateQueryParams({ role: [role], page: 1 });

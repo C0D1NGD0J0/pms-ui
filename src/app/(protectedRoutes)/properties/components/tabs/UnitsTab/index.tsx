@@ -299,7 +299,7 @@ export function UnitsTab({ property }: Props) {
       </div>
 
       <div className="unit-editor">
-        <FormSection title="Basic Details" collapsible defaultCollapsed>
+        <FormSection title="Basic Details" collapsable defaultCollapsed>
           <UnitBasicInfo
             unit={currentUnit}
             errors={unitForm.errors}
@@ -312,7 +312,7 @@ export function UnitsTab({ property }: Props) {
           />
         </FormSection>
 
-        <FormSection title="Financial Information" collapsible defaultCollapsed>
+        <FormSection title="Financial Information" collapsable defaultCollapsed>
           <UnitFinancialInfo
             unit={currentUnit}
             errors={unitForm.errors}
@@ -322,7 +322,7 @@ export function UnitsTab({ property }: Props) {
           />
         </FormSection>
 
-        <FormSection title="Utilities" collapsible defaultCollapsed>
+        <FormSection title="Utilities" collapsable defaultCollapsed>
           <UnitUtilities
             unit={currentUnit}
             errors={unitForm.errors}

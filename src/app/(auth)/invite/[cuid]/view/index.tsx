@@ -181,15 +181,15 @@ export function InvitationAcceptanceView({
           </div>
         );
       case "invitation-details":
-        return (
+        return invitation ? (
           <InvitationDetails
             invitation={invitation}
             onAccept={handleAcceptInvitation}
             onDecline={handleDeclineClick}
           />
-        );
+        ) : null;
       case "account-setup":
-        return (
+        return invitation ? (
           <AccountSetup
             invitationData={invitation}
             onBack={handleBackToInvitation}
@@ -202,7 +202,7 @@ export function InvitationAcceptanceView({
             errors={errors}
             touched={touched}
           />
-        );
+        ) : null;
       default:
         return null;
     }

@@ -206,7 +206,7 @@ describe("useCurrentUser", () => {
     const error = { statusCode: 403, message: "Forbidden", success: false };
     mockedAuthService.currentuser.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useCurrentUser(), { wrapper });
+    renderHook(() => useCurrentUser(), { wrapper });
 
     await waitFor(
       () => {

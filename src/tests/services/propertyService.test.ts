@@ -85,7 +85,8 @@ describe("PropertyService", () => {
         expect.stringContaining("/api/v1/properties/client-123/client_properties"),
         expect.any(Object)
       );
-      expect(response.status).toBe(200);
+      expect(response.success).toBe(true);
+      expect(response.data).toHaveLength(2);
     });
 
     it("should include filter params in query string", async () => {
@@ -130,10 +131,11 @@ describe("PropertyService", () => {
       );
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        "/api/v1/properties/client-123/client_properties/prop-123",
+        "/api/v1/properties/client-123/client_property/prop-123?q",
         expect.any(Object)
       );
-      expect(response.status).toBe(200);
+      expect(response.success).toBe(true);
+      expect(response.data.pid).toBe("prop-123");
     });
   });
 
@@ -250,6 +252,314 @@ describe("PropertyService", () => {
         })
       );
       expect(response.data.data.imported).toBe(5);
+    });
+  });
+
+  describe("getPendingApprovals", () => {
+    it("should fetch pending approval properties with pagination", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          data: [
+            { pid: "prop-1", status: "pending" },
+            { pid: "prop-2", status: "pending" },
+          ],
+          pagination: { page: 1, limit: 10, total: 2 },
+        },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.getPendingApprovals(
+        "client-123",
+        { page: 1, limit: 10 }
+      );
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        expect.stringContaining("/api/v1/properties/client-123/properties/pending"),
+        expect.any(Object)
+      );
+      expect(response.success).toBe(true);
+      expect(response.data).toHaveLength(2);
+    });
+
+    it("should include sort parameters in query string", async () => {
+      const mockResponse = {
+        status: 200,
+        data: { success: true, data: [], pagination: {} },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      await propertyService.getPendingApprovals("client-123", {
+        page: 1,
+        limit: 10,
+        sort: "asc",
+        sortBy: "createdAt",
+      });
+
+      const callUrl = mockedAxios.get.mock.calls[0][0];
+      expect(callUrl).toContain("sort=asc");
+      expect(callUrl).toContain("sortBy=createdAt");
+    });
+  });
+
+  describe("approveProperty", () => {
+    it("should approve a property without notes", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          message: "Property approved",
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.approveProperty(
+        "client-123",
+        "prop-123"
+      );
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/properties/client-123/properties/prop-123/approve",
+        { notes: undefined },
+        expect.any(Object)
+      );
+      expect(response.data.success).toBe(true);
+    });
+
+    it("should approve a property with notes", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          message: "Property approved",
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      await propertyService.approveProperty(
+        "client-123",
+        "prop-123",
+        "Approved after review"
+      );
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        expect.any(String),
+        { notes: "Approved after review" },
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe("rejectProperty", () => {
+    it("should reject a property with reason", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          message: "Property rejected",
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.rejectProperty(
+        "client-123",
+        "prop-123",
+        "Missing required documents"
+      );
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/properties/client-123/properties/prop-123/reject",
+        { reason: "Missing required documents" },
+        expect.any(Object)
+      );
+      expect(response.data.success).toBe(true);
+    });
+
+    it("should throw error when rejection fails", async () => {
+      mockedAxios.post.mockRejectedValue(new Error("Network error"));
+
+      await expect(
+        propertyService.rejectProperty("client-123", "prop-123", "Invalid")
+      ).rejects.toThrow("Network error");
+    });
+  });
+
+  describe("bulkApproveProperties", () => {
+    it("should approve multiple properties", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          message: "Properties approved",
+          data: { approved: 3 },
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.bulkApproveProperties(
+        "client-123",
+        ["prop-1", "prop-2", "prop-3"]
+      );
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/properties/client-123/properties/bulk-approve",
+        { propertyIds: ["prop-1", "prop-2", "prop-3"] },
+        expect.any(Object)
+      );
+      expect(response.data.success).toBe(true);
+    });
+  });
+
+  describe("bulkRejectProperties", () => {
+    it("should reject multiple properties with reason", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          message: "Properties rejected",
+          data: { rejected: 2 },
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.bulkRejectProperties(
+        "client-123",
+        ["prop-1", "prop-2"],
+        "Incomplete information"
+      );
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/properties/client-123/properties/bulk-reject",
+        { propertyIds: ["prop-1", "prop-2"], reason: "Incomplete information" },
+        expect.any(Object)
+      );
+      expect(response.data.success).toBe(true);
+    });
+  });
+
+  describe("getPropertyFormMetaData", () => {
+    it("should fetch form metadata for specific form type", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          data: {
+            formType: "residential",
+            fields: ["address", "bedrooms", "bathrooms"],
+          },
+        },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.getPropertyFormMetaData(
+        "residential"
+      );
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "/api/v1/properties/property_form_metadata?formType=residential",
+        expect.any(Object)
+      );
+      expect(response.success).toBe(true);
+    });
+  });
+
+  describe("getAllStaticData", () => {
+    it("should fetch all static property data", async () => {
+      const mockResponse = {
+        status: 200,
+        data: {
+          success: true,
+          data: {
+            propertyTypes: ["residential", "commercial"],
+            statuses: ["active", "inactive"],
+          },
+        },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      const response = await propertyService.getAllStaticData();
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "/api/v1/properties/property_form_metadata",
+        expect.any(Object)
+      );
+      expect(response.success).toBe(true);
+    });
+  });
+
+  describe("buildQueryString", () => {
+    it("should build query string with all filter parameters", async () => {
+      const mockResponse = {
+        status: 200,
+        data: { success: true, data: [], pagination: {} },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      await propertyService.getClientProperties(
+        "client-123",
+        { page: 1, limit: 10 },
+        {
+          propertyType: "residential",
+          status: "active",
+          occupancyStatus: "occupied",
+          minPrice: 100000,
+          maxPrice: 500000,
+          searchTerm: "downtown",
+          minArea: 1000,
+          maxArea: 3000,
+          minYear: 2000,
+          maxYear: 2020,
+        }
+      );
+
+      const callUrl = mockedAxios.get.mock.calls[0][0];
+      expect(callUrl).toContain("propertyType=residential");
+      expect(callUrl).toContain("status=active");
+      expect(callUrl).toContain("occupancyStatus=occupied");
+      expect(callUrl).toContain("minPrice=100000");
+      expect(callUrl).toContain("maxPrice=500000");
+      expect(callUrl).toContain("searchTerm=downtown");
+      expect(callUrl).toContain("minArea=1000");
+      expect(callUrl).toContain("maxArea=3000");
+      expect(callUrl).toContain("minYear=2000");
+      expect(callUrl).toContain("maxYear=2020");
+    });
+
+    it("should omit undefined and null filter values", async () => {
+      const mockResponse = {
+        status: 200,
+        data: { success: true, data: [], pagination: {} },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      await propertyService.getClientProperties(
+        "client-123",
+        { page: 1, limit: 10 },
+        {
+          propertyType: "residential",
+          status: undefined,
+          minPrice: null as any,
+          searchTerm: "",
+        }
+      );
+
+      const callUrl = mockedAxios.get.mock.calls[0][0];
+      expect(callUrl).toContain("propertyType=residential");
+      expect(callUrl).not.toContain("status=");
+      expect(callUrl).not.toContain("minPrice=");
+      expect(callUrl).not.toContain("searchTerm=");
     });
   });
 });

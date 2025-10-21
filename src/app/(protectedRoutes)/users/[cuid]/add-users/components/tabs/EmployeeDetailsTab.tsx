@@ -7,16 +7,19 @@ import { FormInput, FormLabel, FormField } from "@components/FormElements";
 
 interface EmployeeDetailsTabProps {
   formData: IInvitationFormData;
+  collapsableSections: boolean;
   onFieldChange: (field: string, value: any) => void;
 }
 
 export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
   formData,
   onFieldChange,
+  collapsableSections = false,
 }) => {
   return (
     <FormSection
       title="Employee Information"
+      collapsable={collapsableSections}
       description="Enter employee-specific details"
     >
       <div className="form-fields">

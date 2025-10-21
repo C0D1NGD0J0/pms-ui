@@ -1,20 +1,19 @@
 "use client";
 import React from "react";
 import { FormSection } from "@components/FormLayout";
-import { useNotification } from "@hooks/useNotification";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
 import {
   FormInput,
   FormLabel,
   FormField,
-  FileInput,
   Textarea,
   Select,
 } from "@components/FormElements";
 
 interface VendorInvitationTabProps {
-  formData: IInvitationFormData;
   messageCount: number;
+  collapsableSections?: boolean;
+  formData: IInvitationFormData;
   onFieldChange: (field: string, value: any) => void;
   onMessageCountChange: (count: number) => void;
 }
@@ -24,36 +23,13 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
   messageCount,
   onFieldChange,
   onMessageCountChange,
+  collapsableSections = false,
 }) => {
-  const { message } = useNotification();
-
-  const handleFileUpload = (files: File | File[] | null) => {
-    if (files) {
-      const fileArray = Array.isArray(files) ? files : [files];
-
-      // Update form data with all attachments
-      const attachmentsData = fileArray.map((file) => ({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file),
-      }));
-
-      onFieldChange("metadata.attachments", attachmentsData);
-    } else {
-      // Clear all files
-      onFieldChange("metadata.attachments", null);
-    }
-  };
-
-  const handleFileError = (errorMessage: string) => {
-    message.warning(errorMessage);
-  };
-
   return (
     <>
       <FormSection
         title="Company Information"
+        collapsable={collapsableSections}
         description="Basic vendor company details (optional)"
       >
         <div className="form-fields">
@@ -99,6 +75,7 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
 
       <FormSection
         title="Service Category"
+        collapsable={collapsableSections}
         description="What type of service is this vendor being invited for?"
       >
         <div className="form-fields">
@@ -139,6 +116,7 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
 
       <FormSection
         title="Primary Contact"
+        collapsable={collapsableSections}
         description="Main contact person for this vendor"
       >
         <div className="form-fields">
@@ -206,6 +184,7 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
 
       <FormSection
         title="Invitation Details"
+        collapsable={collapsableSections}
         description="Additional details for the invitation"
       >
         <div className="form-fields">
@@ -253,26 +232,6 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
             <small style={{ color: "#7d8da1", fontSize: "12px" }}>
               {messageCount}/500 characters
             </small>
-          </FormField>
-        </div>
-      </FormSection>
-
-      <FormSection
-        title="File Attachments"
-        description="Attach relevant documents to share with the vendor (3 files max, 10MB total)"
-      >
-        <div className="form-fields">
-          <FormField>
-            <FormLabel htmlFor="attachments" label="Attachments" />
-            <FileInput
-              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt,.csv,.xlsx"
-              instructionText="Upload documents (PDF, JPG, PNG, DOC, DOCX, TXT, CSV, XLSX)"
-              multiImage={true}
-              maxFiles={3}
-              totalSizeAllowed={10}
-              onError={handleFileError}
-              onChange={handleFileUpload}
-            />
           </FormField>
         </div>
       </FormSection>

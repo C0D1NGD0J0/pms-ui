@@ -14,60 +14,55 @@ interface DocumentData {
 }
 
 interface DocumentsTabProps {
-  userType: 'employee' | 'vendor';
+  userType?: "employee" | "vendor" | "tenant";
   documents?: DocumentData[];
 }
 
-export const DocumentsTab: React.FC<DocumentsTabProps> = ({ 
-  userType, 
-  documents 
+// Document type to icon mapping
+const getDocumentIcon = (type: string): string => {
+  const iconMap: Record<string, string> = {
+    // Employee documents
+    certification: "bx-certification",
+    training: "bx-book-reader",
+    id: "bx-id-card",
+    identification: "bx-id-card",
+
+    // Vendor documents
+    license: "bx-certification",
+    agreement: "bx-file-blank",
+    contract: "bx-file-blank",
+    tax: "bx-receipt",
+
+    // Tenant documents
+    lease: "bx-home",
+    application: "bx-file-blank",
+    background: "bx-shield-check",
+    reference: "bx-user-check",
+    pet: "bx-bone",
+
+    // Shared documents
+    insurance: "bx-shield",
+    safety: "bx-award",
+    document: "bx-file",
+    invoice: "bx-receipt",
+    report: "bx-bar-chart",
+    w9: "bx-receipt",
+    "w-9": "bx-receipt",
+  };
+
+  const normalizedType = type.toLowerCase().trim();
+  return iconMap[normalizedType] || "bx-file";
+};
+
+export const DocumentsTab: React.FC<DocumentsTabProps> = ({
+  userType = "employee",
+  documents = [],
 }) => {
-  // Use provided documents or fallback to static data for demo purposes
-  const documentData: DocumentData[] = documents || [
-    {
-      id: "doc-1",
-      title: userType === 'employee' ? "Employee Certification" : "Business License",
-      type: userType === 'employee' ? "Certification" : "License",
-      subtitle: "Valid until: December 31, 2025",
-      icon: "bx-certification",
-      status: "valid",
-      expiryDate: "2025-12-31",
-    },
-    {
-      id: "doc-2",
-      title: "Insurance Certificate",
-      type: "Insurance",
-      subtitle: "Coverage: $2M • Expires: June 30, 2025",
-      icon: "bx-shield",
-      status: "valid",
-      expiryDate: "2025-06-30",
-    },
-    {
-      id: "doc-3",
-      title: userType === 'employee' ? "Training Certificate" : "Service Agreement Template",
-      type: userType === 'employee' ? "Training" : "Agreement",
-      subtitle: "Updated: November 15, 2024",
-      icon: "bx-file",
-      status: "valid",
-    },
-    {
-      id: "doc-4",
-      title: "Safety Certification",
-      type: "Certification",
-      subtitle: "OSHA Compliant • Valid until: March 2025",
-      icon: "bx-award",
-      status: "expiring",
-      expiryDate: "2025-03-31",
-    },
-    {
-      id: "doc-5",
-      title: userType === 'employee' ? "ID Documentation" : "Tax ID Documentation",
-      type: userType === 'employee' ? "ID" : "Tax",
-      subtitle: userType === 'employee' ? "Employee ID: 12345 • Valid" : "EIN: 12-3456789 • Filed: 2024",
-      icon: "bx-id-card",
-      status: "valid",
-    },
-  ];
+  // Enhance documents with proper icons if not provided
+  const enhancedDocuments = documents.map((doc) => ({
+    ...doc,
+    icon: doc.icon.startsWith("bx") ? doc.icon : getDocumentIcon(doc.type),
+  }));
 
   // Define table columns for documents
   const documentColumns: TableColumn<DocumentData>[] = [
@@ -85,6 +80,9 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
     {
       title: "Type",
       dataIndex: "type",
+      render: (type: string) => (
+        <span style={{ textTransform: "capitalize" }}>{type}</span>
+      ),
     },
     {
       title: "Status",
@@ -117,22 +115,45 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
     },
   ];
 
-  const title = userType === 'employee' 
-    ? 'Documents & Certifications'
-    : 'Documents & Licenses';
+  // Title based on user type
+  const getTitleByUserType = () => {
+    switch (userType) {
+      case "employee":
+        return "Documents & Certifications";
+      case "vendor":
+        return "Documents & Licenses";
+      case "tenant":
+        return "Documents & Leases";
+      default:
+        return "Documents";
+    }
+  };
 
   return (
-    <div className="documents-tab">
-      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
-        {title}
-      </h3>
-      <Table
-        columns={documentColumns}
-        dataSource={documentData}
-        rowKey="id"
-        pagination={false}
-        tableVariant="default"
-      />
+    <div className="user-detail-tab">
+      <h3 className="detail-section-title">{getTitleByUserType()}</h3>
+
+      {enhancedDocuments.length > 0 ? (
+        <Table
+          columns={documentColumns}
+          dataSource={enhancedDocuments}
+          rowKey="id"
+          pagination={false}
+          tableVariant="default"
+        />
+      ) : (
+        <div className="detail-empty-state">
+          <i className="bx bx-file"></i>
+          <p>No documents available</p>
+          <p>
+            {userType === "tenant"
+              ? "Lease agreements and tenant documents will appear here once they are uploaded."
+              : userType === "vendor"
+              ? "Business licenses, insurance certificates, and other vendor documents will appear here once they are uploaded."
+              : "Certifications, training documents, and other files will appear here once they are uploaded."}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

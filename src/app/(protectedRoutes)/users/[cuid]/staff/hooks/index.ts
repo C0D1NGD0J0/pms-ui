@@ -1,2 +1,5 @@
-export * from "./useGetEmployees";
-export * from "./useGetEmployee";
+export {
+  useGetEmployees,
+  useGetEmployeeInfo,
+  useUpdateEmployee,
+} from "./employeeHooks";

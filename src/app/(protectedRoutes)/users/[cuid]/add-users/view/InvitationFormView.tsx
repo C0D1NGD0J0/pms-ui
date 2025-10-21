@@ -104,6 +104,7 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
               <EmployeeDetailsTab
                 formData={invitationForm.values as any}
                 onFieldChange={handleFieldChange}
+                collapsableSections={false}
               />
             )}
         </>

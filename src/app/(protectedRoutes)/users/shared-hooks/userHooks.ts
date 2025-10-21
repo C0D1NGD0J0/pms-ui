@@ -1,16 +1,19 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { USER_QUERY_KEYS } from "@utils/constants";
-import { IUserRoleType } from "@interfaces/user.interface";
 import { IFilteredUsersParams, userService } from "@src/services/users";
-
+import {
+  UserStatsQueryParams,
+  IUserRoleType,
+  IUserStats,
+} from "@interfaces/user.interface";
 import {
   COMMON_DEPARTMENT_OPTIONS,
   COMMON_STATUS_OPTIONS,
   COMMON_SORT_OPTIONS,
   ALL_ROLE_OPTIONS,
+  USER_QUERY_KEYS,
   TYPE_OPTIONS,
-} from "./constants";
+} from "@utils/constants";
 
 export interface FilteredUsersQueryParams {
   type?: "employee" | "tenant" | "vendor";
@@ -84,7 +87,8 @@ export const useGetFilteredUsers = (
     updateQueryParams({ search, page: 1 });
   };
 
-  const handleTypeFilter = (type: "employee" | "tenant" | "vendor" | "") => {
+  const handleTypeFilter = (type: "employee" | "vendor" | "") => {
+    if (type === "") return;
     updateQueryParams({ type: type || undefined, page: 1 });
   };
 
@@ -124,5 +128,30 @@ export const useGetFilteredUsers = (
     departmentOptions,
     roleOptions,
     statusOptions,
+  };
+};
+
+export const useGetUserStats = (
+  cuid: string,
+  filterParams?: UserStatsQueryParams
+) => {
+  const query = useQuery({
+    queryKey: USER_QUERY_KEYS.getUserStats(cuid, filterParams),
+    queryFn: async () => {
+      const userQuery: IFilteredUsersParams = {
+        ...(filterParams?.role && { role: filterParams.role }),
+      };
+
+      const resp = await userService.getUserStats(cuid, userQuery);
+      return resp as IUserStats;
+    },
+  });
+
+  return {
+    stats: query.data,
+    isLoading: query.isLoading,
+    isError: query.isError,
+    error: query.error,
+    refetch: query.refetch,
   };
 };

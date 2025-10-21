@@ -3,10 +3,9 @@ import { Panel } from "@components/Panel";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { TableColumn, Table } from "@components/Table";
-import { IPaginationQuery } from "@interfaces/utils.interface";
 import { IInvitationTableData } from "@interfaces/invitation.interface";
+import { IPaginationQuery, FilterOption } from "@interfaces/utils.interface";
 
-import { FilterOption } from "../hooks/useGetInvitations";
 import { RevokeInvitationModal } from "./RevokeInvitationModal";
 import { ResendInvitationModal } from "./ResendInvitationModal";
 
