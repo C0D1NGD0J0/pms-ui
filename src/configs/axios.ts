@@ -83,6 +83,28 @@ class AxiosService implements IAxiosService {
           _retry?: boolean;
         };
 
+        // Handle 429 (rate limit) errors - never retry
+        if (error.response?.status === 429) {
+          const retryAfter = error.response.headers["retry-after"];
+          const waitTime = retryAfter ? parseInt(retryAfter) : 60;
+
+          console.warn(
+            "Rate limit hit:",
+            originalRequest?.url,
+            "Retry-After:",
+            retryAfter
+          );
+
+          // Publish rate limit event for UI notification
+          events.publish(EventTypes.RATE_LIMIT_EXCEEDED, {
+            url: originalRequest?.url,
+            retryAfter: waitTime,
+            message: `Too many requests. Please wait ${waitTime} seconds before trying again.`,
+          });
+
+          return Promise.reject(new APIError().init(error));
+        }
+
         // Check for 401 errors that aren't already retried
         if (
           error.response?.status === 401 &&

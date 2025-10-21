@@ -1,16 +1,19 @@
 import { useForm } from "@mantine/form";
-import { useEffect, useState } from "react";
 import { authService } from "@services/auth";
 import { errorFormatter } from "@utils/helpers";
+import { useEffect, useState, use } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
+import { useSearchParams, useRouter } from "next/navigation";
 import { IAccountActivationForm } from "@interfaces/auth.interface";
-import { useSearchParams, useRouter, useParams } from "next/navigation";
 import { AccountActivationSchema } from "@validations/auth.validations";
 
-export function useAccountActivationLogic() {
-  const params = useParams();
+export function useAccountActivationLogic({
+  params,
+}: {
+  params: Promise<{ cuid: string }>;
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { openNotification } = useNotification();
@@ -20,7 +23,7 @@ export function useAccountActivationLogic() {
   const [showResendActivation, setShowResendActivation] = useState(false);
   const [email, setEmail] = useState("");
   const token = searchParams.get("t");
-  const cuid = params.cuid as string;
+  const { cuid } = use(params);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (

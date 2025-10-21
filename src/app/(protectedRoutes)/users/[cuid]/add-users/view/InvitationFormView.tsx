@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { IUnifiedPermissions } from "@src/interfaces";
 import { Button, Form } from "@components/FormElements";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import { InvitationFormValues } from "@validations/invitation.validations";
@@ -14,17 +15,21 @@ import { useInvitationFormBase } from "../hooks";
 import {
   VendorInvitationTab,
   EmployeeDetailsTab,
+  TenantDetailsTab,
   RoleSelectionTab,
   ReviewTab,
 } from "../components";
 
 interface InvitationFormViewProps {
-  onSubmit: (values: InvitationFormValues) => void;
-  onSaveDraft: (values: InvitationFormValues) => void;
   onCancel: () => void;
   onPreview: () => void;
   isSubmitting?: boolean;
+  editingInvitation?: any;
+  currentUserRole?: string;
+  permission: IUnifiedPermissions;
+  onSubmit: (values: InvitationFormValues) => void;
   formBase: ReturnType<typeof useInvitationFormBase>;
+  onSaveDraft: (values: InvitationFormValues) => void;
 }
 
 export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
@@ -34,6 +39,8 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
   formBase,
   onPreview,
   isSubmitting = false,
+  permission,
+  editingInvitation,
 }) => {
   const {
     activeTab,
@@ -58,7 +65,7 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
       isVisible: isTabVisible("role"),
       content: (
         <RoleSelectionTab
-          formData={invitationForm.values as any}
+          formData={invitationForm}
           selectedRole={selectedRole}
           messageCount={messageCount}
           showInviteMessage={showInviteMessage}
@@ -66,6 +73,8 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
           onFieldChange={handleFieldChange}
           onMessageCountChange={handleMessageCountChange}
           onShowInviteMessageToggle={handleShowInviteMessageToggle}
+          permission={permission}
+          editingInvitation={editingInvitation}
         />
       ),
     },
@@ -83,12 +92,21 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
               onMessageCountChange={handleMessageCountChange}
             />
           )}
-          {selectedRole && selectedRole !== "vendor" && (
-            <EmployeeDetailsTab
+          {selectedRole === "tenant" && (
+            <TenantDetailsTab
               formData={invitationForm.values as any}
               onFieldChange={handleFieldChange}
             />
           )}
+          {selectedRole &&
+            selectedRole !== "vendor" &&
+            selectedRole !== "tenant" && (
+              <EmployeeDetailsTab
+                formData={invitationForm.values as any}
+                onFieldChange={handleFieldChange}
+                collapsableSections={false}
+              />
+            )}
         </>
       ),
     },

@@ -19,7 +19,7 @@ import {
   TasksTab,
 } from "@components/UserDetail";
 
-import { useGetEmployeeInfo } from "../hooks/useGetEmployee";
+import { useGetEmployeeInfo } from "../hooks/employeeHooks";
 
 interface EmployeeDetailPageProps {
   params: Promise<{
@@ -109,7 +109,7 @@ export default function EmployeeDetailPage({
       return dateString;
     }
   };
-
+  console.log(employee);
   const tabItems: TabItem[] = [
     {
       id: "overview",

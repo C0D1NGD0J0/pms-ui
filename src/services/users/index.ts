@@ -3,6 +3,7 @@ import { prepareRequestData } from "@utils/formDataTransformer";
 import { UpdateClientDetailsFormData } from "@validations/client.validations";
 import {
   IListResponseWithPagination,
+  IFilteredTenantsParams,
   IUserRoleType,
 } from "@interfaces/user.interface";
 
@@ -179,6 +180,84 @@ class UsersService {
       return result.data.data;
     } catch (error) {
       console.error("Error updating user details:", error);
+      throw error;
+    }
+  }
+
+  async getTenants(
+    cuid: string,
+    params?: IFilteredTenantsParams
+  ): Promise<IListResponseWithPagination> {
+    try {
+      const queryParams = new URLSearchParams();
+
+      if (params?.status) queryParams.append("status", params.status);
+      if (params?.search) queryParams.append("search", params.search);
+      if (params?.page) queryParams.append("page", params.page.toString());
+      if (params?.limit) queryParams.append("limit", params.limit.toString());
+      if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+      if (params?.sort) queryParams.append("sort", params.sort);
+
+      let url = `${this.baseUrl}/${cuid}/filtered-tenants`;
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const result = await axios.get(url, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching filtered tenants:", error);
+      throw error;
+    }
+  }
+
+  async getClientTenantDetails(
+    cuid: string,
+    uid: string,
+    include?: string[]
+  ) {
+    try {
+      const queryParams = new URLSearchParams();
+      if (include && include.length > 0) {
+        queryParams.append("include", include.join(","));
+      }
+
+      let url = `${this.baseUrl}/${cuid}/client_tenant/${uid}`;
+      if (queryParams.toString()) {
+        url += `?${queryParams.toString()}`;
+      }
+
+      const result = await axios.get(url, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching tenant:", error);
+      throw error;
+    }
+  }
+
+  async updateTenant(cuid: string, uid: string, data: any) {
+    try {
+      const result = await axios.patch(
+        `${this.baseUrl}/${cuid}/tenant_details/${uid}`,
+        data,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error updating tenant:", error);
+      throw error;
+    }
+  }
+
+  async deactivateTenant(cuid: string, uid: string) {
+    try {
+      const result = await axios.delete(
+        `${this.baseUrl}/${cuid}/tenant_details/${uid}`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error deactivating tenant:", error);
       throw error;
     }
   }

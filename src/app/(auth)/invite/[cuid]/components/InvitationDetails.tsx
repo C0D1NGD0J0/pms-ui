@@ -22,7 +22,6 @@ export const InvitationDetails: React.FC<InvitationDetailsProps> = ({
       day: "numeric",
     });
   };
-
   return (
     <>
       <div className="invitation-details-card">

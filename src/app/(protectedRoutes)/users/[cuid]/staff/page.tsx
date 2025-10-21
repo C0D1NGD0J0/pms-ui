@@ -1,14 +1,19 @@
 "use client";
 
-import React, { useMemo } from "react";
 import { useRouter } from "next/navigation";
+import React, { useState, useMemo } from "react";
 import { Loading } from "@src/components/Loading";
+import { Button } from "@components/FormElements";
 import { ChartContainer } from "@components/Charts";
+import { invitationService } from "@services/invite";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNotification } from "@hooks/useNotification";
+import { AddUserModal } from "@components/UserManagement";
 import { generateLegendColors } from "@utils/employeeUtils";
 import { PageHeader } from "@components/PageElements/Header";
 import { FilteredUserTableData } from "@interfaces/user.interface";
+import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { useGetUserStats } from "@app/(protectedRoutes)/shared-hooks/useGetUserStats";
 import {
   PanelsWrapper,
   PanelContent,
@@ -17,6 +22,7 @@ import {
 } from "@components/Panel";
 
 import { useGetEmployees } from "./hooks";
+import { useGetUserStats } from "../../shared-hooks";
 import { EmployeeTableView } from "./components/EmployeeTableView";
 
 interface StaffPageProps {
@@ -28,6 +34,12 @@ interface StaffPageProps {
 export default function StaffPage({ params }: StaffPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
+  const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
+
   const {
     employees,
     sortOptions,
@@ -57,8 +69,7 @@ export default function StaffPage({ params }: StaffPageProps) {
   }, [stats?.roleDistribution]);
 
   const handleEditEmployee = (employee: FilteredUserTableData) => {
-    console.log("Edit employee:", employee);
-    // TODO: Implement edit employee modal/form
+    router.push(`/users/${cuid}/user-edit/${employee.uid}?type=employee`);
   };
 
   const handleViewEmployeeDetails = (employee: FilteredUserTableData) => {
@@ -73,10 +84,52 @@ export default function StaffPage({ params }: StaffPageProps) {
     // TODO: Implement employee status toggle
   };
 
+  const handleAddNewEmployee = () => {
+    setIsAddEmployeeModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsAddEmployeeModalOpen(false);
+  };
+
+  const handleSubmitEmployeeInvite = async (
+    data: Partial<IInvitationFormData>
+  ) => {
+    try {
+      setIsSubmittingInvite(true);
+      await invitationService.sendInvite(cuid, data);
+
+      message.success("Employee invitation sent successfully!");
+      setIsAddEmployeeModalOpen(false);
+
+      // Refresh the employee list
+      queryClient.invalidateQueries({ queryKey: [`/employees/${cuid}`, cuid] });
+    } catch (error: any) {
+      console.error("Failed to send employee invitation:", error);
+      message.error(
+        error?.response?.data?.message ||
+          "Failed to send employee invitation. Please try again."
+      );
+    } finally {
+      setIsSubmittingInvite(false);
+    }
+  };
+
+  const headerButtons = (
+    <div className="flex-row">
+      <Button
+        label="Add new employee"
+        className="btn btn-success"
+        onClick={handleAddNewEmployee}
+        icon={<i className="bx bx-plus-circle"></i>}
+      />
+    </div>
+  );
+
   return (
     <div className="page-container">
       <div className="page add-users-page">
-        <PageHeader title="Employee Management" />
+        <PageHeader title="Employee Management" headerBtn={headerButtons} />
         <div className="flex-row">
           <PanelsWrapper>
             <Panel variant="alt-2">
@@ -164,6 +217,14 @@ export default function StaffPage({ params }: StaffPageProps) {
           </PanelsWrapper>
         </div>
       </div>
+
+      <AddUserModal
+        userType="employee"
+        isOpen={isAddEmployeeModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleSubmitEmployeeInvite}
+        isSubmitting={isSubmittingInvite}
+      />
     </div>
   );
 }

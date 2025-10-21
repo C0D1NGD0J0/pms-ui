@@ -1,11 +1,13 @@
 "use client";
 import { useAuth } from "@store/index";
-import React, { useState } from "react";
 import { Button } from "@components/FormElements";
+import React, { useEffect, useState } from "react";
 import { invitationService } from "@services/invite";
 import { PageHeader } from "@components/PageElements";
 import { useNotification } from "@hooks/useNotification";
+import { useSSENotifications } from "@store/sseNotification.store";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { CsvUploadConfig, CsvUploadModal } from "@components/CsvUploadModal";
 import { InvitationFormValues } from "@src/validations/invitation.validations";
 
@@ -32,7 +34,9 @@ const InviteUsers: React.FC = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const { confirm, message } = useNotification();
   const queryClient = useQueryClient();
-  const { client } = useAuth();
+  const { client, user } = useAuth();
+  const permission = useUnifiedPermissions();
+  const { notifications } = useSSENotifications();
 
   const {
     filterOptions,
@@ -57,18 +61,47 @@ const InviteUsers: React.FC = () => {
   } = useInvitationPreview();
   const formBase = useInvitationFormBase();
 
+  // Listen for CSV validation and import completion notifications
+  useEffect(() => {
+    const latestNotification = notifications[0];
+    if (!latestNotification) return;
+
+    const { metadata } = latestNotification;
+    if (!metadata?.isTransient) return;
+
+    // Handle CSV validation notifications
+    if (metadata.jobType === "csv_validation") {
+      console.log("Received CSV validation notification:", latestNotification);
+      // if validation completed successfully and has valid data
+      if (metadata.stage === "completed" && metadata.validData) {
+        setCsvPreviewData(metadata.validData);
+      }
+      // clear preview if validation failed
+      if (metadata.stage === "failed") {
+        setCsvPreviewData([]);
+      }
+    }
+
+    // Handle CSV import completion - refresh invitation list
+    if (metadata.jobType === "csv_invitation" && metadata.stage === "completed") {
+      setCsvPreviewData([]); // Clear preview if showing
+      queryClient.invalidateQueries({
+        queryKey: [`/invitations/${client?.cuid}`, client?.cuid],
+      });
+    }
+  }, [notifications, queryClient, client?.cuid]);
+
   const handleOpenCSVModal = () => {
     setIsCSVModalOpen(true);
   };
 
   const handleCloseCSVModal = () => {
     setIsCSVModalOpen(false);
-    setCsvPreviewData([]);
   };
 
-  const handlePreviewData = (data: any[]) => {
-    setCsvPreviewData(data);
-  };
+  // const handlePreviewData = (data: any[]) => {
+  //   setCsvPreviewData(data);
+  // };
 
   const toggleFormVisibility = () => {
     setIsFormVisible(!isFormVisible);
@@ -77,10 +110,10 @@ const InviteUsers: React.FC = () => {
   const csvUploadConfig: CsvUploadConfig = {
     title: "Upload User Invitations via CSV",
     description:
-      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid.",
+      "Upload a CSV file containing user invitation information. The file should include the following columns: inviteeEmail, role, firstName, lastName and optionally phoneNumber, inviteMessage, expectedStartDate, cuid. For tenants, you can also include employer and emergency contact information.",
     templateUrl: "/templates/user-invitation.csv",
     templateName: "Download CSV Template",
-    showPreview: true,
+    // showPreview: true,
     columns: [
       {
         name: "inviteeEmail",
@@ -122,12 +155,57 @@ const InviteUsers: React.FC = () => {
         description: "Client unique identifier",
         required: false,
       },
+      {
+        name: "employerCompanyName",
+        description: "Tenant only: Company name",
+        required: false,
+      },
+      {
+        name: "employerPosition",
+        description: "Tenant only: Job position",
+        required: false,
+      },
+      {
+        name: "employerMonthlyIncome",
+        description: "Tenant only: Monthly income (numeric)",
+        required: false,
+      },
+      {
+        name: "employerCompanyRef",
+        description: "Tenant only: Company reference/contact name",
+        required: false,
+      },
+      {
+        name: "employerRefContactEmail",
+        description: "Tenant only: Reference contact email",
+        required: false,
+      },
+      {
+        name: "emergencyContactName",
+        description: "Tenant only: Emergency contact full name",
+        required: false,
+      },
+      {
+        name: "emergencyContactPhone",
+        description: "Tenant only: Emergency contact phone",
+        required: false,
+      },
+      {
+        name: "emergencyContactRelationship",
+        description: "Tenant only: Relationship (e.g., Spouse, Parent)",
+        required: false,
+      },
+      {
+        name: "emergencyContactEmail",
+        description: "Tenant only: Emergency contact email",
+        required: false,
+      },
     ],
     serviceMethods: {
       validateCsv: (file: File) =>
         invitationService.validateInvitationCsv(client?.cuid || "", file),
-      processCsv: (processId: string) =>
-        invitationService.processValidatedCsv(client?.cuid || "", processId),
+      importCsv: (file: File) =>
+        invitationService.importInvitationsFromCsv(client?.cuid || "", file),
     },
   };
 
@@ -285,6 +363,7 @@ const InviteUsers: React.FC = () => {
       },
       employeeInfo: invitation.employeeInfo || {},
       vendorInfo: invitation.vendorInfo || {},
+      tenantInfo: invitation.tenantInfo || {},
     });
 
     formBase.setActiveTab("details");
@@ -321,28 +400,33 @@ const InviteUsers: React.FC = () => {
           onSubmit={onSubmit}
           formBase={formBase}
           onCancel={onCancel}
+          permission={permission}
           onPreview={onPreview}
           onSaveDraft={onSaveDraft}
           isSubmitting={isEditMode ? isUpdating : isSubmitting}
+          currentUserRole={user?.client?.role}
+          editingInvitation={editingInvitation}
         />
       )}
 
-      <InvitationTableView
-        cuid={client?.cuid || ""}
-        invitations={invitations}
-        onResend={handleResend}
-        onRevoke={handleRevoke}
-        onEdit={handleEdit}
-        filterOptions={filterOptions}
-        totalCount={totalCount}
-        pagination={pagination}
-        handleSortChange={handleSortChange}
-        handlePageChange={handlePageChange}
-        handleSortByChange={handleSortByChange}
-        isResending={resendMutation.isPending}
-        isRevoking={revokeMutation.isPending}
-        loadingItemId={loadingItemId || undefined}
-      />
+      {!isFormVisible && (
+        <InvitationTableView
+          cuid={client?.cuid || ""}
+          invitations={invitations}
+          onResend={handleResend}
+          onRevoke={handleRevoke}
+          onEdit={handleEdit}
+          filterOptions={filterOptions}
+          totalCount={totalCount}
+          pagination={pagination}
+          handleSortChange={handleSortChange}
+          handlePageChange={handlePageChange}
+          handleSortByChange={handleSortByChange}
+          isResending={resendMutation.isPending}
+          isRevoking={revokeMutation.isPending}
+          loadingItemId={loadingItemId || undefined}
+        />
+      )}
 
       <InvitationPreviewModal
         isOpen={showPreview}
@@ -357,7 +441,6 @@ const InviteUsers: React.FC = () => {
         isOpen={isCSVModalOpen}
         onClose={handleCloseCSVModal}
         config={csvUploadConfig}
-        onPreviewData={handlePreviewData}
       />
 
       {csvPreviewData.length > 0 && <InvitationPreview data={csvPreviewData} />}

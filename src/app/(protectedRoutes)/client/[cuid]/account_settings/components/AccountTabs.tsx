@@ -91,7 +91,7 @@ export function AccountTabs({
       case "identification":
         return <IdentificationTab {...tabProps} />;
       case "admin-users":
-        return <AdminUsersTab {...tabProps} />;
+        return <AdminUsersTab params={Promise.resolve({ cuid: clientInfo.cuid })} />;
       default:
         return <ProfileTab {...tabProps} />;
     }

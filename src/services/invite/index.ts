@@ -35,7 +35,7 @@ class InvitationService {
   ) {
     return withErrorHandling(async () => {
       const response = await axios.patch(
-        `${this.baseUrl}/${cuid}/update/${iuid}`,
+        `${this.baseUrl}/${cuid}/update_invite/${iuid}`,
         inviteData,
         this.axiosConfig
       );

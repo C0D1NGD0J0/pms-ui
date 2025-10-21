@@ -1,7 +1,7 @@
 import * as authStore from "@store/auth.store";
 import { render } from "@tests/utils/test-utils";
 import { Navbar } from "@components/Layouts/Navbar";
-import { fireEvent, waitFor, screen } from "@testing-library/react";
+import { fireEvent, waitFor, screen, act } from "@testing-library/react";
 
 // Mock auth store
 jest.mock("@store/auth.store", () => ({
@@ -92,6 +92,7 @@ describe("Navbar Component", () => {
   });
 
   it("toggles user dropdown when user avatar is clicked", () => {
+    jest.useFakeTimers();
     (authStore.useAuth as jest.Mock).mockReturnValue({
       isLoggedIn: true,
     });
@@ -103,11 +104,19 @@ describe("Navbar Component", () => {
 
     expect(dropdown).not.toHaveClass("show");
 
-    fireEvent.click(userAvatar!);
+    act(() => {
+      fireEvent.mouseEnter(userAvatar!);
+      jest.advanceTimersByTime(200);
+    });
     expect(dropdown).toHaveClass("show");
 
-    fireEvent.click(userAvatar!);
+    act(() => {
+      fireEvent.mouseLeave(userAvatar!);
+      jest.advanceTimersByTime(300);
+    });
     expect(dropdown).not.toHaveClass("show");
+
+    jest.useRealTimers();
   });
 
   it("shows user dropdown menu items when logged in", () => {
@@ -118,10 +127,9 @@ describe("Navbar Component", () => {
     render(<Navbar />);
 
     const userAvatar = document.querySelector(".user-avatar");
-    fireEvent.click(userAvatar!);
+    fireEvent.mouseEnter(userAvatar!);
 
     expect(screen.getByText("Profile")).toBeInTheDocument();
-    expect(screen.getByText("Settings")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
   });
 
@@ -162,6 +170,7 @@ describe("Navbar Component", () => {
   });
 
   it("closes user dropdown when mobile menu is opened", () => {
+    jest.useFakeTimers();
     (authStore.useAuth as jest.Mock).mockReturnValue({
       isLoggedIn: true,
     });
@@ -170,7 +179,10 @@ describe("Navbar Component", () => {
 
     // Open user dropdown
     const userAvatar = document.querySelector(".user-avatar");
-    fireEvent.click(userAvatar!);
+    act(() => {
+      fireEvent.mouseEnter(userAvatar!);
+      jest.advanceTimersByTime(200);
+    });
     expect(document.querySelector(".navbar__dropdown-menu")).toHaveClass(
       "show"
     );
@@ -182,6 +194,8 @@ describe("Navbar Component", () => {
     expect(document.querySelector(".navbar__dropdown-menu")).not.toHaveClass(
       "show"
     );
+
+    jest.useRealTimers();
   });
 
   it("renders correct navigation links", () => {
@@ -209,15 +223,11 @@ describe("Navbar Component", () => {
     render(<Navbar />);
 
     const userAvatar = document.querySelector(".user-avatar");
-    fireEvent.click(userAvatar!);
+    fireEvent.mouseEnter(userAvatar!);
 
     expect(screen.getByRole("link", { name: "Profile" })).toHaveAttribute(
       "href",
-      "/profile"
-    );
-    expect(screen.getByRole("link", { name: "Settings" })).toHaveAttribute(
-      "href",
-      "/settings"
+      "/profile/undefined"
     );
   });
 

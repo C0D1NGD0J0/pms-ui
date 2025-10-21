@@ -1,0 +1,36 @@
+@use "../abstract/index" as *;
+
+.invitation-preview {
+  margin-top: $space-xl;
+  border: 1px solid hslaGen($light-grey-color, 0.2);
+  border-radius: $border-radius-lg;
+  padding: $space-md;
+  background: hslaGen($blue-ink-color, 0.5);
+
+  .preview-header {
+    h4 {
+      margin: 0 0 $space-sm 0;
+      color: hslaGen($white-color, 1);
+      font-weight: $fw-bold;
+    }
+
+    p {
+      margin: 0 0 $space-md 0;
+      color: hslaGen($light-grey-color, 1);
+      font-size: $fs-sm;
+    }
+  }
+
+  .preview-table-container {
+    overflow-x: auto;
+    background-color: white;
+    margin-bottom: $space-md;
+  }
+
+  .user-phone,
+  .start-date,
+  .invite-message {
+    color: hslaGen($light-grey-color, 1);
+    font-size: $fs-xsm;
+  }
+}

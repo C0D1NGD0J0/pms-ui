@@ -1,5 +1,7 @@
-export * from "./useInvitationFormBase";
-export * from "./useInvitationForm";
-export * from "./useInvitationEdit";
-export * from "./useInvitationPreview";
-export * from "./useGetInvitations";
+export { useInvitationFormBase } from "./useInvitationFormBase";
+export { useInvitationPreview } from "./useInvitationPreview";
+export {
+  useGetInvitations,
+  useInvitationEdit,
+  useInvitationForm,
+} from "./invitationHooks";

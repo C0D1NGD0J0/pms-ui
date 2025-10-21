@@ -28,7 +28,7 @@ export type ErrorType = "expired" | "invalid" | "accepted";
 interface InvitationAcceptanceViewProps {
   cuid: string;
   token: string;
-  invitation: IInvitationDocument;
+  invitation: IInvitationDocument | null;
 }
 
 export function InvitationAcceptanceView({
@@ -132,7 +132,7 @@ export function InvitationAcceptanceView({
   const getHeaderContent = () => {
     switch (currentStep) {
       case "loading":
-        return null; // No header during loading
+        return null;
       case "invitation-details":
         return {
           title: "You're Invited!",
@@ -140,11 +140,11 @@ export function InvitationAcceptanceView({
         };
       case "account-setup":
         return {
-          title: "Create Your Account",
+          title: "Confirm Account Details",
           subtitle: "Set up your account to get started",
         };
       case "error":
-        return null; // Error state has its own title
+        return null;
       default:
         return {
           title: "Invitation",
@@ -181,15 +181,15 @@ export function InvitationAcceptanceView({
           </div>
         );
       case "invitation-details":
-        return (
+        return invitation ? (
           <InvitationDetails
             invitation={invitation}
             onAccept={handleAcceptInvitation}
             onDecline={handleDeclineClick}
           />
-        );
+        ) : null;
       case "account-setup":
-        return (
+        return invitation ? (
           <AccountSetup
             invitationData={invitation}
             onBack={handleBackToInvitation}
@@ -202,7 +202,7 @@ export function InvitationAcceptanceView({
             errors={errors}
             touched={touched}
           />
-        );
+        ) : null;
       default:
         return null;
     }

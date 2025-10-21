@@ -39,8 +39,8 @@
       "@providers/*": ["src/providers/*"],
 
       "@properties/*": ["src/app/(protectedRoutes)/properties/*"],
-      "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/*"],
-      "@users/*": ["src/app/(protectedRoutes)/users/*"],
+      "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/[cuid]/*"],
+      "@users/*": ["src/app/(protectedRoutes)/users/[cuid]/*"],
       "@auth/*": ["src/app/(auth)/*"],
 
       "@/*": ["./*"]

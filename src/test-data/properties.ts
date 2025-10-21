@@ -1443,6 +1443,124 @@ export const defaultFormData = {
         },
       },
     ],
+    tenants: [
+      {
+        personalInfo: {
+          firstName: "Amanda",
+          lastName: "Peterson",
+          phoneNumber: "+1555234890",
+        },
+        inviteeEmail: "amanda.peterson@example.com",
+        role: "tenant",
+        tenantInfo: {
+          employerInfo: {
+            companyName: "Tech Solutions Inc",
+            position: "Senior Software Engineer",
+            monthlyIncome: 8500,
+            companyRef: "John Smith",
+            refContactEmail: "john.smith@techsolutions.com",
+          },
+          emergencyContact: {
+            name: "Robert Peterson",
+            phone: "+1555345901",
+            relationship: "Father",
+            email: "robert.peterson@example.com",
+          },
+          rentalReferences: [
+            {
+              landlordName: "Sarah Williams",
+              landlordEmail: "sarah.w@properties.com",
+              landlordContact: "+1555456012",
+              durationMonths: 24,
+              reasonForLeaving: "Moving closer to work",
+              propertyAddress: "123 Oak Street, San Francisco, CA 94102",
+            },
+          ],
+        },
+        status: "pending",
+        metadata: {
+          inviteMessage:
+            "Welcome! We're excited to have you join our community. Please complete your tenant profile.",
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Marcus",
+          lastName: "Johnson",
+          phoneNumber: "+1555567123",
+        },
+        inviteeEmail: "marcus.j@example.com",
+        role: "tenant",
+        tenantInfo: {
+          employerInfo: {
+            companyName: "Global Finance Corp",
+            position: "Financial Analyst",
+            monthlyIncome: 7200,
+            companyRef: "Lisa Chen",
+            refContactEmail: "l.chen@globalfinance.com",
+          },
+          emergencyContact: {
+            name: "Michelle Johnson",
+            phone: "+1555678234",
+            relationship: "Sister",
+            email: "michelle.j@example.com",
+          },
+          rentalReferences: [
+            {
+              landlordName: "David Martinez",
+              landlordEmail: "david.m@rentals.com",
+              landlordContact: "+1555789345",
+              durationMonths: 18,
+              reasonForLeaving: "Seeking larger space",
+              propertyAddress: "456 Pine Avenue, Los Angeles, CA 90210",
+            },
+            {
+              landlordName: "Karen White",
+              landlordEmail: "karen@apartments.com",
+              landlordContact: "+1555890456",
+              durationMonths: 12,
+              reasonForLeaving: "Relocating for work",
+              propertyAddress: "789 Elm Street, San Diego, CA 92101",
+            },
+          ],
+        },
+        status: "draft",
+        metadata: {
+          inviteMessage:
+            "Thank you for your interest in our property. Please review and complete your application.",
+        },
+      },
+      {
+        personalInfo: {
+          firstName: "Jessica",
+          lastName: "Taylor",
+          phoneNumber: "+1555901567",
+        },
+        inviteeEmail: "jessica.taylor@example.com",
+        role: "tenant",
+        tenantInfo: {
+          employerInfo: {
+            companyName: "Healthcare Partners",
+            position: "Registered Nurse",
+            monthlyIncome: 6800,
+            companyRef: "Dr. Emily Brown",
+            refContactEmail: "e.brown@healthcare.com",
+          },
+          emergencyContact: {
+            name: "Tom Taylor",
+            phone: "+1555012678",
+            relationship: "Spouse",
+            email: "tom.taylor@example.com",
+          },
+          rentalReferences: [],
+        },
+        status: "pending",
+        metadata: {
+          inviteMessage:
+            "Welcome to our property family. Looking forward to having you as our tenant.",
+        },
+      },
+    ],
     vendors: [
       {
         personalInfo: {

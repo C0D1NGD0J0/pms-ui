@@ -54,6 +54,22 @@ const defaultInvitationValues: InvitationFormValues = {
       department: "",
     },
   },
+  tenantInfo: {
+    employerInfo: {
+      companyName: "",
+      position: "",
+      monthlyIncome: undefined,
+      companyRef: "",
+      refContactEmail: "",
+    },
+    emergencyContact: {
+      name: "",
+      phone: "",
+      relationship: "",
+      email: "",
+    },
+    rentalReferences: [],
+  },
   status: "pending",
 };
 
@@ -140,13 +156,28 @@ export function useInvitationFormBase({
       "employeeInfo.startDate",
     ];
 
+    const tenantFields = [
+      ...baseFields,
+      "tenantInfo.employerInfo.companyName",
+      "tenantInfo.employerInfo.position",
+      "tenantInfo.employerInfo.monthlyIncome",
+      "tenantInfo.employerInfo.companyRef",
+      "tenantInfo.employerInfo.refContactEmail",
+      "tenantInfo.emergencyContact.name",
+      "tenantInfo.emergencyContact.phone",
+      "tenantInfo.emergencyContact.relationship",
+      "tenantInfo.emergencyContact.email",
+      "tenantInfo.rentalReferences",
+    ];
+
     let detailsFields = baseFields;
     if (selectedRole === "vendor") {
       detailsFields = vendorFields;
+    } else if (selectedRole === "tenant") {
+      detailsFields = tenantFields;
     } else if (
       selectedRole === "manager" ||
       selectedRole === "staff" ||
-      selectedRole === "tenant" ||
       selectedRole === "admin"
     ) {
       detailsFields = staffFields;
@@ -200,6 +231,8 @@ export function useInvitationFormBase({
         const getDataPath = (role: IUserRole) => {
           if (role === "vendor") {
             return "invitation.vendors";
+          } else if (role === "tenant") {
+            return "invitation.tenants";
           } else {
             return "invitation.employees";
           }
@@ -216,10 +249,10 @@ export function useInvitationFormBase({
                 .split("T")[0];
           }
 
-          invitationForm.setValues(transformedData);
-          if (transformedData.metadata?.inviteMessage) {
-            setMessageCount(transformedData.metadata.inviteMessage.length);
-          }
+          // invitationForm.setValues(transformedData);
+          // if (transformedData.metadata?.inviteMessage) {
+          //   setMessageCount(transformedData.metadata.inviteMessage.length);
+          // }
         }
       } catch (error) {
         console.warn("Failed to populate default data:", error);
@@ -233,15 +266,34 @@ export function useInvitationFormBase({
       setSelectedRole(role);
       invitationForm.setFieldValue("role", role);
 
+      // Clear other role-specific data
       if (role === "vendor") {
         invitationForm.setFieldValue(
           "employeeInfo",
           defaultInvitationValues.employeeInfo
         );
-      } else {
+        invitationForm.setFieldValue(
+          "tenantInfo",
+          defaultInvitationValues.tenantInfo
+        );
+      } else if (role === "tenant") {
         invitationForm.setFieldValue(
           "vendorInfo",
           defaultInvitationValues.vendorInfo
+        );
+        invitationForm.setFieldValue(
+          "employeeInfo",
+          defaultInvitationValues.employeeInfo
+        );
+      } else {
+        // Staff roles (manager, staff, admin)
+        invitationForm.setFieldValue(
+          "vendorInfo",
+          defaultInvitationValues.vendorInfo
+        );
+        invitationForm.setFieldValue(
+          "tenantInfo",
+          defaultInvitationValues.tenantInfo
         );
       }
 
@@ -289,7 +341,10 @@ export function useInvitationFormBase({
     (show: boolean) => {
       setShowInviteMessage(show);
       if (!show) {
-        handleFieldChange("metadata.inviteMessage", "");
+        handleFieldChange(
+          "metadata.inviteMessage",
+          invitationForm.values.metadata?.inviteMessage || ""
+        );
         setMessageCount(0);
       }
     },
@@ -333,6 +388,8 @@ export function useInvitationFormBase({
         case "details":
           if (selectedRole === "vendor") {
             return "Vendor Details";
+          } else if (selectedRole === "tenant") {
+            return "Tenant Details";
           } else if (selectedRole) {
             return "Staff Details";
           }

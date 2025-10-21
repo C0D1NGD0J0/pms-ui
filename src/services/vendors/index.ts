@@ -1,15 +1,6 @@
 import axios from "@configs/axios";
-import { VendorQueryParams } from "@src/interfaces";
 import { IListResponseWithPagination } from "@interfaces/user.interface";
-
-export interface IFilteredVendorsParams {
-  status?: "active" | "inactive";
-  businessType?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sort?: "asc" | "desc";
-}
+import { IFilteredVendorsParams, VendorQueryParams } from "@src/interfaces";
 
 class VendorService {
   private axiosConfig = {};
@@ -118,6 +109,20 @@ class VendorService {
       return result.data;
     } catch (error) {
       console.error("Error fetching vendor team members:", error);
+      throw error;
+    }
+  }
+
+  async updateVendor(cuid: string, vuid: string, data: any) {
+    try {
+      const result = await axios.patch(
+        `${this.baseUrl}/${cuid}/vendor/${vuid}`,
+        data,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error updating vendor:", error);
       throw error;
     }
   }

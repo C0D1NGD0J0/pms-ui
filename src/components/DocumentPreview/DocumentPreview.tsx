@@ -63,8 +63,16 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
     if (!urlValid) {
       return "";
     }
-    return resolveContent(type, content, url);
-  }, [type, content, url, urlValid]);
+    const resolved = resolveContent(type, content, url);
+
+    // For HTML content in iframe mode, create a blob URL
+    if (type === "html" && currentRenderMode === "iframe" && content && !url) {
+      const blob = new Blob([resolved], { type: "text/html" });
+      return URL.createObjectURL(blob);
+    }
+
+    return resolved;
+  }, [type, content, url, urlValid, currentRenderMode]);
 
   const contentIsImage = useMemo(() => {
     if (type === "image") return true;
@@ -114,6 +122,22 @@ export const DocumentPreview: React.FC<DocumentPreviewProps> = ({
       return () => clearTimeout(timer);
     }
   }, [currentRenderMode, external, contentIsPdf, handleLoadError]);
+
+  // Cleanup blob URL when component unmounts or content changes
+  React.useEffect(() => {
+    return () => {
+      if (
+        type === "html" &&
+        currentRenderMode === "iframe" &&
+        content &&
+        !url &&
+        resolvedContent &&
+        resolvedContent.startsWith("blob:")
+      ) {
+        URL.revokeObjectURL(resolvedContent);
+      }
+    };
+  }, [resolvedContent, type, currentRenderMode, content, url]);
 
   if (external && !allowExternalContent) {
     return (

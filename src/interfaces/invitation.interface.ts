@@ -1,6 +1,6 @@
-import { IFilterQuery } from "./utils.interface";
+import { FilterQuery as IFilterQuery, UserRole } from "./common.interface";
 
-export type IUserRole = "manager" | "vendor" | "tenant" | "staff" | "admin";
+export type IUserRole = UserRole;
 
 export interface IInvitationFormData {
   personalInfo: {
@@ -58,6 +58,29 @@ export interface IInvitationFormData {
       phone?: string;
       department?: string;
     };
+  };
+  tenantInfo?: {
+    employerInfo?: {
+      companyName?: string;
+      position?: string;
+      monthlyIncome?: number;
+      companyRef?: string;
+      refContactEmail?: string;
+    };
+    emergencyContact?: {
+      name?: string;
+      phone?: string;
+      relationship?: string;
+      email?: string;
+    };
+    rentalReferences?: Array<{
+      landlordName?: string;
+      landlordEmail?: string;
+      landlordContact?: string;
+      durationMonths?: number;
+      reasonForLeaving?: string;
+      propertyAddress?: string;
+    }>;
   };
   status: "pending" | "accepted" | "expired" | "revoked" | "sent" | "draft";
 }

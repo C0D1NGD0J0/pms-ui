@@ -8,6 +8,7 @@ interface RoleTileProps {
   onClick: () => void;
   value: string;
   className?: string;
+  disabled?: boolean;
 }
 
 export const RoleTile: React.FC<RoleTileProps> = ({
@@ -17,11 +18,16 @@ export const RoleTile: React.FC<RoleTileProps> = ({
   isSelected,
   onClick,
   className = "",
+  disabled = false,
 }) => {
   return (
     <div
-      className={`role-tile ${isSelected ? "selected" : ""} ${className}`}
-      onClick={onClick}
+      className={`role-tile ${isSelected ? "selected" : ""} ${disabled ? "disabled" : ""} ${className}`}
+      onClick={disabled ? undefined : onClick}
+      style={{
+        cursor: disabled ? "not-allowed" : "pointer",
+        opacity: disabled ? 0.5 : 1,
+      }}
     >
       <div className="role-tile-icon">
         <i className={icon}></i>

@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@src/components/FormElements";
 import { useAuthActions, useAuth } from "@store/auth.store";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
@@ -24,7 +26,6 @@ export const Navbar: React.FC = () => {
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
     useState(false);
 
-  // Use Zustand notification store
   const { notifications, announcements, isConnected, isConnecting, hasError } =
     useSSENotifications();
 
@@ -32,9 +33,9 @@ export const Navbar: React.FC = () => {
     useSSENotificationActions();
 
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const userDropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const cuid = user?.client?.cuid;
 
-  // Initialize notification connection when user is logged in
   useEffect(() => {
     if (cuid && isLoggedIn) {
       initializeConnection(cuid);
@@ -95,14 +96,27 @@ export const Navbar: React.FC = () => {
   const allNotifications = [...notifications, ...announcements];
   const unreadCount = allNotifications.filter((n) => !n.isRead).length;
 
+  const handleUserDropdownMouseEnter = useCallback(() => {
+    if (userDropdownTimeoutRef.current) {
+      clearTimeout(userDropdownTimeoutRef.current);
+    }
+    userDropdownTimeoutRef.current = setTimeout(() => {
+      setIsUserDropdownOpen(true);
+    }, 200);
+  }, []);
+
+  const handleUserDropdownMouseLeave = useCallback(() => {
+    if (userDropdownTimeoutRef.current) {
+      clearTimeout(userDropdownTimeoutRef.current);
+    }
+    userDropdownTimeoutRef.current = setTimeout(() => {
+      setIsUserDropdownOpen(false);
+    }, 300);
+  }, []);
+
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setIsUserDropdownOpen(false);
-  };
-
-  const toggleUserDropdown = (e: React.MouseEvent, value: boolean) => {
-    e.stopPropagation();
-    setIsUserDropdownOpen(value);
   };
 
   return (
@@ -134,7 +148,7 @@ export const Navbar: React.FC = () => {
 
           return (
             <li key={index} className="navbar-menu__item">
-              <span>
+              <span className="item-icon">
                 <i className={`bx ${item.icon}`}></i>
               </span>
               <Link href={item.href}>{item.label}</Link>
@@ -150,7 +164,7 @@ export const Navbar: React.FC = () => {
             onMouseEnter={handleNotificationMouseEnter}
             onMouseLeave={handleNotificationMouseLeave}
           >
-            <span>
+            <span className="item-icon">
               <i className="bx bx-bell"></i>
               {unreadCount > 0 && (
                 <span
@@ -182,43 +196,53 @@ export const Navbar: React.FC = () => {
           </li>
         )}
 
-        <li
-          className="navbar-menu__item user-avatar"
-          onClick={(e) => toggleUserDropdown(e, !isUserDropdownOpen)}
-        >
-          <span>
-            <i className="bx bx-user"></i>
-          </span>
-          <ul
-            className={`navbar__dropdown-menu ${
-              isUserDropdownOpen ? "show" : ""
-            }`}
+        {isLoggedIn && (
+          <li
+            className="navbar-menu__item user-avatar"
+            onMouseEnter={handleUserDropdownMouseEnter}
+            onMouseLeave={handleUserDropdownMouseLeave}
           >
-            <li>
-              <Link href={`/profile/${user?.uid}`}>Profile</Link>
-            </li>
-            <li>
-              <button
-                type="button"
+            <span className="item-icon">
+              <Image
+                src={user?.avatarUrl || "/default-avatar.png"}
+                alt="User Avatar"
+                width={32}
+                height={32}
+                className="user-avatar__image"
                 style={{
-                  background: "transparent",
-                  border: "transparent",
-                  fontSize: "2rem",
-                  fontWeight: "100",
+                  objectFit: "cover",
+                  borderRadius: "50%",
                 }}
-                className="text-danger"
-                onClick={async () => {
-                  await logout();
-                  console.log("User logged out");
-                  sessionStorage.removeItem("static-data-storage");
-                  sessionStorage.removeItem("auth-storage");
-                }}
-              >
-                Logout
-              </button>
-            </li>
-          </ul>
-        </li>
+              />
+            </span>
+            <ul
+              className={`navbar__dropdown-menu ${
+                isUserDropdownOpen ? "show" : ""
+              }`}
+              onMouseEnter={handleUserDropdownMouseEnter}
+              onMouseLeave={handleUserDropdownMouseLeave}
+            >
+              <li>
+                <Link href={`/profile/${user?.uid}`}>
+                  <i className="bx bx-user"></i>
+                  Profile
+                </Link>
+              </li>
+              <li>
+                <Button
+                  label="Logout"
+                  className="btn-danger"
+                  onClick={async () => {
+                    await logout();
+                    console.log("User logged out");
+                    sessionStorage.removeItem("static-data-storage");
+                    sessionStorage.removeItem("auth-storage");
+                  }}
+                />
+              </li>
+            </ul>
+          </li>
+        )}
       </ul>
 
       <div className="menuToggle" onClick={toggleMobileMenu}>

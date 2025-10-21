@@ -1,6 +1,5 @@
-import { useEffect } from "react";
+import { useEffect, use } from "react";
 import { useForm } from "@mantine/form";
-import { useParams } from "next/navigation";
 import { authService } from "@services/auth";
 import { errorFormatter } from "@utils/helpers";
 import { useMutation } from "@tanstack/react-query";
@@ -9,9 +8,12 @@ import { useNotification } from "@hooks/useNotification";
 import { IResetPasswordForm } from "@interfaces/auth.interface";
 import { ResetPasswordSchema } from "@validations/auth.validations";
 
-export function useResetPasswordLogic() {
-  const params = useParams();
-  const token = params.token as string;
+export function useResetPasswordLogic({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}) {
+  const { token } = use(params);
   const { openNotification } = useNotification();
 
   const form = useForm<IResetPasswordForm>({

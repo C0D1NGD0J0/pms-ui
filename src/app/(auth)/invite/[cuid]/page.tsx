@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Skeleton } from "@src/components/Skeleton";
-import { useLoadingManager } from "@hooks/useLoadingManager";
+import React, { useEffect, useState, use } from "react";
 import { IInvitationDocument } from "@src/interfaces/invitation.interface";
 
 import { useValidateInviteToken } from "./hooks";
@@ -13,47 +13,63 @@ interface InvitationPageProps {
   params: Promise<{
     cuid: string;
   }>;
-  searchParams: Promise<{
-    token?: string;
-  }>;
 }
 
-export default function InvitationPage({
-  params,
-  searchParams,
-}: InvitationPageProps) {
-  const { cuid } = React.use(params);
-  const { token } = React.use(searchParams);
-  const { setProcessingInvite, isLoading } = useLoadingManager();
-  const [invite, setInvite] = React.useState<{
-    isValid: boolean;
-    data: IInvitationDocument | null;
+export default function InvitationPage({ params }: InvitationPageProps) {
+  const searchParams = useSearchParams();
+  const { cuid } = use(params);
+  const token = searchParams.get("token");
+  const [validationState, setValidationState] = useState<{
+    status: "idle" | "loading" | "success" | "error" | "rate-limited";
+    data: { invitation: IInvitationDocument } | null;
+    error: null | string;
   }>({
-    isValid: false,
+    status: "idle",
     data: null,
+    error: null,
   });
-  const { validateToken, isLoading: isValidatingToken } = useValidateInviteToken();
+  const { validateToken } = useValidateInviteToken();
 
   useEffect(() => {
-    if (cuid && token) {
-      setProcessingInvite(true);
-      validateToken({ cuid, token })
-        .then((resp) => {
-          console.log("Token validation response:", resp);
-          if (resp.success) {
-            setInvite({ isValid: resp.isValid, data: resp.invitation });
-          }
-          setProcessingInvite(false);
-        })
-        .catch(() => {
-          setInvite({ isValid: false, data: null });
-          setProcessingInvite(false);
-        });
-    }
-     
-  }, [cuid, token]);
+    if (!cuid || !token || validationState.status !== "idle") return;
 
-  if (isLoading || isValidatingToken) {
+    setValidationState({ status: "loading", data: null, error: null });
+    validateToken({ cuid, token })
+      .then((result) => {
+        if (result.success) {
+          setValidationState({
+            status: "success",
+            data: result,
+            error: null,
+          });
+        } else if (result.rateLimited) {
+          setValidationState({
+            status: "rate-limited",
+            data: null,
+            error: "Rate limited",
+          });
+        } else {
+          setValidationState({
+            status: "error",
+            data: null,
+            error: "Invalid token",
+          });
+        }
+      })
+      .catch((error) => {
+        setValidationState({
+          status: "error",
+          data: null,
+          error,
+        });
+      });
+  }, [cuid, token, validateToken]);
+
+  if (
+    (validationState.status === "loading" ||
+      validationState.status === "idle") &&
+    !validationState.data
+  ) {
     return (
       <>
         <Skeleton
@@ -80,20 +96,23 @@ export default function InvitationPage({
     );
   }
 
-  if (!token || (!isValidatingToken && !invite.isValid)) {
+  if (!token || (validationState.status === "error" && !validationState.data)) {
     const errorType = !token ? "missing-token" : "invalid";
     return <InvalidInvitationError errorType={errorType} />;
   }
 
-  if (invite.data && invite.data.status === "expired") {
+  if (
+    validationState.data &&
+    validationState.data.invitation?.status === "expired"
+  ) {
     return <InvalidInvitationError errorType="expired" />;
   }
-
+  console.log("Rendering InvitationAcceptanceView with:", validationState);
   return (
     <InvitationAcceptanceView
       cuid={cuid}
       token={token}
-      invitation={invite.data!}
+      invitation={validationState.data?.invitation || null}
     />
   );
 }

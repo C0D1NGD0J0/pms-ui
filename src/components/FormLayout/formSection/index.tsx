@@ -5,7 +5,7 @@ interface FormSectionProps {
   description?: string;
   children: ReactNode;
   className?: string;
-  collapsible?: boolean;
+  collapsable?: boolean;
   defaultCollapsed?: boolean;
 }
 
@@ -14,25 +14,25 @@ export const FormSection: React.FC<FormSectionProps> = ({
   children,
   description,
   className = "",
-  collapsible = false,
+  collapsable = false,
   defaultCollapsed = false,
 }) => {
   const storageKey = `form-section-${title.toLowerCase().replace(/\s+/g, "-")}`;
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
-    if (!collapsible) return false;
+    if (!collapsable) return false;
     const saved = localStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : defaultCollapsed;
   });
 
   useEffect(() => {
-    if (collapsible) {
+    if (collapsable) {
       localStorage.setItem(storageKey, JSON.stringify(isCollapsed));
     }
-  }, [isCollapsed, storageKey, collapsible]);
+  }, [isCollapsed, storageKey, collapsable]);
 
   const toggleCollapse = () => {
-    if (collapsible) {
+    if (collapsable) {
       setIsCollapsed(!isCollapsed);
     }
   };
@@ -45,7 +45,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
   const sectionClasses = [
     "form-section",
     className,
-    collapsible ? "form-section--collapsible" : "",
+    collapsable ? "form-section--collapsible" : "",
     isCollapsed ? "form-section--collapsed" : "",
   ]
     .filter(Boolean)
@@ -55,11 +55,11 @@ export const FormSection: React.FC<FormSectionProps> = ({
     <div className={sectionClasses}>
       <div
         className="form-section_header"
-        onClick={collapsible ? toggleCollapse : undefined}
+        onClick={collapsable ? toggleCollapse : undefined}
       >
         <h4 className="form-section_header-title">{title}</h4>
         {description && <p>{description}</p>}
-        {collapsible && (
+        {collapsable && (
           <button
             type="button"
             className="form-section_toggle"
@@ -78,18 +78,7 @@ export const FormSection: React.FC<FormSectionProps> = ({
           </button>
         )}
       </div>
-      <div
-        className="form-section_content"
-        style={
-          {
-            // opacity: isCollapsed ? 0 : 1,
-            // display: isCollapsed ? "none" : "block",
-            // transition: "opacity 1s ease-in-out",
-          }
-        }
-      >
-        {children}
-      </div>
+      <div className="form-section_content">{children}</div>
     </div>
   );
 };

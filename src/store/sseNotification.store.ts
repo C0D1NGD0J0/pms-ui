@@ -91,6 +91,58 @@ const useSSENotificationStore = create<NotificationState>()(
             }
           });
 
+          newPersonalSource.addEventListener("job-notification", (event) => {
+            const jobUpdate = JSON.parse(event.data);
+            const getJobTitle = () => {
+              const jobTypeLabel =
+                jobUpdate.jobType === "csv_validation"
+                  ? "CSV validation"
+                  : jobUpdate.jobType === "csv_invitation"
+                  ? "CSV import"
+                  : jobUpdate.jobType.replace(/_/g, " ");
+
+              if (jobUpdate.stage === "started") {
+                return `${jobTypeLabel} started`;
+              } else if (jobUpdate.stage === "completed") {
+                return `${jobTypeLabel} completed`;
+              } else if (jobUpdate.stage === "failed") {
+                return `${jobTypeLabel} failed`;
+              }
+              return jobTypeLabel;
+            };
+
+            // convert job notification to INotification format
+            const notification: INotification = {
+              id: jobUpdate.jobId,
+              nuid: `job-${jobUpdate.jobId}`,
+              title: getJobTitle(),
+              message: jobUpdate.message || jobUpdate.metadata?.message || "",
+              type: "system",
+              priority: jobUpdate.stage === "failed" ? "high" : "medium",
+              recipientType: "individual",
+              isRead: false,
+              createdAt: new Date().toISOString(),
+              metadata: {
+                jobId: jobUpdate.jobId,
+                jobType: jobUpdate.jobType,
+                stage: jobUpdate.stage,
+                progress: jobUpdate.progress,
+                isTransient: true, // Mark as transient (not stored in DB)
+                errors: jobUpdate.errors, // Include errors from root level
+                errorCount: jobUpdate.errorCount,
+                totalRows: jobUpdate.totalRows,
+                validCount: jobUpdate.validCount,
+                totalItems: jobUpdate.totalItems,
+                validData: jobUpdate.validData, // Include validData from root level
+                ...jobUpdate.metadata,
+              },
+            };
+
+            set((state) => ({
+              notifications: [notification, ...state.notifications],
+            }));
+          });
+
           newPersonalSource.onerror = () => {
             if (newPersonalSource.readyState === EventSource.CLOSED) {
               set({ connectionStatus: "error" });

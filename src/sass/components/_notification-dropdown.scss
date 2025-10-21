@@ -17,23 +17,22 @@
   animation: pulse 4s ease-in-out infinite;
 }
 
-.navbar-notification-item {
+.navbar-menu__item.navbar-notification-item {
   position: relative;
-  cursor: pointer;
 
-  &:hover span i {
+  > span:hover {
     color: hslaGen($secondary-color, 0.8);
+
+    .bx-bell {
+      animation: bell-ring 1s ease-in-out;
+      transform-origin: top center;
+    }
   }
 
   &.has-unread .bx-bell {
-    animation: bell-ring 2s ease-in-out infinite;
     transform-origin: top center;
     color: hslaGen($secondary-color, 1);
-  }
-
-  &:hover .bx-bell {
-    animation: bell-ring 1s ease-in-out;
-    transform-origin: top center;
+    animation: bell-ring 2s ease-in-out infinite;
   }
 }
 
@@ -69,7 +68,7 @@
     }
 
     &__item {
-      padding: 1rem 0;
+      padding: 0.5rem;
       border-bottom: 1px solid hslaGen($light-grey-color, 0.1);
 
       &.unread {
@@ -77,8 +76,8 @@
       }
 
       h5 {
-        margin: 0 0 0.5rem 0;
         font-size: $fs-sm;
+        margin: 0 0 0.5rem 0;
         color: hslaGen($white-color, 1);
       }
 
@@ -86,39 +85,46 @@
         margin: 0;
         font-size: $fs-xsm;
         color: hslaGen($light-grey-color, 1);
+
+        span {
+          display: block;
+          margin-top: 0.3rem;
+          font-size: $fs-xsm;
+          color: hslaGen($white-color);
+        }
       }
     }
 
     &__footer {
+      gap: 0.5rem;
+      display: flex;
       padding: 1rem 0 0 0;
       border-top: 1px solid hslaGen($light-grey-color, 0.2);
-      display: flex;
-      gap: 0.5rem;
 
-      button {
-        flex: 1;
-        padding: 0.6rem 0.8rem;
-        border: none;
-        font-size: $fs-sm;
-        cursor: pointer;
-        transition: $transition;
-        background: hslaGen($secondary-color, 1);
-        color: hslaGen($white-color, 1);
+      // button {
+      //   flex: 1;
+      //   padding: 0.6rem 0.8rem;
+      //   border: none;
+      //   font-size: $fs-sm;
+      //   cursor: pointer;
+      //   transition: $transition;
+      //   background: hslaGen($secondary-color, 1);
+      //   color: hslaGen($white-color, 1);
 
-        &:hover {
-          background: hslaGen($secondary-color, 0.8);
-        }
+      //   &:hover {
+      //     background: hslaGen($secondary-color, 0.8);
+      //   }
 
-        &:first-child {
-          background: transparent;
-          color: hslaGen($light-grey-color, 1);
+      //   &:first-child {
+      //     background: transparent;
+      //     color: hslaGen($light-grey-color, 1);
 
-          &:hover {
-            background: hslaGen($light-grey-color, 0.1);
-            color: hslaGen($white-color, 1);
-          }
-        }
-      }
+      //     &:hover {
+      //       background: hslaGen($light-grey-color, 0.1);
+      //       color: hslaGen($white-color, 1);
+      //     }
+      //   }
+      // }
     }
   }
 }
