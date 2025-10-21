@@ -169,7 +169,7 @@ describe("useAccountSetupForm Hook", () => {
     await act(async () => {
       try {
         await result.current.handleSubmit();
-      } catch (error) {
+      } catch {
         // Expected error from mutation
       }
     });
@@ -204,7 +204,7 @@ describe("useAccountSetupForm Hook", () => {
     await act(async () => {
       try {
         await result.current.handleSubmit();
-      } catch (error) {
+      } catch {
         // Expected error from mutation
       }
     });
@@ -261,7 +261,7 @@ describe("useAccountSetupForm Hook", () => {
           token: "test-token",
           reason: "Not interested",
         });
-      } catch (error) {
+      } catch {
         // Expected error from mutation
       }
     });

@@ -1,9 +1,9 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { CsvUploadModal } from "@components/CsvUploadModal/CsvUploadModal";
 import { useNotification } from "@hooks/useNotification";
 import { CsvUploadConfig } from "@interfaces/csv.interface";
+import { CsvUploadModal } from "@components/CsvUploadModal/CsvUploadModal";
+import { fireEvent, waitFor, render, screen } from "@testing-library/react";
 
 jest.mock("@hooks/useNotification");
 

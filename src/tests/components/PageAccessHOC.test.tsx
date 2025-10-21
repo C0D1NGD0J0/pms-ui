@@ -1,10 +1,10 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { useRouter, usePathname } from "next/navigation";
-import { withPageAccess, usePageAccess } from "@components/PageAccessHOC";
+import { usePathname, useRouter } from "next/navigation";
+import { waitFor, render, screen } from "@testing-library/react";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
+import { withPageAccess, usePageAccess } from "@components/PageAccessHOC";
 
 // Mock Next.js navigation hooks
 jest.mock("next/navigation", () => ({

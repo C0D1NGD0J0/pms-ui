@@ -1,14 +1,12 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { useSearchParams } from "next/navigation";
+import { useScrollToTop } from "@hooks/useScrollToTop";
 import {
   TabContainer,
   TabList,
-  TabListItem,
-  TabPanelContent,
 } from "@components/Tab";
-import { useSearchParams } from "next/navigation";
-import { useScrollToTop } from "@hooks/useScrollToTop";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 jest.mock("next/navigation", () => ({
   useSearchParams: jest.fn(),

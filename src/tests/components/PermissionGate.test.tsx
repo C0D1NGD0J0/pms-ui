@@ -1,13 +1,13 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import {
-  PermissionGate,
-  PermissionField,
-  PermissionAction,
-} from "@components/PermissionGate";
+import { render, screen } from "@testing-library/react";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
+import {
+  PermissionAction,
+  PermissionField,
+  PermissionGate,
+} from "@components/PermissionGate";
 
 jest.mock("@hooks/useUnifiedPermissions");
 

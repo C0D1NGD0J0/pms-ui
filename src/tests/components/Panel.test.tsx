@@ -1,11 +1,11 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  Panel,
   PanelsWrapper,
-  PanelHeader,
   PanelContent,
+  PanelHeader,
+  Panel,
 } from "@components/Panel";
 
 // Mock scrollIntoView for Select component
