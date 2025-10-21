@@ -160,7 +160,7 @@
   }
 
   &__dropdown-menu {
-    z-index: 250;
+    z-index: $z-index-navbar-dropdown;
     top: 4.4rem;
     display: none;
     padding: 1rem;
