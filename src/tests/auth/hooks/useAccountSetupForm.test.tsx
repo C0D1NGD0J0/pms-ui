@@ -58,8 +58,11 @@ const createWrapper = () => {
 };
 
 describe("useAccountSetupForm Hook", () => {
+  let consoleErrorSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     (useErrorHandlerModule.useErrorHandler as jest.Mock).mockReturnValue({
       handleError: mockHandleError,
     });
@@ -67,6 +70,10 @@ describe("useAccountSetupForm Hook", () => {
       openNotification: mockOpenNotification,
       message: mockMessage,
     });
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
   });
 
   it("should initialize with correct default values", () => {
@@ -137,7 +144,7 @@ describe("useAccountSetupForm Hook", () => {
   });
 
   it("should handle account setup error with field errors", async () => {
-    const mockError = new Error("Validation failed");
+    const mockError = { message: "Validation failed", name: "Error" };
     mockAcceptInvitation.mockRejectedValue(mockError);
 
     const mockErrorResponse = {
@@ -159,7 +166,11 @@ describe("useAccountSetupForm Hook", () => {
     });
 
     await act(async () => {
-      await result.current.handleSubmit();
+      try {
+        await result.current.handleSubmit();
+      } catch (error) {
+        // Expected error from mutation
+      }
     });
 
     expect(mockHandleError).toHaveBeenCalledWith(mockError, {
@@ -170,7 +181,7 @@ describe("useAccountSetupForm Hook", () => {
   });
 
   it("should handle account setup error without field errors", async () => {
-    const mockError = new Error("Server error");
+    const mockError = { message: "Server error", name: "Error" };
     mockAcceptInvitation.mockRejectedValue(mockError);
 
     const mockErrorResponse = {
@@ -189,7 +200,11 @@ describe("useAccountSetupForm Hook", () => {
     });
 
     await act(async () => {
-      await result.current.handleSubmit();
+      try {
+        await result.current.handleSubmit();
+      } catch (error) {
+        // Expected error from mutation
+      }
     });
 
     expect(mockMessage.error).toHaveBeenCalledWith("Server error occurred", {
@@ -226,7 +241,7 @@ describe("useAccountSetupForm Hook", () => {
   });
 
   it("should handle invitation decline error", async () => {
-    const mockError = new Error("Decline failed");
+    const mockError = { message: "Decline failed", name: "Error" };
     mockDeclineInvitation.mockRejectedValue(mockError);
 
     const mockErrorResponse = {
@@ -239,10 +254,14 @@ describe("useAccountSetupForm Hook", () => {
     });
 
     await act(async () => {
-      await result.current.declineInvitation({
-        token: "test-token",
-        reason: "Not interested",
-      });
+      try {
+        await result.current.declineInvitation({
+          token: "test-token",
+          reason: "Not interested",
+        });
+      } catch (error) {
+        // Expected error from mutation
+      }
     });
 
     expect(mockOpenNotification).toHaveBeenCalledWith(

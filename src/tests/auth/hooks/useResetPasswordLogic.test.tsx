@@ -34,15 +34,19 @@ describe("useResetPasswordLogic Hook", () => {
     jest.clearAllMocks();
   });
 
-  it("should initialize with correct default values", () => {
-    const { result } = renderHook(() => useResetPasswordLogic(), {
+  it("should initialize with correct default values", async () => {
+    const { result } = renderHook(() => useResetPasswordLogic({ params: Promise.resolve({ token: "test-token" }) }), {
       wrapper: TestWrapper,
+    });
+
+    // Wait for the hook to initialize by checking a property
+    await waitFor(() => {
+      expect(result.current?.token).toBe("test-token");
     });
 
     expect(result.current.form.values.password).toBe("");
     expect(result.current.form.values.cpassword).toBe("");
     expect(result.current.form.values.token).toBe("test-token");
-    expect(result.current.token).toBe("test-token");
     expect(result.current.isPending).toBe(false);
   });
 
@@ -50,8 +54,12 @@ describe("useResetPasswordLogic Hook", () => {
     const mockResponse = { msg: "Password reset successful" };
     mockAuthService.resetPassword.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useResetPasswordLogic(), {
+    const { result } = renderHook(() => useResetPasswordLogic({ params: Promise.resolve({ token: "test-token" }) }), {
       wrapper: TestWrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current?.token).toBe("test-token");
     });
 
     await act(async () => {
@@ -71,8 +79,12 @@ describe("useResetPasswordLogic Hook", () => {
     const mockResponse = { msg: "Password reset successful" };
     mockAuthService.resetPassword.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useResetPasswordLogic(), {
+    const { result } = renderHook(() => useResetPasswordLogic({ params: Promise.resolve({ token: "test-token" }) }), {
       wrapper: TestWrapper,
+    });
+
+    await waitFor(() => {
+      expect(result.current?.token).toBe("test-token");
     });
 
     // Set form values

@@ -5,13 +5,12 @@ import { InvitationDetails } from "@app/(auth)/invite/[cuid]/components/Invitati
 
 // Mock Button component
 jest.mock("@components/FormElements", () => ({
-  Button: ({ children, onClick, variant }: any) => (
+  Button: ({ label, onClick, className }: any) => (
     <button
       onClick={onClick}
-      data-testid={`button-${variant || "default"}`}
-      className={`btn-${variant || "default"}`}
+      className={className}
     >
-      {children}
+      <span>{label}</span>
     </button>
   ),
 }));
@@ -160,18 +159,21 @@ describe("InvitationDetails Component", () => {
     expect(screen.getByText("Organization")).toBeInTheDocument();
   });
 
-  it("should render buttons with correct variants", () => {
+  it("should render buttons with correct class names", () => {
     render(<InvitationDetails {...defaultProps} />);
 
-    expect(screen.getByTestId("button-primary")).toBeInTheDocument();
-    expect(screen.getByTestId("button-ghost")).toBeInTheDocument();
+    const acceptButton = screen.getByText("Accept Invitation").closest("button");
+    const declineButton = screen.getByText("Decline").closest("button");
+
+    expect(acceptButton).toHaveClass("btn-primary");
+    expect(declineButton).toHaveClass("btn-outline");
   });
 
   it("should format start date correctly for different dates", () => {
     const invitationWithDifferentDate: IInvitationDocument = {
       ...defaultInvitation,
       metadata: {
-        expectedStartDate: new Date("2024-12-25T00:00:00Z"),
+        expectedStartDate: new Date("2024-12-25T12:00:00Z"),
       },
     };
 

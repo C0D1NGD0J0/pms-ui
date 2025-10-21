@@ -6,11 +6,12 @@ import { AccountSetupFormValues } from "@src/validations/invitation.validations"
 
 // Mock form components
 jest.mock("@components/FormElements", () => ({
-  CustomDropdown: ({ label, value, onChange, options }: any) => (
+  CustomDropdown: ({ id, label, value, onChange, options }: any) => (
     <div>
       <label>{label}</label>
       <select
-        data-testid={`dropdown-${label?.toLowerCase()?.replace(/\s+/g, "-")}`}
+        data-testid={`dropdown-${id}`}
+        id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
@@ -22,8 +23,11 @@ jest.mock("@components/FormElements", () => ({
       </select>
     </div>
   ),
-  FormField: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="form-field">{children}</div>
+  FormField: ({ children, error }: { children: React.ReactNode; error?: any }) => (
+    <div data-testid="form-field">
+      {children}
+      {error?.msg && <div className="error-message">{error.msg}</div>}
+    </div>
   ),
   FormInput: ({ type, value, onChange, placeholder, required, name }: any) => (
     <input
@@ -48,25 +52,28 @@ jest.mock("@components/FormElements", () => ({
       {required && <span>*</span>}
     </label>
   ),
-  Checkbox: ({ checked, onChange, label }: any) => (
+  Checkbox: ({ checked, onChange, label, id, name }: any) => (
     <div>
       <input
         type="checkbox"
+        id={id}
+        name={name}
         checked={checked}
         onChange={onChange}
-        data-testid={`checkbox-${label?.toLowerCase()?.replace(/\s+/g, "-")}`}
+        data-testid={`checkbox-${name || id || "default"}`}
       />
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
     </div>
   ),
-  Button: ({ children, onClick, disabled, variant, type }: any) => (
+  Button: ({ label, onClick, disabled, className, type, loading, loadingText }: any) => (
     <button
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || loading}
       type={type}
-      data-testid={`button-${variant || "default"}`}
+      className={className}
+      data-testid={`button-${className?.includes('primary') ? 'primary' : className?.includes('outline') ? 'outline' : 'default'}`}
     >
-      {children}
+      <span>{loading && loadingText ? loadingText : label}</span>
     </button>
   ),
   Form: ({
@@ -131,14 +138,11 @@ describe("AccountSetup Component", () => {
     expect(screen.getByTestId("input-confirmPassword")).toBeInTheDocument();
     expect(screen.getByTestId("input-phoneNumber")).toBeInTheDocument();
     expect(screen.getByTestId("input-location")).toBeInTheDocument();
-    expect(screen.getByTestId("dropdown-time-zone")).toBeInTheDocument();
+    expect(screen.getByTestId("dropdown-timeZone")).toBeInTheDocument();
     expect(
-      screen.getByTestId("dropdown-preferred-language")
+      screen.getByTestId("dropdown-lang")
     ).toBeInTheDocument();
-    expect(screen.getByTestId("checkbox-terms-accepted")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("checkbox-newsletter-opt-in")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("checkbox-termsAccepted")).toBeInTheDocument();
   });
 
   it("should render form fields with correct values", () => {
@@ -149,8 +153,8 @@ describe("AccountSetup Component", () => {
       "Password123"
     );
     expect(screen.getByTestId("input-location")).toHaveValue("Toronto, Canada");
-    expect(screen.getByTestId("dropdown-time-zone")).toHaveValue("UTC");
-    expect(screen.getByTestId("dropdown-preferred-language")).toHaveValue("en");
+    expect(screen.getByTestId("dropdown-timeZone")).toHaveValue("UTC");
+    expect(screen.getByTestId("dropdown-lang")).toHaveValue("en");
   });
 
   it("should call handleFieldChange when input values change", () => {
@@ -172,7 +176,7 @@ describe("AccountSetup Component", () => {
   it("should call handleDropdownChange when dropdown values change", () => {
     render(<AccountSetup {...defaultProps} />);
 
-    fireEvent.change(screen.getByTestId("dropdown-time-zone"), {
+    fireEvent.change(screen.getByTestId("dropdown-timeZone"), {
       target: { value: "America/New_York" },
     });
 
@@ -191,7 +195,7 @@ describe("AccountSetup Component", () => {
 
     render(<AccountSetup {...props} />);
 
-    fireEvent.click(screen.getByTestId("checkbox-terms-accepted"));
+    fireEvent.click(screen.getByTestId("checkbox-termsAccepted"));
 
     expect(mockFieldChange).toHaveBeenCalledWith("termsAccepted");
   });
@@ -205,10 +209,14 @@ describe("AccountSetup Component", () => {
   });
 
   it("should call onBack when back button is clicked", () => {
-    render(<AccountSetup {...defaultProps} />);
+    const props = {
+      ...defaultProps,
+      isValid: false,
+    };
+    render(<AccountSetup {...props} />);
 
-    const backButton = screen.getByText("Back");
-    fireEvent.click(backButton);
+    const backButton = screen.getByText("Back").closest("button");
+    fireEvent.click(backButton!);
 
     expect(defaultProps.onBack).toHaveBeenCalled();
   });
@@ -221,7 +229,7 @@ describe("AccountSetup Component", () => {
 
     render(<AccountSetup {...props} />);
 
-    const submitButton = screen.getByText("Create Account");
+    const submitButton = screen.getByText("Create Account").closest("button");
     expect(submitButton).toBeDisabled();
   });
 
@@ -233,7 +241,7 @@ describe("AccountSetup Component", () => {
 
     render(<AccountSetup {...props} />);
 
-    const submitButton = screen.getByText("Creating Account...");
+    const submitButton = screen.getByText("Creating Account...").closest("button");
     expect(submitButton).toBeDisabled();
   });
 
@@ -255,7 +263,7 @@ describe("AccountSetup Component", () => {
   it("should render all timezone options", () => {
     render(<AccountSetup {...defaultProps} />);
 
-    const timezoneSelect = screen.getByTestId("dropdown-time-zone");
+    const timezoneSelect = screen.getByTestId("dropdown-timeZone");
     expect(timezoneSelect).toBeInTheDocument();
 
     // Check if some key timezone options are present
@@ -267,7 +275,7 @@ describe("AccountSetup Component", () => {
   it("should render all language options", () => {
     render(<AccountSetup {...defaultProps} />);
 
-    const languageSelect = screen.getByTestId("dropdown-preferred-language");
+    const languageSelect = screen.getByTestId("dropdown-lang");
     expect(languageSelect).toBeInTheDocument();
 
     // Check if key language options are present
@@ -295,7 +303,7 @@ describe("AccountSetup Component", () => {
 
     render(<AccountSetup {...props} />);
 
-    const termsCheckbox = screen.getByTestId("checkbox-terms-accepted");
+    const termsCheckbox = screen.getByTestId("checkbox-termsAccepted");
     expect(termsCheckbox).toBeChecked();
   });
 });

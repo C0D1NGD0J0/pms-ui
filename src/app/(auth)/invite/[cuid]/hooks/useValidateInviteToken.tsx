@@ -1,15 +1,17 @@
 "use client";
 import { AxiosError } from "axios";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { parseError } from "@src/utils/helpers";
 import { invitationService } from "@services/index";
 import { useNotification } from "@hooks/useNotification";
 
 export function useValidateInviteToken() {
+  const [isLoading, setIsLoading] = useState(false);
   const { openNotification } = useNotification();
 
   const validateToken = useCallback(
     async ({ cuid, token }: { cuid: string; token: string }) => {
+      setIsLoading(true);
       try {
         const result = await invitationService.validateInvitationToken(
           cuid,
@@ -39,6 +41,8 @@ export function useValidateInviteToken() {
           success: false,
           data: null,
         };
+      } finally {
+        setIsLoading(false);
       }
     },
     [openNotification]
@@ -46,5 +50,6 @@ export function useValidateInviteToken() {
 
   return {
     validateToken,
+    isLoading,
   };
 }
