@@ -1,12 +1,13 @@
 "use client";
 import React from "react";
 import { Button } from "@components/FormElements";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
+import { InvitationFormValues } from "@validations/invitation.validations";
 
 interface TenantDetailsTabProps {
-  formData: IInvitationFormData;
+  formData: UseFormReturnType<InvitationFormValues>;
   onFieldChange: (field: string, value: any) => void;
 }
 
@@ -14,7 +15,7 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
   formData,
   onFieldChange,
 }) => {
-  const rentalReferences = formData.tenantInfo?.rentalReferences || [];
+  const rentalReferences = formData.values?.tenantInfo?.rentalReferences || [];
 
   const addRentalReference = () => {
     const newReferences = [
@@ -60,9 +61,14 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               type="text"
               name="employerCompanyName"
               placeholder="Enter company name"
-              value={formData.tenantInfo?.employerInfo?.companyName || ""}
+              value={
+                formData.values?.tenantInfo?.employerInfo?.companyName || ""
+              }
               onChange={(e) =>
-                onFieldChange("tenantInfo.employerInfo.companyName", e.target.value)
+                onFieldChange(
+                  "tenantInfo.employerInfo.companyName",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -73,9 +79,12 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               type="text"
               name="employerPosition"
               placeholder="Enter position"
-              value={formData.tenantInfo?.employerInfo?.position || ""}
+              value={formData.values?.tenantInfo?.employerInfo?.position || ""}
               onChange={(e) =>
-                onFieldChange("tenantInfo.employerInfo.position", e.target.value)
+                onFieldChange(
+                  "tenantInfo.employerInfo.position",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -91,7 +100,9 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               placeholder="Enter monthly income"
               min="0"
               step="0.01"
-              value={formData.tenantInfo?.employerInfo?.monthlyIncome || ""}
+              value={
+                formData.values?.tenantInfo?.employerInfo?.monthlyIncome || ""
+              }
               onChange={(e) =>
                 onFieldChange(
                   "tenantInfo.employerInfo.monthlyIncome",
@@ -110,22 +121,35 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               type="text"
               name="companyRef"
               placeholder="Enter reference name"
-              value={formData.tenantInfo?.employerInfo?.companyRef || ""}
+              value={
+                formData.values?.tenantInfo?.employerInfo?.companyRef || ""
+              }
               onChange={(e) =>
-                onFieldChange("tenantInfo.employerInfo.companyRef", e.target.value)
+                onFieldChange(
+                  "tenantInfo.employerInfo.companyRef",
+                  e.target.value
+                )
               }
             />
           </FormField>
           <FormField>
-            <FormLabel htmlFor="refContactEmail" label="Reference Contact Email" />
+            <FormLabel
+              htmlFor="refContactEmail"
+              label="Reference Contact Email"
+            />
             <FormInput
               id="refContactEmail"
               type="email"
               name="refContactEmail"
               placeholder="Enter reference email"
-              value={formData.tenantInfo?.employerInfo?.refContactEmail || ""}
+              value={
+                formData.values?.tenantInfo?.employerInfo?.refContactEmail || ""
+              }
               onChange={(e) =>
-                onFieldChange("tenantInfo.employerInfo.refContactEmail", e.target.value)
+                onFieldChange(
+                  "tenantInfo.employerInfo.refContactEmail",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -145,9 +169,12 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               type="text"
               name="emergencyContactName"
               placeholder="Enter contact name"
-              value={formData.tenantInfo?.emergencyContact?.name || ""}
+              value={formData.values?.tenantInfo?.emergencyContact?.name || ""}
               onChange={(e) =>
-                onFieldChange("tenantInfo.emergencyContact.name", e.target.value)
+                onFieldChange(
+                  "tenantInfo.emergencyContact.name",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -158,9 +185,12 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               type="tel"
               name="emergencyContactPhone"
               placeholder="Enter contact phone"
-              value={formData.tenantInfo?.emergencyContact?.phone || ""}
+              value={formData.values?.tenantInfo?.emergencyContact?.phone || ""}
               onChange={(e) =>
-                onFieldChange("tenantInfo.emergencyContact.phone", e.target.value)
+                onFieldChange(
+                  "tenantInfo.emergencyContact.phone",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -168,15 +198,24 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
 
         <div className="form-fields">
           <FormField>
-            <FormLabel htmlFor="emergencyContactRelationship" label="Relationship" />
+            <FormLabel
+              htmlFor="emergencyContactRelationship"
+              label="Relationship"
+            />
             <FormInput
               id="emergencyContactRelationship"
               type="text"
               name="emergencyContactRelationship"
               placeholder="e.g., Spouse, Parent, Sibling"
-              value={formData.tenantInfo?.emergencyContact?.relationship || ""}
+              value={
+                formData.values?.tenantInfo?.emergencyContact?.relationship ||
+                ""
+              }
               onChange={(e) =>
-                onFieldChange("tenantInfo.emergencyContact.relationship", e.target.value)
+                onFieldChange(
+                  "tenantInfo.emergencyContact.relationship",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -187,9 +226,12 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
               type="email"
               name="emergencyContactEmail"
               placeholder="Enter contact email"
-              value={formData.tenantInfo?.emergencyContact?.email || ""}
+              value={formData.values?.tenantInfo?.emergencyContact?.email || ""}
               onChange={(e) =>
-                onFieldChange("tenantInfo.emergencyContact.email", e.target.value)
+                onFieldChange(
+                  "tenantInfo.emergencyContact.email",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -202,9 +244,13 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
         description="Optional: Add previous landlord references (tenant can complete this later)"
       >
         {rentalReferences.length === 0 ? (
-          <div className="empty-state" style={{ padding: "2rem", textAlign: "center" }}>
+          <div
+            className="empty-state"
+            style={{ padding: "2rem", textAlign: "center" }}
+          >
             <p style={{ marginBottom: "1rem", color: "#666" }}>
-              No rental references added yet. Click the button below to add a reference.
+              No rental references added yet. Click the button below to add a
+              reference.
             </p>
             <Button
               type="button"
@@ -260,7 +306,11 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
                       placeholder="Enter landlord name"
                       value={reference.landlordName || ""}
                       onChange={(e) =>
-                        updateRentalReference(index, "landlordName", e.target.value)
+                        updateRentalReference(
+                          index,
+                          "landlordName",
+                          e.target.value
+                        )
                       }
                     />
                   </FormField>
@@ -276,7 +326,11 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
                       placeholder="Enter phone number"
                       value={reference.landlordContact || ""}
                       onChange={(e) =>
-                        updateRentalReference(index, "landlordContact", e.target.value)
+                        updateRentalReference(
+                          index,
+                          "landlordContact",
+                          e.target.value
+                        )
                       }
                     />
                   </FormField>
@@ -295,7 +349,11 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
                       placeholder="Enter email address"
                       value={reference.landlordEmail || ""}
                       onChange={(e) =>
-                        updateRentalReference(index, "landlordEmail", e.target.value)
+                        updateRentalReference(
+                          index,
+                          "landlordEmail",
+                          e.target.value
+                        )
                       }
                     />
                   </FormField>
@@ -311,7 +369,11 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
                       placeholder="Enter property address"
                       value={reference.propertyAddress || ""}
                       onChange={(e) =>
-                        updateRentalReference(index, "propertyAddress", e.target.value)
+                        updateRentalReference(
+                          index,
+                          "propertyAddress",
+                          e.target.value
+                        )
                       }
                     />
                   </FormField>
@@ -335,7 +397,9 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
                         updateRentalReference(
                           index,
                           "durationMonths",
-                          e.target.value ? parseInt(e.target.value, 10) : undefined
+                          e.target.value
+                            ? parseInt(e.target.value, 10)
+                            : undefined
                         )
                       }
                     />
@@ -352,7 +416,11 @@ export const TenantDetailsTab: React.FC<TenantDetailsTabProps> = ({
                       placeholder="Optional"
                       value={reference.reasonForLeaving || ""}
                       onChange={(e) =>
-                        updateRentalReference(index, "reasonForLeaving", e.target.value)
+                        updateRentalReference(
+                          index,
+                          "reasonForLeaving",
+                          e.target.value
+                        )
                       }
                     />
                   </FormField>

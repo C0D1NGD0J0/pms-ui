@@ -1,21 +1,20 @@
 "use client";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { InvitationFormValues } from "@src/validations";
 import { Checkbox, Select } from "@components/FormElements";
-import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 
 interface EmployeeDetailsTabProps {
-  formData: IInvitationFormData;
+  form: UseFormReturnType<InvitationFormValues>;
   collapsableSections: boolean;
-  onFieldChange: (field: string, value: any) => void;
 }
 
-export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
-  formData,
-  onFieldChange,
+export const EmployeeDetailsTab = ({
+  form,
   collapsableSections = false,
-}) => {
+}: EmployeeDetailsTabProps) => {
   return (
     <FormSection
       title="Employee Information"
@@ -30,9 +29,9 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="text"
             name="employeeId"
             placeholder="Enter employee ID"
-            value={formData.employeeInfo?.employeeId || ""}
+            value={form.values?.employeeInfo?.employeeId || ""}
             onChange={(e) =>
-              onFieldChange("employeeInfo.employeeId", e.target.value)
+              form.setFieldValue("employeeInfo.employeeId", e.target.value)
             }
           />
         </FormField>
@@ -43,9 +42,9 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="text"
             name="jobTitle"
             placeholder="Enter job title"
-            value={formData.employeeInfo?.jobTitle || ""}
+            value={form.values?.employeeInfo?.jobTitle || ""}
             onChange={(e) =>
-              onFieldChange("employeeInfo.jobTitle", e.target.value)
+              form.setFieldValue("employeeInfo.jobTitle", e.target.value)
             }
             required
           />
@@ -58,9 +57,9 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
           <Select
             id="department"
             name="department"
-            value={formData.employeeInfo?.department || ""}
+            value={form.values?.employeeInfo?.department || ""}
             onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) =>
-              onFieldChange(
+              form.setFieldValue(
                 "employeeInfo.department",
                 typeof value === "string" ? value : value.target.value
               )
@@ -84,9 +83,9 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="text"
             name="reportsTo"
             placeholder="Enter supervisor name"
-            value={formData.employeeInfo?.reportsTo || ""}
+            value={form.values?.employeeInfo?.reportsTo || ""}
             onChange={(e) =>
-              onFieldChange("employeeInfo.reportsTo", e.target.value)
+              form.setFieldValue("employeeInfo.reportsTo", e.target.value)
             }
           />
         </FormField>
@@ -100,14 +99,14 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="date"
             name="employeeStartDate"
             value={
-              formData.employeeInfo?.startDate
-                ? new Date(formData.employeeInfo.startDate)
+              form.values?.employeeInfo?.startDate
+                ? new Date(form.values.employeeInfo.startDate)
                     .toISOString()
                     .split("T")[0]
                 : ""
             }
             onChange={(e) =>
-              onFieldChange(
+              form.setFieldValue(
                 "employeeInfo.startDate",
                 e.target.value ? new Date(e.target.value) : undefined
               )
@@ -133,17 +132,20 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
                   id={`perm-${permission.id}`}
                   name="employeeInfo.permissions"
                   checked={
-                    formData.employeeInfo?.permissions?.includes(
+                    form.values?.employeeInfo?.permissions?.includes(
                       permission.id
                     ) || false
                   }
                   onChange={(e) => {
                     const permissions =
-                      formData.employeeInfo?.permissions || [];
+                      form.values?.employeeInfo?.permissions || [];
                     const newPermissions = e.target.checked
                       ? [...permissions, permission.id]
-                      : permissions.filter((p) => p !== permission.id);
-                    onFieldChange("employeeInfo.permissions", newPermissions);
+                      : permissions.filter((p: any) => p !== permission.id);
+                    form.setFieldValue(
+                      "employeeInfo.permissions",
+                      newPermissions
+                    );
                   }}
                   label={permission.label}
                 />

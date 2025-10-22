@@ -23,6 +23,10 @@ export interface IInvitationFormData {
   };
   inviteeEmail: string;
   role: IUserRole;
+  settings?: {
+    lang?: string;
+    timeZone?: string;
+  };
   employeeInfo?: {
     jobTitle?: string;
     department?: string;

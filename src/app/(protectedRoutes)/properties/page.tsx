@@ -94,7 +94,8 @@ export default function Properties() {
             title: "Review",
             dataIndex: "pendingChangesPreview",
             render: (pendingChanges: any, record: any) => {
-              if (!pendingChanges || !permissions.isManagerOrAbove) return null;
+              if (!pendingChanges || !permissions.isManagerOrAbove)
+                return "N/A";
               return (
                 <div className="flex items-center gap-2">
                   <i

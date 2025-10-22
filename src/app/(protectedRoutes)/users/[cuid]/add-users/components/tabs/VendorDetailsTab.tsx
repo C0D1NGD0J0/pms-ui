@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
@@ -12,7 +13,7 @@ import {
 } from "@components/FormElements";
 
 interface VendorDetailsTabProps {
-  formData: IInvitationFormData;
+  formData: UseFormReturnType<IInvitationFormData>;
   messageCount: number;
   onFieldChange: (field: string, value: any) => void;
   onMessageCountChange: (count: number) => void;
@@ -38,7 +39,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               type="text"
               name="companyName"
               placeholder="Enter company name"
-              value={formData.vendorInfo?.companyName || ""}
+              value={formData.values?.vendorInfo?.companyName || ""}
               onChange={(e) =>
                 onFieldChange("vendorInfo.companyName", e.target.value)
               }
@@ -50,7 +51,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
             <Select
               id="businessType"
               name="businessType"
-              value={formData.vendorInfo?.businessType || ""}
+              value={formData.values?.vendorInfo?.businessType || ""}
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) =>
@@ -79,7 +80,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               type="text"
               name="taxId"
               placeholder="Enter tax ID"
-              value={formData.vendorInfo?.taxId || ""}
+              value={formData.values?.vendorInfo?.taxId || ""}
               onChange={(e) =>
                 onFieldChange("vendorInfo.taxId", e.target.value)
               }
@@ -95,7 +96,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               type="text"
               name="registrationNumber"
               placeholder="Enter registration number"
-              value={formData.vendorInfo?.registrationNumber || ""}
+              value={formData.values?.vendorInfo?.registrationNumber || ""}
               onChange={(e) =>
                 onFieldChange("vendorInfo.registrationNumber", e.target.value)
               }
@@ -111,7 +112,9 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               type="number"
               name="yearsInBusiness"
               placeholder="Enter years in business"
-              value={formData.vendorInfo?.yearsInBusiness?.toString() || ""}
+              value={
+                formData.values?.vendorInfo?.yearsInBusiness?.toString() || ""
+              }
               onChange={(e) =>
                 onFieldChange(
                   "vendorInfo.yearsInBusiness",
@@ -151,8 +154,9 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                     id={`service-${service.id}`}
                     name="vendorInfo.servicesOffered"
                     checked={
-                      formData.vendorInfo?.servicesOffered?.[service.id] ||
-                      false
+                      formData.values?.vendorInfo?.servicesOffered?.[
+                        service.id
+                      ] || false
                     }
                     onChange={(e) => {
                       onFieldChange(
@@ -189,7 +193,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                   name="serviceArea"
                   value={option.value.toString()}
                   checked={
-                    formData.vendorInfo?.serviceArea?.maxDistance ===
+                    formData.values?.vendorInfo?.serviceArea?.maxDistance ===
                     option.value
                   }
                   onChange={() =>
@@ -216,7 +220,8 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               id="hasInsurance"
               name="hasInsurance"
               checked={
-                formData.vendorInfo?.insuranceInfo?.hasInsurance || false
+                formData.values?.vendorInfo?.insuranceInfo?.hasInsurance ||
+                false
               }
               onChange={(e) =>
                 onFieldChange(
@@ -229,7 +234,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
           </FormField>
         </div>
 
-        {formData.vendorInfo?.insuranceInfo?.hasInsurance && (
+        {formData.values?.vendorInfo?.insuranceInfo?.hasInsurance && (
           <div className="form-fields">
             <FormField>
               <div className="insurance-group">
@@ -245,7 +250,10 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                       type="text"
                       name="insuranceProvider"
                       placeholder="Enter insurance provider name"
-                      value={formData.vendorInfo?.insuranceInfo?.provider || ""}
+                      value={
+                        formData.values?.vendorInfo?.insuranceInfo?.provider ||
+                        ""
+                      }
                       onChange={(e) =>
                         onFieldChange(
                           "vendorInfo.insuranceInfo.provider",
@@ -262,7 +270,8 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                       name="policyNumber"
                       placeholder="Enter policy number"
                       value={
-                        formData.vendorInfo?.insuranceInfo?.policyNumber || ""
+                        formData.values?.vendorInfo?.insuranceInfo
+                          ?.policyNumber || ""
                       }
                       onChange={(e) =>
                         onFieldChange(
@@ -285,7 +294,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                       name="coverageAmount"
                       placeholder="Enter coverage amount"
                       value={
-                        formData.vendorInfo?.insuranceInfo?.coverageAmount?.toString() ||
+                        formData.values?.vendorInfo?.insuranceInfo?.coverageAmount?.toString() ||
                         ""
                       }
                       onChange={(e) =>
@@ -307,9 +316,10 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                       type="date"
                       name="expirationDate"
                       value={
-                        formData.vendorInfo?.insuranceInfo?.expirationDate
+                        formData.values?.vendorInfo?.insuranceInfo
+                          ?.expirationDate
                           ? new Date(
-                              formData.vendorInfo.insuranceInfo.expirationDate
+                              formData.values?.vendorInfo?.insuranceInfo?.expirationDate
                             )
                               .toISOString()
                               .split("T")[0]
@@ -382,7 +392,9 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                     type="text"
                     name="contactName"
                     placeholder="Enter contact person name"
-                    value={formData.vendorInfo?.contactPerson?.name || ""}
+                    value={
+                      formData.values?.vendorInfo?.contactPerson?.name || ""
+                    }
                     onChange={(e) =>
                       onFieldChange(
                         "vendorInfo.contactPerson.name",
@@ -399,7 +411,9 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                     type="text"
                     name="contactJobTitle"
                     placeholder="Enter job title"
-                    value={formData.vendorInfo?.contactPerson?.jobTitle || ""}
+                    value={
+                      formData.values?.vendorInfo?.contactPerson?.jobTitle || ""
+                    }
                     onChange={(e) =>
                       onFieldChange(
                         "vendorInfo.contactPerson.jobTitle",
@@ -418,7 +432,9 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                     type="email"
                     name="contactEmail"
                     placeholder="Enter contact email"
-                    value={formData.vendorInfo?.contactPerson?.email || ""}
+                    value={
+                      formData.values?.vendorInfo?.contactPerson?.email || ""
+                    }
                     onChange={(e) =>
                       onFieldChange(
                         "vendorInfo.contactPerson.email",
@@ -434,7 +450,9 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                     type="tel"
                     name="contactPhone"
                     placeholder="Enter contact phone"
-                    value={formData.vendorInfo?.contactPerson?.phone || ""}
+                    value={
+                      formData.values?.vendorInfo?.contactPerson?.phone || ""
+                    }
                     onChange={(e) =>
                       onFieldChange(
                         "vendorInfo.contactPerson.phone",
@@ -452,7 +470,10 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                     type="text"
                     name="contactDepartment"
                     placeholder="Enter department"
-                    value={formData.vendorInfo?.contactPerson?.department || ""}
+                    value={
+                      formData.values?.vendorInfo?.contactPerson?.department ||
+                      ""
+                    }
                     onChange={(e) =>
                       onFieldChange(
                         "vendorInfo.contactPerson.department",
@@ -479,7 +500,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
               name="inviteMessage"
               rows={5}
               placeholder="Add a personal message to the invitation (optional)"
-              value={formData.metadata?.inviteMessage || ""}
+              value={(formData.values as any).metadata?.inviteMessage || ""}
               onChange={(e: any) => {
                 onFieldChange("metadata.inviteMessage", e.target.value);
                 onMessageCountChange(e.target.value.length);

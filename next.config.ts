@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.cloudfront.net",
       },
+      {
+        protocol: "https",
+        hostname: "*",
+      },
       // Add your custom domains here as needed
       // {
       //   protocol: 'https',

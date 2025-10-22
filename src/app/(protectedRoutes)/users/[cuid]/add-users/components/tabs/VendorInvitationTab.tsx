@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { IInvitationFormData } from "@interfaces/invitation.interface";
 import {
   FormInput,
   FormLabel,
@@ -10,21 +10,39 @@ import {
   Select,
 } from "@components/FormElements";
 
-interface VendorInvitationTabProps {
+// Generic type that ensures form has vendorInfo and metadata structure
+interface FormWithVendorInfo {
+  vendorInfo?: {
+    companyName?: string;
+    businessType?: string;
+    primaryService?: string;
+    contactPerson?: {
+      name?: string;
+      jobTitle?: string;
+      email?: string;
+      phone?: string;
+    };
+  };
+  metadata?: {
+    expectedStartDate?: Date | null;
+    inviteMessage?: string;
+  };
+  [key: string]: any;
+}
+
+interface VendorInvitationTabProps<T extends FormWithVendorInfo = FormWithVendorInfo> {
+  form: UseFormReturnType<T>;
   messageCount: number;
   collapsableSections?: boolean;
-  formData: IInvitationFormData;
-  onFieldChange: (field: string, value: any) => void;
   onMessageCountChange: (count: number) => void;
 }
 
-export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
-  formData,
+export const VendorInvitationTab = <T extends FormWithVendorInfo = FormWithVendorInfo>({
+  form,
   messageCount,
-  onFieldChange,
   onMessageCountChange,
   collapsableSections = false,
-}) => {
+}: VendorInvitationTabProps<T>) => {
   return (
     <>
       <FormSection
@@ -40,9 +58,9 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               type="text"
               name="companyName"
               placeholder="Enter company name (optional)"
-              value={formData.vendorInfo?.companyName || ""}
+              value={form.values.vendorInfo?.companyName || ""}
               onChange={(e) =>
-                onFieldChange("vendorInfo.companyName", e.target.value)
+                form.setFieldValue("vendorInfo.companyName", e.target.value)
               }
             />
           </FormField>
@@ -51,11 +69,11 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
             <Select
               id="businessType"
               name="businessType"
-              value={formData.vendorInfo?.businessType || ""}
+              value={form.values.vendorInfo?.businessType || ""}
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) =>
-                onFieldChange(
+                form.setFieldValue(
                   "vendorInfo.businessType",
                   typeof value === "string" ? value : value.target.value
                 )
@@ -84,11 +102,11 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
             <Select
               id="primaryService"
               name="primaryService"
-              value={formData.vendorInfo?.primaryService || ""}
+              value={form.values.vendorInfo?.primaryService || ""}
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) =>
-                onFieldChange(
+                form.setFieldValue(
                   "vendorInfo.primaryService",
                   typeof value === "string" ? value : value.target.value
                 )
@@ -127,9 +145,9 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               type="text"
               name="contactName"
               placeholder="Enter contact person name"
-              value={formData.vendorInfo?.contactPerson?.name || ""}
+              value={form.values.vendorInfo?.contactPerson?.name || ""}
               onChange={(e) =>
-                onFieldChange("vendorInfo.contactPerson.name", e.target.value)
+                form.setFieldValue("vendorInfo.contactPerson.name", e.target.value)
               }
               required
             />
@@ -141,9 +159,9 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               type="text"
               name="contactJobTitle"
               placeholder="Enter job title (optional)"
-              value={formData.vendorInfo?.contactPerson?.jobTitle || ""}
+              value={form.values.vendorInfo?.contactPerson?.jobTitle || ""}
               onChange={(e) =>
-                onFieldChange(
+                form.setFieldValue(
                   "vendorInfo.contactPerson.jobTitle",
                   e.target.value
                 )
@@ -159,9 +177,9 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               type="email"
               name="contactEmail"
               placeholder="Enter contact email"
-              value={formData.vendorInfo?.contactPerson?.email || ""}
+              value={form.values.vendorInfo?.contactPerson?.email || ""}
               onChange={(e) =>
-                onFieldChange("vendorInfo.contactPerson.email", e.target.value)
+                form.setFieldValue("vendorInfo.contactPerson.email", e.target.value)
               }
               required
             />
@@ -173,9 +191,9 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               type="tel"
               name="contactPhone"
               placeholder="Enter contact phone"
-              value={formData.vendorInfo?.contactPerson?.phone || ""}
+              value={form.values.vendorInfo?.contactPerson?.phone || ""}
               onChange={(e) =>
-                onFieldChange("vendorInfo.contactPerson.phone", e.target.value)
+                form.setFieldValue("vendorInfo.contactPerson.phone", e.target.value)
               }
             />
           </FormField>
@@ -198,14 +216,14 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               type="date"
               name="expectedStartDate"
               value={
-                formData.metadata?.expectedStartDate
-                  ? new Date(formData.metadata.expectedStartDate)
+                form.values.metadata?.expectedStartDate
+                  ? new Date(form.values.metadata.expectedStartDate)
                       .toISOString()
                       .split("T")[0]
                   : ""
               }
               onChange={(e) =>
-                onFieldChange(
+                form.setFieldValue(
                   "metadata.expectedStartDate",
                   e.target.value ? new Date(e.target.value) : undefined
                 )
@@ -222,9 +240,9 @@ export const VendorInvitationTab: React.FC<VendorInvitationTabProps> = ({
               name="inviteMessage"
               rows={5}
               placeholder="Add a personal message to the invitation (optional)"
-              value={formData.metadata?.inviteMessage || ""}
+              value={form.values.metadata?.inviteMessage || ""}
               onChange={(e: any) => {
-                onFieldChange("metadata.inviteMessage", e.target.value);
+                form.setFieldValue("metadata.inviteMessage", e.target.value);
                 onMessageCountChange(e.target.value.length);
               }}
               maxLength={500}
