@@ -2,12 +2,12 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { InvitationFormValues } from "@src/validations";
 import { Checkbox, Select } from "@components/FormElements";
+import { ProfileFormValues } from "@src/validations/profile.validations";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 
 interface EmployeeDetailsTabProps {
-  form: UseFormReturnType<InvitationFormValues>;
+  form: UseFormReturnType<ProfileFormValues>;
   collapsableSections: boolean;
 }
 
@@ -15,6 +15,34 @@ export const EmployeeDetailsTab = ({
   form,
   collapsableSections = false,
 }: EmployeeDetailsTabProps) => {
+  const getEmployeeInfo = () => {
+    const values = form.values as any;
+    return values.employeeInfo || {};
+  };
+
+  const getFieldValue = (field: string) => {
+    const employeeInfo = getEmployeeInfo();
+    return employeeInfo[field] || "";
+  };
+
+  const getPermissions = (): string[] => {
+    const employeeInfo = getEmployeeInfo();
+    return employeeInfo.permissions || [];
+  };
+
+  const getStartDate = () => {
+    const employeeInfo = getEmployeeInfo();
+    const startDate = employeeInfo.startDate;
+    if (!startDate) return "";
+
+    const date = startDate instanceof Date ? startDate : new Date(startDate);
+    return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+  };
+
+  const setEmployeeField = (field: string, value: any) => {
+    (form as any).setFieldValue(`employeeInfo.${field}`, value);
+  };
+
   return (
     <FormSection
       title="Employee Information"
@@ -29,10 +57,8 @@ export const EmployeeDetailsTab = ({
             type="text"
             name="employeeId"
             placeholder="Enter employee ID"
-            value={form.values?.employeeInfo?.employeeId || ""}
-            onChange={(e) =>
-              form.setFieldValue("employeeInfo.employeeId", e.target.value)
-            }
+            value={getFieldValue("employeeId")}
+            onChange={(e) => setEmployeeField("employeeId", e.target.value)}
           />
         </FormField>
         <FormField>
@@ -42,10 +68,8 @@ export const EmployeeDetailsTab = ({
             type="text"
             name="jobTitle"
             placeholder="Enter job title"
-            value={form.values?.employeeInfo?.jobTitle || ""}
-            onChange={(e) =>
-              form.setFieldValue("employeeInfo.jobTitle", e.target.value)
-            }
+            value={getFieldValue("jobTitle")}
+            onChange={(e) => setEmployeeField("jobTitle", e.target.value)}
             required
           />
         </FormField>
@@ -57,10 +81,10 @@ export const EmployeeDetailsTab = ({
           <Select
             id="department"
             name="department"
-            value={form.values?.employeeInfo?.department || ""}
+            value={getFieldValue("department")}
             onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) =>
-              form.setFieldValue(
-                "employeeInfo.department",
+              setEmployeeField(
+                "department",
                 typeof value === "string" ? value : value.target.value
               )
             }
@@ -83,10 +107,8 @@ export const EmployeeDetailsTab = ({
             type="text"
             name="reportsTo"
             placeholder="Enter supervisor name"
-            value={form.values?.employeeInfo?.reportsTo || ""}
-            onChange={(e) =>
-              form.setFieldValue("employeeInfo.reportsTo", e.target.value)
-            }
+            value={getFieldValue("reportsTo")}
+            onChange={(e) => setEmployeeField("reportsTo", e.target.value)}
           />
         </FormField>
       </div>
@@ -98,17 +120,11 @@ export const EmployeeDetailsTab = ({
             id="employeeStartDate"
             type="date"
             name="employeeStartDate"
-            value={
-              form.values?.employeeInfo?.startDate
-                ? new Date(form.values.employeeInfo.startDate)
-                    .toISOString()
-                    .split("T")[0]
-                : ""
-            }
+            value={getStartDate()}
             onChange={(e) =>
-              form.setFieldValue(
-                "employeeInfo.startDate",
-                e.target.value ? new Date(e.target.value) : undefined
+              setEmployeeField(
+                "startDate",
+                e.target.value ? new Date(e.target.value) : null
               )
             }
           />
@@ -131,21 +147,13 @@ export const EmployeeDetailsTab = ({
                 <Checkbox
                   id={`perm-${permission.id}`}
                   name="employeeInfo.permissions"
-                  checked={
-                    form.values?.employeeInfo?.permissions?.includes(
-                      permission.id
-                    ) || false
-                  }
+                  checked={getPermissions().includes(permission.id)}
                   onChange={(e) => {
-                    const permissions =
-                      form.values?.employeeInfo?.permissions || [];
+                    const permissions = getPermissions();
                     const newPermissions = e.target.checked
                       ? [...permissions, permission.id]
-                      : permissions.filter((p: any) => p !== permission.id);
-                    form.setFieldValue(
-                      "employeeInfo.permissions",
-                      newPermissions
-                    );
+                      : permissions.filter((p: string) => p !== permission.id);
+                    setEmployeeField("permissions", newPermissions);
                   }}
                   label={permission.label}
                 />

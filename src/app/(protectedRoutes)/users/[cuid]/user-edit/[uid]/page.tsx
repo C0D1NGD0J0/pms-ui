@@ -31,7 +31,6 @@ export default function UserEditPage({ params }: UserEditPageProps) {
 
   const [messageCount, setMessageCount] = useState(0);
 
-  // Fetch employee or vendor data
   const {
     employee,
     isLoading: isLoadingEmployee,

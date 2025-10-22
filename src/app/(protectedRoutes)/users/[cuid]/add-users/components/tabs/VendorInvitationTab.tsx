@@ -2,7 +2,6 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
-import { InvitationFormValues } from "@validations/invitation.validations";
 import {
   FormInput,
   FormLabel,
@@ -12,7 +11,7 @@ import {
 } from "@components/FormElements";
 
 interface VendorInvitationTabProps {
-  form: UseFormReturnType<InvitationFormValues>;
+  form: UseFormReturnType<any>;
   messageCount: number;
   collapsableSections?: boolean;
   onMessageCountChange: (count: number) => void;
