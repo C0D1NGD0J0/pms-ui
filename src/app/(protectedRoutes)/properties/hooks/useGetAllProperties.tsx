@@ -16,8 +16,8 @@ export const useGetAllProperties = (cuid: string) => {
     { label: "Date Added", value: "createdAt" },
   ];
 
-  const fetchProperties = (pagination: IPaginationQuery) =>
-    propertyService.getClientProperties(cuid, pagination);
+  const fetchProperties = async (pagination: IPaginationQuery) =>
+    await propertyService.getClientProperties(cuid, pagination);
 
   const tableData = useTableData({
     queryKeys: CLIENT_QUERY_KEYS.getClientProperties(cuid),

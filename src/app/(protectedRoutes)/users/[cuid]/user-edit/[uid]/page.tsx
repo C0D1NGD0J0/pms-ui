@@ -1,24 +1,20 @@
 "use client";
 
+import React, { useState } from "react";
 import { Loading } from "@components/Loading";
-import React, { useEffect, useState } from "react";
 import { FormSection } from "@components/FormLayout";
 import { Button, Form } from "@components/FormElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
-import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { useGetVendor } from "@users/vendors/hooks/vendorHooks";
+import { useGetEmployeeInfo } from "@users/staff/hooks/employeeHooks";
 import { FormField, FormInput, FormLabel } from "@components/FormElements";
+import { useUserProfileEditForm } from "@app/(protectedRoutes)/users/shared-hooks";
 import {
-  useUpdateVendor,
-  useGetVendor,
-} from "@app/(protectedRoutes)/users/[cuid]/vendors/hooks/vendorHooks";
-import { EmployeeDetailsTab } from "@app/(protectedRoutes)/users/[cuid]/add-users/components/tabs/EmployeeDetailsTab";
-import { VendorInvitationTab } from "@app/(protectedRoutes)/users/[cuid]/add-users/components/tabs/VendorInvitationTab";
-import {
-  useGetEmployeeInfo,
-  useUpdateEmployee,
-} from "@app/(protectedRoutes)/users/[cuid]/staff/hooks/employeeHooks";
+  VendorInvitationTab,
+  EmployeeDetailsTab,
+} from "@users/add-users/components/tabs";
 
 interface UserEditPageProps {
   params: Promise<{
@@ -34,18 +30,7 @@ export default function UserEditPage({ params }: UserEditPageProps) {
   const userType = searchParams.get("type") as "employee" | "vendor" | null;
 
   const [messageCount, setMessageCount] = useState(0);
-  const [formData, setFormData] = useState<IInvitationFormData>({
-    personalInfo: {
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-    },
-    inviteeEmail: "",
-    role: userType === "employee" ? "staff" : "vendor",
-    status: "pending",
-  });
 
-  // Fetch employee or vendor data
   const {
     employee,
     isLoading: isLoadingEmployee,
@@ -58,91 +43,14 @@ export default function UserEditPage({ params }: UserEditPageProps) {
     isError: isErrorVendor,
   } = useGetVendor(cuid, uid, userType === "vendor");
 
-  // Update mutations
-  const updateEmployeeMutation = useUpdateEmployee(cuid, uid);
-  const updateVendorMutation = useUpdateVendor(cuid, uid);
+  const userData = userType === "employee" ? employee : vendor;
 
-  // Populate form data when data is loaded
-  useEffect(() => {
-    if (userType === "employee" && employee?.profile) {
-      setFormData({
-        personalInfo: {
-          firstName: employee.profile.firstName || "",
-          lastName: employee.profile.lastName || "",
-          phoneNumber: employee.profile.phoneNumber || "",
-        },
-        inviteeEmail: employee.profile.email || "",
-        role: "staff",
-        status: "pending",
-        employeeInfo: {
-          jobTitle: employee.employeeInfo?.position || "",
-          department: employee.employeeInfo?.department || "",
-          employeeId: employee.employeeInfo?.employeeId || "",
-          reportsTo: employee.employeeInfo?.directManager || "",
-          startDate: employee.employeeInfo?.hireDate
-            ? new Date(employee.employeeInfo.hireDate)
-            : undefined,
-          permissions: [],
-        },
-      });
-    } else if (userType === "vendor" && vendor?.profile) {
-      setFormData({
-        personalInfo: {
-          firstName: vendor.profile.firstName || "",
-          lastName: vendor.profile.lastName || "",
-          phoneNumber: vendor.profile.phoneNumber || "",
-        },
-        inviteeEmail: vendor.profile.email || "",
-        role: "vendor",
-        status: "pending",
-        vendorInfo: {
-          companyName: vendor.vendorInfo?.companyName || "",
-          businessType: vendor.vendorInfo?.businessType || "",
-          primaryService: "",
-          servicesOffered: vendor.vendorInfo?.servicesOffered || {},
-          contactPerson: {
-            name: vendor.vendorInfo?.contactPerson?.name || "",
-            jobTitle: vendor.vendorInfo?.contactPerson?.jobTitle || "",
-            email: vendor.vendorInfo?.contactPerson?.email || "",
-            phone: vendor.vendorInfo?.contactPerson?.phone || "",
-          },
-        },
-      });
-    }
-  }, [employee, vendor, userType]);
-
-  const handleFieldChange = (field: string, value: any) => {
-    setFormData((prev) => {
-      const keys = field.split(".");
-      const newData = { ...prev };
-
-      let current: any = newData;
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) {
-          current[keys[i]] = {};
-        }
-        current = current[keys[i]];
-      }
-      current[keys[keys.length - 1]] = value;
-
-      return newData;
-    });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      if (userType === "employee") {
-        await updateEmployeeMutation.mutateAsync(formData);
-      } else if (userType === "vendor") {
-        await updateVendorMutation.mutateAsync(formData);
-      }
-      router.back();
-    } catch (error) {
-      console.error("Failed to update user:", error);
-    }
-  };
+  const { form, isSubmitting, handleSubmit } = useUserProfileEditForm({
+    cuid,
+    uid,
+    userType: userType || "employee",
+    userData,
+  });
 
   const handleCancel = () => {
     router.back();
@@ -151,8 +59,6 @@ export default function UserEditPage({ params }: UserEditPageProps) {
   const isLoading =
     userType === "employee" ? isLoadingEmployee : isLoadingVendor;
   const isError = userType === "employee" ? isErrorEmployee : isErrorVendor;
-  const isSubmitting =
-    updateEmployeeMutation.isPending || updateVendorMutation.isPending;
 
   if (!userType) {
     return (
@@ -220,87 +126,116 @@ export default function UserEditPage({ params }: UserEditPageProps) {
                   }
                 >
                   <div className="form-fields">
-                    <FormField>
+                    <FormField
+                      error={{
+                        msg:
+                          (form.errors["personalInfo.firstName"] as string) ||
+                          "",
+                        touched: form.isTouched("personalInfo.firstName"),
+                      }}
+                    >
                       <FormLabel htmlFor="firstName" label="First Name *" />
                       <FormInput
                         id="firstName"
                         type="text"
                         name="firstName"
                         placeholder="Enter first name"
-                        value={formData.personalInfo?.firstName || ""}
+                        value={form.values.personalInfo.firstName}
                         onChange={(e) =>
-                          handleFieldChange(
+                          form.setFieldValue(
                             "personalInfo.firstName",
                             e.target.value
                           )
                         }
+                        hasError={!!form.errors["personalInfo.firstName"]}
                         required
                       />
                     </FormField>
-                    <FormField>
+                    <FormField
+                      error={{
+                        msg:
+                          (form.errors["personalInfo.lastName"] as string) ||
+                          "",
+                        touched: form.isTouched("personalInfo.lastName"),
+                      }}
+                    >
                       <FormLabel htmlFor="lastName" label="Last Name *" />
                       <FormInput
                         id="lastName"
                         type="text"
                         name="lastName"
                         placeholder="Enter last name"
-                        value={formData.personalInfo?.lastName || ""}
+                        value={form.values.personalInfo.lastName}
                         onChange={(e) =>
-                          handleFieldChange(
+                          form.setFieldValue(
                             "personalInfo.lastName",
                             e.target.value
                           )
                         }
+                        hasError={!!form.errors["personalInfo.lastName"]}
                         required
                       />
                     </FormField>
                   </div>
 
                   <div className="form-fields">
-                    <FormField>
+                    <FormField
+                      error={{
+                        msg:
+                          (form.errors["personalInfo.email"] as string) || "",
+                        touched: form.isTouched("personalInfo.email"),
+                      }}
+                    >
                       <FormLabel htmlFor="email" label="Email Address *" />
                       <FormInput
                         id="email"
                         type="email"
                         name="email"
                         placeholder="Enter email address"
-                        value={formData.inviteeEmail || ""}
+                        value={form.values.personalInfo.email}
                         onChange={(e) =>
-                          handleFieldChange("inviteeEmail", e.target.value)
+                          form.setFieldValue(
+                            "personalInfo.email",
+                            e.target.value
+                          )
                         }
+                        hasError={!!form.errors["personalInfo.email"]}
                         required
                       />
                     </FormField>
-                    <FormField>
+                    <FormField
+                      error={{
+                        msg:
+                          (form.errors["personalInfo.phoneNumber"] as string) ||
+                          "",
+                        touched: form.isTouched("personalInfo.phoneNumber"),
+                      }}
+                    >
                       <FormLabel htmlFor="phoneNumber" label="Phone Number" />
                       <FormInput
                         id="phoneNumber"
                         type="tel"
                         name="phoneNumber"
                         placeholder="Enter phone number"
-                        value={formData.personalInfo?.phoneNumber || ""}
+                        value={form.values.personalInfo.phoneNumber || ""}
                         onChange={(e) =>
-                          handleFieldChange(
+                          form.setFieldValue(
                             "personalInfo.phoneNumber",
                             e.target.value
                           )
                         }
+                        hasError={!!form.errors["personalInfo.phoneNumber"]}
                       />
                     </FormField>
                   </div>
                 </FormSection>
 
                 {userType === "employee" ? (
-                  <EmployeeDetailsTab
-                    formData={formData}
-                    collapsableSections={false}
-                    onFieldChange={handleFieldChange}
-                  />
+                  <EmployeeDetailsTab form={form} collapsableSections={false} />
                 ) : (
                   <VendorInvitationTab
-                    formData={formData}
+                    form={form}
                     messageCount={messageCount}
-                    onFieldChange={handleFieldChange}
                     onMessageCountChange={setMessageCount}
                   />
                 )}

@@ -53,7 +53,6 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
     getTabLabel,
     handleTabChange,
     handleRoleSelect,
-    handleFieldChange,
     handleMessageCountChange,
     handleShowInviteMessageToggle,
   } = formBase;
@@ -70,7 +69,9 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
           messageCount={messageCount}
           showInviteMessage={showInviteMessage}
           onRoleSelect={handleRoleSelect}
-          onFieldChange={handleFieldChange}
+          onFieldChange={(field, value) =>
+            invitationForm.setFieldValue(field as any, value)
+          }
           onMessageCountChange={handleMessageCountChange}
           onShowInviteMessageToggle={handleShowInviteMessageToggle}
           permission={permission}
@@ -86,24 +87,24 @@ export const InvitationFormView: React.FC<InvitationFormViewProps> = ({
         <>
           {selectedRole === "vendor" && (
             <VendorInvitationTab
-              formData={invitationForm.values as any}
+              form={invitationForm}
               messageCount={messageCount}
-              onFieldChange={handleFieldChange}
               onMessageCountChange={handleMessageCountChange}
             />
           )}
           {selectedRole === "tenant" && (
             <TenantDetailsTab
-              formData={invitationForm.values as any}
-              onFieldChange={handleFieldChange}
+              formData={invitationForm}
+              onFieldChange={(field, value) =>
+                invitationForm.setFieldValue(field as any, value)
+              }
             />
           )}
           {selectedRole &&
             selectedRole !== "vendor" &&
             selectedRole !== "tenant" && (
               <EmployeeDetailsTab
-                formData={invitationForm.values as any}
-                onFieldChange={handleFieldChange}
+                form={invitationForm}
                 collapsableSections={false}
               />
             )}

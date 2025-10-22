@@ -305,34 +305,6 @@ export function useInvitationFormBase({
     [invitationForm, populateWithDefaultData]
   );
 
-  const handleFieldChange = useCallback(
-    (field: string, value: any) => {
-      const keys = field.split(".");
-      if (keys.length === 1) {
-        invitationForm.setFieldValue(field as any, value);
-      } else {
-        const currentValue = invitationForm.values;
-        const newValue = { ...currentValue };
-        let current: any = newValue;
-
-        for (let i = 0; i < keys.length - 1; i++) {
-          if (!current[keys[i]]) {
-            current[keys[i]] = {};
-          }
-          current = current[keys[i]];
-        }
-        current[keys[keys.length - 1]] = value;
-
-        invitationForm.setValues(newValue);
-      }
-
-      if (field === "metadata.inviteMessage") {
-        setMessageCount(value?.length || 0);
-      }
-    },
-    [invitationForm]
-  );
-
   const handleMessageCountChange = useCallback((count: number) => {
     setMessageCount(count);
   }, []);
@@ -341,14 +313,11 @@ export function useInvitationFormBase({
     (show: boolean) => {
       setShowInviteMessage(show);
       if (!show) {
-        handleFieldChange(
-          "metadata.inviteMessage",
-          invitationForm.values.metadata?.inviteMessage || ""
-        );
+        invitationForm.setFieldValue("metadata.inviteMessage", "");
         setMessageCount(0);
       }
     },
-    [handleFieldChange]
+    [invitationForm]
   );
 
   const resetForm = useCallback(() => {
@@ -414,7 +383,6 @@ export function useInvitationFormBase({
     getTabLabel,
     handleTabChange,
     handleRoleSelect,
-    handleFieldChange,
     handleMessageCountChange,
     handleShowInviteMessageToggle,
     resetForm,

@@ -230,15 +230,27 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
 
           {userType === "employee" ? (
             <EmployeeDetailsTab
-              formData={formData}
+              form={
+                {
+                  values: formData,
+                  setFieldValue: (path: string, value: unknown) => {
+                    handleFieldChange(path, value);
+                  },
+                } as const
+              }
               collapsableSections={true}
-              onFieldChange={handleFieldChange}
             />
           ) : (
             <VendorInvitationTab
-              formData={formData}
+              form={
+                {
+                  values: formData,
+                  setFieldValue: (path: string, value: unknown) => {
+                    handleFieldChange(path, value);
+                  },
+                } as const
+              }
               messageCount={messageCount}
-              onFieldChange={handleFieldChange}
               onMessageCountChange={setMessageCount}
             />
           )}

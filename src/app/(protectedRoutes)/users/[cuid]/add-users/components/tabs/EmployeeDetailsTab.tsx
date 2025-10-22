@@ -2,20 +2,63 @@
 import React from "react";
 import { FormSection } from "@components/FormLayout";
 import { Checkbox, Select } from "@components/FormElements";
-import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 
+import { EmployeeForm } from "./types";
+
 interface EmployeeDetailsTabProps {
-  formData: IInvitationFormData;
+  form: EmployeeForm;
   collapsableSections: boolean;
-  onFieldChange: (field: string, value: any) => void;
 }
 
-export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
-  formData,
-  onFieldChange,
+export const EmployeeDetailsTab = ({
+  form,
   collapsableSections = false,
-}) => {
+}: EmployeeDetailsTabProps) => {
+  const getEmployeeInfo = () => {
+    const values = form.values;
+    return (
+      (values as { employeeInfo?: Record<string, unknown> }).employeeInfo || {}
+    );
+  };
+
+  const getFieldValue = (field: string): string => {
+    const employeeInfo = getEmployeeInfo();
+    const value = employeeInfo[field];
+    return typeof value === "string" ? value : "";
+  };
+
+  const getPermissions = (): string[] => {
+    const employeeInfo = getEmployeeInfo();
+    const permissions = employeeInfo.permissions;
+    return Array.isArray(permissions)
+      ? permissions.filter((p): p is string => typeof p === "string")
+      : [];
+  };
+
+  const getStartDate = (): string => {
+    const employeeInfo = getEmployeeInfo();
+    const startDate = employeeInfo.startDate;
+    if (!startDate) return "";
+
+    const date =
+      startDate instanceof Date ? startDate : new Date(String(startDate));
+    return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+  };
+
+  const setEmployeeField = (
+    field: string,
+    value: string | number | Date | null | string[]
+  ) => {
+    // Type-safe way to call setFieldValue on union form types
+    if ("setFieldValue" in form && typeof form.setFieldValue === "function") {
+      (form.setFieldValue as (path: string, value: unknown) => void)(
+        `employeeInfo.${field}`,
+        value
+      );
+    }
+  };
+
   return (
     <FormSection
       title="Employee Information"
@@ -30,10 +73,8 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="text"
             name="employeeId"
             placeholder="Enter employee ID"
-            value={formData.employeeInfo?.employeeId || ""}
-            onChange={(e) =>
-              onFieldChange("employeeInfo.employeeId", e.target.value)
-            }
+            value={getFieldValue("employeeId")}
+            onChange={(e) => setEmployeeField("employeeId", e.target.value)}
           />
         </FormField>
         <FormField>
@@ -43,10 +84,8 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="text"
             name="jobTitle"
             placeholder="Enter job title"
-            value={formData.employeeInfo?.jobTitle || ""}
-            onChange={(e) =>
-              onFieldChange("employeeInfo.jobTitle", e.target.value)
-            }
+            value={getFieldValue("jobTitle")}
+            onChange={(e) => setEmployeeField("jobTitle", e.target.value)}
             required
           />
         </FormField>
@@ -58,10 +97,10 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
           <Select
             id="department"
             name="department"
-            value={formData.employeeInfo?.department || ""}
+            value={getFieldValue("department")}
             onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) =>
-              onFieldChange(
-                "employeeInfo.department",
+              setEmployeeField(
+                "department",
                 typeof value === "string" ? value : value.target.value
               )
             }
@@ -84,10 +123,8 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             type="text"
             name="reportsTo"
             placeholder="Enter supervisor name"
-            value={formData.employeeInfo?.reportsTo || ""}
-            onChange={(e) =>
-              onFieldChange("employeeInfo.reportsTo", e.target.value)
-            }
+            value={getFieldValue("reportsTo")}
+            onChange={(e) => setEmployeeField("reportsTo", e.target.value)}
           />
         </FormField>
       </div>
@@ -99,17 +136,11 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
             id="employeeStartDate"
             type="date"
             name="employeeStartDate"
-            value={
-              formData.employeeInfo?.startDate
-                ? new Date(formData.employeeInfo.startDate)
-                    .toISOString()
-                    .split("T")[0]
-                : ""
-            }
+            value={getStartDate()}
             onChange={(e) =>
-              onFieldChange(
-                "employeeInfo.startDate",
-                e.target.value ? new Date(e.target.value) : undefined
+              setEmployeeField(
+                "startDate",
+                e.target.value ? new Date(e.target.value) : null
               )
             }
           />
@@ -132,18 +163,13 @@ export const EmployeeDetailsTab: React.FC<EmployeeDetailsTabProps> = ({
                 <Checkbox
                   id={`perm-${permission.id}`}
                   name="employeeInfo.permissions"
-                  checked={
-                    formData.employeeInfo?.permissions?.includes(
-                      permission.id
-                    ) || false
-                  }
+                  checked={getPermissions().includes(permission.id)}
                   onChange={(e) => {
-                    const permissions =
-                      formData.employeeInfo?.permissions || [];
+                    const permissions = getPermissions();
                     const newPermissions = e.target.checked
                       ? [...permissions, permission.id]
-                      : permissions.filter((p) => p !== permission.id);
-                    onFieldChange("employeeInfo.permissions", newPermissions);
+                      : permissions.filter((p: string) => p !== permission.id);
+                    setEmployeeField("permissions", newPermissions);
                   }}
                   label={permission.label}
                 />

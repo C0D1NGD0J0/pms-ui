@@ -5,7 +5,6 @@ import { ProfileFormValues } from "@validations/profile.validations";
 import {
   ToggleListItem,
   FormField,
-  FormInput,
   FormLabel,
   Select,
 } from "@components/FormElements";
@@ -59,27 +58,61 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         </div>
         <div className="form-fields">
           <FormField>
-            <FormLabel htmlFor="timeZone" label="Time Zone" />
-            <FormInput
-              id="timeZone"
-              name="timeZone"
-              type="text"
-              value={profileForm.values.settings.timeZone}
-              onChange={(e) =>
-                handleNestedChange("settings", "timeZone", e.target.value)
+            <FormLabel htmlFor="lang" label="Language" />
+            <Select
+              id="lang"
+              name="lang"
+              value={profileForm.values.settings.lang}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                handleNestedChange("settings", "lang", e.target.value)
               }
+              options={[
+                { value: "en", label: "English" },
+                { value: "fr", label: "French" },
+                { value: "en-nig", label: "English (Nigeria)" },
+              ]}
+              placeholder="Select language"
             />
           </FormField>
           <FormField>
-            <FormLabel htmlFor="lang" label="Language" />
-            <FormInput
-              id="lang"
-              name="lang"
-              type="text"
-              value={profileForm.values.settings.lang}
-              onChange={(e) =>
-                handleNestedChange("settings", "lang", e.target.value)
+            <FormLabel htmlFor="timeZone" label="Time Zone" />
+            <Select
+              id="timeZone"
+              name="timeZone"
+              value={profileForm.values.settings.timeZone}
+              onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                handleNestedChange("settings", "timeZone", e.target.value)
               }
+              options={[
+                { value: "UTC", label: "UTC (Coordinated Universal Time)" },
+                {
+                  value: "America/New_York",
+                  label: "Eastern Time (US & Canada)",
+                },
+                {
+                  value: "America/Chicago",
+                  label: "Central Time (US & Canada)",
+                },
+                {
+                  value: "America/Denver",
+                  label: "Mountain Time (US & Canada)",
+                },
+                {
+                  value: "America/Los_Angeles",
+                  label: "Pacific Time (US & Canada)",
+                },
+                { value: "America/Toronto", label: "Toronto" },
+                { value: "Europe/London", label: "London" },
+                { value: "Europe/Paris", label: "Paris" },
+                { value: "Europe/Berlin", label: "Berlin" },
+                { value: "Asia/Dubai", label: "Dubai" },
+                { value: "Asia/Tokyo", label: "Tokyo" },
+                { value: "Asia/Shanghai", label: "Shanghai" },
+                { value: "Asia/Singapore", label: "Singapore" },
+                { value: "Australia/Sydney", label: "Sydney" },
+                { value: "Pacific/Auckland", label: "Auckland" },
+              ]}
+              placeholder="Select timezone"
             />
           </FormField>
         </div>
