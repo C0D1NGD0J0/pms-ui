@@ -2,6 +2,7 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
+import { InvitationFormValues } from "@validations/invitation.validations";
 import {
   FormInput,
   FormLabel,
@@ -10,39 +11,19 @@ import {
   Select,
 } from "@components/FormElements";
 
-// Generic type that ensures form has vendorInfo and metadata structure
-interface FormWithVendorInfo {
-  vendorInfo?: {
-    companyName?: string;
-    businessType?: string;
-    primaryService?: string;
-    contactPerson?: {
-      name?: string;
-      jobTitle?: string;
-      email?: string;
-      phone?: string;
-    };
-  };
-  metadata?: {
-    expectedStartDate?: Date | null;
-    inviteMessage?: string;
-  };
-  [key: string]: any;
-}
-
-interface VendorInvitationTabProps<T extends FormWithVendorInfo = FormWithVendorInfo> {
-  form: UseFormReturnType<T>;
+interface VendorInvitationTabProps {
+  form: UseFormReturnType<InvitationFormValues>;
   messageCount: number;
   collapsableSections?: boolean;
   onMessageCountChange: (count: number) => void;
 }
 
-export const VendorInvitationTab = <T extends FormWithVendorInfo = FormWithVendorInfo>({
+export const VendorInvitationTab = ({
   form,
   messageCount,
   onMessageCountChange,
   collapsableSections = false,
-}: VendorInvitationTabProps<T>) => {
+}: VendorInvitationTabProps) => {
   return (
     <>
       <FormSection
@@ -147,7 +128,10 @@ export const VendorInvitationTab = <T extends FormWithVendorInfo = FormWithVendo
               placeholder="Enter contact person name"
               value={form.values.vendorInfo?.contactPerson?.name || ""}
               onChange={(e) =>
-                form.setFieldValue("vendorInfo.contactPerson.name", e.target.value)
+                form.setFieldValue(
+                  "vendorInfo.contactPerson.name",
+                  e.target.value
+                )
               }
               required
             />
@@ -179,7 +163,10 @@ export const VendorInvitationTab = <T extends FormWithVendorInfo = FormWithVendo
               placeholder="Enter contact email"
               value={form.values.vendorInfo?.contactPerson?.email || ""}
               onChange={(e) =>
-                form.setFieldValue("vendorInfo.contactPerson.email", e.target.value)
+                form.setFieldValue(
+                  "vendorInfo.contactPerson.email",
+                  e.target.value
+                )
               }
               required
             />
@@ -193,7 +180,10 @@ export const VendorInvitationTab = <T extends FormWithVendorInfo = FormWithVendo
               placeholder="Enter contact phone"
               value={form.values.vendorInfo?.contactPerson?.phone || ""}
               onChange={(e) =>
-                form.setFieldValue("vendorInfo.contactPerson.phone", e.target.value)
+                form.setFieldValue(
+                  "vendorInfo.contactPerson.phone",
+                  e.target.value
+                )
               }
             />
           </FormField>
@@ -205,32 +195,7 @@ export const VendorInvitationTab = <T extends FormWithVendorInfo = FormWithVendo
         collapsable={collapsableSections}
         description="Additional details for the invitation"
       >
-        <div className="form-fields">
-          <FormField>
-            <FormLabel
-              htmlFor="expectedStartDate"
-              label="Expected Start Date"
-            />
-            <FormInput
-              id="expectedStartDate"
-              type="date"
-              name="expectedStartDate"
-              value={
-                form.values.metadata?.expectedStartDate
-                  ? new Date(form.values.metadata.expectedStartDate)
-                      .toISOString()
-                      .split("T")[0]
-                  : ""
-              }
-              onChange={(e) =>
-                form.setFieldValue(
-                  "metadata.expectedStartDate",
-                  e.target.value ? new Date(e.target.value) : undefined
-                )
-              }
-            />
-          </FormField>
-        </div>
+        {/* TODO: expectedStartDate field needs to be added to metadata schema */}
 
         <div className="form-fields">
           <FormField>
