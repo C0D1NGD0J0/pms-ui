@@ -1,13 +1,13 @@
 "use client";
 import React from "react";
-import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import { Checkbox, Select } from "@components/FormElements";
-import { ProfileFormValues } from "@src/validations/profile.validations";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 
+import { EmployeeForm } from "./types";
+
 interface EmployeeDetailsTabProps {
-  form: UseFormReturnType<ProfileFormValues>;
+  form: EmployeeForm;
   collapsableSections: boolean;
 }
 
@@ -16,31 +16,47 @@ export const EmployeeDetailsTab = ({
   collapsableSections = false,
 }: EmployeeDetailsTabProps) => {
   const getEmployeeInfo = () => {
-    const values = form.values as any;
-    return values.employeeInfo || {};
+    const values = form.values;
+    return (
+      (values as { employeeInfo?: Record<string, unknown> }).employeeInfo || {}
+    );
   };
 
-  const getFieldValue = (field: string) => {
+  const getFieldValue = (field: string): string => {
     const employeeInfo = getEmployeeInfo();
-    return employeeInfo[field] || "";
+    const value = employeeInfo[field];
+    return typeof value === "string" ? value : "";
   };
 
   const getPermissions = (): string[] => {
     const employeeInfo = getEmployeeInfo();
-    return employeeInfo.permissions || [];
+    const permissions = employeeInfo.permissions;
+    return Array.isArray(permissions)
+      ? permissions.filter((p): p is string => typeof p === "string")
+      : [];
   };
 
-  const getStartDate = () => {
+  const getStartDate = (): string => {
     const employeeInfo = getEmployeeInfo();
     const startDate = employeeInfo.startDate;
     if (!startDate) return "";
 
-    const date = startDate instanceof Date ? startDate : new Date(startDate);
+    const date =
+      startDate instanceof Date ? startDate : new Date(String(startDate));
     return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
   };
 
-  const setEmployeeField = (field: string, value: any) => {
-    (form as any).setFieldValue(`employeeInfo.${field}`, value);
+  const setEmployeeField = (
+    field: string,
+    value: string | number | Date | null | string[]
+  ) => {
+    // Type-safe way to call setFieldValue on union form types
+    if ("setFieldValue" in form && typeof form.setFieldValue === "function") {
+      (form.setFieldValue as (path: string, value: unknown) => void)(
+        `employeeInfo.${field}`,
+        value
+      );
+    }
   };
 
   return (

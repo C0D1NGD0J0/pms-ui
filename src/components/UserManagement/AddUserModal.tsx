@@ -233,8 +233,10 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
               form={
                 {
                   values: formData,
-                  setFieldValue: handleFieldChange,
-                } as any
+                  setFieldValue: (path: string, value: unknown) => {
+                    handleFieldChange(path, value);
+                  },
+                } as const
               }
               collapsableSections={true}
             />
@@ -243,8 +245,10 @@ export const AddUserModal: React.FC<AddUserModalProps> = ({
               form={
                 {
                   values: formData,
-                  setFieldValue: handleFieldChange,
-                } as any
+                  setFieldValue: (path: string, value: unknown) => {
+                    handleFieldChange(path, value);
+                  },
+                } as const
               }
               messageCount={messageCount}
               onMessageCountChange={setMessageCount}

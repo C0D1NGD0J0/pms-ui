@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import {
   FormInput,
@@ -10,8 +9,10 @@ import {
   Select,
 } from "@components/FormElements";
 
+import { VendorForm } from "./types";
+
 interface VendorInvitationTabProps {
-  form: UseFormReturnType<any>;
+  form: VendorForm;
   messageCount: number;
   collapsableSections?: boolean;
   onMessageCountChange: (count: number) => void;
@@ -23,6 +24,52 @@ export const VendorInvitationTab = ({
   onMessageCountChange,
   collapsableSections = false,
 }: VendorInvitationTabProps) => {
+  // Type-safe helpers to access vendor info from either form structure
+  const getVendorInfo = () => {
+    const values = form.values;
+    return (
+      (values as { vendorInfo?: Record<string, unknown> }).vendorInfo || {}
+    );
+  };
+
+  const getVendorField = (field: string): string => {
+    const vendorInfo = getVendorInfo();
+    const value = vendorInfo[field];
+    return typeof value === "string" ? value : "";
+  };
+
+  const getContactPerson = () => {
+    const vendorInfo = getVendorInfo();
+    const contactPerson = vendorInfo.contactPerson;
+    return (contactPerson as Record<string, unknown>) || {};
+  };
+
+  const getContactField = (field: string): string => {
+    const contactPerson = getContactPerson();
+    const value = contactPerson[field];
+    return typeof value === "string" ? value : "";
+  };
+
+  const getMetadata = () => {
+    const values = form.values;
+    return (values as { metadata?: Record<string, unknown> }).metadata || {};
+  };
+
+  const getMetadataField = (field: string): string => {
+    const metadata = getMetadata();
+    const value = metadata[field];
+    return typeof value === "string" ? value : "";
+  };
+
+  const setVendorField = (path: string, value: string) => {
+    if ("setFieldValue" in form && typeof form.setFieldValue === "function") {
+      (form.setFieldValue as (path: string, value: unknown) => void)(
+        path,
+        value
+      );
+    }
+  };
+
   return (
     <>
       <FormSection
@@ -38,9 +85,9 @@ export const VendorInvitationTab = ({
               type="text"
               name="companyName"
               placeholder="Enter company name (optional)"
-              value={form.values.vendorInfo?.companyName || ""}
+              value={getVendorField("companyName")}
               onChange={(e) =>
-                form.setFieldValue("vendorInfo.companyName", e.target.value)
+                setVendorField("vendorInfo.companyName", e.target.value)
               }
             />
           </FormField>
@@ -49,11 +96,11 @@ export const VendorInvitationTab = ({
             <Select
               id="businessType"
               name="businessType"
-              value={form.values.vendorInfo?.businessType || ""}
+              value={getVendorField("businessType")}
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) =>
-                form.setFieldValue(
+                setVendorField(
                   "vendorInfo.businessType",
                   typeof value === "string" ? value : value.target.value
                 )
@@ -82,11 +129,11 @@ export const VendorInvitationTab = ({
             <Select
               id="primaryService"
               name="primaryService"
-              value={form.values.vendorInfo?.primaryService || ""}
+              value={getVendorField("primaryService")}
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) =>
-                form.setFieldValue(
+                setVendorField(
                   "vendorInfo.primaryService",
                   typeof value === "string" ? value : value.target.value
                 )
@@ -125,12 +172,9 @@ export const VendorInvitationTab = ({
               type="text"
               name="contactName"
               placeholder="Enter contact person name"
-              value={form.values.vendorInfo?.contactPerson?.name || ""}
+              value={getContactField("name")}
               onChange={(e) =>
-                form.setFieldValue(
-                  "vendorInfo.contactPerson.name",
-                  e.target.value
-                )
+                setVendorField("vendorInfo.contactPerson.name", e.target.value)
               }
               required
             />
@@ -142,9 +186,9 @@ export const VendorInvitationTab = ({
               type="text"
               name="contactJobTitle"
               placeholder="Enter job title (optional)"
-              value={form.values.vendorInfo?.contactPerson?.jobTitle || ""}
+              value={getContactField("jobTitle")}
               onChange={(e) =>
-                form.setFieldValue(
+                setVendorField(
                   "vendorInfo.contactPerson.jobTitle",
                   e.target.value
                 )
@@ -160,12 +204,9 @@ export const VendorInvitationTab = ({
               type="email"
               name="contactEmail"
               placeholder="Enter contact email"
-              value={form.values.vendorInfo?.contactPerson?.email || ""}
+              value={getContactField("email")}
               onChange={(e) =>
-                form.setFieldValue(
-                  "vendorInfo.contactPerson.email",
-                  e.target.value
-                )
+                setVendorField("vendorInfo.contactPerson.email", e.target.value)
               }
               required
             />
@@ -177,12 +218,9 @@ export const VendorInvitationTab = ({
               type="tel"
               name="contactPhone"
               placeholder="Enter contact phone"
-              value={form.values.vendorInfo?.contactPerson?.phone || ""}
+              value={getContactField("phone")}
               onChange={(e) =>
-                form.setFieldValue(
-                  "vendorInfo.contactPerson.phone",
-                  e.target.value
-                )
+                setVendorField("vendorInfo.contactPerson.phone", e.target.value)
               }
             />
           </FormField>
@@ -204,9 +242,9 @@ export const VendorInvitationTab = ({
               name="inviteMessage"
               rows={5}
               placeholder="Add a personal message to the invitation (optional)"
-              value={form.values.metadata?.inviteMessage || ""}
-              onChange={(e: any) => {
-                form.setFieldValue("metadata.inviteMessage", e.target.value);
+              value={getMetadataField("inviteMessage")}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+                setVendorField("metadata.inviteMessage", e.target.value);
                 onMessageCountChange(e.target.value.length);
               }}
               maxLength={500}
