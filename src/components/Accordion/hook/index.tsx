@@ -1,4 +1,5 @@
 import { createContext, useContext } from "react";
+
 import { AccordionContextType } from "../interface";
 
 export const AccordionContext = createContext<AccordionContextType | undefined>(

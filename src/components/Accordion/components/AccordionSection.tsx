@@ -1,6 +1,7 @@
 import React from "react";
-import { AccordionSectionProps } from "../interface";
+
 import { useAccordionContext } from "../hook";
+import { AccordionSectionProps } from "../interface";
 
 export const AccordionSection: React.FC<AccordionSectionProps> = ({
   item,
@@ -46,15 +47,16 @@ export const AccordionSection: React.FC<AccordionSectionProps> = ({
         </div>
       </div>
 
-      <div
-        className={`accordion-content ${isActive ? "active" : ""}`}
-        id={`accordion-content-${item.id}`}
-        role="region"
-        aria-labelledby={`accordion-header-${item.id}`}
-        hidden={!isActive}
-      >
-        <div className="accordion-content-inner">{item.content}</div>
-      </div>
+      {isActive && (
+        <div
+          className="accordion-content active"
+          id={`accordion-content-${item.id}`}
+          role="region"
+          aria-labelledby={`accordion-header-${item.id}`}
+        >
+          <div className="accordion-content-inner">{item.content}</div>
+        </div>
+      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ export interface AccordionItem {
   subtitle?: string;
   content: ReactNode;
   icon?: ReactNode;
+  hasError?: boolean;
   isCompleted?: boolean;
   isDisabled?: boolean;
 }

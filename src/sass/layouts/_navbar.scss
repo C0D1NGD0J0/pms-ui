@@ -163,39 +163,124 @@
     z-index: 50;
     top: 4.4rem;
     display: none;
-    padding: 1rem;
-    right: -1.3rem;
+    padding: 0.4rem 0;
+    right: -0.5rem;
     list-style: none;
-    min-width: 15rem;
+    min-width: 16rem;
     position: absolute;
-    transition: $transition;
-    background: hslaGen($blue-ink-color, 1);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: hslaGen($white-color, 1);
+    border: 1px solid hslaGen($light-grey-color, 0.3);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+    transform: translateY(-4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
 
     &.show {
       display: block;
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    // Modern arrow pointer
+    &::before {
+      content: "";
+      position: absolute;
+      top: -5px;
+      right: 1.8rem;
+      width: 10px;
+      height: 10px;
+      background: hslaGen($white-color, 1);
+      border: 1px solid hslaGen($light-grey-color, 0.3);
+      border-bottom: none;
+      border-right: none;
+      transform: rotate(45deg);
+      z-index: 51;
     }
 
     li {
       text-align: left;
-      padding: 0.5rem 1rem;
-      transition: $transition;
+      transition: all 0.15s ease;
+      border-radius: 4px;
+      margin: 0.2rem 0.4rem;
+
+      &:first-child {
+        margin-top: 0.4rem;
+      }
+
+      &:last-child {
+        margin-bottom: 0.4rem;
+      }
 
       &:hover {
-        background: hslaGen($blue-ink-color, 0.8);
+        background: hslaGen($background-color, 0.5);
       }
 
       a {
-        gap: 0.5rem;
+        gap: 0.8rem;
         display: flex;
-        font-size: $fs-base;
+        padding: 0.6rem 1rem;
+        font-size: 1.3rem;
+        font-weight: $fw-normal;
         text-decoration: none;
-        transition: $transition;
-        color: hslaGen($white-color, 1);
+        border-radius: 4px;
+        align-items: center;
+        transition: all 0.15s ease;
+        color: hslaGen($primary-color, 1) !important;
+
+        text-transform: none;
+        letter-spacing: 0;
+
+        i {
+          font-size: 1.4rem;
+          color: hslaGen($grey-color, 1);
+          transition: all 0.15s ease;
+        }
 
         &:hover {
-          transition: $transition;
-          color: hslaGen($secondary-color, 1);
+          color: hslaGen($primary-color, 1);
+          font-weight: $fw-bold;
+
+          i {
+            color: hslaGen($primary-color, 1);
+          }
+        }
+      }
+    }
+
+    // Simple divider between profile and logout
+    li:first-child::after {
+      content: "";
+      display: block;
+      width: calc(100% - 0.8rem);
+      height: 1px;
+      margin: 0.4rem 0.4rem 0.2rem;
+      background: hslaGen($light-grey-color, 0.4);
+    }
+
+    // Mobile responsive adjustments
+    @include breakpoint("560px", max) {
+      right: -1rem;
+      min-width: 16rem;
+      max-width: calc(100vw - 2rem);
+
+      &::before {
+        right: 1.5rem;
+      }
+
+      li {
+        margin: 0.4rem;
+
+        a {
+          padding: 0.8rem 1rem;
+          font-size: $fs-sm;
+        }
+
+        .btn-danger {
+          padding: 0.8rem 1rem;
+          font-size: $fs-sm;
         }
       }
     }

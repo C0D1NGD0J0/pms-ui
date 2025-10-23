@@ -1,7 +1,6 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@src/components/FormElements";
 import { useAuthActions, useAuth } from "@store/auth.store";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
@@ -229,16 +228,19 @@ export const Navbar: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <Button
-                  label="Logout"
-                  className="btn-danger"
+                <Link
+                  href="/#"
+                  className="user-avatar__logout"
                   onClick={async () => {
                     await logout();
                     console.log("User logged out");
                     sessionStorage.removeItem("static-data-storage");
                     sessionStorage.removeItem("auth-storage");
                   }}
-                />
+                >
+                  <i className="bx bx-log-out"></i>
+                  Logout
+                </Link>
               </li>
             </ul>
           </li>
