@@ -657,3 +657,57 @@ export const VENDOR_SERVICE_OPTIONS = [
   { label: "Plumbing", value: "plumbing" },
   { label: "Electrical", value: "electrical" },
 ];
+
+// Profile form dropdown options
+export const PROFILE_THEME_OPTIONS = [
+  { value: "light", label: "Light" },
+  { value: "dark", label: "Dark" },
+];
+
+export const PROFILE_LOGIN_TYPE_OPTIONS = [
+  { value: "password", label: "Password" },
+  { value: "otp", label: "One-Time Password" },
+];
+
+export const PROFILE_ID_TYPE_OPTIONS = [
+  { value: "passport", label: "Passport" },
+  { value: "drivers-license", label: "Driver's License" },
+  { value: "national-id", label: "National ID" },
+  { value: "corporation-license", label: "Corporation License" },
+];
+
+export const PROFILE_DATA_RETENTION_OPTIONS = [
+  { value: "minimal", label: "Minimal (6 months)" },
+  { value: "standard", label: "Standard (2 years)" },
+  { value: "extended", label: "Extended (5 years)" },
+];
+
+export const PROFILE_LANGUAGE_OPTIONS = [
+  { value: "en", label: "English" },
+  { value: "es", label: "Spanish" },
+  { value: "fr", label: "French" },
+  { value: "de", label: "German" },
+];
+
+export const PROFILE_TIMEZONE_OPTIONS = [
+  { value: "UTC", label: "UTC" },
+  { value: "America/New_York", label: "Eastern Time (ET)" },
+  { value: "America/Chicago", label: "Central Time (CT)" },
+  { value: "America/Denver", label: "Mountain Time (MT)" },
+  { value: "America/Los_Angeles", label: "Pacific Time (PT)" },
+  { value: "Europe/London", label: "Greenwich Mean Time (GMT)" },
+  { value: "Africa/Lagos", label: "West Africa Time (WAT)" },
+  { value: "Europe/Paris", label: "Central European Time (CET)" },
+  { value: "Asia/Tokyo", label: "Japan Standard Time (JST)" },
+];
+
+export const PROFILE_DOCUMENT_TYPE_OPTIONS = [
+  { value: "passport", label: "Passport" },
+  { value: "id_card", label: "ID Card" },
+  { value: "drivers_license", label: "Driver's License" },
+  { value: "birth_certificate", label: "Birth Certificate" },
+  { value: "social_security", label: "Social Security Card" },
+  { value: "tax_document", label: "Tax Document" },
+  { value: "employment_verification", label: "Employment Verification" },
+  { value: "other", label: "Other" },
+];

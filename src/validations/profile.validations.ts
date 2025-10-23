@@ -284,10 +284,7 @@ export const profileTabFields = {
     "settings.gdprSettings.dataProcessingConsent",
   ],
   documents: [
-    "documents.documents",
-    "documents.pendingUpload.name",
-    "documents.pendingUpload.type",
-    "documents.pendingUpload.file",
+    "documents.items",
   ],
   security: [], // Security settings handled separately
 } as const;

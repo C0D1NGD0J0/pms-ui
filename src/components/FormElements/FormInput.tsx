@@ -62,7 +62,6 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
     ref
   ) => {
     const [isTouched, setIsTouched] = useState(false);
-
     const handleBlur = (e: FocusEvent<HTMLInputElement>) => {
       setIsTouched(true);
       if (onBlur) onBlur(e);

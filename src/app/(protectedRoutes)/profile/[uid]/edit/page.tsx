@@ -2,10 +2,10 @@
 import React, { use } from "react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
-import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
-import { TabContainer } from "@components/Tab/components";
+import { AccordionContainer } from "@components/Accordion";
+import { AccordionItem } from "@components/Accordion/interface";
 
 import { useProfileFormBase } from "../../hooks/useProfileFormBase";
 import { useProfileEditForm } from "../../hooks/useProfileEditForm";
@@ -29,6 +29,7 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
     handleNestedChange,
     handleProfilePhotoChange,
     setActiveTab,
+    hasTabErrors,
     idTypeOptions,
   } = useProfileFormBase();
 
@@ -41,65 +42,81 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
     router.back();
   };
 
-  const tabItems: TabItem[] = [
-    {
-      id: "personal",
-      label: "Personal Info",
-      icon: <i className="bx bx-user"></i>,
-      content: (
-        <PersonalInfoTab
-          profileForm={profileForm}
-          handleNestedChange={handleNestedChange}
-          handleProfilePhotoChange={handleProfilePhotoChange}
-        />
-      ),
-    },
-    {
-      id: "identification",
-      label: "Identification",
-      icon: <i className="bx bx-id-card"></i>,
-      content: (
-        <IdentificationTab
-          profileForm={profileForm}
-          handleNestedChange={handleNestedChange}
-          idTypeOptions={idTypeOptions}
-        />
-      ),
-    },
-    {
-      id: "settings",
-      label: "Settings",
-      icon: <i className="bx bx-cog"></i>,
-      content: (
-        <SettingsTab
-          profileForm={profileForm}
-          handleNestedChange={handleNestedChange}
-        />
-      ),
-    },
-    {
-      id: "documents",
-      label: "Documents",
-      icon: <i className="bx bx-file"></i>,
-      content: (
-        <DocumentsTab
-          profileForm={profileForm}
-          handleNestedChange={handleNestedChange}
-        />
-      ),
-    },
-    {
-      id: "security",
-      label: "Security",
-      icon: <i className="bx bx-shield"></i>,
-      content: (
-        <SecurityTab
-          profileForm={profileForm}
-          handleNestedChange={handleNestedChange}
-        />
-      ),
-    },
-  ];
+  const accordionItems: AccordionItem[] = React.useMemo(() => {
+    const items = [
+      {
+        id: "personal",
+        label: "Personal Info",
+        subtitle: "Update your personal details and profile photo",
+        icon: <i className="bx bx-user"></i>,
+        hasError: hasTabErrors("personal"),
+        content: (
+          <PersonalInfoTab
+            profileForm={profileForm}
+            handleNestedChange={handleNestedChange}
+            handleProfilePhotoChange={handleProfilePhotoChange}
+          />
+        ),
+      },
+      {
+        id: "identification",
+        label: "Identification",
+        subtitle: "Manage your identification documents",
+        icon: <i className="bx bx-id-card"></i>,
+        hasError: hasTabErrors("identification"),
+        content: (
+          <IdentificationTab
+            profileForm={profileForm}
+            handleNestedChange={handleNestedChange}
+            idTypeOptions={idTypeOptions}
+          />
+        ),
+      },
+      {
+        id: "settings",
+        label: "Settings",
+        subtitle: "Configure your account preferences",
+        icon: <i className="bx bx-cog"></i>,
+        hasError: hasTabErrors("settings"),
+        content: (
+          <SettingsTab
+            profileForm={profileForm}
+            handleNestedChange={handleNestedChange}
+          />
+        ),
+      },
+      {
+        id: "documents",
+        label: "Documents",
+        subtitle: "View and manage your documents",
+        icon: <i className="bx bx-file"></i>,
+        hasError: hasTabErrors("documents"),
+        content: (
+          <DocumentsTab
+            profileForm={profileForm}
+            handleNestedChange={handleNestedChange}
+          />
+        ),
+      },
+      {
+        id: "security",
+        label: "Security",
+        subtitle: "Update security settings and password",
+        icon: <i className="bx bx-shield"></i>,
+        hasError: hasTabErrors("security"),
+        content: (
+          <SecurityTab
+            profileForm={profileForm}
+            handleNestedChange={handleNestedChange}
+          />
+        ),
+      },
+    ];
+
+    console.log("[ProfileEditPage] Form errors:", profileForm.errors);
+
+    return items;
+  }, [profileForm.errors]);
 
   if (isDataLoading) {
     return <Loading size="regular" description="Loading profile data..." />;
@@ -133,13 +150,12 @@ const ProfileEditPage: React.FC<{ params: Promise<{ uid: string }> }> = ({
 
       <div className="resource-form">
         <Form id="profile-form" onSubmit={handleUpdate} disabled={isSubmitting}>
-          <TabContainer
-            variant="profile"
-            tabItems={tabItems}
-            defaultTab={activeTab}
+          <AccordionContainer
+            items={accordionItems}
+            defaultActiveId={activeTab}
             onChange={setActiveTab}
-            scrollOnChange={false}
-            ariaLabel="Profile settings tabs"
+            showSidebar={true}
+            ariaLabel="Profile settings"
           />
           <div className="form-actions">
             <Button

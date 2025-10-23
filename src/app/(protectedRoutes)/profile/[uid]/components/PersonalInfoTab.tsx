@@ -1,6 +1,6 @@
 import Image from "next/image";
-import React, { useState } from "react";
 import { UseFormReturnType } from "@mantine/form";
+import React, { useEffect, useState } from "react";
 import { FormSection } from "@components/FormLayout/formSection";
 import {
   PersonalInfoFormValues,
@@ -27,7 +27,6 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
 }) => {
   const [imageError, setImageError] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
   const personalInfo = profileForm.values
     .personalInfo as PersonalInfoFormValues;
   const avatarUrl = personalInfo?.avatar?.url;
@@ -77,7 +76,7 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (imagePreview) {
         URL.revokeObjectURL(imagePreview);
@@ -158,7 +157,13 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
         description="Your personal details and contact information"
       >
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (profileForm.errors["personalInfo.firstName"] as string) || "",
+              touched: profileForm.isTouched("personalInfo.firstName"),
+            }}
+          >
             <FormLabel htmlFor="firstName" label="First Name" />
             <FormInput
               id="firstName"
@@ -172,10 +177,16 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
                 handleNestedChange("personalInfo", "firstName", e.target.value)
               }
               required
-              hasError={!!(profileForm.errors as any).personalInfo?.firstName}
+              hasError={!!profileForm.errors["personalInfo.firstName"]}
             />
           </FormField>
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (profileForm.errors["personalInfo.lastName"] as string) || "",
+              touched: profileForm.isTouched("personalInfo.lastName"),
+            }}
+          >
             <FormLabel htmlFor="lastName" label="Last Name" />
             <FormInput
               id="lastName"
@@ -189,12 +200,19 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               onChange={(e) =>
                 handleNestedChange("personalInfo", "lastName", e.target.value)
               }
-              hasError={!!(profileForm.errors as any).personalInfo?.lastName}
+              hasError={!!profileForm.errors["personalInfo.lastName"]}
             />
           </FormField>
         </div>
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (profileForm.errors["personalInfo.displayName"] as string) ||
+                "",
+              touched: profileForm.isTouched("personalInfo.displayName"),
+            }}
+          >
             <FormLabel htmlFor="displayName" label="Display Name" />
             <FormInput
               id="displayName"
@@ -212,10 +230,17 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
                   e.target.value
                 )
               }
-              hasError={!!(profileForm.errors as any).personalInfo?.displayName}
+              hasError={!!profileForm.errors["personalInfo.displayName"]}
             />
           </FormField>
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (profileForm.errors["personalInfo.phoneNumber"] as string) ||
+                "",
+              touched: profileForm.isTouched("personalInfo.phoneNumber"),
+            }}
+          >
             <FormLabel htmlFor="phoneNumber" label="Phone Number" />
             <FormInput
               id="phoneNumber"
@@ -232,12 +257,17 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
                   e.target.value
                 )
               }
-              hasError={!!(profileForm.errors as any).personalInfo?.phoneNumber}
+              hasError={!!profileForm.errors["personalInfo.phoneNumber"]}
             />
           </FormField>
         </div>
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg: (profileForm.errors["personalInfo.dob"] as string) || "",
+              touched: profileForm.isTouched("personalInfo.dob"),
+            }}
+          >
             <FormLabel htmlFor="dob" label="Date of Birth" />
             <DatePicker
               id="dob"
@@ -251,10 +281,16 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               }
               onChange={handleDateChange}
               placeholder="Select date of birth"
-              hasError={!!(profileForm.errors as any).personalInfo?.dob}
+              hasError={!!profileForm.errors["personalInfo.dob"]}
             />
           </FormField>
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (profileForm.errors["personalInfo.location"] as string) || "",
+              touched: profileForm.isTouched("personalInfo.location"),
+            }}
+          >
             <FormLabel htmlFor="location" label="Location" />
             <FormInput
               id="location"
@@ -268,7 +304,7 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               onChange={(e) =>
                 handleNestedChange("personalInfo", "location", e.target.value)
               }
-              hasError={!!(profileForm.errors as any).personalInfo?.location}
+              hasError={!!profileForm.errors["personalInfo.location"]}
             />
           </FormField>
         </div>
@@ -279,7 +315,13 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
         description="Your headline and bio information"
       >
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg:
+                (profileForm.errors["personalInfo.headline"] as string) || "",
+              touched: profileForm.isTouched("personalInfo.headline"),
+            }}
+          >
             <FormLabel htmlFor="headline" label="Headline" />
             <FormInput
               id="headline"
@@ -292,16 +334,21 @@ export const PersonalInfoTab: React.FC<PersonalInfoTabProps> = ({
               onChange={(e) =>
                 handleNestedChange("personalInfo", "headline", e.target.value)
               }
-              hasError={!!(profileForm.errors as any).personalInfo?.headline}
+              hasError={!!profileForm.errors["personalInfo.headline"]}
             />
           </FormField>
         </div>
         <div className="form-fields">
-          <FormField>
+          <FormField
+            error={{
+              msg: (profileForm.errors["personalInfo.bio"] as string) || "",
+              touched: profileForm.isTouched("personalInfo.bio"),
+            }}
+          >
             <FormLabel htmlFor="bio" label="Bio" />
             <textarea
               id="bio"
-              name="bio"
+              name="personalInfo.bio"
               rows={4}
               style={{
                 width: "100%",

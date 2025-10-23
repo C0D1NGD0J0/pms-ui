@@ -1,0 +1,342 @@
+@use "../abstract/index" as *;
+
+// Main accordion container
+.accordion-container {
+  display: flex;
+  gap: $space-xl;
+  width: 100%;
+
+  &.with-sidebar {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: $space-xl;
+
+    @include breakpoint("1024px", max) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Sidebar navigation
+.accordion-sidebar {
+  position: sticky;
+  top: $space-md;
+  height: fit-content;
+  background: hslaGen($white-color, 1);
+  border-radius: $base-border-radius;
+  padding: $space-lg;
+  box-shadow: $box-shadow;
+
+  @include breakpoint("1024px", max) {
+    position: relative;
+    top: 0;
+  }
+}
+
+.accordion-sidebar-title {
+  font-size: $fs-base;
+  font-weight: $fw-bold;
+  text-transform: uppercase;
+  color: hslaGen($grey-color, 1);
+  margin-bottom: $space-md;
+  letter-spacing: 0.05em;
+}
+
+.accordion-nav {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.accordion-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: $fs-base;
+  color: hslaGen($grey-color, 1);
+  background: transparent;
+  border: none;
+  text-align: left;
+  width: 100%;
+  position: relative;
+
+  &:hover {
+    background: hslaGen($background-color, 0.8);
+    color: hslaGen($primary-color, 1);
+  }
+
+  &.active {
+    background: hslaGen($primary-color, 0.1);
+    color: hslaGen($primary-color, 1);
+    font-weight: $fw-bold;
+  }
+
+  &.completed {
+    color: hslaGen($success-color, 1);
+  }
+
+  &.has-error {
+    .error-indicator {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: hslaGen($danger-color);
+      display: inline-block;
+    }
+  }
+
+  .accordion-nav-icon {
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .accordion-nav-label {
+    flex: 1;
+  }
+
+  .accordion-nav-check {
+    font-size: 1.25rem;
+    color: hslaGen($success-color, 1);
+  }
+}
+
+.accordion-stats {
+  margin-top: $space-lg;
+  padding-top: $space-lg;
+  border-top: 1px solid hslaGen($grey-color, 0.2);
+}
+
+.accordion-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  font-size: $fs-base;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.accordion-stat-label {
+  color: hslaGen($grey-color, 1);
+}
+
+.accordion-stat-value {
+  font-weight: $fw-bold;
+  color: hslaGen($primary-color, 1);
+  font-size: $fs-md;
+}
+
+// Accordion sections
+.accordion-sections {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+  flex: 1;
+  min-height: 500px;
+}
+
+.accordion-section {
+  background: hslaGen($white-color, 1);
+  border-radius: $base-border-radius;
+  box-shadow: $box-shadow;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &.completed {
+    border-left: 4px solid hslaGen($success-color, 1);
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $space-lg;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  border-bottom: 1px solid transparent;
+
+  &:hover {
+    background: hslaGen($background-color, 0.5);
+  }
+
+  .accordion-section.active & {
+    border-bottom-color: hslaGen($grey-color, 0.2);
+    background: hslaGen($background-color, 0.3);
+  }
+}
+
+.accordion-header-left {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  flex: 1;
+}
+
+.accordion-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: $border-radius-md;
+  background: hslaGen($primary-color, 0.1);
+  color: hslaGen($primary-color, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $fs-lg;
+
+  .accordion-section.completed & {
+    background: hslaGen($success-color, 0.1);
+    color: hslaGen($success-color, 1);
+  }
+}
+
+.accordion-title {
+  h3 {
+    font-size: $fs-lg;
+    margin-bottom: 0.25rem;
+    color: hslaGen($primary-color, 1);
+    font-weight: $fw-bold;
+  }
+
+  p {
+    font-size: $fs-base;
+    color: hslaGen($grey-color, 1);
+    margin: 0;
+  }
+}
+
+.accordion-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: hslaGen($background-color, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 1.25rem;
+  color: hslaGen($grey-color, 1);
+
+  .accordion-section.active & {
+    transform: rotate(180deg);
+    background: hslaGen($primary-color, 1);
+    color: hslaGen($white-color, 1);
+  }
+
+  .accordion-section.completed & {
+    background: hslaGen($success-color, 0.1);
+    color: hslaGen($success-color, 1);
+  }
+}
+
+.accordion-content {
+  display: none;
+
+  &.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+}
+
+.accordion-content-inner {
+  padding: $space-xl $space-lg;
+}
+
+// Animations
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Empty state
+.accordion-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  background: hslaGen($white-color, 1);
+  border-radius: $base-border-radius;
+  padding: $space-xl;
+  text-align: center;
+  box-shadow: $box-shadow;
+
+  .accordion-empty-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: hslaGen($background-color, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $space-lg;
+
+    i {
+      font-size: 3rem;
+      color: hslaGen($grey-color, 0.5);
+    }
+  }
+
+  h3 {
+    font-size: $fs-lg;
+    color: hslaGen($primary-color, 1);
+    margin-bottom: $space-sm;
+    font-weight: $fw-bold;
+  }
+
+  p {
+    font-size: $fs-base;
+    color: hslaGen($grey-color, 1);
+    margin: 0;
+  }
+}
+
+// Responsive adjustments
+@include breakpoint("768px", max) {
+  .accordion-container.with-sidebar {
+    gap: $space-md;
+  }
+
+  .accordion-sidebar {
+    padding: $space-md;
+  }
+
+  .accordion-header {
+    padding: $space-md;
+  }
+
+  .accordion-content-inner {
+    padding: $space-md;
+  }
+
+  .accordion-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+
+  .accordion-title h3 {
+    font-size: 1rem;
+  }
+}
