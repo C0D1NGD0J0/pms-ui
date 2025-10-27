@@ -1,0 +1,17 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://pms-api-production.up.railway.app"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)", 
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "https://pms-ui-two.vercel.app" }
+      ]
+    }
+  ]
+}
