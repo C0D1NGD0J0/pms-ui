@@ -12,6 +12,10 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
   allowMultipleOpen = false,
   className = "",
   ariaLabel = "Accordion",
+  renderPreview,
+  previewPosition = "right",
+  previewWidth = "500px",
+  hidePreviewOn = "mobile",
 }) => {
   const [activeId, setActiveId] = useState<string | null>(
     defaultActiveId || items[0]?.id || null
@@ -54,6 +58,9 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
     (item) => item.isCompleted || completedIds.has(item.id)
   ).length;
 
+  const activeItem = items.find((item) => item.id === activeId) || null;
+  const hasPreview = !!renderPreview;
+
   return (
     <AccordionContext.Provider
       value={{ activeId, setActiveId, completedIds, markAsCompleted }}
@@ -61,9 +68,16 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
       <div
         className={`accordion-container ${
           showSidebar ? "with-sidebar" : ""
-        } ${className}`}
+        } ${hasPreview ? "with-preview" : ""} ${
+          hasPreview ? `preview-${previewPosition}` : ""
+        } ${hasPreview ? `hide-preview-${hidePreviewOn}` : ""} ${className}`}
         role="region"
         aria-label={ariaLabel}
+        style={
+          hasPreview
+            ? ({ "--preview-width": previewWidth } as React.CSSProperties)
+            : undefined
+        }
       >
         {showSidebar && (
           <div className="accordion-sidebar">
@@ -141,6 +155,12 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
             </div>
           )}
         </div>
+
+        {hasPreview && renderPreview && (
+          <div className="accordion-preview-panel" role="complementary" aria-label="Live preview">
+            {renderPreview(activeItem, activeId)}
+          </div>
+        )}
       </div>
     </AccordionContext.Provider>
   );
