@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { AccordionContext } from "../hook";
 import { AccordionSection } from "./AccordionSection";
+import { PreviewDrawer } from "./PreviewDrawer";
 import { AccordionContainerProps } from "../interface";
 
 export const AccordionContainer: React.FC<AccordionContainerProps> = ({
@@ -12,11 +13,15 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
   allowMultipleOpen = false,
   className = "",
   ariaLabel = "Accordion",
+  // Drawer props
+  showPreviewDrawer = false,
   renderPreview,
-  previewPosition = "right",
-  previewWidth = "500px",
-  hidePreviewOn = "mobile",
+  onPreviewToggle,
+  previewData,
+  previewTitle = "Preview",
+  previewActions,
 }) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(
     defaultActiveId || items[0]?.id || null
   );
@@ -59,7 +64,17 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
   ).length;
 
   const activeItem = items.find((item) => item.id === activeId) || null;
-  const hasPreview = !!renderPreview;
+
+  const handleDrawerToggle = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+    if (onPreviewToggle) {
+      onPreviewToggle(previewData);
+    }
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
 
   return (
     <AccordionContext.Provider
@@ -68,16 +83,9 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
       <div
         className={`accordion-container ${
           showSidebar ? "with-sidebar" : ""
-        } ${hasPreview ? "with-preview" : ""} ${
-          hasPreview ? `preview-${previewPosition}` : ""
-        } ${hasPreview ? `hide-preview-${hidePreviewOn}` : ""} ${className}`}
+        } ${className}`}
         role="region"
         aria-label={ariaLabel}
-        style={
-          hasPreview
-            ? ({ "--preview-width": previewWidth } as React.CSSProperties)
-            : undefined
-        }
       >
         {showSidebar && (
           <div className="accordion-sidebar">
@@ -127,6 +135,20 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* Preview Drawer Toggle Button */}
+            {showPreviewDrawer && (
+              <div className="accordion-preview-controls">
+                <button
+                  className="accordion-preview-btn"
+                  onClick={handleDrawerToggle}
+                  aria-label="Toggle preview drawer"
+                >
+                  <i className="bx bx-show"></i>
+                  <span>Preview</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -155,13 +177,19 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
             </div>
           )}
         </div>
-
-        {hasPreview && renderPreview && (
-          <div className="accordion-preview-panel" role="complementary" aria-label="Live preview">
-            {renderPreview(activeItem, activeId)}
-          </div>
-        )}
       </div>
+
+      {/* Preview Drawer */}
+      {showPreviewDrawer && (
+        <PreviewDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleDrawerClose}
+          title={previewTitle}
+          actions={previewActions}
+        >
+          {renderPreview ? renderPreview(activeItem, activeId) : null}
+        </PreviewDrawer>
+      )}
     </AccordionContext.Provider>
   );
 };

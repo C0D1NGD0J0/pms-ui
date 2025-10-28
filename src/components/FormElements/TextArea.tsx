@@ -1,7 +1,7 @@
 "use client";
 import React, { ChangeEvent, forwardRef, FocusEvent, useState } from "react";
 
-interface FormTextareaProps {
+interface FormTextAreaProps {
   id: string;
   name: string;
   value: string;
@@ -18,7 +18,7 @@ interface FormTextareaProps {
   ariaDescribedBy?: string;
 }
 
-export const Textarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
+export const TextArea = forwardRef<HTMLTextAreaElement, FormTextAreaProps>(
   (
     {
       id,
@@ -82,4 +82,4 @@ export const Textarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
   }
 );
 
-Textarea.displayName = "FormTextarea";
+TextArea.displayName = "FormTextArea";
