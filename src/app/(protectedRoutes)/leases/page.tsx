@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
@@ -212,19 +213,24 @@ export default function LeasesPage() {
     {
       title: "Actions",
       dataIndex: "id",
-      render: () => (
+      render: (lease: any) => (
         <div className="action-icons">
-          <div className="action-icon view-icon" title="View Lease">
+          <Link
+            href={`/leases/${lease.luid}`}
+            className="action-icon view-icon"
+            title="View Property"
+          >
             <i className="bx bx-show"></i>
-          </div>
+          </Link>
           {permissions.isManagerOrAbove && (
-            <div className="action-icon edit-icon" title="Edit Lease">
+            <Link
+              href={`/leases/${lease.luid}/edit`}
+              className="action-icon edit-icon"
+              title="Edit Lease"
+            >
               <i className="bx bx-edit"></i>
-            </div>
+            </Link>
           )}
-          <div className="action-icon" title="Download">
-            <i className="bx bx-download"></i>
-          </div>
         </div>
       ),
     },
