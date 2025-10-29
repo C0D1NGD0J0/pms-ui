@@ -10,6 +10,7 @@ import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   PerformanceTab,
   PropertiesTab,
@@ -28,9 +29,7 @@ interface EmployeeDetailPageProps {
   }>;
 }
 
-export default function EmployeeDetailPage({
-  params,
-}: EmployeeDetailPageProps) {
+function EmployeeDetailPage({ params }: EmployeeDetailPageProps) {
   const router = useRouter();
   const permission = useUnifiedPermissions();
   const { cuid, uid } = React.use(params);
@@ -303,3 +302,5 @@ export default function EmployeeDetailPage({
     </div>
   );
 }
+
+export default withClientAccess(EmployeeDetailPage);

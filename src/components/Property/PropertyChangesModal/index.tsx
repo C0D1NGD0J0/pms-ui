@@ -8,7 +8,10 @@ import { Button } from "@components/FormElements/Button";
 import { Textarea } from "@components/FormElements/TextArea";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions, IPropertyDocument } from "@src/interfaces";
-import { useApproveProperty, useRejectProperty } from "@properties/hooks";
+import {
+  useApproveProperty,
+  useRejectProperty,
+} from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 
 interface PropertyChangesModalProps {
   visible: boolean;

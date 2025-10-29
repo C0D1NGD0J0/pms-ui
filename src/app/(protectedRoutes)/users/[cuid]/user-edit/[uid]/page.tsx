@@ -11,6 +11,7 @@ import { useGetVendor } from "@users/vendors/hooks/vendorHooks";
 import { useGetEmployeeInfo } from "@users/staff/hooks/employeeHooks";
 import { FormField, FormInput, FormLabel } from "@components/FormElements";
 import { useUserProfileEditForm } from "@app/(protectedRoutes)/users/shared-hooks";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   VendorInvitationTab,
   EmployeeDetailsTab,
@@ -23,7 +24,7 @@ interface UserEditPageProps {
   }>;
 }
 
-export default function UserEditPage({ params }: UserEditPageProps) {
+function UserEditPage({ params }: UserEditPageProps) {
   const { cuid, uid } = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -274,3 +275,5 @@ export default function UserEditPage({ params }: UserEditPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(UserEditPage);

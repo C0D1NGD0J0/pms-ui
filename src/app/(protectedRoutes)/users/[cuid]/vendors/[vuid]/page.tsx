@@ -10,6 +10,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   PerformanceTab,
   DocumentsTab,
@@ -31,7 +32,7 @@ interface VendorDetailPageProps {
   }>;
 }
 
-export default function VendorDetailPage({ params }: VendorDetailPageProps) {
+function VendorDetailPage({ params }: VendorDetailPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { cuid, vuid } = React.use(params);
@@ -313,3 +314,5 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(VendorDetailPage);

@@ -12,6 +12,7 @@ import { UserProfileHeader } from "@components/UserManagement";
 import { withPageAccess } from "@src/components/PageAccessHOC";
 import { DocumentsTab, ContactTab } from "@components/UserDetail";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { useDeactivateTenant, useGetClientTenant } from "@users/tenants/hooks";
 import { DeactivateTenantModal } from "@users/tenants/components/DeactivateTenantModal";
 
@@ -387,6 +388,8 @@ const TenantDetailPage = ({ params }: TenantDetailPageProps) => {
   );
 };
 
-export default withPageAccess(TenantDetailPage, {
-  requiredPermission: (p) => p.isStaffOrAbove,
-});
+export default withClientAccess(
+  withPageAccess(TenantDetailPage, {
+    requiredPermission: (p) => p.isStaffOrAbove,
+  })
+);

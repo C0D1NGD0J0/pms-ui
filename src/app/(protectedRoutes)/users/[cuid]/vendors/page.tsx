@@ -13,6 +13,7 @@ import { PageHeader } from "@components/PageElements/Header";
 import { generateLegendColors } from "@src/utils/employeeUtils";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   PanelsWrapper,
   PanelContent,
@@ -29,7 +30,7 @@ interface VendorsPageProps {
   }>;
 }
 
-export default function VendorsPage({ params }: VendorsPageProps) {
+function VendorsPage({ params }: VendorsPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -265,3 +266,5 @@ export default function VendorsPage({ params }: VendorsPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(VendorsPage);
