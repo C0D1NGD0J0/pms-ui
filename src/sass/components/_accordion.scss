@@ -191,14 +191,14 @@
   flex-direction: column;
   gap: $space-md;
   flex: 1;
-  min-height: 500px;
+  min-height: 50rem;
 }
 
 .accordion-section {
   background: hslaGen($white-color, 1);
   border-radius: $base-border-radius;
   box-shadow: $box-shadow;
-  overflow: hidden;
+  height: max-content;
   transition: all 0.3s ease;
 
   &.completed {
