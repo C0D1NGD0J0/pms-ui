@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useAuth } from "@store/index";
 import { leaseService } from "@services/lease";
 import { UseFormReturnType } from "@mantine/form";
-import { LeaseFormValues } from "@interfaces/lease.interface";
-import { useNotification } from "@hooks/useNotification";
 import { useMutation } from "@tanstack/react-query";
+import { useNotification } from "@hooks/useNotification";
+import { LeaseFormValues } from "@interfaces/lease.interface";
 
 export function useLeasePreview() {
   const { client } = useAuth();
@@ -12,33 +12,36 @@ export function useLeasePreview() {
   const [html, setHtml] = useState<string>("");
 
   const previewMutation = useMutation({
-    mutationFn: (data: Partial<LeaseFormValues>) =>
-      leaseService.previewLeaseTemplate(client?.cuid || "", data),
+    mutationFn: (data: Partial<LeaseFormValues>) => {
+      return leaseService.previewLeaseTemplate(client?.cuid || "", data);
+    },
     onSuccess: (result) => {
-      if (result.success && result.data) {
-        setHtml(result.data.html);
+      if (result.html) {
+        setHtml(result.html);
       } else {
         openNotification(
           "error",
           "Preview Failed",
-          result.message || "Failed to generate lease preview"
+          "Failed to generate lease preview"
         );
       }
     },
     onError: (error: any) => {
       const errorMessage =
-        error.response?.data?.message || "Failed to generate preview. Please try again.";
+        error.response?.data?.message ||
+        "Failed to generate preview. Please try again.";
       openNotification("error", "Preview Failed", errorMessage);
     },
   });
 
-  const fetchPreview = async (leaseForm: UseFormReturnType<LeaseFormValues>) => {
+  const fetchPreview = async (
+    leaseForm: UseFormReturnType<LeaseFormValues>
+  ) => {
     if (!client?.cuid) {
       openNotification("error", "Error", "Client information not found");
       return;
     }
 
-    // Validate form before preview
     const validation = leaseForm.validate();
     if (validation.hasErrors) {
       openNotification(
@@ -49,26 +52,37 @@ export function useLeasePreview() {
       return;
     }
 
-    try {
-      // Prepare preview data
-      const previewData = {
-        property: leaseForm.values.property,
-        tenantInfo: leaseForm.values.tenantInfo,
-        duration: leaseForm.values.duration,
-        fees: leaseForm.values.fees,
-        type: leaseForm.values.type,
-        utilitiesIncluded: leaseForm.values.utilitiesIncluded,
-        coTenants: leaseForm.values.coTenants?.filter(
-          (ct) => ct.name && ct.email && ct.phone
-        ),
-        petPolicy: leaseForm.values.petPolicy,
-        renewalOptions: leaseForm.values.renewalOptions,
-      };
+    const previewData = {
+      templateType: leaseForm.values.templateType,
+      propertyId: leaseForm.values.property.id,
+      tenantName:
+        leaseForm.values.tenantInfo.firstName &&
+        leaseForm.values.tenantInfo.lastName
+          ? `${leaseForm.values.tenantInfo.firstName} ${leaseForm.values.tenantInfo.lastName}`
+          : "[Tenant Name] - will be swapped upon creation of lease",
+      tenantEmail:
+        leaseForm.values.tenantInfo.email ||
+        "[Tenant Email] - will be swapped upon creation of lease",
+      tenantPhone: "[Tenant Phone] - will be swapped upon creation of lease",
+      propertyAddress: leaseForm.values.property.address,
+      unitNumber: leaseForm.values.property.unitId,
+      leaseType: leaseForm.values.type,
+      startDate: leaseForm.values.duration.startDate,
+      endDate: leaseForm.values.duration.endDate,
+      monthlyRent: Number(leaseForm.values.fees.monthlyRent),
+      securityDeposit: Number(leaseForm.values.fees.securityDeposit),
+      rentDueDay: Number(leaseForm.values.fees.rentDueDay),
+      currency: leaseForm.values.fees.currency,
+      utilitiesIncluded: leaseForm.values.utilitiesIncluded,
+      coTenants: leaseForm.values.coTenants?.filter(
+        (ct) => ct.name && ct.email && ct.phone
+      ),
+      petPolicy: leaseForm.values.petPolicy,
+      renewalOptions: leaseForm.values.renewalOptions,
+      signingMethod: leaseForm.values.signingMethod,
+    };
 
-      await previewMutation.mutateAsync(previewData);
-    } catch (error) {
-      console.error("Error fetching lease preview:", error);
-    }
+    await previewMutation.mutateAsync(previewData);
   };
 
   const clearPreview = () => {

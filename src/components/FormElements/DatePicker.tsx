@@ -1,7 +1,10 @@
 "use client";
 import dayjs from "dayjs";
 import React from "react";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import { DatePicker as AntDatePicker, DatePickerProps } from "antd";
+
+dayjs.extend(isSameOrBefore);
 
 interface CustomDatePickerProps {
   id: string;
@@ -14,6 +17,8 @@ interface CustomDatePickerProps {
   disabled?: boolean;
   hasError?: boolean;
   format?: string;
+  position?: "topRight" | "bottomLeft";
+  disablePastDates?: boolean;
 }
 
 export const DatePicker: React.FC<CustomDatePickerProps> = ({
@@ -27,12 +32,24 @@ export const DatePicker: React.FC<CustomDatePickerProps> = ({
   disabled = false,
   hasError = false,
   format = "YYYY-MM-DD",
+  disablePastDates = false,
+  position = "bottomLeft",
   ...restProps
 }) => {
   const handleChange: DatePickerProps["onChange"] = (date, dateString) => {
     const dateValue = Array.isArray(dateString) ? dateString[0] : dateString;
     onChange(dateValue || "", name);
   };
+
+  const disabledDate = disablePastDates
+    ? (current: dayjs.Dayjs) => {
+        if (!current) return false;
+        // Get today at start of day (00:00:00)
+        const today = dayjs().startOf("day");
+        // Disable if date is before today
+        return current.endOf("day").isBefore(today);
+      }
+    : undefined;
 
   const inputClasses = [
     "form-input",
@@ -54,6 +71,9 @@ export const DatePicker: React.FC<CustomDatePickerProps> = ({
       format={format}
       value={value ? dayjs(value) : null}
       aria-required={required}
+      disabledDate={disabledDate}
+      placement={position}
+      getPopupContainer={(trigger) => trigger.parentElement || document.body}
       {...restProps}
     />
   );

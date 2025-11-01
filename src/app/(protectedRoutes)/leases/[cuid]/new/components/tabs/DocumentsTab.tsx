@@ -33,9 +33,6 @@ export const DocumentsTab = ({ leaseForm, handleOnChange }: Props) => {
               instructionText="Select lease agreements and related documents"
               maxFiles={10}
               totalSizeAllowed={50}
-              onError={(message) =>
-                console.error("File upload error:", message)
-              }
             />
             <p
               style={{

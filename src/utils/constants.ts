@@ -552,6 +552,7 @@ export const LEASE_QUERY_KEYS = {
     `fetchUnits=${fetchUnits}`,
   ],
   getLeasePreview: (cuid: string) => ["/getLeasePreview", cuid],
+  getAvailableTenants: (cuid: string) => ["/getAvailableTenants", cuid],
 };
 export const INVITE_QUERY_KEYS = {
   validateInviteToken: (cuid: string, token: string) => [

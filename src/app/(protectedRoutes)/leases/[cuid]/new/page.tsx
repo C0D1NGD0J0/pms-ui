@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@components/FormElements";
 import { PageHeader } from "@components/PageElements";
+import { Button, Modal } from "@components/FormElements";
 import { AccordionContainer, AccordionItem } from "@components/Accordion";
 import { DocumentPreview } from "@components/DocumentPreview/DocumentPreview";
 
@@ -13,25 +13,39 @@ import {
   AdditionalTermsTab,
   LeaseTermsTab,
   TenantInfoTab,
+  SignatureTab,
   CoTenantsTab,
   DocumentsTab,
 } from "./components";
 
-export default function CreateLease() {
+interface CreateLeaseProps {
+  params: Promise<{
+    cuid: string;
+  }>;
+}
+export default function CreateLease({ params }: CreateLeaseProps) {
+  const { cuid } = React.use(params);
   const router = useRouter();
   const {
     leaseForm,
-    // properties,
     handleOnChange,
     propertyOptions,
     unitOptions,
     selectedProperty,
     isLoadingProperties,
+    filteredProperties,
+    filteredCount,
+    tenantOptions,
+    tenantSelectionType,
+    isLoadingTenants,
+    handleTenantSelectionTypeChange,
     handleCoTenantChange,
     addCoTenant,
     removeCoTenant,
     handleUtilityToggle,
-  } = useLeaseFormBase();
+    hasTabErrors,
+    isTabCompleted,
+  } = useLeaseFormBase({ cuid });
 
   const { isSubmitting, handleSubmit } = useLeaseForm();
   const {
@@ -41,7 +55,22 @@ export default function CreateLease() {
     clearPreview,
   } = useLeasePreview();
 
+  const [showCoTenantWarning, setShowCoTenantWarning] = useState(false);
+
   const handleCreateLease = () => {
+    const hasCoTenants =
+      leaseForm.values.coTenants && leaseForm.values.coTenants.length > 0;
+
+    if (!hasCoTenants) {
+      setShowCoTenantWarning(true);
+      return;
+    }
+
+    handleSubmit(leaseForm);
+  };
+
+  const handleConfirmWithoutCoTenants = () => {
+    setShowCoTenantWarning(false);
     handleSubmit(leaseForm);
   };
 
@@ -50,7 +79,7 @@ export default function CreateLease() {
   };
 
   const handleCancel = () => {
-    router.push("/leases");
+    router.back();
   };
 
   const isFormValid = leaseForm.isValid();
@@ -61,14 +90,19 @@ export default function CreateLease() {
       label: "Property & Unit",
       subtitle: "Select property and unit",
       icon: <i className="bx bx-building"></i>,
+      hasError: hasTabErrors("property"),
+      isCompleted: isTabCompleted("property"),
       content: (
         <PropertySelectionTab
+          cuid={cuid}
           leaseForm={leaseForm}
           handleOnChange={handleOnChange}
           propertyOptions={propertyOptions}
           unitOptions={unitOptions}
           selectedProperty={selectedProperty}
           isLoading={isLoadingProperties}
+          filteredProperties={filteredProperties}
+          filteredCount={filteredCount}
         />
       ),
     },
@@ -77,8 +111,17 @@ export default function CreateLease() {
       label: "Tenant Information",
       subtitle: "Select or invite tenant",
       icon: <i className="bx bx-user"></i>,
+      hasError: hasTabErrors("tenant"),
+      isCompleted: isTabCompleted("tenant"),
       content: (
-        <TenantInfoTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
+        <TenantInfoTab
+          leaseForm={leaseForm}
+          handleOnChange={handleOnChange}
+          tenantOptions={tenantOptions}
+          tenantSelectionType={tenantSelectionType}
+          isLoadingTenants={isLoadingTenants}
+          onTenantSelectionTypeChange={handleTenantSelectionTypeChange}
+        />
       ),
     },
     {
@@ -86,6 +129,8 @@ export default function CreateLease() {
       label: "Lease Terms",
       subtitle: "Define lease duration and terms",
       icon: <i className="bx bx-file-blank"></i>,
+      hasError: hasTabErrors("leaseTerms"),
+      isCompleted: isTabCompleted("leaseTerms"),
       content: (
         <LeaseTermsTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
       ),
@@ -95,6 +140,8 @@ export default function CreateLease() {
       label: "Financial Details",
       subtitle: "Set rent, deposits, and fees",
       icon: <i className="bx bx-dollar-circle"></i>,
+      hasError: hasTabErrors("financial"),
+      isCompleted: isTabCompleted("financial"),
       content: (
         <FinancialDetailsTab
           leaseForm={leaseForm}
@@ -103,10 +150,23 @@ export default function CreateLease() {
       ),
     },
     {
+      id: "signature",
+      label: "Signature Settings",
+      subtitle: "Configure signing method",
+      icon: <i className="bx bx-pen"></i>,
+      hasError: hasTabErrors("signature"),
+      isCompleted: isTabCompleted("signature"),
+      content: (
+        <SignatureTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
+      ),
+    },
+    {
       id: "additional",
       label: "Additional Terms",
       subtitle: "Utilities, pet policy, renewals",
       icon: <i className="bx bx-cog"></i>,
+      hasError: hasTabErrors("additional"),
+      isCompleted: isTabCompleted("additional"),
       content: (
         <AdditionalTermsTab
           leaseForm={leaseForm}
@@ -120,6 +180,8 @@ export default function CreateLease() {
       label: "Co-Tenants",
       subtitle: "Add additional tenants (optional)",
       icon: <i className="bx bx-group"></i>,
+      hasError: hasTabErrors("cotenants"),
+      isCompleted: isTabCompleted("cotenants"),
       content: (
         <CoTenantsTab
           leaseForm={leaseForm}
@@ -134,6 +196,8 @@ export default function CreateLease() {
       label: "Documents",
       subtitle: "Upload lease documents",
       icon: <i className="bx bx-file"></i>,
+      hasError: hasTabErrors("documents"),
+      isCompleted: isTabCompleted("documents"),
       content: (
         <DocumentsTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
       ),
@@ -161,9 +225,7 @@ export default function CreateLease() {
             showSidebar={true}
             defaultActiveId="property"
             ariaLabel="Create lease form sections"
-            onChange={(activeId) => {
-              console.log("Active section changed to:", activeId);
-            }}
+            onChange={() => {}}
             showPreviewDrawer={isFormValid}
             previewTitle="Lease Review"
             renderPreview={() => {
@@ -243,18 +305,7 @@ export default function CreateLease() {
             }}
           />
 
-          {/* Action buttons at bottom of form */}
-          <div
-            className="form-actions"
-            style={{
-              marginTop: "2rem",
-              padding: "1.5rem",
-              borderTop: "1px solid var(--border-color)",
-              display: "flex",
-              gap: "1rem",
-              justifyContent: "flex-end",
-            }}
-          >
+          <div className="form-actions">
             <Button
               className="btn btn-outline"
               label="Cancel"
@@ -276,6 +327,47 @@ export default function CreateLease() {
             />
           </div>
         </div>
+
+        {/* Co-Tenant Warning Modal */}
+        <Modal
+          isOpen={showCoTenantWarning}
+          onClose={() => setShowCoTenantWarning(false)}
+          size="medium"
+        >
+          <Modal.Header title="No Co-Tenants Added" />
+          <Modal.Content>
+            <div
+              style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}
+            >
+              <i
+                className="bx bx-info-circle"
+                style={{ fontSize: "2rem", color: "var(--warning)" }}
+              ></i>
+              <div>
+                <p style={{ marginBottom: "1rem" }}>
+                  You haven&apos;t added any co-tenants to this lease.
+                </p>
+                <p style={{ marginBottom: "0" }}>
+                  If you proceed without adding co-tenants, they will not appear
+                  on the lease document and will not have signing rights.
+                </p>
+              </div>
+            </div>
+          </Modal.Content>
+          <Modal.Footer>
+            <Button
+              className="btn btn-outline"
+              label="Go Back"
+              onClick={() => setShowCoTenantWarning(false)}
+            />
+            <Button
+              className="btn btn-primary"
+              label="Continue Without Co-Tenants"
+              onClick={handleConfirmWithoutCoTenants}
+              disabled={isSubmitting}
+            />
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );

@@ -47,7 +47,6 @@ class UsersService {
       if (params?.role) {
         if (Array.isArray(params.role)) {
           params.role = params.role.join(",") as any;
-          console.log("Filtered role:", params.role);
           queryParams.append("role", params.role as any);
         } else {
           queryParams.append("role", params.role);
@@ -211,11 +210,7 @@ class UsersService {
     }
   }
 
-  async getClientTenantDetails(
-    cuid: string,
-    uid: string,
-    include?: string[]
-  ) {
+  async getClientTenantDetails(cuid: string, uid: string, include?: string[]) {
     try {
       const queryParams = new URLSearchParams();
       if (include && include.length > 0) {
@@ -258,6 +253,19 @@ class UsersService {
       return result.data;
     } catch (error) {
       console.error("Error deactivating tenant:", error);
+      throw error;
+    }
+  }
+
+  async getAvailableTenants(cuid: string) {
+    try {
+      const result = await axios.get(
+        `${this.baseUrl}/${cuid}/available-tenants`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching available tenants:", error);
       throw error;
     }
   }

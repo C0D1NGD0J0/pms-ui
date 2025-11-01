@@ -8,42 +8,43 @@ import {
   Select,
 } from "@components/FormElements";
 
+interface TenantOption {
+  value: string;
+  label: string;
+}
+
 interface Props {
   leaseForm: UseFormReturnType<
     LeaseFormValues,
     (values: LeaseFormValues) => LeaseFormValues
   >;
   handleOnChange: (e: any, field?: string) => void;
+  tenantOptions: TenantOption[];
+  tenantSelectionType: "existing" | "invite";
+  isLoadingTenants: boolean;
+  onTenantSelectionTypeChange: (type: "existing" | "invite") => void;
 }
 
-export const TenantInfoTab = ({ leaseForm, handleOnChange }: Props) => {
-  const useExistingTenant = !!leaseForm.values.tenantInfo.id;
-
-  // Placeholder options - will be fetched from API in future
-  const tenantOptions = [
-    { value: "", label: "Select a tenant" },
-    { value: "tenant-1", label: "John Doe - john.doe@example.com" },
-    { value: "tenant-2", label: "Jane Smith - jane.smith@example.com" },
-  ];
-
-  const handleTenantTypeChange = (
+export const TenantInfoTab = ({
+  leaseForm,
+  handleOnChange,
+  tenantOptions,
+  tenantSelectionType,
+  isLoadingTenants,
+  onTenantSelectionTypeChange,
+}: Props) => {
+  const handleTypeChange = (
     value: string | React.ChangeEvent<HTMLSelectElement>
   ) => {
-    if (value === "existing") {
-      // Clear email, keep id field for selection
-      handleOnChange("", "tenantInfo.email");
-    } else {
-      // Clear id, keep email field for entry
-      handleOnChange("", "tenantInfo.id");
-    }
+    const actualValue = typeof value === "string" ? value : value.target.value;
+    onTenantSelectionTypeChange(actualValue as "existing" | "invite");
   };
-
   return (
     <>
       <div className="form-fields">
         <FormField
           error={{
-            msg: "",
+            msg: (leaseForm.errors["tenantInfo"] as string) || "",
             touched: false,
           }}
         >
@@ -51,17 +52,17 @@ export const TenantInfoTab = ({ leaseForm, handleOnChange }: Props) => {
           <Select
             id="tenantType"
             name="tenantType"
-            onChange={handleTenantTypeChange}
+            onChange={handleTypeChange}
             options={[
               { value: "existing", label: "Select Existing Tenant" },
               { value: "invite", label: "Invite New Tenant" },
             ]}
-            value={useExistingTenant ? "existing" : "invite"}
+            value={tenantSelectionType}
           />
         </FormField>
       </div>
 
-      {useExistingTenant ? (
+      {tenantSelectionType === "existing" ? (
         <div className="form-fields">
           <FormField
             error={{
@@ -77,8 +78,11 @@ export const TenantInfoTab = ({ leaseForm, handleOnChange }: Props) => {
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) => handleOnChange(value, "tenantInfo.id")}
               options={tenantOptions}
-              placeholder="Select tenant"
+              placeholder={
+                isLoadingTenants ? "Loading tenants..." : "Select tenant"
+              }
               value={leaseForm.values.tenantInfo.id || ""}
+              disabled={isLoadingTenants}
             />
           </FormField>
         </div>
@@ -87,11 +91,55 @@ export const TenantInfoTab = ({ leaseForm, handleOnChange }: Props) => {
           <div className="form-fields">
             <FormField
               error={{
+                msg: (leaseForm.errors["tenantInfo.firstName"] as string) || "",
+                touched: leaseForm.isTouched("tenantInfo.firstName"),
+              }}
+            >
+              <FormLabel
+                htmlFor="tenantFirstName"
+                label="First Name"
+                required
+              />
+              <FormInput
+                id="tenantFirstName"
+                name="tenantInfo.firstName"
+                type="text"
+                onChange={handleOnChange}
+                placeholder="Enter tenant's first name"
+                value={leaseForm.values.tenantInfo.firstName || ""}
+                hasError={!!leaseForm.errors["tenantInfo.firstName"]}
+              />
+            </FormField>
+          </div>
+
+          <div className="form-fields">
+            <FormField
+              error={{
+                msg: (leaseForm.errors["tenantInfo.lastName"] as string) || "",
+                touched: leaseForm.isTouched("tenantInfo.lastName"),
+              }}
+            >
+              <FormLabel htmlFor="tenantLastName" label="Last Name" required />
+              <FormInput
+                id="tenantLastName"
+                name="tenantInfo.lastName"
+                type="text"
+                onChange={handleOnChange}
+                placeholder="Enter tenant's last name"
+                value={leaseForm.values.tenantInfo.lastName || ""}
+                hasError={!!leaseForm.errors["tenantInfo.lastName"]}
+              />
+            </FormField>
+          </div>
+
+          <div className="form-fields">
+            <FormField
+              error={{
                 msg: (leaseForm.errors["tenantInfo.email"] as string) || "",
                 touched: leaseForm.isTouched("tenantInfo.email"),
               }}
             >
-              <FormLabel htmlFor="tenantEmail" label="Tenant Email" required />
+              <FormLabel htmlFor="tenantEmail" label="Email" required />
               <FormInput
                 id="tenantEmail"
                 name="tenantInfo.email"

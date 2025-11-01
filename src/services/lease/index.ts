@@ -2,6 +2,7 @@ import axios from "@configs/axios";
 import { IServerResponse } from "@interfaces/utils.interface";
 import { prepareRequestData } from "@utils/formDataTransformer";
 import {
+  LeaseablePropertiesMetadata,
   LeasePreviewRequest,
   LeaseableProperty,
   LeaseFormValues,
@@ -9,7 +10,7 @@ import {
 
 class LeaseService {
   private axiosConfig = {};
-  private readonly baseUrl = `/api/v1/lease`;
+  private readonly baseUrl = `/api/v1/leases`;
   private readonly propertyBaseUrl = `/api/v1/properties`;
 
   constructor() {}
@@ -26,13 +27,12 @@ class LeaseService {
       };
 
       const result = await axios.post(
-        `${this.baseUrl}/${cuid}/lease`,
+        `${this.baseUrl}/${cuid}/`,
         requestData,
         config
       );
       return result;
     } catch (error) {
-      console.error("Error creating lease:", error);
       throw error;
     }
   }
@@ -43,13 +43,12 @@ class LeaseService {
   ) {
     try {
       const result = await axios.post<IServerResponse<{ html: string }>>(
-        `${this.baseUrl}/${cuid}/lease/preview`,
+        `${this.baseUrl}/${cuid}/preview`,
         leaseData,
         this.axiosConfig
       );
       return result.data;
     } catch (error) {
-      console.error("Error previewing lease template:", error);
       throw error;
     }
   }
@@ -57,13 +56,17 @@ class LeaseService {
   async getLeaseableProperties(cuid: string, fetchUnits: boolean = false) {
     try {
       const queryString = fetchUnits ? "?fetchUnits=true" : "";
-      const result = await axios.get<IServerResponse<LeaseableProperty[]>>(
+      const result = await axios.get<
+        IServerResponse<{
+          items: LeaseableProperty[];
+          metadata: LeaseablePropertiesMetadata | null;
+        }>
+      >(
         `${this.propertyBaseUrl}/${cuid}/leaseable${queryString}`,
         this.axiosConfig
       );
-      return result.data;
+      return result;
     } catch (error) {
-      console.error("Error fetching leaseable properties:", error);
       throw error;
     }
   }

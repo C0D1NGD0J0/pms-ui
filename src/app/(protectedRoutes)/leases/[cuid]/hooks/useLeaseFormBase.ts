@@ -1,103 +1,51 @@
 import { useForm } from "@mantine/form";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { leaseSchema } from "@validations/lease.validations";
-import { useCallback, ChangeEvent, useState, useMemo } from "react";
+import { leaseTabFields, leaseSchema } from "@validations/lease.validations";
+import { useCallback, ChangeEvent, useEffect, useState, useMemo } from "react";
 import {
   defaultLeaseFormValues,
   LeaseableProperty,
-  PaymentMethodEnum,
-  SigningMethodEnum,
   LeaseFormValues,
-  LeaseTypeEnum,
   UtilityEnum,
 } from "@interfaces/lease.interface";
 
+import { useAvailableTenants } from "./useAvailableTenants";
 import { useLeaseableProperties } from "./useLeaseableProperties";
 
 export type LeaseFormBaseProps = {
   initialValues?: LeaseFormValues;
+  cuid: string;
 };
 
-const defaultVal: LeaseFormValues = {
-  property: {
-    id: "68ad1888b4879d5b5db77f0c", // Palm View ResidencesQ
-    address: "38 Bourdillon Rd, Ikoyi, Lagos 106104, Lagos, Nigeria",
-    unitId: "68ada748db028243e41628fb", // Unit 101
-  },
-  tenantInfo: {
-    email: "tenant@example.com",
-  },
-  duration: {
-    startDate: new Date().toISOString().split("T")[0], // Today
-    endDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0], // 1 year from now
-    moveInDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-      .toISOString()
-      .split("T")[0], // 1 week from now
-  },
-  fees: {
-    monthlyRent: 2500,
-    currency: "USD",
-    rentDueDay: 1,
-    securityDeposit: 5000,
-    lateFeeAmount: 100,
-    lateFeeDays: 5,
-    lateFeeType: "fixed",
-    lateFeePercentage: 5,
-    acceptedPaymentMethod: PaymentMethodEnum.E_TRANSFER,
-  },
-  type: LeaseTypeEnum.FIXED_TERM,
-  signingMethod: SigningMethodEnum.ELECTRONIC,
-  utilitiesIncluded: [
-    UtilityEnum.WATER,
-    UtilityEnum.ELECTRICITY,
-    UtilityEnum.TRASH,
-  ],
-  coTenants: [
-    {
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      phone: "+1234567890",
-      occupation: "Software Engineer",
-    },
-  ],
-  petPolicy: {
-    allowed: true,
-    types: ["Dogs", "Cats"],
-    maxPets: 2,
-    deposit: 500,
-    monthlyFee: 50,
-  },
-  renewalOptions: {
-    autoRenew: true,
-    noticePeriodDays: 60,
-    renewalTermMonths: 12,
-  },
-  internalNotes: "Test lease - preferred tenant with excellent credit history",
-  leaseDocument: [],
-};
 export function useLeaseFormBase({
-  initialValues = defaultVal,
-}: LeaseFormBaseProps = {}) {
+  initialValues = defaultLeaseFormValues,
+  cuid,
+}: LeaseFormBaseProps) {
   const [selectedProperty, setSelectedProperty] =
     useState<LeaseableProperty | null>(null);
 
-  const leaseForm = useForm<
-    LeaseFormValues,
-    (values: LeaseFormValues) => LeaseFormValues
-  >({
+  const [tenantSelectionType, setTenantSelectionType] = useState<
+    "existing" | "invite"
+  >("existing");
+
+  const leaseForm = useForm<LeaseFormValues>({
     initialValues,
     validateInputOnBlur: true,
     validateInputOnChange: true,
     validate: zodResolver(leaseSchema),
   });
 
-  // Use TanStack Query to fetch leaseable properties
-  const { data: properties = [], isLoading: isLoadingProperties } =
+  const { data: propertiesResult, isLoading: isLoadingProperties } =
     useLeaseableProperties(true);
 
-  // Get property options for dropdown
+  const { data: availableTenants = [], isLoading: isLoadingTenants } =
+    useAvailableTenants({ cuid });
+
+  const properties = propertiesResult?.properties || [];
+  const propertiesMetadata = propertiesResult?.metadata || null;
+  const filteredProperties = propertiesMetadata?.filteredProperties || [];
+  const filteredCount = propertiesMetadata?.filteredCount || 0;
+
   const propertyOptions = useMemo(() => {
     return properties.map((property) => ({
       value: property.id,
@@ -106,7 +54,6 @@ export function useLeaseFormBase({
     }));
   }, [properties]);
 
-  // Get unit options for selected property
   const unitOptions = useMemo(() => {
     if (!selectedProperty || !selectedProperty.units) return [];
 
@@ -117,6 +64,39 @@ export function useLeaseFormBase({
     }));
   }, [selectedProperty]);
 
+  const tenantOptions = useMemo(() => {
+    return [
+      { value: "", label: "Select a tenant" },
+      ...availableTenants.map((tenant) => ({
+        value: tenant.id,
+        label: `${tenant.fullName} - ${tenant.email}`,
+      })),
+    ];
+  }, [availableTenants]);
+
+  const handleTenantSelectionTypeChange = useCallback(
+    (type: "existing" | "invite") => {
+      setTenantSelectionType(type);
+
+      if (type === "existing") {
+        leaseForm.setFieldValue("tenantInfo", {
+          id: "",
+          email: undefined,
+          firstName: undefined,
+          lastName: undefined,
+        });
+      } else {
+        leaseForm.setFieldValue("tenantInfo", {
+          id: undefined,
+          email: "",
+          firstName: "",
+          lastName: "",
+        });
+      }
+    },
+    [leaseForm]
+  );
+
   const handleOnChange = useCallback(
     (
       e:
@@ -125,23 +105,19 @@ export function useLeaseFormBase({
           >
         | string
         | boolean,
-      field?: keyof LeaseFormValues | string
+      field?: string
     ) => {
-      // Extract the actual value from event or use direct value
       let actualValue: string | boolean;
       let actualField: string | undefined = field;
-
       if (typeof e === "string" || typeof e === "boolean") {
         actualValue = e;
       } else {
-        // It's an event object
         const { name, value, type } = e.target;
         const checked = (e.target as HTMLInputElement).checked;
         actualValue = type === "checkbox" ? checked : value;
         actualField = field || name;
       }
 
-      // Update form field value
       if (
         actualField &&
         typeof actualField === "string" &&
@@ -163,21 +139,35 @@ export function useLeaseFormBase({
         leaseForm.setFieldValue(actualField as any, actualValue);
       }
 
-      // Handle property selection - update selected property and populate financial info
       if (actualField === "property.id" && typeof actualValue === "string") {
         const property = properties.find((p) => p.id === actualValue);
-        console.log("Property selected:", {
-          selectedId: actualValue,
-          foundProperty: property,
-          hasUnits: property?.units?.length,
-          allProperties: properties,
-        });
         setSelectedProperty(property || null);
 
         if (property) {
           leaseForm.setFieldValue("property.address", property.address);
+          leaseForm.setFieldValue(
+            "property.propertyType",
+            property.propertyType
+          );
 
-          // Pre-fill financial info from property
+          const propertyType = property.propertyType?.toLowerCase();
+          let templateType = "residential-single-family";
+
+          if (propertyType === "house" || propertyType === "townhouse") {
+            templateType = "residential-single-family";
+          } else if (
+            propertyType === "apartment" ||
+            propertyType === "condominium"
+          ) {
+            templateType = "residential-apartment";
+          } else if (propertyType === "commercial") {
+            templateType = "commercial-office";
+          } else if (propertyType === "industrial") {
+            templateType = "commercial-office";
+          }
+
+          leaseForm.setFieldValue("templateType", templateType);
+
           if (property.financialInfo) {
             if (property.financialInfo.monthlyRent) {
               leaseForm.setFieldValue(
@@ -201,7 +191,6 @@ export function useLeaseFormBase({
         }
       }
 
-      // Handle unit selection - update financial info if unit has specific fees
       if (
         actualField === "property.unitId" &&
         typeof actualValue === "string"
@@ -266,7 +255,7 @@ export function useLeaseFormBase({
   );
 
   const handleUtilityToggle = useCallback(
-    (utility: string, checked: boolean) => {
+    (utility: UtilityEnum, checked: boolean) => {
       const utilities = leaseForm.values.utilitiesIncluded || [];
       if (checked) {
         leaseForm.setFieldValue("utilitiesIncluded", [...utilities, utility]);
@@ -280,6 +269,91 @@ export function useLeaseFormBase({
     [leaseForm]
   );
 
+  useEffect(() => {
+    leaseForm.validate();
+  }, [leaseForm.values]);
+
+  const hasTabErrors = useCallback(
+    (tabId: string): boolean => {
+      const relevantFields =
+        leaseTabFields[tabId as keyof typeof leaseTabFields] || [];
+
+      return relevantFields.some((field) => {
+        if (leaseForm.errors[field as keyof typeof leaseForm.errors]) {
+          return true;
+        }
+
+        if (field.includes(".")) {
+          const parent = field.split(".")[0];
+          if (leaseForm.errors[parent as keyof typeof leaseForm.errors]) {
+            return true;
+          }
+        }
+
+        return false;
+      });
+    },
+    [leaseForm.errors]
+  );
+
+  const isTabCompleted = useCallback(
+    (tabId: string): boolean => {
+      const values = leaseForm.values;
+
+      switch (tabId) {
+        case "property":
+          if (!values.property.id) return false;
+          if (values.property.propertyType) {
+            const requiresUnit =
+              selectedProperty?.units && selectedProperty.units.length > 0;
+            if (requiresUnit && !values.property.unitId) return false;
+          }
+          return true;
+
+        case "tenant":
+          const hasId =
+            values.tenantInfo.id && values.tenantInfo.id.trim() !== "";
+          const hasEmail =
+            values.tenantInfo.email && values.tenantInfo.email.trim() !== "";
+          const hasFirstName =
+            values.tenantInfo.firstName &&
+            values.tenantInfo.firstName.trim() !== "";
+          const hasLastName =
+            values.tenantInfo.lastName &&
+            values.tenantInfo.lastName.trim() !== "";
+          return !!hasId || !!(hasEmail && hasFirstName && hasLastName);
+
+        case "leaseTerms":
+          return !!(
+            values.type &&
+            values.templateType &&
+            values.duration.startDate &&
+            values.duration.endDate
+          );
+
+        case "financial":
+          return !!(
+            values.fees.monthlyRent > 0 &&
+            values.fees.securityDeposit >= 0 &&
+            values.fees.rentDueDay >= 1 &&
+            values.fees.rentDueDay <= 31
+          );
+
+        case "signature":
+          return !!values.signingMethod;
+
+        case "additional":
+        case "cotenants":
+        case "documents":
+          return true;
+
+        default:
+          return false;
+      }
+    },
+    [leaseForm.values, selectedProperty]
+  );
+
   return {
     leaseForm,
     handleOnChange,
@@ -288,9 +362,18 @@ export function useLeaseFormBase({
     unitOptions,
     selectedProperty,
     isLoadingProperties,
+    filteredProperties,
+    filteredCount,
+    availableTenants,
+    tenantOptions,
+    tenantSelectionType,
+    isLoadingTenants,
+    handleTenantSelectionTypeChange,
     handleCoTenantChange,
     addCoTenant,
     removeCoTenant,
     handleUtilityToggle,
+    hasTabErrors,
+    isTabCompleted,
   };
 }

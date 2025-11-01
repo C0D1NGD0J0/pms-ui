@@ -75,10 +75,6 @@
     font-weight: $fw-bold;
   }
 
-  &.completed {
-    color: hslaGen($success-color, 1);
-  }
-
   &.has-error {
     .error-indicator {
       position: absolute;

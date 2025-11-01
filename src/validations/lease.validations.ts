@@ -5,11 +5,13 @@ import {
   LeaseTypeEnum,
   UtilityEnum,
 } from "@interfaces/lease.interface";
+import { PropertyTypeManager } from "@utils/propertyTypeManager";
 
 const leasePropertySchema = z.object({
   id: z.string().min(1, "Property is required"),
   address: z.string().optional(),
   unitId: z.string().optional(),
+  propertyType: z.string().optional(),
 });
 
 const leaseFeesSchema = z.object({
@@ -78,7 +80,9 @@ const leaseFeesSchema = z.object({
       message: "Late fee percentage must be between 0-100",
     })
     .optional(),
-  acceptedPaymentMethod: z.nativeEnum(PaymentMethodEnum).optional(),
+  acceptedPaymentMethod: z.nativeEnum(PaymentMethodEnum, {
+    errorMap: () => ({ message: "Payment method is required" }),
+  }),
 });
 
 const leaseDurationSchema = z.object({
@@ -175,7 +179,14 @@ const renewalOptionsSchema = z.object({
 
 const tenantInfoSchema = z.object({
   id: z.string().optional(),
-  email: z.string().optional(),
+  email: z
+    .string()
+    .email("Invalid email format")
+    .optional()
+    .or(z.literal(""))
+    .or(z.undefined()),
+  firstName: z.string().optional().or(z.literal("")),
+  lastName: z.string().optional().or(z.literal("")),
 });
 
 export const leaseSchema = z
@@ -200,15 +211,35 @@ export const leaseSchema = z
   })
   .refine(
     (data) => {
-      // Either tenant ID or email is required
-      return (
-        (data.tenantInfo.id && data.tenantInfo.id.trim() !== "") ||
-        (data.tenantInfo.email && data.tenantInfo.email.trim() !== "")
-      );
+      // Either tenant ID OR (email + firstName + lastName) is required
+      const hasId = data.tenantInfo.id && data.tenantInfo.id.trim() !== "";
+      const hasEmail = data.tenantInfo.email && data.tenantInfo.email.trim() !== "";
+      const hasFirstName = data.tenantInfo.firstName && data.tenantInfo.firstName.trim() !== "";
+      const hasLastName = data.tenantInfo.lastName && data.tenantInfo.lastName.trim() !== "";
+
+      return hasId || (hasEmail && hasFirstName && hasLastName);
     },
     {
-      message: "Either tenant ID or email is required",
+      message: "Either select an existing tenant OR provide email, first name, and last name to invite a new tenant",
       path: ["tenantInfo"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If email is provided without ID, firstName and lastName must be provided
+      const hasEmail = data.tenantInfo.email && data.tenantInfo.email.trim() !== "";
+      const hasId = data.tenantInfo.id && data.tenantInfo.id.trim() !== "";
+      const hasFirstName = data.tenantInfo.firstName && data.tenantInfo.firstName.trim() !== "";
+      const hasLastName = data.tenantInfo.lastName && data.tenantInfo.lastName.trim() !== "";
+
+      if (hasEmail && !hasId) {
+        return hasFirstName && hasLastName;
+      }
+      return true;
+    },
+    {
+      message: "First name and last name are required when inviting a new tenant",
+      path: ["tenantInfo", "firstName"],
     }
   )
   .refine(
@@ -222,4 +253,91 @@ export const leaseSchema = z
       message: "End date must be after start date",
       path: ["duration", "endDate"],
     }
+  )
+  .refine(
+    (data) => {
+      // Multi-unit properties must have a unitId
+      if (data.property.propertyType) {
+        const requiresUnit = PropertyTypeManager.supportsMultipleUnits(
+          data.property.propertyType
+        );
+        if (requiresUnit) {
+          return data.property.unitId && data.property.unitId.trim() !== "";
+        }
+      }
+      return true;
+    },
+    {
+      message: "Unit selection is required for this property type",
+      path: ["property", "unitId"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If late fee type is "fixed", late fee amount must be > 0
+      if (data.fees.lateFeeType === "fixed") {
+        return data.fees.lateFeeAmount && data.fees.lateFeeAmount > 0;
+      }
+      return true;
+    },
+    {
+      message: "Late fee amount is required when late fee type is Fixed",
+      path: ["fees", "lateFeeAmount"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If late fee type is "percentage", late fee percentage must be > 0
+      if (data.fees.lateFeeType === "percentage") {
+        return data.fees.lateFeePercentage && data.fees.lateFeePercentage > 0;
+      }
+      return true;
+    },
+    {
+      message: "Late fee percentage is required when late fee type is Percentage",
+      path: ["fees", "lateFeePercentage"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If late fee type is selected, late fee days must be > 0
+      if (data.fees.lateFeeType) {
+        return data.fees.lateFeeDays && data.fees.lateFeeDays > 0;
+      }
+      return true;
+    },
+    {
+      message: "Late fee grace period (days) is required when late fee type is selected",
+      path: ["fees", "lateFeeDays"],
+    }
   );
+
+export const leaseTabFields = {
+  property: ["property.id", "property.unitId", "property.propertyType"],
+  tenant: [
+    "tenantInfo.id",
+    "tenantInfo.email",
+    "tenantInfo.firstName",
+    "tenantInfo.lastName",
+  ],
+  leaseTerms: [
+    "type",
+    "templateType",
+    "duration.startDate",
+    "duration.endDate",
+    "duration.moveInDate",
+  ],
+  financial: [
+    "fees.monthlyRent",
+    "fees.securityDeposit",
+    "fees.rentDueDay",
+    "fees.currency",
+    "fees.lateFeeAmount",
+    "fees.lateFeeDays",
+    "fees.lateFeeType",
+  ],
+  signature: ["signingMethod"],
+  additional: ["utilitiesIncluded", "petPolicy", "renewalOptions", "internalNotes"],
+  cotenants: ["coTenants"],
+  documents: ["leaseDocument"],
+};

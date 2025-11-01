@@ -2,12 +2,20 @@ import { useAuth } from "@store/index";
 import { leaseService } from "@services/lease";
 import { useQuery } from "@tanstack/react-query";
 import { LEASE_QUERY_KEYS } from "@utils/constants";
-import { LeaseableProperty } from "@interfaces/lease.interface";
+import {
+  LeaseablePropertiesMetadata,
+  LeaseableProperty,
+} from "@interfaces/lease.interface";
+
+interface LeaseablePropertiesResult {
+  properties: LeaseableProperty[];
+  metadata: LeaseablePropertiesMetadata | null;
+}
 
 export function useLeaseableProperties(fetchUnits: boolean = false) {
   const { client } = useAuth();
 
-  return useQuery<LeaseableProperty[]>({
+  return useQuery<LeaseablePropertiesResult>({
     enabled: !!client?.cuid,
     queryKey: LEASE_QUERY_KEYS.getLeaseableProperties(
       client?.cuid || "",
@@ -18,9 +26,12 @@ export function useLeaseableProperties(fetchUnits: boolean = false) {
         client!.cuid,
         fetchUnits
       );
-      console.log("Fetched Leaseable Properties:", result);
-      return result || [];
+
+      return {
+        properties: result.data.items || [],
+        metadata: result.data.metadata || null,
+      };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 }

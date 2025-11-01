@@ -1,6 +1,6 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
-import { LeaseFormValues } from "@interfaces/lease.interface";
+import { LeaseFormValues, UtilityEnum } from "@interfaces/lease.interface";
 import {
   FormField,
   FormLabel,
@@ -16,7 +16,7 @@ interface Props {
     (values: LeaseFormValues) => LeaseFormValues
   >;
   handleOnChange: (e: any, field?: string) => void;
-  handleUtilityToggle: (utility: string, checked: boolean) => void;
+  handleUtilityToggle: (utility: UtilityEnum, checked: boolean) => void;
 }
 
 export const AdditionalTermsTab = ({
@@ -28,15 +28,15 @@ export const AdditionalTermsTab = ({
   const autoRenew = leaseForm.values.renewalOptions?.autoRenew || false;
 
   const utilities = [
-    { value: "water", label: "Water" },
-    { value: "gas", label: "Gas" },
-    { value: "electricity", label: "Electricity" },
-    { value: "internet", label: "Internet" },
-    { value: "cable", label: "Cable" },
-    { value: "trash", label: "Trash" },
-    { value: "sewer", label: "Sewer" },
-    { value: "heating", label: "Heating" },
-    { value: "cooling", label: "Cooling" },
+    { value: UtilityEnum.WATER, label: "Water" },
+    { value: UtilityEnum.GAS, label: "Gas" },
+    { value: UtilityEnum.ELECTRICITY, label: "Electricity" },
+    { value: UtilityEnum.INTERNET, label: "Internet" },
+    { value: UtilityEnum.CABLE, label: "Cable" },
+    { value: UtilityEnum.TRASH, label: "Trash" },
+    { value: UtilityEnum.SEWER, label: "Sewer" },
+    { value: UtilityEnum.HEATING, label: "Heating" },
+    { value: UtilityEnum.COOLING, label: "Cooling" },
   ];
 
   return (
@@ -131,7 +131,11 @@ export const AdditionalTermsTab = ({
                   type="text"
                   onChange={handleOnChange}
                   placeholder="e.g., Dogs, Cats"
-                  value={leaseForm.values.petPolicy?.types || ""}
+                  value={
+                    Array.isArray(leaseForm.values.petPolicy?.types)
+                      ? leaseForm.values.petPolicy.types.join(", ")
+                      : leaseForm.values.petPolicy?.types || ""
+                  }
                   hasError={!!leaseForm.errors["petPolicy.types"]}
                 />
               </FormField>

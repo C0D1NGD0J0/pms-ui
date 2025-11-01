@@ -1,8 +1,10 @@
 import React from "react";
+import Link from "next/link";
 import { UseFormReturnType } from "@mantine/form";
 import { FormField, FormLabel, Select } from "@components/FormElements";
 import {
   LeaseableProperty,
+  FilteredProperty,
   LeaseFormValues,
 } from "@interfaces/lease.interface";
 
@@ -20,6 +22,9 @@ interface Props {
   unitOptions: { value: string; label: string }[];
   selectedProperty: LeaseableProperty | null;
   isLoading: boolean;
+  filteredProperties: FilteredProperty[];
+  filteredCount: number;
+  cuid: string;
 }
 
 export const PropertySelectionTab = ({
@@ -29,19 +34,38 @@ export const PropertySelectionTab = ({
   unitOptions,
   selectedProperty,
   isLoading,
+  filteredProperties,
+  cuid,
+  filteredCount,
 }: Props) => {
   const hasUnits = selectedProperty?.units && selectedProperty.units.length > 0;
 
-  console.log("PropertySelectionTab Debug:", {
-    selectedProperty,
-    hasUnits,
-    unitOptions,
-    propertyId: leaseForm.values.property.id,
-    unitsCount: selectedProperty?.units?.length,
-  });
-
   return (
     <>
+      {filteredCount > 0 && (
+        <div className="alert-warning">
+          <i className="bx bx-info-circle"></i>
+          <div>
+            <strong>
+              {filteredCount}{" "}
+              {filteredCount === 1 ? "property is" : "properties are"} hidden
+            </strong>
+            <p>
+              The following properties require units before they can be leased:
+            </p>
+            <ul>
+              {filteredProperties.map((prop) => (
+                <li key={prop.id}>
+                  <strong>{prop.name}</strong> ({prop.propertyType})
+                </li>
+              ))}
+            </ul>
+            <Link href={`/properties/${cuid}`}>
+              Add units to these properties →
+            </Link>
+          </div>
+        </div>
+      )}
       <div className="form-fields">
         <FormField
           error={{
@@ -53,8 +77,9 @@ export const PropertySelectionTab = ({
           <Select
             id="property"
             name="property.id"
-            onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) => {
-              console.log("Select onChange triggered:", value);
+            onChange={(
+              value: string | React.ChangeEvent<HTMLSelectElement>
+            ) => {
               handleOnChange(value, "property.id");
             }}
             options={propertyOptions}
@@ -75,7 +100,7 @@ export const PropertySelectionTab = ({
               touched: leaseForm.isTouched("property.unitId"),
             }}
           >
-            <FormLabel htmlFor="unit" label="Unit" />
+            <FormLabel htmlFor="unit" label="Unit" required />
             <Select
               id="unit"
               name="property.unitId"

@@ -40,6 +40,7 @@ export interface LeaseProperty {
   id: string;
   address?: string;
   unitId?: string;
+  propertyType?: string;
 }
 
 export interface LeaseFees {
@@ -84,6 +85,8 @@ export interface RenewalOptions {
 export interface TenantInfo {
   id?: string;
   email?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 export interface LeaseDocument {
@@ -102,12 +105,14 @@ export interface LeaseFormValues {
   fees: LeaseFees;
   type: LeaseTypeEnum;
   signingMethod?: SigningMethodEnum;
+  templateType?: string;
   utilitiesIncluded?: UtilityEnum[];
   coTenants?: CoTenant[];
   petPolicy?: PetPolicy;
   renewalOptions?: RenewalOptions;
   internalNotes?: string;
   leaseDocument?: LeaseDocument[];
+  [key: string]: any;
 }
 
 export const defaultLeaseFormValues: LeaseFormValues = {
@@ -132,11 +137,13 @@ export const defaultLeaseFormValues: LeaseFormValues = {
     securityDeposit: 0,
     lateFeeAmount: 0,
     lateFeeDays: 0,
-    lateFeeType: "fixed",
+    lateFeeType: undefined,
     lateFeePercentage: 0,
+    acceptedPaymentMethod: undefined,
   },
   type: LeaseTypeEnum.FIXED_TERM,
-  signingMethod: SigningMethodEnum.PENDING,
+  signingMethod: undefined,
+  templateType: "",
   utilitiesIncluded: [],
   coTenants: [],
   petPolicy: {
@@ -191,4 +198,17 @@ export interface LeaseableProperty {
       currency?: string;
     };
   }[];
+}
+
+export interface FilteredProperty {
+  id: string;
+  name: string;
+  propertyType: string;
+  reason: string;
+}
+
+export interface LeaseablePropertiesMetadata {
+  totalProperties: number;
+  filteredCount: number;
+  filteredProperties?: FilteredProperty[];
 }

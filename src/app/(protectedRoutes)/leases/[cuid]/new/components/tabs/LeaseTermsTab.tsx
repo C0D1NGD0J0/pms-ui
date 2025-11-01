@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { LeaseFormValues, LeaseTypeEnum } from "@interfaces/lease.interface";
 import {
@@ -23,6 +23,89 @@ export const LeaseTermsTab = ({ leaseForm, handleOnChange }: Props) => {
     { value: LeaseTypeEnum.MONTH_TO_MONTH, label: "Month to Month" },
   ];
 
+  const calculateDuration = () => {
+    const { startDate, endDate } = leaseForm.values.duration;
+    if (!startDate || !endDate) return null;
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const months =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth());
+
+    const days = Math.floor(
+      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (months > 0) {
+      const years = Math.floor(months / 12);
+      const remainingMonths = months % 12;
+
+      if (years > 0 && remainingMonths > 0) {
+        return `${years} year${years > 1 ? "s" : ""}, ${remainingMonths} month${
+          remainingMonths > 1 ? "s" : ""
+        }`;
+      } else if (years > 0) {
+        return `${years} year${years > 1 ? "s" : ""}`;
+      } else {
+        return `${months} month${months > 1 ? "s" : ""}`;
+      }
+    } else {
+      return `${days} day${days !== 1 ? "s" : ""}`;
+    }
+  };
+
+  const isFixedTerm = leaseForm.values.type === LeaseTypeEnum.FIXED_TERM;
+  const duration = isFixedTerm ? calculateDuration() : null;
+
+  const templateTypeOptions = useMemo(() => {
+    const propertyType = leaseForm.values.property.propertyType?.toLowerCase();
+
+    const allTemplates = [
+      { value: "", label: "Select lease template" },
+      {
+        value: "residential-single-family",
+        label: "Residential - Single Family Home",
+        propertyTypes: ["house", "townhouse"],
+      },
+      {
+        value: "residential-apartment",
+        label: "Residential - Apartment/Condo",
+        propertyTypes: ["apartment", "condominium"],
+      },
+      {
+        value: "commercial-office",
+        label: "Commercial - Office Space",
+        propertyTypes: ["commercial", "industrial"],
+      },
+      {
+        value: "commercial-retail",
+        label: "Commercial - Retail/Storefront",
+        propertyTypes: ["commercial"],
+      },
+      {
+        value: "short-term-rental",
+        label: "Short-Term Rental Agreement",
+        propertyTypes: ["house", "townhouse", "apartment", "condominium"],
+      },
+    ];
+
+    // If no property selected, show all templates (excluding propertyTypes)
+    if (!propertyType) {
+      return allTemplates.map(({ propertyTypes: _, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+    }
+
+    // filter templates based on property type (excluding propertyTypes)
+    return allTemplates
+      .filter(
+        (template) =>
+          !template.propertyTypes ||
+          template.propertyTypes.includes(propertyType)
+      )
+      .map(({ propertyTypes: _, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+  }, [leaseForm.values.property.propertyType]);
+
   return (
     <>
       <div className="form-fields">
@@ -44,6 +127,25 @@ export const LeaseTermsTab = ({ leaseForm, handleOnChange }: Props) => {
             value={leaseForm.values.type}
           />
         </FormField>
+
+        <FormField
+          error={{
+            msg: (leaseForm.errors.templateType as string) || "",
+            touched: leaseForm.isTouched("templateType"),
+          }}
+        >
+          <FormLabel htmlFor="templateType" label="Lease Template" required />
+          <Select
+            id="templateType"
+            name="templateType"
+            onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) =>
+              handleOnChange(value, "templateType")
+            }
+            options={templateTypeOptions}
+            placeholder="Select lease template"
+            value={leaseForm.values.templateType || ""}
+          />
+        </FormField>
       </div>
 
       <div className="form-fields">
@@ -59,6 +161,7 @@ export const LeaseTermsTab = ({ leaseForm, handleOnChange }: Props) => {
             name="duration.startDate"
             onChange={(value) => handleOnChange(value, "duration.startDate")}
             placeholder="Select start date"
+            disablePastDates={false}
             value={
               leaseForm.values.duration.startDate
                 ? typeof leaseForm.values.duration.startDate === "string"
@@ -120,6 +223,16 @@ export const LeaseTermsTab = ({ leaseForm, handleOnChange }: Props) => {
           />
         </FormField>
       </div>
+
+      {/* Display calculated duration for fixed-term leases */}
+      {isFixedTerm && duration && (
+        <div className="info-banner">
+          <i className="bx bx-time-five"></i>
+          <div>
+            <strong>Lease Duration:</strong> {duration}
+          </div>
+        </div>
+      )}
     </>
   );
 };
