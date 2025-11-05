@@ -2,13 +2,11 @@
 import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
-import { usePropertyFormBase } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 import { Button, Form } from "@components/FormElements";
 import { useSearchParams, useRouter } from "next/navigation";
-import { usePropertyData } from "@app/(protectedRoutes)/properties/[cuid]/hooks/usePropertyData";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
-import { usePropertyEditForm } from "@app/(protectedRoutes)/properties/[cuid]/hooks/usePropertyEditForm";
+import { usePropertyFormBase } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 import {
   PendingChangesBanner,
   PropertyChangesModal,
@@ -19,6 +17,8 @@ import {
   PanelHeader,
   Panel,
 } from "@components/Panel";
+import { usePropertyData } from "@app/(protectedRoutes)/properties/[cuid]/hooks/usePropertyData";
+import { usePropertyEditForm } from "@app/(protectedRoutes)/properties/[cuid]/hooks/usePropertyEditForm";
 import {
   PropertyInfoTab,
   BasicInfoTab,

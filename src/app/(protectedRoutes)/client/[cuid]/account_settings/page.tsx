@@ -3,9 +3,9 @@
 import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { Button } from "@src/components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { PageHeader } from "@components/PageElements/Header";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { withClientAccess } from "@hooks/permissionHOCs";
 
 import { AccountTabs } from "./components/AccountTabs";
 import { AccountOverview } from "./components/AccountOverview";

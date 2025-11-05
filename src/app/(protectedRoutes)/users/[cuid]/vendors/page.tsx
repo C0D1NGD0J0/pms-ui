@@ -8,12 +8,12 @@ import { ChartContainer } from "@components/Charts";
 import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { AddUserModal } from "@components/UserManagement";
 import { PageHeader } from "@components/PageElements/Header";
 import { generateLegendColors } from "@src/utils/employeeUtils";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
-import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   PanelsWrapper,
   PanelContent,

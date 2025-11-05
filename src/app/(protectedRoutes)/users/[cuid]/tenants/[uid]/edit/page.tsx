@@ -6,9 +6,9 @@ import { Loading } from "@components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { withPageAccess } from "@src/components/PageAccessHOC";
-import { withClientAccess } from "@hooks/permissionHOCs";
 
 import { useTenantFormBase, useTenantEditForm } from "../../hooks";
 import {

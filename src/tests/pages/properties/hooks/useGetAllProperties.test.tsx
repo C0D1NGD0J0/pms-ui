@@ -1,8 +1,8 @@
-import { renderHook, waitFor } from "@testing-library/react";
-import { useGetAllProperties } from "@app/(protectedRoutes)/properties/[cuid]/hooks/useGetAllProperties";
-import { propertyService } from "@services/property";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
+import { propertyService } from "@services/property";
+import { renderHook, waitFor } from "@testing-library/react";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { useGetAllProperties } from "@app/(protectedRoutes)/properties/[cuid]/hooks/useGetAllProperties";
 
 jest.mock("@services/property");
 const mockPropertyService = propertyService as jest.Mocked<
@@ -15,9 +15,11 @@ const createWrapper = () => {
       queries: { retry: false },
     },
   });
-  return ({ children }: { children: React.ReactNode }) => (
+  const QueryWrapper = ({ children }: { children: React.ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
+  QueryWrapper.displayName = "QueryWrapper";
+  return QueryWrapper;
 };
 
 describe("useGetAllProperties", () => {

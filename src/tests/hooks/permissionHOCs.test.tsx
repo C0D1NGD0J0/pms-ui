@@ -1,14 +1,10 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { useRouter } from "next/navigation";
 import { redirect } from "next/navigation";
 import { useAuth } from "@store/auth.store";
-import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
-import {
-  withPermissionCheck,
-  withClientAccess,
-} from "@hooks/permissionHOCs";
 import { UserRole } from "@utils/permissions";
+import { render, screen } from "@testing-library/react";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { withPermissionCheck, withClientAccess } from "@hooks/permissionHOCs";
 
 // Mock Next.js navigation
 jest.mock("next/navigation", () => ({
@@ -195,10 +191,7 @@ describe("permissionHOCs", () => {
   });
 
   describe("withClientAccess", () => {
-    const TestPage = (props: {
-      params: Promise<{ cuid: string }>;
-      children?: React.ReactNode;
-    }) => <div data-testid="page-content">Page Content</div>;
+    const TestPage = () => <div data-testid="page-content">Page Content</div>;
 
     const mockAuth = useAuth as jest.Mock;
     const mockRedirect = redirect as jest.Mock;

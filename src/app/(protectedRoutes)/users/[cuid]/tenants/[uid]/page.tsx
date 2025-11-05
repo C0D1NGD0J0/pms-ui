@@ -6,13 +6,13 @@ import { Skeleton } from "@components/Skeleton";
 import React, { useState, useMemo } from "react";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
 import { withPageAccess } from "@src/components/PageAccessHOC";
 import { DocumentsTab, ContactTab } from "@components/UserDetail";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
-import { withClientAccess } from "@hooks/permissionHOCs";
 import { useDeactivateTenant, useGetClientTenant } from "@users/tenants/hooks";
 import { DeactivateTenantModal } from "@users/tenants/components/DeactivateTenantModal";
 

@@ -5,13 +5,13 @@ import { Loading } from "@components/Loading";
 import { FormSection } from "@components/FormLayout";
 import { Button, Form } from "@components/FormElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
 import { useGetVendor } from "@users/vendors/hooks/vendorHooks";
 import { useGetEmployeeInfo } from "@users/staff/hooks/employeeHooks";
 import { FormField, FormInput, FormLabel } from "@components/FormElements";
 import { useUserProfileEditForm } from "@app/(protectedRoutes)/users/shared-hooks";
-import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   VendorInvitationTab,
   EmployeeDetailsTab,

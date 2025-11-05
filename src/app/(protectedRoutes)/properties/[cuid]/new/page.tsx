@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
-import { usePropertyFormBase } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { usePropertyFormBase } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 import {
   PanelsWrapper,
   PanelContent,

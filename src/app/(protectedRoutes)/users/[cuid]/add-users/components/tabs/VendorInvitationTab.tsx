@@ -5,7 +5,7 @@ import {
   FormInput,
   FormLabel,
   FormField,
-  Textarea,
+  TextArea,
   Select,
 } from "@components/FormElements";
 
@@ -237,7 +237,7 @@ export const VendorInvitationTab = ({
         <div className="form-fields">
           <FormField>
             <FormLabel htmlFor="inviteMessage" label="Personal Message" />
-            <Textarea
+            <TextArea
               id="inviteMessage"
               name="inviteMessage"
               rows={5}

@@ -1,11 +1,11 @@
 import { z } from "zod";
+import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import {
   SigningMethodEnum,
   PaymentMethodEnum,
   LeaseTypeEnum,
   UtilityEnum,
 } from "@interfaces/lease.interface";
-import { PropertyTypeManager } from "@utils/propertyTypeManager";
 
 const leasePropertySchema = z.object({
   id: z.string().min(1, "Property is required"),
@@ -213,24 +213,31 @@ export const leaseSchema = z
     (data) => {
       // Either tenant ID OR (email + firstName + lastName) is required
       const hasId = data.tenantInfo.id && data.tenantInfo.id.trim() !== "";
-      const hasEmail = data.tenantInfo.email && data.tenantInfo.email.trim() !== "";
-      const hasFirstName = data.tenantInfo.firstName && data.tenantInfo.firstName.trim() !== "";
-      const hasLastName = data.tenantInfo.lastName && data.tenantInfo.lastName.trim() !== "";
+      const hasEmail =
+        data.tenantInfo.email && data.tenantInfo.email.trim() !== "";
+      const hasFirstName =
+        data.tenantInfo.firstName && data.tenantInfo.firstName.trim() !== "";
+      const hasLastName =
+        data.tenantInfo.lastName && data.tenantInfo.lastName.trim() !== "";
 
       return hasId || (hasEmail && hasFirstName && hasLastName);
     },
     {
-      message: "Either select an existing tenant OR provide email, first name, and last name to invite a new tenant",
+      message:
+        "Either select an existing tenant OR provide email, first name, and last name to invite a new tenant",
       path: ["tenantInfo"],
     }
   )
   .refine(
     (data) => {
       // If email is provided without ID, firstName and lastName must be provided
-      const hasEmail = data.tenantInfo.email && data.tenantInfo.email.trim() !== "";
+      const hasEmail =
+        data.tenantInfo.email && data.tenantInfo.email.trim() !== "";
       const hasId = data.tenantInfo.id && data.tenantInfo.id.trim() !== "";
-      const hasFirstName = data.tenantInfo.firstName && data.tenantInfo.firstName.trim() !== "";
-      const hasLastName = data.tenantInfo.lastName && data.tenantInfo.lastName.trim() !== "";
+      const hasFirstName =
+        data.tenantInfo.firstName && data.tenantInfo.firstName.trim() !== "";
+      const hasLastName =
+        data.tenantInfo.lastName && data.tenantInfo.lastName.trim() !== "";
 
       if (hasEmail && !hasId) {
         return hasFirstName && hasLastName;
@@ -238,7 +245,8 @@ export const leaseSchema = z
       return true;
     },
     {
-      message: "First name and last name are required when inviting a new tenant",
+      message:
+        "First name and last name are required when inviting a new tenant",
       path: ["tenantInfo", "firstName"],
     }
   )
@@ -294,7 +302,8 @@ export const leaseSchema = z
       return true;
     },
     {
-      message: "Late fee percentage is required when late fee type is Percentage",
+      message:
+        "Late fee percentage is required when late fee type is Percentage",
       path: ["fees", "lateFeePercentage"],
     }
   )
@@ -307,7 +316,8 @@ export const leaseSchema = z
       return true;
     },
     {
-      message: "Late fee grace period (days) is required when late fee type is selected",
+      message:
+        "Late fee grace period (days) is required when late fee type is selected",
       path: ["fees", "lateFeeDays"],
     }
   );
@@ -337,7 +347,12 @@ export const leaseTabFields = {
     "fees.lateFeeType",
   ],
   signature: ["signingMethod"],
-  additional: ["utilitiesIncluded", "petPolicy", "renewalOptions", "internalNotes"],
+  additional: [
+    "utilitiesIncluded",
+    "petPolicy",
+    "renewalOptions",
+    "internalNotes",
+  ],
   cotenants: ["coTenants"],
   documents: ["leaseDocument"],
 };

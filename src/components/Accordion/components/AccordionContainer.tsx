@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import { AccordionContext } from "../hook";
-import { AccordionSection } from "./AccordionSection";
 import { PreviewDrawer } from "./PreviewDrawer";
+import { AccordionSection } from "./AccordionSection";
 import { AccordionContainerProps } from "../interface";
 
 export const AccordionContainer: React.FC<AccordionContainerProps> = ({

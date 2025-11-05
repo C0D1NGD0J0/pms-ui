@@ -1,4 +1,4 @@
-import { events, EventTypes, EventSystemHandler } from "@services/events/eventSystem";
+import { EventTypes, events } from "@services/events/eventSystem";
 
 describe("EventSystem", () => {
   beforeEach(() => {
@@ -418,7 +418,11 @@ describe("EventSystem", () => {
       const handler2 = jest.fn();
 
       events.subscribeComponent(component, EventTypes.LOGIN_SUCCESS, handler1);
-      events.subscribeComponent(component, EventTypes.CURRENT_USER_UPDATED, handler2);
+      events.subscribeComponent(
+        component,
+        EventTypes.CURRENT_USER_UPDATED,
+        handler2
+      );
 
       // Component receives events
       events.publish(EventTypes.LOGIN_SUCCESS, {});

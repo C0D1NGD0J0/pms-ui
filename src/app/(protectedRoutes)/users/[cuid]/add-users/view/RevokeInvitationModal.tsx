@@ -4,7 +4,7 @@ import { IInvitationTableData } from "@interfaces/invitation.interface";
 import {
   FormField,
   FormLabel,
-  Textarea,
+  TextArea,
   Button,
   Modal,
 } from "@components/FormElements";
@@ -54,11 +54,13 @@ export const RevokeInvitationModal: React.FC<RevokeInvitationModalProps> = ({
               label="Reason for revocation"
               required
             />
-            <Textarea
+            <TextArea
               id="revokeReason"
               name="revokeReason"
               value={revokeReason}
-              onChange={(e) => setRevokeReason(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setRevokeReason(e.target.value)
+              }
               placeholder="Please provide a reason for revoking this invitation..."
               rows={4}
               required

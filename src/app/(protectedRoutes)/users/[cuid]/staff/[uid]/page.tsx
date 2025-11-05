@@ -6,11 +6,11 @@ import { Loading } from "@components/Loading";
 import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { withClientAccess } from "@hooks/permissionHOCs";
 import {
   PerformanceTab,
   PropertiesTab,

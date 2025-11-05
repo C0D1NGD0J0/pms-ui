@@ -4,7 +4,7 @@ import { IInvitationTableData } from "@interfaces/invitation.interface";
 import {
   FormField,
   FormLabel,
-  Textarea,
+  TextArea,
   Button,
   Modal,
 } from "@components/FormElements";
@@ -55,11 +55,13 @@ export const ResendInvitationModal: React.FC<ResendInvitationModalProps> = ({
               htmlFor="customMessage"
               label="Custom message (optional)"
             />
-            <Textarea
+            <TextArea
               id="customMessage"
               name="customMessage"
               value={customMessage}
-              onChange={(e) => setCustomMessage(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setCustomMessage(e.target.value)
+              }
               placeholder="Add a custom message to include with the resent invitation..."
               rows={4}
             />

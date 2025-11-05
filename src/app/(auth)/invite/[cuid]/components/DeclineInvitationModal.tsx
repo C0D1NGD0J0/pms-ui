@@ -4,7 +4,7 @@ import { IInvitationDocument } from "@src/interfaces/invitation.interface";
 import {
   FormField,
   FormLabel,
-  Textarea,
+  TextArea,
   Button,
   Modal,
 } from "@components/FormElements";
@@ -60,11 +60,13 @@ export const DeclineInvitationModal: React.FC<DeclineInvitationModalProps> = ({
               label="Reason for declining"
               required
             />
-            <Textarea
+            <TextArea
               id="declineReason"
               name="declineReason"
               value={declineReason}
-              onChange={(e) => setDeclineReason(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setDeclineReason(e.target.value)
+              }
               placeholder="Please provide a reason for declining this invitation..."
               rows={4}
               required
