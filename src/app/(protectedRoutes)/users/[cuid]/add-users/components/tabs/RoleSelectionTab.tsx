@@ -4,7 +4,7 @@ import { RoleTile } from "@components/RoleTile";
 import { UseFormReturnType } from "@mantine/form";
 import { FormSection } from "@components/FormLayout";
 import { IUnifiedPermissions } from "@interfaces/index";
-import { Textarea, Checkbox } from "@components/FormElements";
+import { TextArea, Checkbox } from "@components/FormElements";
 import { FormInput, FormLabel, FormField } from "@components/FormElements";
 import {
   IInvitationFormData,
@@ -215,7 +215,7 @@ export const RoleSelectionTab = ({
                 }}
               >
                 <FormLabel htmlFor="inviteMessage" label="Personal Message" />
-                <Textarea
+                <TextArea
                   id="inviteMessage"
                   name="inviteMessage"
                   rows={5}

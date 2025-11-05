@@ -26,10 +26,16 @@ export interface AccordionContainerProps {
   allowMultipleOpen?: boolean;
   className?: string;
   ariaLabel?: string;
-  renderPreview?: (activeItem: AccordionItem | null, activeId: string | null) => ReactNode;
-  previewPosition?: "left" | "right";
-  previewWidth?: string;
-  hidePreviewOn?: "mobile" | "tablet" | "never";
+  // Drawer functionality
+  showPreviewDrawer?: boolean;
+  renderPreview?: (
+    activeItem: AccordionItem | null,
+    activeId: string | null
+  ) => ReactNode;
+  onPreviewToggle?: (data: any) => void;
+  previewData?: any;
+  previewTitle?: string;
+  previewActions?: ReactNode;
 }
 
 export interface AccordionSectionProps {

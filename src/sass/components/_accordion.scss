@@ -15,66 +15,6 @@
       grid-template-columns: 1fr;
     }
   }
-
-  // With preview panel (3-column layout)
-  &.with-preview {
-    &.with-sidebar {
-      grid-template-columns: 250px 1fr var(--preview-width, 500px);
-
-      @include breakpoint("1024px", max) {
-        grid-template-columns: 1fr var(--preview-width, 400px);
-      }
-
-      @include breakpoint("768px", max) {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    &:not(.with-sidebar) {
-      grid-template-columns: 1fr var(--preview-width, 500px);
-
-      @include breakpoint("768px", max) {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    // Hide preview on mobile
-    &.hide-preview-mobile {
-      @include breakpoint("768px", max) {
-        .accordion-preview-panel {
-          display: none;
-        }
-      }
-    }
-
-    // Hide preview on tablet
-    &.hide-preview-tablet {
-      @include breakpoint("1024px", max) {
-        .accordion-preview-panel {
-          display: none;
-        }
-      }
-    }
-
-    // Preview on left side
-    &.preview-left {
-      &.with-sidebar {
-        grid-template-columns: 250px var(--preview-width, 500px) 1fr;
-
-        @include breakpoint("1024px", max) {
-          grid-template-columns: var(--preview-width, 400px) 1fr;
-        }
-      }
-
-      &:not(.with-sidebar) {
-        grid-template-columns: var(--preview-width, 500px) 1fr;
-      }
-
-      .accordion-preview-panel {
-        order: -1;
-      }
-    }
-  }
 }
 
 // Sidebar navigation
@@ -135,10 +75,6 @@
     font-weight: $fw-bold;
   }
 
-  &.completed {
-    color: hslaGen($success-color, 1);
-  }
-
   &.has-error {
     .error-indicator {
       position: absolute;
@@ -196,20 +132,69 @@
   font-size: $fs-md;
 }
 
+// Preview Controls
+.accordion-preview-controls {
+  margin-top: $space-lg;
+  padding-top: $space-lg;
+  border-top: 1px solid hslaGen($grey-color, 0.2);
+}
+
+.accordion-preview-btn {
+  width: 100%;
+  padding: $space-md;
+  border: 2px solid hslaGen($primary-color, 0.2);
+  border-radius: $border-radius-lg;
+  background: linear-gradient(
+    135deg,
+    hslaGen($primary-color, 0.05),
+    hslaGen($primary-color, 0.1)
+  );
+  color: hslaGen($primary-color, 1);
+  font-weight: $fw-bold;
+  font-size: $fs-base;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  i {
+    font-size: $fs-lg;
+  }
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      hslaGen($primary-color, 0.1),
+      hslaGen($primary-color, 0.2)
+    );
+    border-color: hslaGen($primary-color, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px hslaGen($primary-color, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 // Accordion sections
 .accordion-sections {
   display: flex;
   flex-direction: column;
   gap: $space-md;
   flex: 1;
-  min-height: 500px;
+  min-height: 50rem;
 }
 
 .accordion-section {
   background: hslaGen($white-color, 1);
   border-radius: $base-border-radius;
   box-shadow: $box-shadow;
-  overflow: hidden;
+  height: max-content;
   transition: all 0.3s ease;
 
   &.completed {

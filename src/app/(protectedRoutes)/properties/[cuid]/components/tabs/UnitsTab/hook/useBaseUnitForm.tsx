@@ -6,8 +6,8 @@ import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import { createUnitSchema } from "@validations/unit.validations";
 import { PropertyFormValues } from "@interfaces/property.interface";
 import { usePropertyFormRenderer, useNotification } from "@hooks/index";
-import { useGetPropertyUnits } from "@app/(protectedRoutes)/properties/hooks";
 import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
+import { useGetPropertyUnits } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 import {
   UnitsFormValues,
   UnitFormValues,

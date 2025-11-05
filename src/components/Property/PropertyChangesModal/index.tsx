@@ -5,10 +5,13 @@ import { formatDistanceToNow } from "date-fns";
 import { useQueryClient } from "@tanstack/react-query";
 import { Modal } from "@components/FormElements/Modal";
 import { Button } from "@components/FormElements/Button";
-import { Textarea } from "@components/FormElements/TextArea";
+import { TextArea } from "@components/FormElements/TextArea";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions, IPropertyDocument } from "@src/interfaces";
-import { useApproveProperty, useRejectProperty } from "@properties/hooks";
+import {
+  useApproveProperty,
+  useRejectProperty,
+} from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 
 interface PropertyChangesModalProps {
   visible: boolean;
@@ -293,7 +296,7 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
               <div className="action-area">
                 <div className="approval-notes">
                   <label>Approval Notes (Optional)</label>
-                  <Textarea
+                  <TextArea
                     id="approval-notes"
                     name="approvalNotes"
                     value={notes}
@@ -310,7 +313,7 @@ export const PropertyChangesModal: React.FC<PropertyChangesModalProps> = ({
               <label>
                 <strong>Rejection Reason (Required)</strong>
               </label>
-              <Textarea
+              <TextArea
                 id="rejection-reason"
                 name="rejectionReason"
                 value={rejectReason}

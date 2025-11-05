@@ -6,6 +6,7 @@ import { Loading } from "@components/Loading";
 import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
@@ -28,9 +29,7 @@ interface EmployeeDetailPageProps {
   }>;
 }
 
-export default function EmployeeDetailPage({
-  params,
-}: EmployeeDetailPageProps) {
+function EmployeeDetailPage({ params }: EmployeeDetailPageProps) {
   const router = useRouter();
   const permission = useUnifiedPermissions();
   const { cuid, uid } = React.use(params);
@@ -303,3 +302,5 @@ export default function EmployeeDetailPage({
     </div>
   );
 }
+
+export default withClientAccess(EmployeeDetailPage);

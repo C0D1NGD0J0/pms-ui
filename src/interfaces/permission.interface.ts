@@ -1,6 +1,8 @@
 import { PermissionContext, NavigationKey, UserRole } from "@utils/permissions";
 
 export interface IUnifiedPermissions {
+  hasRoleLevel(minRole: UserRole): unknown;
+  canPerformAction(action: string, resource: string | undefined): unknown;
   /**
    * Check if user has a specific permission
    * @param permission - Permission string (e.g., "property.create", "user.read")

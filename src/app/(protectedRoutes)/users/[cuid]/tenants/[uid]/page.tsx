@@ -6,6 +6,7 @@ import { Skeleton } from "@components/Skeleton";
 import React, { useState, useMemo } from "react";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { PageHeader } from "@components/PageElements/Header";
 import { UserProfileHeader } from "@components/UserManagement";
@@ -387,6 +388,8 @@ const TenantDetailPage = ({ params }: TenantDetailPageProps) => {
   );
 };
 
-export default withPageAccess(TenantDetailPage, {
-  requiredPermission: (p) => p.isStaffOrAbove,
-});
+export default withClientAccess(
+  withPageAccess(TenantDetailPage, {
+    requiredPermission: (p) => p.isStaffOrAbove,
+  })
+);

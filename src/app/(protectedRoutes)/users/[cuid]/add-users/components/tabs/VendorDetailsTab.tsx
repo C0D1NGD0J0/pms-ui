@@ -8,7 +8,7 @@ import {
   FormRadio,
   FileInput,
   Checkbox,
-  Textarea,
+  TextArea,
   Select,
 } from "@components/FormElements";
 
@@ -495,7 +495,7 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
         <div className="form-fields">
           <FormField>
             <FormLabel htmlFor="inviteMessage" label="Personal Message" />
-            <Textarea
+            <TextArea
               id="inviteMessage"
               name="inviteMessage"
               rows={5}

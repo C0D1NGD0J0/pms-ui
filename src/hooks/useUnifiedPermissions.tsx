@@ -399,9 +399,18 @@ export const useUnifiedPermissions = (): IUnifiedPermissions => {
     isOwner,
     inDepartment,
     hasRole,
+    hasRoleLevel: hasRole,
     canAll,
     canAny,
     canManage,
+    canPerformAction: useCallback(
+      (action: string, resource?: string) => {
+        if (!currentRole || !action) return false;
+        const permission = resource ? `${resource}.${action}` : action;
+        return can(permission);
+      },
+      [can, currentRole]
+    ),
     getUserContext,
 
     canCreateProperty,

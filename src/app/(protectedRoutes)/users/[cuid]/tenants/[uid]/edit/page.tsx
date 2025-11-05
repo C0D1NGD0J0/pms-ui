@@ -6,6 +6,7 @@ import { Loading } from "@components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { withPageAccess } from "@src/components/PageAccessHOC";
 
@@ -162,6 +163,8 @@ const TenantEditPage = ({ params }: TenantEditPageProps) => {
   );
 };
 
-export default withPageAccess(TenantEditPage, {
-  requiredPermission: (p) => p.isAdmin,
-});
+export default withClientAccess(
+  withPageAccess(TenantEditPage, {
+    requiredPermission: (p) => p.isAdmin,
+  })
+);

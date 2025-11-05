@@ -545,6 +545,15 @@ export const CLIENT_QUERY_KEYS = {
   getClientBycuid: (cuid: string) => ["/getClientDetails", cuid],
   getClientProperties: (cuid: string) => ["/getClientProperties", cuid],
 };
+export const LEASE_QUERY_KEYS = {
+  getLeaseableProperties: (cuid: string, fetchUnits: boolean) => [
+    "/getLeaseableProperties",
+    cuid,
+    `fetchUnits=${fetchUnits}`,
+  ],
+  getLeasePreview: (cuid: string) => ["/getLeasePreview", cuid],
+  getAvailableTenants: (cuid: string) => ["/getAvailableTenants", cuid],
+};
 export const INVITE_QUERY_KEYS = {
   validateInviteToken: (cuid: string, token: string) => [
     "/validateInviteToken",

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@src/store";
 import React, { useState } from "react";
 import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
-import { Button } from "@components/FormElements";
 import { ChartContainer } from "@components/Charts";
 import { PageHeader } from "@components/PageElements";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
@@ -149,6 +149,7 @@ const renewalStatusData = [
 const legendColors = ["#4CAF50", "#FF9800", "#F44336"];
 
 export default function LeasesPage() {
+  const { user } = useAuth();
   const permissions = useUnifiedPermissions();
   const [filterValue, setFilterValue] = useState("all");
   const [searchValue, setSearchValue] = useState("");
@@ -241,11 +242,13 @@ export default function LeasesPage() {
       <PageHeader
         title="Leases"
         headerBtn={
-          <Button
-            label="ADD NEW LEASE"
+          <Link
+            href={`/leases/${user?.client.cuid}/new`}
             className="btn btn-primary"
-            icon={<i className="bx bx-plus-circle"></i>}
-          />
+          >
+            <i className="bx bx-plus"></i>
+            New Lease
+          </Link>
         }
       />
 

@@ -11,7 +11,7 @@ import {
   FormInput,
   FormLabel,
   Checkbox,
-  Textarea,
+  TextArea,
   Tooltip,
   Select,
 } from "@components/FormElements";
@@ -460,7 +460,7 @@ export function PropertyInfoTab({
             }}
           >
             <FormLabel htmlFor="descriptionText" label="Description" />
-            <Textarea
+            <TextArea
               id="descriptionText"
               name="description.text"
               onChange={handleOnChange}
