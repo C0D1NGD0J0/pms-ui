@@ -59,10 +59,17 @@ export interface ThemeContextType {
   toggleTheme: () => void;
 }
 
+// Filter Option Interface (used for dropdowns/selects)
+export interface FilterOption {
+  label: string;
+  value: string;
+}
+
 export interface NestedQueryParams {
   pagination?: PaginationQuery;
   filter?: FilterParams;
 }
+
 export type PaginationQuery = {
   page: number;
   limit: number;
@@ -73,8 +80,8 @@ export type PaginationQuery = {
 
 export interface FilterParams {
   search?: string;
+  status?: "active" | "inactive" | string;
   [key: string]: any;
-  status?: "active" | "inactive";
 }
 
 export interface ParsedError {
@@ -82,9 +89,4 @@ export interface ParsedError {
   fieldErrors: Record<string, string[]>;
   statusCode?: number;
   hasValidationErrors?: boolean;
-}
-
-export interface FilterOption {
-  label: string;
-  value: string;
 }

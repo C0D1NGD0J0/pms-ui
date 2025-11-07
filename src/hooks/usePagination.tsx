@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { PaginationQuery } from "@src/interfaces/common.interface";
 
 export interface PaginationConfig {
   initialPage?: number;
@@ -17,11 +18,11 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     initialFilters = {},
   } = config;
 
-  const [pagination, setPagination] = useState({
+  const [pagination, setPagination] = useState<PaginationQuery>({
     page: initialPage,
     limit: initialLimit,
     sortBy: initialSortBy,
-    order: initialOrder,
+    order: initialOrder as "asc" | "desc" | "",
   });
 
   const [filters, setFilters] = useState(initialFilters);

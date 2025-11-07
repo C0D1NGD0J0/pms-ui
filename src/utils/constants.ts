@@ -1,5 +1,5 @@
 import { PropertyTypeRule } from "@interfaces/property.interface";
-import { PaginationQuery, FilterOption } from "@interfaces/index";
+import { NestedQueryParams, PaginationQuery, FilterOption } from "@interfaces/index";
 import {
   UnitTypeRules,
   UnitTypeEnum,
@@ -532,8 +532,8 @@ export const PROPERTY_QUERY_KEYS = {
   getPropertyUnits: (
     pid: string,
     cuid: string,
-    pagination: PaginationQuery
-  ) => ["/getPropertyUnits", cuid, pid, `page=${pagination.page}`],
+    params?: NestedQueryParams
+  ) => ["/getPropertyUnits", cuid, pid, `page=${params?.pagination?.page || 1}`],
   getPropertyUnitByPuid: (pid: string, cuid: string, puid: string) => [
     "/getPropertyUnit",
     cuid,

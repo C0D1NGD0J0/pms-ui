@@ -2,12 +2,8 @@ import { leaseService } from "@services/lease";
 import { useQuery } from "@tanstack/react-query";
 import { LEASE_QUERY_KEYS } from "@utils/constants";
 import { useTableData } from "@components/Table/hook";
+import { FilterOption } from "@interfaces/common.interface";
 import { LeaseStatusEnum } from "@interfaces/lease.interface";
-
-export interface FilterOption {
-  label: string;
-  value: string;
-}
 
 export const useGetLeaseStats = (cuid: string) => {
   return useQuery({

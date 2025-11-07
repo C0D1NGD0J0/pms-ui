@@ -1,5 +1,7 @@
 import axios from "@configs/axios";
+import { buildNestedQuery } from "@utils/helpers";
 import { prepareRequestData } from "@utils/formDataTransformer";
+import { NestedQueryParams } from "@interfaces/common.interface";
 import { UpdateClientDetailsFormData } from "@validations/client.validations";
 import {
   IListResponseWithPagination,
@@ -7,6 +9,10 @@ import {
   IUserRoleType,
 } from "@interfaces/user.interface";
 
+/**
+ * @deprecated Use NestedQueryParams with filter.role instead
+ * Kept for backward compatibility
+ */
 export interface IFilteredUsersParams {
   type?: "employee" | "tenant" | "vendor";
   role?: IUserRoleType | IUserRoleType[];
@@ -40,30 +46,25 @@ class UsersService {
 
   async getFilteredUsers(
     cuid: string,
-    params?: IFilteredUsersParams
+    params?: NestedQueryParams
   ): Promise<IListResponseWithPagination> {
     try {
-      const queryParams = new URLSearchParams();
-      if (params?.role) {
-        if (Array.isArray(params.role)) {
-          params.role = params.role.join(",") as any;
-          queryParams.append("role", params.role as any);
-        } else {
-          queryParams.append("role", params.role);
-        }
+      // Handle role array specially - backend expects comma-separated string
+      let processedParams = params;
+      if (params?.filter?.role && Array.isArray(params.filter.role)) {
+        processedParams = {
+          ...params,
+          filter: {
+            ...params.filter,
+            role: params.filter.role.join(","),
+          },
+        };
       }
-      if (params?.department)
-        queryParams.append("department", params.department);
-      if (params?.status) queryParams.append("status", params.status);
-      if (params?.search) queryParams.append("search", params.search);
-      if (params?.page) queryParams.append("page", params.page.toString());
-      if (params?.limit) queryParams.append("limit", params.limit.toString());
-      if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
-      if (params?.sort) queryParams.append("sort", params.sort);
 
+      const queryString = buildNestedQuery(processedParams || {});
       let url = `${this.baseUrl}/${cuid}/filtered-users`;
-      if (queryParams.toString()) {
-        url += `?${queryParams.toString()}`;
+      if (queryString) {
+        url += `?${queryString}`;
       }
 
       const result = await axios.get(url, this.axiosConfig);
@@ -76,21 +77,25 @@ class UsersService {
 
   async getUserStats(
     cuid: string,
-    params?: IFilteredUsersParams
+    params?: NestedQueryParams
   ): Promise<any> {
     try {
-      const queryParams = new URLSearchParams();
-
-      if (params?.role) {
-        if (Array.isArray(params.role)) {
-          params.role = params.role.join(",") as any;
-          queryParams.append("role", params.role as any);
-        }
+      // Handle role array specially - backend expects comma-separated string
+      let processedParams = params;
+      if (params?.filter?.role && Array.isArray(params.filter.role)) {
+        processedParams = {
+          ...params,
+          filter: {
+            ...params.filter,
+            role: params.filter.role.join(","),
+          },
+        };
       }
 
+      const queryString = buildNestedQuery(processedParams || {});
       let url = `${this.baseUrl}/${cuid}/users/stats`;
-      if (queryParams.toString()) {
-        url += `?${queryParams.toString()}`;
+      if (queryString) {
+        url += `?${queryString}`;
       }
 
       const result = await axios.get(url, this.axiosConfig);

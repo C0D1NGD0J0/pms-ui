@@ -1,6 +1,6 @@
 import { propertyUnitService } from "@services/index";
 import { PROPERTY_QUERY_KEYS } from "@utils/constants";
-import { IPaginationQuery } from "@interfaces/utils.interface";
+import { NestedQueryParams, PaginationQuery } from "@interfaces/common.interface";
 import {
   UseInfiniteQueryOptions,
   useInfiniteQuery,
@@ -14,7 +14,7 @@ type PropertyUnitsResponse = Awaited<
 export function useGetPropertyUnits(
   cuid: string,
   pid: string,
-  pagination: IPaginationQuery,
+  pagination: PaginationQuery,
   options?: Partial<
     UseInfiniteQueryOptions<
       PropertyUnitsResponse,
@@ -26,13 +26,26 @@ export function useGetPropertyUnits(
     >
   >
 ) {
+  const params: NestedQueryParams = {
+    pagination: {
+      ...pagination,
+    },
+  };
+
   return useInfiniteQuery({
-    queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(cuid, pid, pagination),
+    queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(pid, cuid, params),
     queryFn: async ({ pageParam = 1 }: { pageParam: number }) => {
-      const data = await propertyUnitService.getPropertyUnits(cuid, pid, {
-        ...pagination,
-        page: pageParam,
-      });
+      const queryParams: NestedQueryParams = {
+        pagination: {
+          ...pagination,
+          page: pageParam,
+        },
+      };
+      const data = await propertyUnitService.getPropertyUnits(
+        cuid,
+        pid,
+        queryParams
+      );
       return data;
     },
     getNextPageParam: (lastPage) => {

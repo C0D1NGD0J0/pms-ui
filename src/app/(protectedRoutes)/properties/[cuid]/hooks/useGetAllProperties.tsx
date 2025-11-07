@@ -1,12 +1,7 @@
-import { PaginationQuery } from "@src/interfaces";
 import { propertyService } from "@services/property";
 import { CLIENT_QUERY_KEYS } from "@utils/constants";
 import { useTableData } from "@components/Table/hook";
-
-export interface FilterOption {
-  label: string;
-  value: string;
-}
+import { FilterOption } from "@interfaces/common.interface";
 
 export const useGetAllProperties = (cuid: string) => {
   const sortOptions: FilterOption[] = [
@@ -16,8 +11,20 @@ export const useGetAllProperties = (cuid: string) => {
     { label: "Date Added", value: "createdAt" },
   ];
 
-  const fetchProperties = async (pagination: PaginationQuery) =>
-    await propertyService.getClientProperties(cuid, pagination);
+  const fetchProperties = async (params: any) => {
+    const queryParams = {
+      pagination: {
+        page: params.page || 1,
+        limit: params.limit || 10,
+        ...(params.sortBy && { sortBy: params.sortBy }),
+        ...(params.order && { order: params.order }),
+      },
+      filter: {
+        ...params.filter,
+      },
+    };
+    return await propertyService.getClientProperties(cuid, queryParams);
+  };
 
   const tableData = useTableData({
     queryKeys: CLIENT_QUERY_KEYS.getClientProperties(cuid),

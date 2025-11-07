@@ -1,10 +1,10 @@
 import React from "react";
+import { useAuth } from "@store/index";
 import { leaseService } from "@services/lease";
+import { useNotification } from "@hooks/useNotification";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useLeasePreview } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeasePreview";
-import { useNotification } from "@hooks/useNotification";
-import { useAuth } from "@store/index";
 
 jest.mock("@services/lease");
 jest.mock("@hooks/useNotification");
@@ -152,7 +152,7 @@ describe("useLeasePreview", () => {
 
     try {
       await result.current.fetchPreview(mockForm);
-    } catch (error) {
+    } catch {
       // Expected to throw
     }
 

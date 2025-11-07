@@ -2,7 +2,7 @@ import React from "react";
 import { leaseService } from "@services/lease";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useGetAllLeases, useGetLeaseStats } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetAllLeases";
+import { useGetLeaseStats, useGetAllLeases } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetAllLeases";
 
 jest.mock("@services/lease");
 const mockLeaseService = leaseService as jest.Mocked<typeof leaseService>;

@@ -28,7 +28,6 @@ export default function Properties() {
     handleSortByChange,
     refetch,
   } = useGetAllProperties(client?.cuid || "");
-
   const openCsvModal = () => {
     setIsCsvModalOpen(true);
   };
@@ -177,7 +176,7 @@ export default function Properties() {
                 placeholder: "Search by name, city, or property type",
               }}
               filterOpts={{
-                value: "all",
+                value: pagination.sortBy || "",
                 isVisible: true,
                 options: filterOptions,
                 onFilterChange: (value: string) => {

@@ -2,10 +2,7 @@ import axios from "@configs/axios";
 import { buildNestedQuery } from "@src/utils/helpers";
 import { IServerResponse } from "@interfaces/utils.interface";
 import { prepareRequestData } from "@utils/formDataTransformer";
-import {
-  FilterQueryWithPagination,
-  NestedQueryParams,
-} from "@src/interfaces/common.interface";
+import { NestedQueryParams } from "@src/interfaces/common.interface";
 import {
   LeaseablePropertiesMetadata,
   LeasePreviewRequest,

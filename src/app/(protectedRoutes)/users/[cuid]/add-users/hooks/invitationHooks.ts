@@ -1,18 +1,14 @@
 import { useAuth } from "@src/store";
 import { invitationService } from "@services/invite";
 import { useTableData } from "@components/Table/hook";
+import { FilterOption } from "@interfaces/utils.interface";
 import { useNotification, useErrorHandler } from "@src/hooks";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { IPaginationQuery, FilterOption } from "@interfaces/utils.interface";
+import { IInvitationFormData } from "@interfaces/invitation.interface";
 import {
   sanitizeInvitationFormData,
   InvitationFormValues,
 } from "@src/validations";
-import {
-  IInvitationFormData,
-  IInvitationQuery,
-  IUserRole,
-} from "@interfaces/invitation.interface";
 
 const transformFormDataToAPIFormat = (
   formData: InvitationFormValues
@@ -50,22 +46,20 @@ export const useGetInvitations = (cuid: string) => {
     { label: "Date Invited", value: "createdAt" },
   ];
 
-  const fetchInvitations = (
-    pagination: IPaginationQuery & {
-      status?: IInvitationQuery["status"];
-      role?: IUserRole;
-    }
-  ) => {
-    const invitationQuery: IInvitationQuery = {
-      page: pagination.page,
-      limit: pagination.limit,
-      sort: pagination.sort,
-      sortBy: pagination.sortBy as "createdAt" | "inviteeEmail" | "status",
-      ...(pagination?.status && { status: pagination.status }),
-      ...(pagination?.role && { role: pagination.role }),
+  const fetchInvitations = async (params: any) => {
+    const queryParams = {
+      pagination: {
+        page: params.page || 1,
+        size: params.limit || 10,
+        ...(params.sortBy && { sort: params.sortBy }),
+        ...(params.order && { order: params.order }),
+      },
+      filter: {
+        ...(params.status && { status: params.status }),
+        ...(params.role && { role: params.role }),
+      },
     };
-
-    return invitationService.getInvitations(cuid, invitationQuery);
+    return await invitationService.getInvitations(cuid, queryParams);
   };
 
   const tableData = useTableData({
@@ -80,10 +74,11 @@ export const useGetInvitations = (cuid: string) => {
     filterOptions: sortOptions,
     pagination: tableData?.pagination || {},
     invitations: tableData.data?.data || [],
-    handleSortChange: tableData.handleSortChange,
+    handleSortDirectionChange: tableData.handleSortDirectionChange,
     handlePageChange: tableData.handlePageChange,
     totalCount: tableData.data?.pagination.total || 0,
     handleSortByChange: tableData.handleSortByChange,
+    handleFilterChange: tableData.handleFilterChange,
   };
 };
 

@@ -46,13 +46,15 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
-          client.cuid,
           property.pid,
+          client.cuid,
           {
-            page: 1,
-            limit: 10,
-            sort: "",
-            sortBy: "floor",
+            pagination: {
+              page: 1,
+              limit: 10,
+              sortBy: "floor",
+              order: "asc",
+            },
           }
         ),
       });
@@ -103,13 +105,15 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
-          client.cuid,
           property.pid,
+          client.cuid,
           {
-            page: 1,
-            limit: 10,
-            sort: "",
-            sortBy: "floor",
+            pagination: {
+              page: 1,
+              limit: 10,
+              sortBy: "floor",
+              order: "asc",
+            },
           }
         ),
       });
@@ -148,13 +152,15 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
 
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyUnits(
-          client.cuid,
           property.pid,
+          client.cuid,
           {
-            page: 1,
-            limit: 10,
-            sort: "",
-            sortBy: "floor",
+            pagination: {
+              page: 1,
+              limit: 10,
+              sortBy: "floor",
+              order: "asc",
+            },
           }
         ),
       });
