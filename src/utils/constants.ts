@@ -1,5 +1,5 @@
 import { PropertyTypeRule } from "@interfaces/property.interface";
-import { IPaginationQuery, FilterOption } from "@interfaces/index";
+import { PaginationQuery, FilterOption } from "@interfaces/index";
 import {
   UnitTypeRules,
   UnitTypeEnum,
@@ -526,13 +526,13 @@ export const PROPERTY_QUERY_KEYS = {
   getAllProperties: (
     cuid: string,
     pid: string,
-    pagination: IPaginationQuery
+    pagination: PaginationQuery
   ) => ["/getProperties", cuid, `page=${pagination.page}`, pid],
   getPropertyByPid: (pid: string, cuid: string) => ["/getProperty", cuid, pid],
   getPropertyUnits: (
     pid: string,
     cuid: string,
-    pagination: IPaginationQuery
+    pagination: PaginationQuery
   ) => ["/getPropertyUnits", cuid, pid, `page=${pagination.page}`],
   getPropertyUnitByPuid: (pid: string, cuid: string, puid: string) => [
     "/getPropertyUnit",
@@ -553,6 +553,21 @@ export const LEASE_QUERY_KEYS = {
   ],
   getLeasePreview: (cuid: string) => ["/getLeasePreview", cuid],
   getAvailableTenants: (cuid: string) => ["/getAvailableTenants", cuid],
+  getFilteredLeases: (cuid: string, filters?: Record<string, any>) => [
+    "/getFilteredLeases",
+    cuid,
+    filters,
+  ],
+  getLeaseStats: (cuid: string, filters?: Record<string, any>) => [
+    "/getLeaseStats",
+    cuid,
+    filters,
+  ],
+  getExpiringLeases: (cuid: string, days: number) => [
+    "/getExpiringLeases",
+    cuid,
+    days,
+  ],
 };
 export const INVITE_QUERY_KEYS = {
   validateInviteToken: (cuid: string, token: string) => [
@@ -569,14 +584,14 @@ export const INVITE_QUERY_KEYS = {
   ],
 };
 export const USER_QUERY_KEYS = {
-  getClientTenants: (cuid: string, pagination: IPaginationQuery) => [
+  getClientTenants: (cuid: string, pagination: PaginationQuery) => [
     `/users/${cuid}/filtered-tenants`,
     `page=${pagination.page}`,
   ],
   getClientTenant: (cuid: string, uid: string) => [
     `/users/${cuid}/client_tenant/${uid}`,
   ],
-  getClientUsers: (cuid: string, pagination: IPaginationQuery) => [
+  getClientUsers: (cuid: string, pagination: PaginationQuery) => [
     `/users/${cuid}/filtered-users`,
     `page=${pagination.page}`,
   ],

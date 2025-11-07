@@ -212,3 +212,111 @@ export interface LeaseablePropertiesMetadata {
   filteredCount: number;
   filteredProperties?: FilteredProperty[];
 }
+
+// Lease List Interfaces
+export interface Lease {
+  _id: string;
+  luid: string;
+  leaseNumber: string;
+  cuid: string;
+  status: LeaseStatusEnum;
+  type: LeaseTypeEnum;
+  tenantId: string;
+  useInvitationIdAsTenantId?: boolean;
+  property: {
+    id: string;
+    unitId?: string;
+    address: string;
+    name?: string;
+    propertyType?: string;
+  };
+  duration: {
+    startDate: string;
+    endDate: string;
+    moveInDate?: string;
+    moveOutDate?: string;
+    terminationDate?: string;
+  };
+  fees: {
+    monthlyRent: number;
+    securityDeposit: number;
+    rentDueDay: number;
+    currency: string;
+    lateFeeAmount?: number;
+    lateFeeDays?: number;
+    lateFeeType?: "fixed" | "percentage";
+    lateFeePercentage?: number;
+    acceptedPaymentMethod?: string;
+  };
+  signingMethod: SigningMethodEnum;
+  signedDate?: string;
+  approvalStatus: string;
+  createdAt: string;
+  updatedAt: string;
+  // Virtuals
+  daysUntilExpiry?: number | null;
+  durationMonths?: number | null;
+  isExpiringSoon?: boolean;
+  isActive?: boolean;
+}
+
+export interface LeaseListItem {
+  _id: string;
+  luid: string;
+  leaseNumber: string;
+  status: LeaseStatusEnum;
+  type: LeaseTypeEnum;
+  tenantName?: string;
+  tenantEmail?: string;
+  propertyAddress: string;
+  propertyName?: string;
+  unitNumber?: string;
+  monthlyRent: number;
+  currency: string;
+  startDate: string;
+  endDate: string;
+  daysUntilExpiry?: number | null;
+  isExpiringSoon?: boolean;
+}
+
+export interface LeaseStats {
+  totalLeases: number;
+  leasesByStatus: {
+    draft: number;
+    pending_signature: number;
+    active: number;
+    expired: number;
+    terminated: number;
+    cancelled: number;
+  };
+  averageLeaseDuration: number;
+  totalMonthlyRent: number;
+  expiringIn30Days: number;
+  expiringIn60Days: number;
+  expiringIn90Days: number;
+  occupancyRate: number;
+}
+
+export interface FilteredLeasesResponse {
+  items: Lease[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+// Actual API response structure for getFilteredLeases
+export interface LeaseListResponse {
+  success: boolean;
+  data: LeaseListItem[];
+  message: string;
+  pagination: {
+    total: number;
+    perPage: number;
+    totalPages: number;
+    currentPage: number;
+    hasMoreResource: boolean;
+  };
+}

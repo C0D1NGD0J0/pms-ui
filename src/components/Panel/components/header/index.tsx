@@ -19,7 +19,7 @@ export interface PanelHeaderProps {
     sortDirection?: "asc" | "desc" | "";
     onFilterChange: (value: string) => void;
     options: { label: string; value: string }[];
-    onSortDirectionChange?: (sort: "asc" | "desc") => void;
+    onSortDirectionChange?: (dir: "asc" | "desc") => void;
   } | null;
 }
 

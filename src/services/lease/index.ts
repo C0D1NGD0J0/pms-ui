@@ -1,11 +1,19 @@
 import axios from "@configs/axios";
+import { buildNestedQuery } from "@src/utils/helpers";
 import { IServerResponse } from "@interfaces/utils.interface";
 import { prepareRequestData } from "@utils/formDataTransformer";
 import {
+  FilterQueryWithPagination,
+  NestedQueryParams,
+} from "@src/interfaces/common.interface";
+import {
   LeaseablePropertiesMetadata,
   LeasePreviewRequest,
+  LeaseListResponse,
   LeaseableProperty,
   LeaseFormValues,
+  LeaseStats,
+  Lease,
 } from "@interfaces/lease.interface";
 
 class LeaseService {
@@ -32,6 +40,52 @@ class LeaseService {
         config
       );
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFilteredLeases(cuid: string, params?: NestedQueryParams) {
+    try {
+      const queryString = buildNestedQuery(params || {});
+
+      let url = `${this.baseUrl}/${cuid}`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+
+      const result = await axios.get<LeaseListResponse>(url, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getLeaseStats(cuid: string, params?: NestedQueryParams) {
+    try {
+      const queryString = buildNestedQuery(params || {});
+      let url = `${this.baseUrl}/${cuid}/stats`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+
+      const result = await axios.get<IServerResponse<LeaseStats>>(
+        url,
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getExpiringLeases(cuid: string, days: number = 30) {
+    try {
+      const result = await axios.get<IServerResponse<Lease[]>>(
+        `${this.baseUrl}/${cuid}/expiring?days=${days}`,
+        this.axiosConfig
+      );
+      return result.data;
     } catch (error) {
       throw error;
     }

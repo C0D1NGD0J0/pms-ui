@@ -183,7 +183,7 @@ export default function Properties() {
                 onFilterChange: (value: string) => {
                   handleSortByChange(value);
                 },
-                sortDirection: pagination.sort,
+                sortDirection: pagination.order,
                 onSortDirectionChange: (sort: "asc" | "desc") => {
                   handleSortChange(sort);
                 },

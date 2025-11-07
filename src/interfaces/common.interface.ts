@@ -25,32 +25,12 @@ export interface PaginationResult {
   hasMoreResource?: boolean;
 }
 
-// Alternative pagination format for backward compatibility
-export interface PaginationResponse {
-  total: number;
-  perPage: number;
-  totalPages: number;
-  currentPage: number;
-  hasMoreResource: boolean;
-}
-
-// Generic query parameters interface
-export interface QueryParams {
-  status?: "active" | "inactive";
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sort?: "asc" | "desc";
-}
-
-// Stats distribution interface (consolidating StatsDistribution)
 export interface StatsDistribution {
   name: string;
   value: number;
   percentage: number;
 }
 
-// Server response interfaces
 export interface ServerResponse<T> {
   success: boolean;
   msg?: string;
@@ -79,19 +59,22 @@ export interface ThemeContextType {
   toggleTheme: () => void;
 }
 
+export interface NestedQueryParams {
+  pagination?: PaginationQuery;
+  filter?: FilterParams;
+}
 export type PaginationQuery = {
   page: number;
   limit: number;
   total?: number;
   sortBy?: string;
-  sort?: "asc" | "desc" | "";
+  order?: "asc" | "desc" | "";
 };
 
-// Generic filter interface that extends pagination
-export interface FilterQuery<TSortBy = string, TStatus = string>
-  extends Omit<PaginationQuery, "sortBy"> {
-  status?: TStatus;
-  sortBy?: TSortBy;
+export interface FilterParams {
+  search?: string;
+  [key: string]: any;
+  status?: "active" | "inactive";
 }
 
 export interface ParsedError {

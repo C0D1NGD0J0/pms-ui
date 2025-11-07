@@ -5,9 +5,6 @@ export type {
   ErrorReturnData as IErrorReturnData,
   Theme,
   ThemeContextType,
-  PaginationQuery as IPaginationQuery,
-  FilterQuery as IFilterQuery,
-  PaginationResponse as IPaginationResponse,
   ParsedError,
   FilterOption,
 } from "./common.interface";

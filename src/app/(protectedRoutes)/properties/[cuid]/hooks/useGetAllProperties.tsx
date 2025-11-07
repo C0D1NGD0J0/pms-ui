@@ -1,7 +1,7 @@
+import { PaginationQuery } from "@src/interfaces";
 import { propertyService } from "@services/property";
 import { CLIENT_QUERY_KEYS } from "@utils/constants";
 import { useTableData } from "@components/Table/hook";
-import { IPaginationQuery } from "@interfaces/utils.interface";
 
 export interface FilterOption {
   label: string;
@@ -16,7 +16,7 @@ export const useGetAllProperties = (cuid: string) => {
     { label: "Date Added", value: "createdAt" },
   ];
 
-  const fetchProperties = async (pagination: IPaginationQuery) =>
+  const fetchProperties = async (pagination: PaginationQuery) =>
     await propertyService.getClientProperties(cuid, pagination);
 
   const tableData = useTableData({
@@ -32,5 +32,6 @@ export const useGetAllProperties = (cuid: string) => {
     filterOptions: sortOptions,
     properties: tableData.data?.items || [],
     totalCount: tableData.data?.pagination.total || 0,
+    handleSortChange: tableData.handleSortDirectionChange,
   };
 };

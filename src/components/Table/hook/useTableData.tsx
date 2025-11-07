@@ -1,4 +1,5 @@
-import { IPaginationQuery } from "@interfaces/index";
+import { PaginationQuery } from "@src/interfaces";
+import { FilterParams } from "@src/interfaces/common.interface";
 import { useTablePagination, PaginationConfig } from "@hooks/index";
 import { keepPreviousData, useQuery, QueryKey } from "@tanstack/react-query";
 
@@ -6,7 +7,7 @@ interface UseTableDataOptions<T> {
   queryKeys: QueryKey;
   refetchInterval?: number | false;
   paginationConfig?: PaginationConfig;
-  fetchFn: (pagination: IPaginationQuery) => Promise<T>;
+  fetchFn: (pagination: PaginationQuery & FilterParams) => Promise<T>;
 }
 
 export const useTableData = <TData,>({
@@ -17,15 +18,17 @@ export const useTableData = <TData,>({
 }: UseTableDataOptions<TData>) => {
   const {
     pagination,
+    filters,
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
+    handleSortDirectionChange,
     handleSortByChange,
+    handleFilterChange,
   } = useTablePagination(paginationConfig);
 
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: [...queryKeys, pagination.page],
-    queryFn: () => fetchFn(pagination),
+    queryKey: [...queryKeys, pagination, filters],
+    queryFn: () => fetchFn({ ...pagination, ...filters }),
     refetchInterval,
     placeholderData: keepPreviousData,
   });
@@ -36,9 +39,11 @@ export const useTableData = <TData,>({
     error,
     refetch,
     pagination,
+    filters,
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
+    handleSortDirectionChange,
     handleSortByChange,
+    handleFilterChange,
   };
 };

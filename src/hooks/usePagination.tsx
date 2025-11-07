@@ -1,11 +1,11 @@
 import { useCallback, useState } from "react";
-import { IPaginationQuery } from "@interfaces/utils.interface";
 
 export interface PaginationConfig {
   initialPage?: number;
   initialLimit?: number;
   initialSortBy?: string;
-  initialSort?: "asc" | "desc" | "";
+  initialOrder?: "asc" | "desc";
+  initialFilters?: Record<string, any>;
 }
 
 export const useTablePagination = (config: PaginationConfig = {}) => {
@@ -13,15 +13,18 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     initialPage = 1,
     initialLimit = 10,
     initialSortBy = "",
-    initialSort = "",
+    initialOrder = "asc",
+    initialFilters = {},
   } = config;
 
-  const [pagination, setPagination] = useState<IPaginationQuery>({
-    sort: initialSort,
+  const [pagination, setPagination] = useState({
     page: initialPage,
     limit: initialLimit,
     sortBy: initialSortBy,
+    order: initialOrder,
   });
+
+  const [filters, setFilters] = useState(initialFilters);
 
   const handlePageChange = useCallback((page: number) => {
     setPagination((prev) => ({
@@ -38,32 +41,43 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     }));
   }, []);
 
-  const handleSortChange = useCallback(
-    (sort: "asc" | "desc") => {
-      if (pagination.sortBy === "") {
-        return;
-      }
+  const handleOrderChange = useCallback(
+    (order: "asc" | "desc") => {
       setPagination((prev) => ({
         ...prev,
-        sort,
+        order,
       }));
     },
-    [pagination.sortBy]
+    [pagination]
   );
 
   const handleSortByChange = useCallback((sortBy: string) => {
     setPagination((prev) => ({
       ...prev,
       sortBy,
-      sort: sortBy === "" ? "" : prev.sort || "desc",
+      order: sortBy === "" ? "asc" : prev.order || "desc",
+    }));
+  }, []);
+
+  const handleFilterChange = useCallback((key: string, value: any) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value === "" ? undefined : value,
+    }));
+    // Reset to first page when filter changes
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
     }));
   }, []);
 
   return {
     pagination,
+    filters,
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
     handleSortByChange,
+    handleFilterChange,
+    handleSortDirectionChange: handleOrderChange,
   };
 };
