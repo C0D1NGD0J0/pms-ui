@@ -101,7 +101,7 @@ export function Table<T extends object>({
   let tableColumns = columns.map((column, index) => ({
     title: column.title,
     dataIndex: column.dataIndex as string,
-    key: `${new Date()}-${index}`,
+    key: column.key || `${String(column.dataIndex)}-${index}`,
     sorter: column.sorter,
     width: column.width,
     render:
@@ -184,7 +184,22 @@ export function Table<T extends object>({
 
   const HeaderCell = React.forwardRef<HTMLTableCellElement, any>(
     function HeaderCell(props, ref) {
-      return <th {...props} ref={ref} className="custom-th" />;
+      // Check if this column has sorters by looking at the className
+      const isSortableColumn = props.className?.includes(
+        "ant-table-column-has-sorters"
+      );
+
+      // Selective prop forwarding - only forward click handlers to sortable columns
+      const { onClick, onKeyDown, ...safeProps } = props;
+
+      const headerProps = {
+        ...safeProps,
+        ...(isSortableColumn && { onClick, onKeyDown }),
+        ref,
+        className: `${props.className || ""} custom-th`,
+      };
+
+      return <th {...headerProps} />;
     }
   );
 

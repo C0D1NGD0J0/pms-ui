@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { IFilteredUsersParams, userService } from "@src/services/users";
+import { userService } from "@src/services/users";
 import {
   UserStatsQueryParams,
   IUserRoleType,
@@ -45,15 +45,19 @@ export const useGetFilteredUsers = (
   const query = useQuery({
     queryKey: [USER_QUERY_KEYS.getClientUsers, cuid, queryParams],
     queryFn: async () => {
-      const userQuery: IFilteredUsersParams = {
-        ...(queryParams.page && { page: queryParams.page }),
-        ...(queryParams.limit && { limit: queryParams.limit }),
-        ...(queryParams.sortBy && { sortBy: queryParams.sortBy }),
-        ...(queryParams.sort && { sort: queryParams.sort }),
-        ...(queryParams.search && { search: queryParams.search }),
-        ...(queryParams.role && { role: queryParams.role }),
-        ...(queryParams.department && { department: queryParams.department }),
-        ...(queryParams.status && { status: queryParams.status }),
+      const userQuery = {
+        pagination: {
+          page: queryParams.page || 1,
+          limit: queryParams.limit || 10,
+          ...(queryParams.sortBy && { sortBy: queryParams.sortBy }),
+          ...(queryParams.sort && { order: queryParams.sort }),
+        },
+        filter: {
+          ...(queryParams.search && { search: queryParams.search }),
+          ...(queryParams.role && { role: queryParams.role }),
+          ...(queryParams.department && { department: queryParams.department }),
+          ...(queryParams.status && { status: queryParams.status }),
+        },
       };
       const resp = await userService.getFilteredUsers(cuid, userQuery);
       return resp;
@@ -75,8 +79,10 @@ export const useGetFilteredUsers = (
     updateQueryParams({ limit, page: 1 });
   };
 
-  const handleSortChange = (sort: "asc" | "desc") => {
-    updateQueryParams({ sort });
+  const handleSortDirectionChange = () => {
+    const currentSort = queryParams.sort || "desc"; // Default to desc if undefined
+    const newSort = currentSort === "asc" ? "desc" : "asc";
+    updateQueryParams({ sort: newSort });
   };
 
   const handleSortByChange = (sortBy: string) => {
@@ -115,7 +121,7 @@ export const useGetFilteredUsers = (
     updateQueryParams,
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
+    handleSortDirectionChange,
     handleSortByChange,
     handleSearch,
     handleTypeFilter,
@@ -138,8 +144,10 @@ export const useGetUserStats = (
   const query = useQuery({
     queryKey: USER_QUERY_KEYS.getUserStats(cuid, filterParams),
     queryFn: async () => {
-      const userQuery: IFilteredUsersParams = {
-        ...(filterParams?.role && { role: filterParams.role }),
+      const userQuery = {
+        filter: {
+          ...(filterParams?.role && { role: filterParams.role }),
+        },
       };
 
       const resp = await userService.getUserStats(cuid, userQuery);

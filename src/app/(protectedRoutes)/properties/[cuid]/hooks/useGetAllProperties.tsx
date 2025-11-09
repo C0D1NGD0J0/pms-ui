@@ -39,6 +39,5 @@ export const useGetAllProperties = (cuid: string) => {
     filterOptions: sortOptions,
     properties: tableData.data?.items || [],
     totalCount: tableData.data?.pagination.total || 0,
-    handleSortChange: tableData.handleSortDirectionChange,
   };
 };

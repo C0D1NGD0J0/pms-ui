@@ -1,7 +1,7 @@
 import { StatsDistribution } from "./common.interface";
 
-// Re-export QueryParams as VendorQueryParams for backward compatibility
-export type { QueryParams as VendorQueryParams } from "./common.interface";
+// VendorQueryParams is now defined in vendor hooks for local use
+// export type { QueryParams as VendorQueryParams } from "./common.interface";
 
 export interface VendorStatsQueryParams {
   status?: "active" | "inactive";

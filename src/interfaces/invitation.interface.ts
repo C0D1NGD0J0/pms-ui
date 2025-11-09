@@ -1,4 +1,4 @@
-import { FilterQuery as IFilterQuery, UserRole } from "./common.interface";
+import { UserRole } from "./common.interface";
 
 export type IUserRole = UserRole;
 
@@ -215,13 +215,14 @@ export interface IInvitationStats {
   sent: number;
 }
 
-export interface IInvitationQuery
-  extends IFilterQuery<
-    "createdAt" | "inviteeEmail" | "status",
-    "draft" | "pending" | "accepted" | "expired" | "revoked" | "sent" | "all"
-  > {
-  role?: IUserRole;
-}
+// Deprecated: Use NestedQueryParams with FilterParams instead
+// export interface IInvitationQuery
+//   extends IFilterQuery<
+//     "createdAt" | "inviteeEmail" | "status",
+//     "draft" | "pending" | "accepted" | "expired" | "revoked" | "sent" | "all"
+//   > {
+//   role?: IUserRole;
+// }
 
 export interface IResendInvitationData {
   customMessage?: string;

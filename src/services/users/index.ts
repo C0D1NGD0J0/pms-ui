@@ -49,18 +49,13 @@ class UsersService {
     params?: NestedQueryParams
   ): Promise<IListResponseWithPagination> {
     try {
-      // Handle role array specially - backend expects comma-separated string
-      let processedParams = params;
-      if (params?.filter?.role && Array.isArray(params.filter.role)) {
-        processedParams = {
-          ...params,
-          filter: {
-            ...params.filter,
-            role: params.filter.role.join(","),
-          },
-        };
-      }
-
+      const processedParams = {
+        ...params,
+        filter: {
+          ...params?.filter,
+          role: params?.filter?.role.join(",") ?? [],
+        },
+      };
       const queryString = buildNestedQuery(processedParams || {});
       let url = `${this.baseUrl}/${cuid}/filtered-users`;
       if (queryString) {
@@ -75,10 +70,7 @@ class UsersService {
     }
   }
 
-  async getUserStats(
-    cuid: string,
-    params?: NestedQueryParams
-  ): Promise<any> {
+  async getUserStats(cuid: string, params?: NestedQueryParams): Promise<any> {
     try {
       // Handle role array specially - backend expects comma-separated string
       let processedParams = params;

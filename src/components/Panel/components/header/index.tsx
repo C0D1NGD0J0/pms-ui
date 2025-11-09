@@ -19,7 +19,7 @@ export interface PanelHeaderProps {
     sortDirection?: "asc" | "desc" | "";
     onFilterChange: (value: string) => void;
     options: { label: string; value: string }[];
-    onSortDirectionChange?: (dir: "asc" | "desc") => void;
+    onSortDirectionChange?: () => void;
   } | null;
 }
 
@@ -77,11 +77,7 @@ const PanelHeaderComponent = ({
               {_sortBy && filterOpts.sortDirection && (
                 <button
                   className="sort-direction-btn"
-                  onClick={() =>
-                    filterOpts.onSortDirectionChange?.(
-                      filterOpts.sortDirection === "asc" ? "desc" : "asc"
-                    )
-                  }
+                  onClick={() => filterOpts.onSortDirectionChange?.()}
                 >
                   <i
                     className={`bx ${

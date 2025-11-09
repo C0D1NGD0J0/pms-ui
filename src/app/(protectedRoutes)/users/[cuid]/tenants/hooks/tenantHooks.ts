@@ -131,8 +131,10 @@ export const useGetTenants = (
     updateQueryParams({ limit, page: 1 });
   };
 
-  const handleSortChange = (sort: "asc" | "desc") => {
-    updateQueryParams({ sort });
+  const handleSortDirectionChange = () => {
+    const currentSort = queryParams.sort || "desc";
+    const newSort = currentSort === "asc" ? "desc" : "asc";
+    updateQueryParams({ sort: newSort });
   };
 
   const handleSortByChange = (sortBy: string) => {
@@ -167,7 +169,7 @@ export const useGetTenants = (
     updateQueryParams,
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
+    handleSortDirectionChange,
     handleSortByChange,
     handleSearch,
     handleStatusFilter,

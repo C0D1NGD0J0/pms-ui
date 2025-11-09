@@ -44,7 +44,7 @@ function VendorsPage({ params }: VendorsPageProps) {
     serviceOptions,
     pagination,
     totalCount,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleServiceTypeFilter,
     isLoading,
@@ -185,7 +185,7 @@ function VendorsPage({ params }: VendorsPageProps) {
                 filterOptions={serviceOptions}
                 handlePageChange={handlePageChange}
                 handleSortByChange={handleServiceTypeFilter}
-                handleSortChange={handleSortChange}
+                handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditVendor}
                 onMessage={handleMessageVendor}

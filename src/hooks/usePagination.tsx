@@ -42,15 +42,16 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     }));
   }, []);
 
-  const handleOrderChange = useCallback(
-    (order: "asc" | "desc") => {
-      setPagination((prev) => ({
+  const handleSortDirectionChange = useCallback(() => {
+    setPagination((prev) => {
+      const currentOrder = prev.order || "desc"; // Default to desc if empty/undefined
+      const newOrder = currentOrder === "asc" ? "desc" : "asc";
+      return {
         ...prev,
-        order,
-      }));
-    },
-    [pagination]
-  );
+        order: newOrder,
+      };
+    });
+  }, []);
 
   const handleSortByChange = useCallback((sortBy: string) => {
     setPagination((prev) => ({
@@ -79,6 +80,6 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     handleLimitChange,
     handleSortByChange,
     handleFilterChange,
-    handleSortDirectionChange: handleOrderChange,
+    handleSortDirectionChange,
   };
 };

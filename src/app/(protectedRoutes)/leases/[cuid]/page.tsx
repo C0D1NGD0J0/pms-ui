@@ -7,6 +7,7 @@ import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
+import { LeaseListItem } from "@src/interfaces/lease.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 import { useGetLeaseStats, useGetAllLeases } from "./hooks";
@@ -100,11 +101,21 @@ export default function LeasesPage() {
       {
         title: "Property",
         dataIndex: "propertyAddress",
+        key: "propertyAddress",
+        sorter: (a: LeaseListItem, b: LeaseListItem) => {
+          return a.propertyAddress.localeCompare(b.propertyAddress);
+        },
         render: (address: string) => address || "N/A",
       },
       {
         title: "Start Date",
         dataIndex: "startDate",
+        key: "startDate",
+        sorter: (a: LeaseListItem, b: LeaseListItem) => {
+          const dateA = new Date(a.startDate).getTime();
+          const dateB = new Date(b.startDate).getTime();
+          return dateA - dateB;
+        },
         render: (startDate: any) => {
           return new Date(startDate).toLocaleDateString();
         },
@@ -112,8 +123,9 @@ export default function LeasesPage() {
       {
         title: "End Date",
         dataIndex: "endDate",
-        render: (endDate: any) => {
-          return new Date(endDate).toLocaleDateString();
+        key: "endDate",
+        render: (a: LeaseListItem) => {
+          return new Date(a.endDate).toLocaleDateString();
         },
       },
       {
@@ -224,9 +236,7 @@ export default function LeasesPage() {
                 },
                 sortDirection:
                   (pagination?.order as "asc" | "desc" | "") || "desc",
-                onSortDirectionChange: (value: string) => {
-                  return handleSortDirectionChange(value as "asc" | "desc");
-                },
+                onSortDirectionChange: handleSortDirectionChange,
               }}
               pagination={{
                 current: pagination?.page || 1,

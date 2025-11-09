@@ -39,7 +39,7 @@ export const VendorUsersTab: React.FC<VendorUsersTabProps> = (props) => {
     sortOptions,
     handlePageChange,
     handleSortByChange,
-    handleSortChange,
+    handleSortDirectionChange,
     isLoading,
   } = useGetVendorTeamMembers(props.cuid, props.vuid);
 
@@ -212,9 +212,7 @@ export const VendorUsersTab: React.FC<VendorUsersTabProps> = (props) => {
               handleSortByChange(value);
             },
             sortDirection: pagination.sort,
-            onSortDirectionChange: (sort: "asc" | "desc") => {
-              handleSortChange(sort);
-            },
+            onSortDirectionChange: handleSortDirectionChange,
           }}
           pagination={{
             total: totalCount,

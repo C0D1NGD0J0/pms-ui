@@ -23,7 +23,7 @@ export default function Properties() {
     properties,
     totalCount,
     pagination,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleSortByChange,
     refetch,
@@ -183,9 +183,7 @@ export default function Properties() {
                   handleSortByChange(value);
                 },
                 sortDirection: pagination.order,
-                onSortDirectionChange: (sort: "asc" | "desc") => {
-                  handleSortChange(sort);
-                },
+                onSortDirectionChange: handleSortDirectionChange,
               }}
               pagination={{
                 total: totalCount,

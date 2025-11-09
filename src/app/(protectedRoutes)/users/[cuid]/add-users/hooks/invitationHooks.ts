@@ -50,8 +50,8 @@ export const useGetInvitations = (cuid: string) => {
     const queryParams = {
       pagination: {
         page: params.page || 1,
-        size: params.limit || 10,
-        ...(params.sortBy && { sort: params.sortBy }),
+        limit: params.limit || 10,
+        ...(params.sortBy && { sortBy: params.sortBy }),
         ...(params.order && { order: params.order }),
       },
       filter: {

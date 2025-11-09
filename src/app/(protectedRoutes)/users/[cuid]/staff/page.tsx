@@ -46,7 +46,7 @@ function StaffPage({ params }: StaffPageProps) {
     sortOptions,
     pagination,
     totalCount,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleSortByChange,
     isLoading,
@@ -139,7 +139,7 @@ function StaffPage({ params }: StaffPageProps) {
                 filterOptions={sortOptions}
                 handlePageChange={handlePageChange}
                 handleSortByChange={handleSortByChange}
-                handleSortChange={handleSortChange}
+                handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditEmployee}
                 onToggleStatus={handleToggleEmployeeStatus}
