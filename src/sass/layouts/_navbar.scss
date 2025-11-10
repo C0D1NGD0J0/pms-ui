@@ -431,7 +431,7 @@
     height: 100%;
     width: 100%;
     display: flex;
-    position: fixed;
+    position: relative;
     list-style: none;
     flex-direction: column;
 
@@ -499,7 +499,7 @@
 
   // Theme toggle inside navbar
   &__navbar-item.theme-item {
-    margin-top: 9rem;
+    // margin-top: 9rem;
     padding-top: 2rem;
     border-top: 1px solid hslaGen($white-color, 0.1);
   }
