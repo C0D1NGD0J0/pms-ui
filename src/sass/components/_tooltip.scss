@@ -1,19 +1,22 @@
 @use "../abstract/index" as *;
 
 .custom-tooltip {
+  max-width: 100%;
   position: relative;
-  display: contents; // makes the wrapper "invisible" to layout
+  display: inline-block;
 
   &__content {
     position: absolute;
     z-index: 9999;
-    padding: 8px 12px;
+    width: fit-content;
+    padding: 0.3rem;
     background-color: hslaGen($dark-grey-color, 0.9);
     color: #fff;
     border-radius: 4px;
     font-size: 14px;
     line-height: 1.4;
     white-space: nowrap;
+    text-align: center;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     pointer-events: none;
     opacity: 1;
@@ -49,7 +52,8 @@
   }
 
   &__text {
-    max-width: 250px;
+    min-width: 25rem;
+    max-width: fit-content;
     white-space: normal;
     word-wrap: break-word;
   }

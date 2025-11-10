@@ -7,6 +7,8 @@ import {
   useSSENotificationActions,
   useSSENotifications,
 } from "@src/store/sseNotification.store";
+import { usePublish } from "@hooks/event";
+import { EventTypes } from "@services/events";
 
 import NotificationDropdown from "./NotificationDropdown";
 
@@ -20,6 +22,7 @@ interface MenuItem {
 export const Navbar: React.FC = () => {
   const { isLoggedIn, user } = useAuth();
   const { logout } = useAuthActions();
+  const publish = usePublish();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
@@ -116,6 +119,7 @@ export const Navbar: React.FC = () => {
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     setIsUserDropdownOpen(false);
+    publish(EventTypes.MOBILE_MENU_TOGGLE, {});
   };
 
   return (

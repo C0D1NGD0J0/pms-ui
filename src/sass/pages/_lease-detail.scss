@@ -15,6 +15,10 @@
       margin-bottom: $space-md;
       @include flex(row, flex-start, center, 1.2rem);
       flex-wrap: wrap;
+
+      @include breakpoint(76.8rem, max) {
+        font-size: 2rem;
+      }
     }
 
     &__property,
@@ -22,6 +26,10 @@
       font-size: 1.5rem;
       opacity: 0.9;
       margin-bottom: $space-sm;
+
+      @include breakpoint(76.8rem, max) {
+        font-size: 1.3rem;
+      }
 
       i {
         margin-right: $space-sm;
@@ -57,12 +65,8 @@
   }
 
   .lease-content-grid {
-    @include grid(1fr 35rem, auto, $fs-xlg);
+    @include grid(2fr auto, auto, $fs-xlg);
     margin-bottom: $fs-xlg;
-
-    // @include breakpoint(120rem, max) {
-    //   @include grid(1fr, auto, $fs-xlg);
-    // }
   }
 
   // Tab content styles
@@ -79,6 +83,14 @@
 
   .info-grid {
     @include grid(repeat(auto-fill, minmax(28rem, 1fr)), auto, $fs-xlg);
+
+    @include breakpoint(76.8rem, max) {
+      @include grid(repeat(auto-fill, minmax(20rem, 1fr)), auto, $space-md);
+    }
+
+    @include breakpoint(57.6rem, max) {
+      @include grid(1fr, auto, $space-md);
+    }
   }
 
   .info-item {
@@ -118,6 +130,11 @@
     @include border-radius($border-radius-xl);
     border: 1px solid hslaGen($alice-blue-color);
     margin-bottom: 3rem;
+
+    @include breakpoint(57.6rem, max) {
+      @include flex(column, flex-start, center, $space-md);
+      text-align: center;
+    }
 
     &__avatar {
       width: 6rem;
@@ -173,8 +190,17 @@
     background: hslaGen($off-white-color, 0.5);
     border: 1px solid hslaGen($alice-blue-color);
 
+    @include breakpoint(57.6rem, max) {
+      @include flex(column, flex-start, stretch, $space-sm);
+    }
+
     &__info {
       @include flex(row, flex-start, center, 1.2rem);
+
+      @include breakpoint(57.6rem, max) {
+        @include flex(column, flex-start, center, $space-sm);
+        text-align: center;
+      }
     }
 
     &__icon {

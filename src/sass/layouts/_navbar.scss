@@ -143,19 +143,14 @@
   }
 
   .menuToggle {
-    z-index: 5;
-    display: flex;
-    right: 0.5rem;
-    cursor: pointer;
-    font-size: $fs-lg;
-    position: relative;
-    margin-left: 0.5rem;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border: 1px solid $black-color;
+    display: none;
 
-    @include breakpoint("559px", min) {
-      display: none;
+    @include breakpoint("768px", max) {
+      display: flex;
+      cursor: pointer;
+      font-size: 2.4rem;
+      align-items: center;
+      color: hslaGen($white-color, 1);
     }
   }
 
@@ -322,46 +317,41 @@
 
 // DASHBOARD SIDEBAR-NAV
 .sidebar {
-  top: 0;
+  top: 25rem;
   width: 100%;
-  height: 100vh; /* Fixed height */
   display: flex;
-  overflow-y: auto;
-  position: sticky;
+  align-self: start;
+  height: 100%;
   grid-area: sidebar;
   padding: 1rem 1.4rem;
   flex-direction: column;
-  transition: width 0.3s ease;
-  justify-content: space-between;
   background: hslaGen($blue-ink-color, 1);
+  transition: width 0.3s ease, transform 0.3s ease;
 
   // Sidebar toggle button
   .sidebar-toggle {
-    right: 0rem;
-    top: 0rem;
-    z-index: 100;
-    display: flex;
+    left: 20rem;
+    top: -1.5rem;
     width: 3rem;
+    z-index: 100;
     height: 3rem;
+    display: flex;
     cursor: pointer;
     position: absolute;
     border-radius: 50%;
     align-items: center;
     justify-content: center;
-    opacity: 0.3;
     transition: $transition;
-    background: hslaGen($primary-color);
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
+    background: hslaGen($primary-color, 0.8);
 
     i {
-      color: hslaGen($white-color);
+      color: hslaGen($black-color);
       font-size: 2rem;
     }
 
     &:hover {
       opacity: 1;
       transition: $transition;
-      background: hslaGen($primary-color);
     }
   }
 
@@ -407,6 +397,11 @@
     i {
       font-size: $fs-xlg;
     }
+
+    .sidebar-toggle {
+      left: 6rem;
+      transition: $transition;
+    }
   }
 
   &.close &__navbar-item a {
@@ -433,8 +428,10 @@
 
   &__navbar {
     gap: 1.2rem;
+    height: 100%;
     width: 100%;
     display: flex;
+    position: fixed;
     list-style: none;
     flex-direction: column;
 
@@ -498,6 +495,13 @@
         background-color: hslaGen($secondary-color, 1);
       }
     }
+  }
+
+  // Theme toggle inside navbar
+  &__navbar-item.theme-item {
+    margin-top: 9rem;
+    padding-top: 2rem;
+    border-top: 1px solid hslaGen($white-color, 0.1);
   }
 
   &.close .theme__icons,
@@ -667,6 +671,51 @@
       top: 0.3rem;
       position: relative;
       margin-left: 2rem; // add more space between text and icon when sidebar is clsed
+    }
+  }
+
+  // Mobile: hide sidebar by default, show with mobile-open class
+  @include breakpoint("768px", max) {
+    position: fixed;
+    top: 6rem;
+    left: 0;
+    width: 70vw;
+    max-width: 28rem;
+    height: calc(100vh - 6rem);
+    z-index: 1000;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    &.mobile-open {
+      transform: translateX(0);
+    }
+  }
+
+  @include breakpoint("576px", max) {
+    width: 80vw;
+  }
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 6rem;
+  left: 0;
+  width: 100vw;
+  height: calc(100vh - 6rem);
+  background: hslaGen($primary-color, 0.5);
+  z-index: 999;
+  backdrop-filter: blur(2px);
+
+  @include breakpoint("768px", max) {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+
+    &.show {
+      opacity: 1;
+      visibility: visible;
     }
   }
 }

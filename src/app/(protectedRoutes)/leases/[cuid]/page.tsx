@@ -7,10 +7,23 @@ import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
+import { Tooltip } from "@components/FormElements/Tooltip";
 import { LeaseListItem } from "@src/interfaces/lease.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 import { useGetLeaseStats, useGetAllLeases } from "./hooks";
+
+const renderTruncatedText = (text: string, maxWidth: string = "200px") => {
+  if (!text) return "N/A";
+
+  return (
+    <Tooltip content={text} placement="bottom">
+      <span className="truncated-text" style={{ maxWidth }}>
+        {text}
+      </span>
+    </Tooltip>
+  );
+};
 
 export default function LeasesPage() {
   const { user } = useAuth();
@@ -96,7 +109,7 @@ export default function LeasesPage() {
       {
         title: "Lease #",
         dataIndex: "luid",
-        render: (luid: string) => luid || "N/A",
+        render: (luid: string) => renderTruncatedText(luid, "150px"),
       },
       {
         title: "Property",
@@ -105,7 +118,7 @@ export default function LeasesPage() {
         sorter: (a: LeaseListItem, b: LeaseListItem) => {
           return a.propertyAddress.localeCompare(b.propertyAddress);
         },
-        render: (address: string) => address || "N/A",
+        render: (address: string) => renderTruncatedText(address, "250px"),
       },
       {
         title: "Start Date",
