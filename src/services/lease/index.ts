@@ -53,7 +53,6 @@ class LeaseService {
       if (!luid) {
         throw new Error("Lease Unique ID (luid) is required");
       }
-
       let url = `${this.baseUrl}/${cuid}/${luid}`;
       if (queryString) {
         url += `?${queryString}`;

@@ -179,13 +179,22 @@ export default function LeasesPage() {
               <i className="bx bx-show"></i>
             </Link>
             {permissions.isManagerOrAbove && (
-              <Link
-                href={`/leases/${cuid}/${luid}/edit`}
-                className="action-icon edit-icon"
-                title="Edit Lease"
-              >
-                <i className="bx bx-edit"></i>
-              </Link>
+              <>
+                <Link
+                  href={`/leases/${cuid}/${luid}/edit`}
+                  className="action-icon edit-icon"
+                  title="Edit Lease"
+                >
+                  <i className="bx bx-edit"></i>
+                </Link>
+                <Link
+                  href={`/leases/${cuid}/new?duplicate=${luid}`}
+                  className="action-icon duplicate-icon"
+                  title="Duplicate Lease"
+                >
+                  <i className="bx bx-copy"></i>
+                </Link>
+              </>
             )}
           </div>
         ),

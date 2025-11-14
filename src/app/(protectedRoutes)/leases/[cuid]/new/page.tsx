@@ -45,6 +45,9 @@ export default function CreateLease({ params }: CreateLeaseProps) {
     handleUtilityToggle,
     hasTabErrors,
     isTabCompleted,
+    isDuplicating,
+    duplicateSource,
+    duplicateError,
   } = useLeaseFormBase({ cuid });
 
   const { isSubmitting, handleSubmit } = useLeaseForm();
@@ -218,6 +221,35 @@ export default function CreateLease({ params }: CreateLeaseProps) {
             />
           }
         />
+
+        {duplicateSource && !isDuplicating && (
+          <div className="duplication-banner">
+            <i className="bx bx-copy"></i>
+            <div className="duplication-banner__content">
+              <strong>Duplicating lease</strong>
+              <span>Based on: {duplicateSource}</span>
+            </div>
+            <Button
+              label="Start Fresh"
+              variant="link"
+              onClick={() => router.push(`/leases/${cuid}/new`)}
+            />
+          </div>
+        )}
+
+        {isDuplicating && (
+          <div className="loading-overlay">
+            <i className="bx bx-loader-alt bx-spin"></i>
+            <p>Loading lease data for duplication...</p>
+          </div>
+        )}
+
+        {duplicateError && (
+          <div className="error-banner">
+            <i className="bx bx-error"></i>
+            <span>Failed to load lease: {duplicateError}</span>
+          </div>
+        )}
 
         <div className="resource-form">
           <AccordionContainer

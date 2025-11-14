@@ -11,6 +11,7 @@ import {
 
 import { useAvailableTenants } from "./useAvailableTenants";
 import { useLeaseableProperties } from "./useLeaseableProperties";
+import { useLeaseDuplication } from "./useLeaseDuplication";
 
 export type LeaseFormBaseProps = {
   initialValues?: LeaseFormValues;
@@ -34,6 +35,13 @@ export function useLeaseFormBase({
     validateInputOnChange: true,
     validate: zodResolver(leaseSchema),
   });
+
+  const {
+    isDuplicating,
+    duplicateSource,
+    duplicateData,
+    error: duplicateError,
+  } = useLeaseDuplication(cuid);
 
   const { data: propertiesResult, isLoading: isLoadingProperties } =
     useLeaseableProperties(true);
@@ -270,6 +278,20 @@ export function useLeaseFormBase({
   );
 
   useEffect(() => {
+    if (duplicateData && !isDuplicating) {
+      leaseForm.setValues({
+        ...defaultLeaseFormValues,
+        ...duplicateData,
+      });
+
+      if (duplicateData.property?.id) {
+        const property = properties.find((p) => p.id === duplicateData.property.id);
+        setSelectedProperty(property || null);
+      }
+    }
+  }, [duplicateData, isDuplicating, properties]);
+
+  useEffect(() => {
     leaseForm.validate();
   }, [leaseForm.values]);
 
@@ -375,5 +397,8 @@ export function useLeaseFormBase({
     handleUtilityToggle,
     hasTabErrors,
     isTabCompleted,
+    isDuplicating,
+    duplicateSource,
+    duplicateError,
   };
 }

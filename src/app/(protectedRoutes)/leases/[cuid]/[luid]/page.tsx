@@ -10,6 +10,7 @@ import { PageHeader } from "@components/PageElements";
 import { DocumentsTab } from "@components/UserDetail";
 import { PanelsWrapper, PanelContent, Panel } from "@components/Panel";
 import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 import { useGetLeaseByLuid } from "../hooks/index";
 import { LeaseHeader } from "./components/LeaseHeader";
@@ -32,6 +33,7 @@ interface LeaseDetailPageProps {
 
 export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
   const router = useRouter();
+  const permissions = useUnifiedPermissions();
   const { luid, cuid } = use(params);
   const {
     data: responseData,
@@ -51,6 +53,10 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleDuplicateLease = () => {
+    router.push(`/leases/${cuid}/new?duplicate=${luid}`);
   };
 
   const handleViewChanges = () => {
@@ -172,6 +178,15 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
                 label="Send for Signature"
                 icon={<i className="bx bx-send ghost"></i>}
                 onClick={() => setShowSignatureModal(true)}
+              />
+            )}
+
+            {permissions.isManagerOrAbove && (
+              <Button
+                className="btn btn-outline"
+                label="Duplicate Lease"
+                icon={<i className="bx bx-copy"></i>}
+                onClick={handleDuplicateLease}
               />
             )}
 
