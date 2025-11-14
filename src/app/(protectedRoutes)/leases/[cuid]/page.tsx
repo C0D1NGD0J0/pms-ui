@@ -7,23 +7,11 @@ import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
-import { Tooltip } from "@components/FormElements/Tooltip";
+import { renderTruncatedText } from "@src/components/Utils";
 import { LeaseListItem } from "@src/interfaces/lease.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 import { useGetLeaseStats, useGetAllLeases } from "./hooks";
-
-const renderTruncatedText = (text: string, maxWidth: string = "200px") => {
-  if (!text) return "N/A";
-
-  return (
-    <Tooltip content={text} placement="bottom">
-      <span className="truncated-text" style={{ maxWidth }}>
-        {text}
-      </span>
-    </Tooltip>
-  );
-};
 
 export default function LeasesPage() {
   const { user } = useAuth();

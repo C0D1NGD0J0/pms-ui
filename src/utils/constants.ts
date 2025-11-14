@@ -1,5 +1,9 @@
 import { PropertyTypeRule } from "@interfaces/property.interface";
-import { NestedQueryParams, PaginationQuery, FilterOption } from "@interfaces/index";
+import {
+  NestedQueryParams,
+  PaginationQuery,
+  FilterOption,
+} from "@interfaces/index";
 import {
   UnitTypeRules,
   UnitTypeEnum,
@@ -529,11 +533,12 @@ export const PROPERTY_QUERY_KEYS = {
     pagination: PaginationQuery
   ) => ["/getProperties", cuid, `page=${pagination.page}`, pid],
   getPropertyByPid: (pid: string, cuid: string) => ["/getProperty", cuid, pid],
-  getPropertyUnits: (
-    pid: string,
-    cuid: string,
-    params?: NestedQueryParams
-  ) => ["/getPropertyUnits", cuid, pid, `page=${params?.pagination?.page || 1}`],
+  getPropertyUnits: (pid: string, cuid: string, params?: NestedQueryParams) => [
+    "/getPropertyUnits",
+    cuid,
+    pid,
+    `page=${params?.pagination?.page || 1}`,
+  ],
   getPropertyUnitByPuid: (pid: string, cuid: string, puid: string) => [
     "/getPropertyUnit",
     cuid,
@@ -546,6 +551,11 @@ export const CLIENT_QUERY_KEYS = {
   getClientProperties: (cuid: string) => ["/getClientProperties", cuid],
 };
 export const LEASE_QUERY_KEYS = {
+  previewLeaseHTMLFormat: (cuid: string, luid: string) => [
+    "/previewLeaseHTMLFormat",
+    cuid,
+    luid,
+  ],
   getLeaseableProperties: (cuid: string, fetchUnits: boolean) => [
     "/getLeaseableProperties",
     cuid,
@@ -562,6 +572,11 @@ export const LEASE_QUERY_KEYS = {
     "/getLeaseStats",
     cuid,
     filters,
+  ],
+  getLeaseByLuid: (cuid: string, luid: string) => [
+    "/getLeaseByLuid",
+    cuid,
+    luid,
   ],
   getExpiringLeases: (cuid: string, days: number) => [
     "/getExpiringLeases",

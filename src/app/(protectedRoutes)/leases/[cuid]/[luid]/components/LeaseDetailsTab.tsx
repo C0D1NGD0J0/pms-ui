@@ -1,36 +1,57 @@
 import React from "react";
+import { formatDate } from "@src/utils/dateFormatter";
 
 interface LeaseDetailsTabProps {
-  leaseData: {
-    luid: string;
-    leaseType: string;
-    startDate: string;
-    endDate: string;
-    duration: string;
-    noticePeriod: string;
-    renewalOption: string;
-    signedDate: string;
-    moveInDate: string;
-    occupancyLimit: string;
-    petsAllowed: string;
-    parkingSpaces: string;
-  };
+  leaseData: any;
 }
 
-export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ leaseData }) => {
+export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({
+  leaseData,
+}) => {
   const infoItems = [
     { label: "Lease Number", value: leaseData.luid },
-    { label: "Lease Type", value: leaseData.leaseType },
-    { label: "Start Date", value: leaseData.startDate },
-    { label: "End Date", value: leaseData.endDate },
-    { label: "Duration", value: leaseData.duration },
-    { label: "Notice Period", value: leaseData.noticePeriod },
-    { label: "Renewal Option", value: leaseData.renewalOption },
-    { label: "Signed Date", value: leaseData.signedDate },
-    { label: "Move-in Date", value: leaseData.moveInDate },
-    { label: "Occupancy Limit", value: leaseData.occupancyLimit },
-    { label: "Pets Allowed", value: leaseData.petsAllowed },
-    { label: "Parking Spaces", value: leaseData.parkingSpaces },
+    { label: "Lease Type", value: leaseData.type },
+    {
+      label: "Start Date",
+      value: formatDate(leaseData.duration.startDate, {
+        displayFormat: "shortMonth",
+      }),
+    },
+    {
+      label: "End Date",
+      value: formatDate(leaseData.duration.endDate, {
+        displayFormat: "shortMonth",
+      }),
+    },
+    {
+      label: "Notice Period",
+      value: leaseData.renewalOptions.noticePeriodDays,
+    },
+    {
+      label: "Renewal Option",
+      value: leaseData.renewalOptions.autoRenew
+        ? "Auto-Renew"
+        : "No Auto-Renew",
+    },
+    {
+      label: "Signed Date",
+      value: leaseData.signatures.length
+        ? leaseData.signatures[0].status
+        : "Not Signed",
+    },
+    {
+      label: "Move-in Date",
+      value: formatDate(leaseData.duration.moveInDate, {
+        displayFormat: "shortMonth",
+      }),
+    },
+    {
+      label: "Pets Allowed",
+      value: leaseData.petPolicy.allowed
+        ? `Allowed - ${leaseData.petPolicy.maxPets} Pets`
+        : "Not Allowed",
+    },
+    { label: "Parking Spaces", value: leaseData.parkingSpaces || 0 },
   ];
 
   return (

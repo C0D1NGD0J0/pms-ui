@@ -1,43 +1,91 @@
 import React from "react";
-import { Timeline, TimelineItem } from "@components/Timeline";
+import { TimelineItem, Timeline } from "@components/Timeline";
+import { LeaseTimeline } from "@src/interfaces/lease.interface";
 
-export const LeaseSidebar: React.FC = () => {
+interface LeaseSidebarProps {
+  timeline: LeaseTimeline;
+  renewalNoticeDays?: number;
+}
+
+export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
+  timeline,
+  renewalNoticeDays = 60
+}) => {
+  // Calculate renewal notice date
+  const endDate = new Date(timeline.endDate);
+  const renewalNoticeDate = new Date(endDate);
+  renewalNoticeDate.setDate(endDate.getDate() - renewalNoticeDays);
+
+  const today = new Date();
+  const startDate = new Date(timeline.startDate);
+  const moveInDate = new Date(timeline.moveInDate);
+
+  // Determine completion status based on isActive flag and dates
+  const leaseHasStarted = timeline.isActive && today >= startDate;
+  const tenantHasMovedIn = timeline.isActive && today >= moveInDate;
+
   const timelineItems: TimelineItem[] = [
     {
-      date: "Jan 1, 2024",
-      title: "Lease Started",
-      desc: "Move-in completed",
-      completed: true,
+      date: endDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      title: timeline.isExpiringSoon ? "Lease Ending Soon" : "Lease End Date",
+      desc: timeline.isActive
+        ? `${timeline.daysRemaining} days remaining`
+        : "End of lease term",
+      completed: timeline.isActive && today >= endDate,
     },
     {
-      date: "Oct 1, 2024",
+      date: renewalNoticeDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
       title: "Renewal Decision",
-      desc: "Notice required by",
-      completed: false,
+      desc: timeline.isActive
+        ? `Notice required by (${renewalNoticeDays} days)`
+        : "Pending lease activation",
+      completed: timeline.isActive && today >= renewalNoticeDate,
     },
     {
-      date: "Dec 31, 2024",
-      title: "Lease Ends",
-      desc: "End of term",
-      completed: false,
+      date: moveInDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      title: "Move-in Date",
+      desc: tenantHasMovedIn
+        ? "Tenant moved in"
+        : timeline.isActive
+          ? "Scheduled move-in"
+          : "Awaiting lease activation",
+      completed: tenantHasMovedIn,
     },
     {
-      date: "Jan 1, 2024",
-      title: "Lease Started",
-      desc: "Move-in completed",
+      date: startDate.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      title: "Lease Start Date",
+      desc: timeline.isActive
+        ? "Lease is active"
+        : today >= startDate
+          ? "Awaiting activation"
+          : "Scheduled start date",
+      completed: leaseHasStarted,
+    },
+    {
+      date: new Date(timeline.created).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      }),
+      title: "Lease Created",
+      desc: "Agreement drafted",
       completed: true,
-    },
-    {
-      date: "Oct 1, 2024",
-      title: "Renewal Decision",
-      desc: "Notice required by",
-      completed: false,
-    },
-    {
-      date: "Dec 31, 2024",
-      title: "Lease Ends",
-      desc: "End of term",
-      completed: false,
     },
   ];
 

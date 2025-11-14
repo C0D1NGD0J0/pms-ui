@@ -17,7 +17,7 @@ export const LeaseHeader: React.FC<LeaseHeaderProps> = ({
     <div className="lease-header">
       <h1 className="lease-header__title">
         Lease #{luid}
-        <span className="lease-status-badge active">
+        <span className={`lease-status-badge ${status}`}>
           <i className="bx bx-check-circle"></i>
           {status.charAt(0).toUpperCase() + status.slice(1)}
         </span>
