@@ -8,6 +8,15 @@
     padding: 2rem;
     @include border-radius($border-radius-lg);
     margin-bottom: $fs-xlg;
+    @include flex(row, space-between, flex-start, $space-xl);
+
+    @include breakpoint(76.8rem, max) {
+      @include flex(column, flex-start, stretch, $space-lg);
+    }
+
+    &__info {
+      flex: 1;
+    }
 
     &__title {
       font-size: 2.8rem;
@@ -33,6 +42,15 @@
 
       i {
         margin-right: $space-sm;
+      }
+    }
+
+    &__actions {
+      @include flex(row, flex-end, center, $space-md);
+      flex-wrap: wrap;
+
+      @include breakpoint(76.8rem, max) {
+        @include flex(row, flex-start, center, $space-md);
       }
     }
   }
@@ -90,43 +108,50 @@
   }
 
   .info-grid {
-    @include grid(repeat(auto-fill, minmax(28rem, 1fr)), auto, $fs-xlg);
-
-    @include breakpoint(76.8rem, max) {
-      @include grid(repeat(auto-fill, minmax(20rem, 1fr)), auto, $space-md);
-    }
-
-    @include breakpoint(57.6rem, max) {
-      @include grid(1fr, auto, $space-md);
-    }
+    display: grid;
+    gap: 2rem;
   }
 
-  .info-item {
-    padding: 1.6rem $space-lg;
-    border-bottom: 1px solid hslaGen($alice-blue-color);
-    border-right: 1px solid hslaGen($alice-blue-color);
+  .info-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid hslaGen($grey-color, 0.15);
 
     &:last-child {
       border-bottom: none;
+      padding-bottom: 0;
     }
 
-    &__label {
-      font-size: $fs-sm;
-      color: hslaGen($black-color);
+    @include breakpoint(57.6rem, max) {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
+
+  .info-label {
+    font-weight: 600;
+    color: hslaGen($grey-color);
+    font-size: 1.3rem;
+  }
+
+  .info-value {
+    color: hslaGen($dark-grey-color);
+    font-size: 1.3rem;
+
+    &.highlight-value {
+      font-size: 2rem;
+      color: hslaGen($success-color);
       font-weight: $fw-bold;
-      margin-bottom: 0.6rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05rem;
     }
 
-    &__value {
-      font-size: $fs-base;
+    a {
       color: hslaGen($primary-color);
-      font-weight: $fw-normal;
+      text-decoration: none;
 
-      &.highlight-value {
-        font-size: 2rem;
-        color: hslaGen($success-color);
+      &:hover {
+        text-decoration: underline;
       }
     }
   }

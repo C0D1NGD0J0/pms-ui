@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState, use } from "react";
 import { TabContainer } from "@components/Tab";
@@ -9,8 +10,8 @@ import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { DocumentsTab } from "@components/UserDetail";
 import { PanelsWrapper, PanelContent, Panel } from "@components/Panel";
-import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
 
 import { useGetLeaseByLuid } from "../hooks/index";
 import { LeaseHeader } from "./components/LeaseHeader";
@@ -53,6 +54,10 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleEditLease = () => {
+    router.push(`/leases/${cuid}/${luid}/edit`);
   };
 
   const handleDuplicateLease = () => {
@@ -157,6 +162,36 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
     },
   ];
 
+  const leaseActions = (
+    <>
+      <Button
+        className="btn btn-outline"
+        label="Preview Lease"
+        icon={<i className="bx bx-file warning"></i>}
+        onClick={handlePreviewLease}
+      />
+
+      {isDraftStatus && (
+        <Button
+          className="btn btn-danger"
+          label="Send for Signature"
+          icon={<i className="bx bx-send ghost"></i>}
+          onClick={() => setShowSignatureModal(true)}
+        />
+      )}
+
+      {permissions.isManagerOrAbove && (
+        <Link
+          href={`/leases/${cuid}/new?duplicate=${luid}`}
+          className="btn btn-outline"
+        >
+          <i className="bx bx-copy"></i>
+          Duplicate Lease
+        </Link>
+      )}
+    </>
+  );
+
   return (
     <div className="page lease-show">
       <PageHeader
@@ -165,31 +200,15 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
         withBreadcrumb={true}
         headerBtn={
           <div style={{ display: "flex", gap: "1rem" }}>
-            <Button
-              className="btn btn-primary"
-              label="Preview Lease"
-              icon={<i className="bx bx-file ghost"></i>}
-              onClick={handlePreviewLease}
-            />
-
-            {isDraftStatus && (
-              <Button
-                className="btn btn-danger"
-                label="Send for Signature"
-                icon={<i className="bx bx-send ghost"></i>}
-                onClick={() => setShowSignatureModal(true)}
-              />
-            )}
-
             {permissions.isManagerOrAbove && (
-              <Button
+              <Link
+                href={`/leases/${cuid}/${luid}/edit`}
                 className="btn btn-outline"
-                label="Duplicate Lease"
-                icon={<i className="bx bx-copy"></i>}
-                onClick={handleDuplicateLease}
-              />
+              >
+                <i className="bx bx-edit"></i>
+                Edit
+              </Link>
             )}
-
             <Button
               className="btn btn-default"
               label="Back"
@@ -219,6 +238,7 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
           status={lease.status}
           propertyName={responseData.property.name}
           propertyAddress={lease.property.address}
+          actions={leaseActions}
         />
       )}
 

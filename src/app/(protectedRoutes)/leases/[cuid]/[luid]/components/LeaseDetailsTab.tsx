@@ -57,9 +57,9 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({
   return (
     <div className="info-grid">
       {infoItems.map((item, idx) => (
-        <div key={idx} className="info-item">
-          <div className="info-item__label">{item.label}</div>
-          <div className="info-item__value">{item.value}</div>
+        <div key={idx} className="info-row">
+          <div className="info-label">{item.label}:</div>
+          <div className="info-value">{item.value}</div>
         </div>
       ))}
     </div>

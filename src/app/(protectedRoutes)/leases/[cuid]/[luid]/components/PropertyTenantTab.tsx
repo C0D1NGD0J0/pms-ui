@@ -69,42 +69,31 @@ export const PropertyTenantTab: React.FC<PropertyTenantTabProps> = ({
       <h3 className="section-title">Property Information</h3>
       <div className="info-grid">
         {property.map((item, idx) => (
-          <div key={idx} className="info-item">
-            <div className="info-item__label">{item.label}</div>
-            <div className="info-item__value">{item.value}</div>
+          <div key={idx} className="info-row">
+            <div className="info-label">{item.label}:</div>
+            <div className="info-value">{item.value}</div>
           </div>
         ))}
       </div>
       {tenantInfo ? (
         <>
           <h3 className="section-title">Primary Tenant</h3>
-          <div className="tenant-card">
-            <div className="tenant-card__avatar">
-              {tenantInfo.fullname
-                .split(" ")
-                .map((name) => name[0])
-                .join("")}
+          <div className="info-grid">
+            <div className="info-row">
+              <div className="info-label">Name:</div>
+              <div className="info-value">{tenantInfo.fullname}</div>
             </div>
-            <div className="tenant-card__info">
-              <div className="tenant-card__name">{tenantInfo.fullname}</div>
-              <div className="tenant-card__contact">
-                <i className="bx bx-envelope"></i> {tenantInfo.email}
-              </div>
-              <div className="tenant-card__contact">
-                <i className="bx bx-phone"></i> {tenantInfo.phone}
+            <div className="info-row">
+              <div className="info-label">Email:</div>
+              <div className="info-value">
+                <Link href={`mailto:${tenantInfo.email}`}>{tenantInfo.email}</Link>
               </div>
             </div>
-            <div className="tenant-card__actions">
-              <button className="icon-btn" title="Message">
-                <i className="bx bx-message"></i>
-              </button>
-              <Link
-                href={`tel:${tenantInfo.phone}`}
-                className="icon-btn"
-                title="Call"
-              >
-                <i className="bx bx-phone"></i>
-              </Link>
+            <div className="info-row">
+              <div className="info-label">Phone:</div>
+              <div className="info-value">
+                <Link href={`tel:${tenantInfo.phone}`}>{tenantInfo.phone}</Link>
+              </div>
             </div>
           </div>
         </>

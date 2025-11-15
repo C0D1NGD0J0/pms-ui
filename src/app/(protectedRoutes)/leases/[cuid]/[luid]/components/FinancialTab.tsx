@@ -99,10 +99,10 @@ export const FinancialTab: React.FC<FinancialTabProps> = ({
       <h3 className="section-title">Rent Details</h3>
       <div className="info-grid">
         {rentDetails.map((item, idx) => (
-          <div key={idx} className="info-item">
-            <div className="info-item__label">{item.label}</div>
+          <div key={idx} className="info-row">
+            <div className="info-label">{item.label}:</div>
             <div
-              className={`info-item__value ${
+              className={`info-value ${
                 item.highlight ? "highlight-value" : ""
               }`}
             >

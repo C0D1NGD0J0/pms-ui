@@ -231,7 +231,7 @@ export default function CreateLease({ params }: CreateLeaseProps) {
             </div>
             <Button
               label="Start Fresh"
-              variant="link"
+              className="btn btn-sm btn-primary"
               onClick={() => router.push(`/leases/${cuid}/new`)}
             />
           </div>
