@@ -1,0 +1,1 @@
+export { useLeaseDetailLogic } from "./useLeaseDetailLogic";
