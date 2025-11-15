@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React, { useState, use } from "react";
 import { TabContainer } from "@components/Tab";
 import { Button } from "@components/FormElements";
 import { Loading } from "@src/components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { DocumentsTab } from "@components/UserDetail";
+import React, { useEffect, useState, use } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { PanelsWrapper, PanelContent, Panel } from "@components/Panel";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
+import { PendingChangesReviewModal } from "@src/components/PendingChangesReviewModal";
 
 import { useGetLeaseByLuid } from "../hooks/index";
 import { LeaseHeader } from "./components/LeaseHeader";
@@ -51,21 +52,72 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isSendingSignature, setIsSendingSignature] = useState(false);
+  const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const showChanges = searchParams.get("showChanges");
+    if (
+      showChanges === "true" &&
+      responseData?.lease?.pendingChangesPreview &&
+      !isChangesModalOpen
+    ) {
+      setIsChangesModalOpen(true);
+
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("showChanges");
+      router.replace(newUrl.pathname, { scroll: false });
+    }
+  }, [
+    searchParams,
+    responseData?.lease?.pendingChangesPreview,
+    isChangesModalOpen,
+    router,
+  ]);
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleEditLease = () => {
-    router.push(`/leases/${cuid}/${luid}/edit`);
-  };
-
-  const handleDuplicateLease = () => {
-    router.push(`/leases/${cuid}/new?duplicate=${luid}`);
-  };
-
   const handleViewChanges = () => {
-    // TODO: Implement view changes modal/page
+    setIsChangesModalOpen(true);
+  };
+
+  const closeChangesModal = () => {
+    setIsChangesModalOpen(false);
+  };
+
+  const handleApproveChanges = async (notes?: string) => {
+    // TODO: Implement lease approval API call
+    // await leaseService.approveLease(cuid, luid, { notes });
+    console.log("Approving lease changes with notes:", notes);
+
+    // Simulate API call
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log("Lease changes approved");
+        resolve();
+      }, 1000);
+    });
+  };
+
+  const handleRejectChanges = async (reason: string) => {
+    // TODO: Implement lease rejection API call
+    // await leaseService.rejectLease(cuid, luid, { reason });
+    console.log("Rejecting lease changes with reason:", reason);
+
+    // Simulate API call
+    return new Promise<void>((resolve) => {
+      setTimeout(() => {
+        console.log("Lease changes rejected");
+        resolve();
+      }, 1000);
+    });
+  };
+
+  const handleModalSuccess = () => {
+    closeChangesModal();
+    // TODO: Invalidate queries or refetch data
   };
 
   const handleSendForSignature = async () => {
@@ -191,7 +243,7 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
       )}
     </>
   );
-
+  console.log("Lease Detail Page Rendered", lease);
   return (
     <div className="page lease-show">
       <PageHeader
@@ -273,12 +325,11 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
         />
       </div>
 
-      {/* Modals */}
       <SendForSignatureModal
         isOpen={showSignatureModal}
         onClose={() => setShowSignatureModal(false)}
         onConfirm={handleSendForSignature}
-        tenantName={responseData.tenant?.fullname || ""}
+        tenantName={lease.tenant?.fullname || ""}
         coTenants={lease.coTenants || []}
         isLoading={isSendingSignature}
       />
@@ -290,6 +341,23 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
         isLoading={isLoadingPreview}
         onGeneratePreview={handleGeneratePreview}
       />
+
+      {responseData?.lease?.pendingChangesPreview && (
+        <PendingChangesReviewModal
+          visible={isChangesModalOpen}
+          entityType="lease"
+          entity={lease}
+          pendingChanges={responseData.lease.pendingChangesPreview}
+          requesterName={
+            responseData.lease?.pendingChanges?.displayName || "Unknown User"
+          }
+          onSuccess={handleModalSuccess}
+          onCancel={closeChangesModal}
+          onApprove={handleApproveChanges}
+          onReject={handleRejectChanges}
+          isLoading={false}
+        />
+      )}
     </div>
   );
 }

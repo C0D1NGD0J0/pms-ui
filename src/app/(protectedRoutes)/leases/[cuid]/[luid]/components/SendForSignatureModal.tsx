@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Button } from "@components/FormElements";
+import { Button, Modal } from "@components/FormElements";
 
 interface SendForSignatureModalProps {
   isOpen: boolean;
@@ -29,7 +29,9 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
             <i className="bx bx-envelope"></i>
           </div>
           <p className="info-text">
-            This lease will be sent to the following {totalRecipients === 1 ? "recipient" : "recipients"} for electronic signature:
+            This lease will be sent to the following{" "}
+            {totalRecipients === 1 ? "recipient" : "recipients"} for electronic
+            signature:
           </p>
         </div>
 
@@ -47,7 +49,9 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
               <i className="bx bx-user"></i>
               <div className="recipient-details">
                 <strong>{coTenant.name}</strong>
-                <span className="recipient-label">Co-Tenant • {coTenant.email}</span>
+                <span className="recipient-label">
+                  Co-Tenant • {coTenant.email}
+                </span>
               </div>
             </div>
           ))}
@@ -56,8 +60,9 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
         <div className="modal-notice">
           <i className="bx bx-info-circle"></i>
           <p>
-            Each recipient will receive an email with a secure link to review and sign the lease agreement.
-            You'll be notified once all signatures are collected.
+            Each recipient will receive an email with a secure link to review
+            and sign the lease agreement. You'll be notified once all signatures
+            are collected.
           </p>
         </div>
       </Modal.Content>
@@ -65,14 +70,15 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
         <Button
           type="button"
           label="Cancel"
-          variant="secondary"
+          className="btn-default"
           onClick={onClose}
+          icon={<i className="bx bx-stop-circle danger"></i>}
           disabled={isLoading}
         />
         <Button
           type="button"
+          className="btn-primary"
           label={isLoading ? "Sending..." : "Send for Signature"}
-          variant="primary"
           icon={<i className="bx bx-send"></i>}
           onClick={onConfirm}
           disabled={isLoading}
