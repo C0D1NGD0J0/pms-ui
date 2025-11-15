@@ -177,7 +177,7 @@ export function useLeasesListLogic() {
             {permissions.isManagerOrAbove && (
               <>
                 <Link
-                  href={`/leases/${cuid}/${luid}/edit`}
+                  href={`/leases/${cuid}/new?luid=${luid}`}
                   className="action-icon edit-icon"
                   title="Edit Lease"
                 >

@@ -172,14 +172,14 @@
   margin-bottom: $space-xl;
 
   .info-icon {
-    flex-shrink: 0;
     width: 4rem;
     height: 4rem;
     display: flex;
+    flex-shrink: 0;
+    border-radius: 50%;
     align-items: center;
     justify-content: center;
     background-color: hslaGen($primary-color, 0.1);
-    border-radius: 50%;
 
     i {
       font-size: $fs-xlg;
@@ -190,8 +190,10 @@
   .info-text {
     margin: 0;
     font-size: $fs-sm;
-    color: hslaGen($dark-grey-color, 1);
+    align-self: center;
+    font-weight: $fw-bold;
     line-height: $base-line-height;
+    color: hslaGen($dark-grey-color, 1);
   }
 }
 

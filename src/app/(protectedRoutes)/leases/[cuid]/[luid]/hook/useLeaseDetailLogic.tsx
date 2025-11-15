@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useEffect, useState, use } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
 import { TabItem } from "@components/Tab/interface";
 import { DocumentsTab } from "@components/UserDetail";
+import { useSearchParams, useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useState, use } from "react";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
 import { useGetLeaseByLuid } from "../../hooks/index";
 import { ActivityTab } from "../components/ActivityTab";
 import { FinancialTab } from "../components/FinancialTab";
-import { useGetLeasePreview } from "../../hooks/useLeasePreview";
 import { LeaseDetailsTab } from "../components/LeaseDetailsTab";
+import { useGetLeasePreview } from "../../hooks/useLeasePreview";
 import { PropertyTenantTab } from "../components/PropertyTenantTab";
 
 interface UseLeaseDetailLogicProps {
@@ -62,19 +62,19 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     router,
   ]);
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     router.back();
-  };
+  }, [router]);
 
-  const handleViewChanges = () => {
+  const handleViewChanges = useCallback(() => {
     setIsChangesModalOpen(true);
-  };
+  }, []);
 
-  const closeChangesModal = () => {
+  const closeChangesModal = useCallback(() => {
     setIsChangesModalOpen(false);
-  };
+  }, []);
 
-  const handleApproveChanges = async (notes?: string) => {
+  const handleApproveChanges = useCallback(async (notes?: string) => {
     // TODO: Implement lease approval API call
     // await leaseService.approveLease(cuid, luid, { notes });
     console.log("Approving lease changes with notes:", notes);
@@ -86,9 +86,9 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
         resolve();
       }, 1000);
     });
-  };
+  }, []);
 
-  const handleRejectChanges = async (reason: string) => {
+  const handleRejectChanges = useCallback(async (reason: string) => {
     // TODO: Implement lease rejection API call
     // await leaseService.rejectLease(cuid, luid, { reason });
     console.log("Rejecting lease changes with reason:", reason);
@@ -100,14 +100,14 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
         resolve();
       }, 1000);
     });
-  };
+  }, []);
 
-  const handleModalSuccess = () => {
-    closeChangesModal();
+  const handleModalSuccess = useCallback(() => {
+    setIsChangesModalOpen(false);
     // TODO: Invalidate queries or refetch data
-  };
+  }, []);
 
-  const handleSendForSignature = async () => {
+  const handleSendForSignature = useCallback(async () => {
     setIsSendingSignature(true);
     // TODO: Implement API call to send for signature
     // await leaseService.sendForSignature(cuid, luid);
@@ -116,15 +116,15 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
       setShowSignatureModal(false);
       // Show success notification
     }, 1500);
-  };
+  }, []);
 
-  const handlePreviewLease = () => {
+  const handlePreviewLease = useCallback(() => {
     setShowPreviewModal(true);
-  };
+  }, []);
 
-  const handleGeneratePreview = () => {
+  const handleGeneratePreview = useCallback(() => {
     fetchPreview();
-  };
+  }, [fetchPreview]);
 
   const isDraftStatus = lease?.status === "draft";
 
@@ -172,7 +172,9 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
                 type: doc.documentType,
                 subtitle: `${doc.mimeType} • ${(doc.size / 1024).toFixed(
                   0
-                )} KB • Uploaded ${new Date(doc.uploadedAt).toLocaleDateString()}`,
+                )} KB • Uploaded ${new Date(
+                  doc.uploadedAt
+                ).toLocaleDateString()}`,
                 icon: doc.documentType.includes("lease") ? "lease" : "document",
                 status: "valid" as const,
                 url: doc.url,
