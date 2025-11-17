@@ -35,9 +35,10 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({
     },
     {
       label: "Signed Date",
-      value: leaseData.signatures.length
-        ? leaseData.signatures[0].status
-        : "Not Signed",
+      value:
+        leaseData.signatures.length && leaseData.signatures[0].signedAt
+          ? formatDate(leaseData.signatures[0].signedAt, { displayFormat: "shortMonth" })
+          : "Not Signed",
     },
     {
       label: "Move-in Date",
