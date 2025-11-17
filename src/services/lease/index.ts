@@ -5,6 +5,7 @@ import { prepareRequestData } from "@utils/formDataTransformer";
 import { NestedQueryParams } from "@src/interfaces/common.interface";
 import {
   LeaseablePropertiesMetadata,
+  LeaseDetailResponse,
   LeasePreviewRequest,
   LeaseListResponse,
   LeaseableProperty,
@@ -37,6 +38,30 @@ class LeaseService {
         config
       );
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getLeaseByLuid(
+    cuid: string,
+    luid: string,
+    filters?: NestedQueryParams
+  ) {
+    try {
+      const queryString = buildNestedQuery(filters || {});
+      if (!luid) {
+        throw new Error("Lease Unique ID (luid) is required");
+      }
+      let url = `${this.baseUrl}/${cuid}/${luid}`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+      const result = await axios.get<LeaseDetailResponse>(
+        url,
+        this.axiosConfig
+      );
+      return result.data;
     } catch (error) {
       throw error;
     }
@@ -96,6 +121,18 @@ class LeaseService {
       const result = await axios.post<IServerResponse<{ html: string }>>(
         `${this.baseUrl}/${cuid}/preview`,
         leaseData,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async previewLeaseHTMLFormat(cuid: string, luid: string) {
+    try {
+      const result = await axios.get<IServerResponse<{ html: string }>>(
+        `${this.baseUrl}/${cuid}/${luid}/preview`,
         this.axiosConfig
       );
       return result.data;

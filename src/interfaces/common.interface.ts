@@ -68,6 +68,7 @@ export interface FilterOption {
 export interface NestedQueryParams {
   pagination?: PaginationQuery;
   filter?: FilterParams;
+  meta?: Record<string, string | number | boolean>;
 }
 
 export type PaginationQuery = {

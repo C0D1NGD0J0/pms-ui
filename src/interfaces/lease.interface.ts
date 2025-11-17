@@ -65,7 +65,8 @@ export interface CoTenant {
   name: string;
   email: string;
   phone: string;
-  occupation?: string;
+  occupation: string | undefined;
+  relationship: string | undefined;
 }
 
 export interface PetPolicy {
@@ -319,4 +320,214 @@ export interface LeaseListResponse {
     currentPage: number;
     hasMoreResource: boolean;
   };
+}
+
+// Lease Detail Response Interfaces
+export interface LeaseDetailResponse {
+  success: boolean;
+  message: string;
+  data: {
+    lease: LeaseDetailData;
+    property: LeasePropertyDetail;
+    unit?: LeaseUnitDetails;
+    tenant: LeaseTenantDetail;
+    documents: LeaseDocumentItem[];
+    activity: LeaseActivityEvent[];
+    timeline: LeaseTimeline;
+    permissions: LeaseUserPermissions;
+    financialSummary: LeaseFinancialSummary;
+  };
+}
+
+export interface LeaseUnitDetails {
+  unitId: string;
+  unitNumber: string;
+  floor: number;
+  status: string;
+  specifications: {
+    totalArea: number;
+    bedrooms: number;
+    bathrooms: number;
+    rooms: number;
+    maxOccupants: number;
+  };
+}
+
+export interface LeaseDetailData {
+  _id: string;
+  leaseNumber: string;
+  status: LeaseStatusEnum;
+  type: LeaseTypeEnum;
+  duration: LeaseDuration;
+  fees: LeaseFees;
+  property: {
+    id: string;
+    unitId?: string;
+    address: string;
+  };
+  signingMethod: SigningMethodEnum;
+  renewalOptions?: RenewalOptions;
+  petPolicy?: PetPolicy;
+  coTenants?: CoTenant[];
+  utilitiesIncluded?: string[];
+  legalTerms?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+  internalNotes?: string;
+  approvalStatus: string;
+  approvalDetails?: ApprovalDetail[];
+  pendingChangesPreview?: any;
+  pendingChanges?: LeasePendingChanges | null;
+  createdBy: LeaseUser;
+  lastModifiedBy?: LastModifiedBy[];
+  eSignature?: ESignature;
+  tenant?: LeaseTenantDetail;
+  signatures?: Signature[];
+}
+
+export type LeasePendingChanges = {
+  changes: Partial<Omit<LeaseDetailData, "_id" | "createdAt" | "createdBy">>;
+  updatedAt: string;
+  updatedBy: string;
+  displayName?: string;
+};
+
+export interface ApprovalDetail {
+  action: string;
+  actor: string;
+  timestamp: string;
+  notes?: string;
+}
+
+export interface LastModifiedBy {
+  userId: string;
+  date: string;
+}
+
+export interface ESignature {
+  provider: string;
+  status: string;
+  documentId?: string;
+}
+
+export interface Signature {
+  signerId: string;
+  signerEmail: string;
+  signedAt?: string;
+  status: string;
+}
+
+export interface LeasePropertyDetail {
+  _id: string;
+  address: {
+    street: string;
+    streetNumber: string;
+    city: string;
+    state: string;
+    country: string;
+    postCode: string;
+    fullAddress: string;
+  };
+  name: string;
+  propertyType: string;
+  specifications: {
+    totalArea: number;
+    lotSize: number;
+    bedrooms: number;
+    bathrooms: number;
+    floors: number;
+    garageSpaces: number;
+    maxOccupants: number;
+  };
+  maxAllowedUnits: number;
+  pid: string;
+  owner: {
+    type: string;
+  };
+  id: string;
+}
+
+export interface LeaseTenantDetail {
+  id: string;
+  avatar?: string;
+  email: string;
+  phone: string;
+  fullname: string;
+}
+
+export interface LeaseUser {
+  _id: string;
+  personalInfo: {
+    avatar: {
+      url: string;
+    };
+    firstName: string;
+    lastName: string;
+    phoneNumber: string;
+  };
+  fullname: string;
+  id: string;
+}
+
+export interface LeaseDocumentItem {
+  documentType: string;
+  url: string;
+  key: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
+  uploadedBy: string;
+}
+
+export interface LeaseActivityEvent {
+  type?: string;
+  description: string;
+  timestamp: string;
+  user: string;
+  notes?: string;
+}
+
+export interface LeaseTimeline {
+  created: string;
+  startDate: string;
+  endDate: string;
+  moveInDate: string;
+  daysRemaining: number;
+  daysElapsed: number;
+  isActive: boolean;
+  isExpiringSoon: boolean;
+  progress: number;
+}
+
+export interface LeaseUserPermissions {
+  canEdit: boolean;
+  canDelete: boolean;
+  canTerminate: boolean;
+  canActivate: boolean;
+  canDownload: boolean;
+  canViewDocuments: boolean;
+  canUploadDocuments: boolean;
+  canViewActivity: boolean;
+  canViewFinancials: boolean;
+  canManageSignatures: boolean;
+  canGeneratePDF: boolean;
+}
+
+export interface LeaseFinancialSummary {
+  monthlyRent: string;
+  monthlyRentRaw: number;
+  securityDeposit: string;
+  securityDepositRaw: number;
+  currency: string;
+  rentDueDay: number;
+  lateFeeAmount?: number;
+  lateFeeDays?: number;
+  lateFeeType?: "fixed" | "percentage";
+  acceptedPaymentMethod?: string;
+  totalExpected: number;
+  totalPaid: number;
+  totalOwed: number;
+  lastPaymentDate: string | null;
+  nextPaymentDate: string;
 }

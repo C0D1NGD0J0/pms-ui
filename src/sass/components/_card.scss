@@ -4,6 +4,10 @@
   display: grid;
   margin: 2rem 0 4rem;
   grid-template-columns: repeat(4, 1fr);
+
+  @include breakpoint(55.2rem, max) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .insight-card {

@@ -269,5 +269,13 @@ export const buildNestedQuery = (params: NestedQueryParams): string => {
     });
   }
 
+  if (params.meta) {
+    Object.entries(params.meta).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        queryString.append(`meta[${key}]`, value.toString());
+      }
+    });
+  }
+
   return queryString.toString();
 };

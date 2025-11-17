@@ -10,6 +10,7 @@ import {
 } from "@interfaces/lease.interface";
 
 import { useAvailableTenants } from "./useAvailableTenants";
+import { useLeaseDuplication } from "./useLeaseDuplication";
 import { useLeaseableProperties } from "./useLeaseableProperties";
 
 export type LeaseFormBaseProps = {
@@ -34,6 +35,13 @@ export function useLeaseFormBase({
     validateInputOnChange: true,
     validate: zodResolver(leaseSchema),
   });
+
+  const {
+    isDuplicating,
+    duplicateSource,
+    duplicateData,
+    error: duplicateError,
+  } = useLeaseDuplication(cuid);
 
   const { data: propertiesResult, isLoading: isLoadingProperties } =
     useLeaseableProperties(true);
@@ -239,7 +247,7 @@ export function useLeaseFormBase({
     const coTenants = leaseForm.values.coTenants || [];
     leaseForm.setFieldValue("coTenants", [
       ...coTenants,
-      { name: "", email: "", phone: "", occupation: "" },
+      { name: "", email: "", phone: "", occupation: "", relationship: "" },
     ]);
   }, [leaseForm]);
 
@@ -268,6 +276,20 @@ export function useLeaseFormBase({
     },
     [leaseForm]
   );
+
+  useEffect(() => {
+    if (duplicateData && !isDuplicating) {
+      leaseForm.setValues({
+        ...defaultLeaseFormValues,
+        ...duplicateData,
+      });
+
+      if (duplicateData.property?.id) {
+        const property = properties.find((p) => p.id === duplicateData.property?.id);
+        setSelectedProperty(property || null);
+      }
+    }
+  }, [duplicateData, isDuplicating, properties]);
 
   useEffect(() => {
     leaseForm.validate();
@@ -375,5 +397,8 @@ export function useLeaseFormBase({
     handleUtilityToggle,
     hasTabErrors,
     isTabCompleted,
+    isDuplicating,
+    duplicateSource,
+    duplicateError,
   };
 }

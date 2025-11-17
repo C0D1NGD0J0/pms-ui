@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useAuth } from "@store/index";
 import { leaseService } from "@services/lease";
 import { UseFormReturnType } from "@mantine/form";
-import { useMutation } from "@tanstack/react-query";
+import { LEASE_QUERY_KEYS } from "@src/utils/constants";
 import { useNotification } from "@hooks/useNotification";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { LeaseFormValues } from "@interfaces/lease.interface";
 
 export function useLeasePreview() {
@@ -13,6 +14,7 @@ export function useLeasePreview() {
 
   const previewMutation = useMutation({
     mutationFn: (data: Partial<LeaseFormValues>) => {
+      console.log("Generating preview with data:", data);
       return leaseService.previewLeaseTemplate(client?.cuid || "", data);
     },
     onSuccess: (result) => {
@@ -85,6 +87,15 @@ export function useLeasePreview() {
     await previewMutation.mutateAsync(previewData);
   };
 
+  const fetchPreviewByLuid = async (luid: string) => {
+    if (!client?.cuid) {
+      openNotification("error", "Error", "Client information not found");
+      return;
+    }
+
+    await previewMutation.mutateAsync({ luid });
+  };
+
   const clearPreview = () => {
     setHtml("");
     previewMutation.reset();
@@ -97,6 +108,25 @@ export function useLeasePreview() {
     isSuccess: previewMutation.isSuccess,
     isError: previewMutation.isError,
     fetchPreview,
+    fetchPreviewByLuid,
     clearPreview,
   };
 }
+
+export const useGetLeasePreview = (cuid: string, luid: string) => {
+  const query = useQuery({
+    queryKey: LEASE_QUERY_KEYS.previewLeaseHTMLFormat(cuid, luid),
+    queryFn: async () => {
+      const response = await leaseService.previewLeaseHTMLFormat(cuid, luid);
+      return response;
+    },
+    enabled: false,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
+  return {
+    previewHtml: query.data?.html || "",
+    isLoadingPreview: query.isLoading,
+    fetchPreviewByLuid: query.refetch,
+    fetchPreview: query.refetch,
+  };
+};

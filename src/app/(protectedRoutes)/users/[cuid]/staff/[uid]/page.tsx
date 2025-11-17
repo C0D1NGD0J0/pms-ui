@@ -108,7 +108,7 @@ function EmployeeDetailPage({ params }: EmployeeDetailPageProps) {
       return dateString;
     }
   };
-  console.log(employee);
+
   const tabItems: TabItem[] = [
     {
       id: "overview",
