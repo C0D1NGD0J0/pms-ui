@@ -49,7 +49,7 @@ describe("currencyMapper", () => {
 
   describe("getCurrencyInfo", () => {
     it("should return USD currency info by default", () => {
-      const result = getCurrencyInfo();
+      const result = getCurrencyInfo("USD");
       expect(result).toEqual(CURRENCY_DICTIONARY.USD);
     });
 
