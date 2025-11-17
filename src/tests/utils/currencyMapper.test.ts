@@ -8,46 +8,41 @@ describe("currencyMapper", () => {
   describe("CURRENCY_DICTIONARY", () => {
     it("should have USD currency info", () => {
       expect(CURRENCY_DICTIONARY.USD).toEqual({
-        code: "USD",
+        name: "dollar",
         symbol: "$",
-        icon: "bx-dollar",
-        name: "US Dollar",
+        icon: "bx-dollar-circle",
       });
     });
 
     it("should have EUR currency info", () => {
       expect(CURRENCY_DICTIONARY.EUR).toEqual({
-        code: "EUR",
+        name: "euro",
         symbol: "€",
         icon: "bx-euro",
-        name: "Euro",
       });
     });
 
     it("should have GBP currency info", () => {
       expect(CURRENCY_DICTIONARY.GBP).toEqual({
-        code: "GBP",
+        name: "pound",
         symbol: "£",
         icon: "bx-pound",
-        name: "British Pound",
       });
     });
 
     it("should have NGN currency info", () => {
       expect(CURRENCY_DICTIONARY.NGN).toEqual({
-        code: "NGN",
+        name: "naira",
         symbol: "₦",
         icon: "bx-money",
-        name: "Nigerian Naira",
       });
     });
 
     it("should have CAD currency info", () => {
       expect(CURRENCY_DICTIONARY.CAD).toEqual({
-        code: "CAD",
+        name: "dollar",
         symbol: "C$",
-        icon: "bx-dollar",
-        name: "Canadian Dollar",
+        icon: "bx-dollar-circle",
       });
     });
   });
