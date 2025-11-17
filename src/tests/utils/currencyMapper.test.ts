@@ -65,7 +65,7 @@ describe("currencyMapper", () => {
       expect(result).toEqual(CURRENCY_DICTIONARY.USD);
     });
 
-    it("should be case-sensitive", () => {
+    it("should be case-insensitive", () => {
       const result = getCurrencyInfo("usd");
       expect(result).toEqual(CURRENCY_DICTIONARY.USD);
     });
