@@ -10,8 +10,8 @@ import {
 } from "@interfaces/lease.interface";
 
 import { useAvailableTenants } from "./useAvailableTenants";
-import { useLeaseableProperties } from "./useLeaseableProperties";
 import { useLeaseDuplication } from "./useLeaseDuplication";
+import { useLeaseableProperties } from "./useLeaseableProperties";
 
 export type LeaseFormBaseProps = {
   initialValues?: LeaseFormValues;
@@ -247,7 +247,7 @@ export function useLeaseFormBase({
     const coTenants = leaseForm.values.coTenants || [];
     leaseForm.setFieldValue("coTenants", [
       ...coTenants,
-      { name: "", email: "", phone: "", occupation: "" },
+      { name: "", email: "", phone: "", occupation: "", relationship: "" },
     ]);
   }, [leaseForm]);
 
@@ -285,7 +285,7 @@ export function useLeaseFormBase({
       });
 
       if (duplicateData.property?.id) {
-        const property = properties.find((p) => p.id === duplicateData.property.id);
+        const property = properties.find((p) => p.id === duplicateData.property?.id);
         setSelectedProperty(property || null);
       }
     }

@@ -1,14 +1,14 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
+import { usePublish } from "@hooks/event";
+import { EventTypes } from "@services/events";
 import { useAuthActions, useAuth } from "@store/auth.store";
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
   useSSENotificationActions,
   useSSENotifications,
 } from "@src/store/sseNotification.store";
-import { usePublish } from "@hooks/event";
-import { EventTypes } from "@services/events";
 
 import NotificationDropdown from "./NotificationDropdown";
 

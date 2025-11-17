@@ -1,10 +1,10 @@
 import React from "react";
+import { useSearchParams } from "next/navigation";
+import { useNotification } from "@hooks/useNotification";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
-import { useLeaseDuplication } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication";
 import { useGetLeaseByLuid } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetLeaseByLuid";
-import { useNotification } from "@hooks/useNotification";
+import { useLeaseDuplication } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication";
 
 jest.mock("next/navigation");
 jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useGetLeaseByLuid");

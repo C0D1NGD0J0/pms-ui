@@ -3,8 +3,8 @@ import { InsightCard } from "@components/Cards";
 import {
   DateDisplayFormat,
   getCurrencyInfo,
-  formatDate,
   formatCurrency,
+  formatDate,
 } from "@utils/index";
 
 interface LeaseOverviewCardsProps {

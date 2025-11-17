@@ -3,8 +3,8 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useLeaseFormBase } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseFormBase";
 import { useAvailableTenants } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants";
-import { useLeaseableProperties } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties";
 import { useLeaseDuplication } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication";
+import { useLeaseableProperties } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties";
 
 jest.mock(
   "@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants"

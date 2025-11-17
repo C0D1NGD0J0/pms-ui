@@ -61,7 +61,7 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
           <i className="bx bx-info-circle"></i>
           <p>
             Each recipient will receive an email with a secure link to review
-            and sign the lease agreement. You'll be notified once all signatures
+            and sign the lease agreement. You&apos;ll be notified once all signatures
             are collected.
           </p>
         </div>

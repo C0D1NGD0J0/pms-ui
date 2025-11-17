@@ -1,7 +1,7 @@
 "use client";
 
-import { useLeaseFormLogic } from "./hook";
 import { LeaseFormView } from "./view";
+import { useLeaseFormLogic } from "./hook";
 
 interface CreateLeaseProps {
   params: Promise<{

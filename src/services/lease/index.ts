@@ -5,11 +5,11 @@ import { prepareRequestData } from "@utils/formDataTransformer";
 import { NestedQueryParams } from "@src/interfaces/common.interface";
 import {
   LeaseablePropertiesMetadata,
+  LeaseDetailResponse,
   LeasePreviewRequest,
   LeaseListResponse,
   LeaseableProperty,
   LeaseFormValues,
-  LeaseDetailResponse,
   LeaseStats,
   Lease,
 } from "@interfaces/lease.interface";

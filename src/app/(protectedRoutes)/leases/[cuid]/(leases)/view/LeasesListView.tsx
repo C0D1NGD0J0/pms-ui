@@ -78,7 +78,10 @@ export function LeasesListView({
                 },
                 sortDirection:
                   (pagination?.order as "asc" | "desc" | "") || "desc",
-                onSortDirectionChange: handleSortDirectionChange,
+                onSortDirectionChange: () => {
+                  const newDirection = pagination?.order === "asc" ? "desc" : "asc";
+                  handleSortDirectionChange(newDirection);
+                },
               }}
               pagination={{
                 current: pagination?.page || 1,

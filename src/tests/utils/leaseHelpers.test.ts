@@ -1,7 +1,7 @@
 import { transformLeaseForDuplication } from "@utils/leaseHelpers";
 import {
-  LeaseDetailData,
   defaultLeaseFormValues,
+  LeaseDetailData,
 } from "@interfaces/lease.interface";
 
 describe("transformLeaseForDuplication", () => {

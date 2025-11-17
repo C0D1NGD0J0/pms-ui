@@ -1,7 +1,7 @@
 import {
-  formatCurrency,
-  getCurrencyInfo,
   CURRENCY_DICTIONARY,
+  getCurrencyInfo,
+  formatCurrency,
 } from "@utils/currencyMapper";
 
 describe("currencyMapper", () => {

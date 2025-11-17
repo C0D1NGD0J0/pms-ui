@@ -1,7 +1,7 @@
 import {
+  defaultLeaseFormValues,
   LeaseDetailData,
   LeaseFormValues,
-  defaultLeaseFormValues,
 } from "@interfaces/lease.interface";
 
 export function transformLeaseForDuplication(
@@ -25,9 +25,9 @@ export function transformLeaseForDuplication(
       acceptedPaymentMethod: rawLeaseData.fees.acceptedPaymentMethod,
     },
     type: rawLeaseData.type,
-    templateType: rawLeaseData.templateType || "",
+    templateType: (rawLeaseData as any).templateType || "",
     signingMethod: rawLeaseData.signingMethod,
-    utilitiesIncluded: rawLeaseData.utilitiesIncluded || [],
+    utilitiesIncluded: (rawLeaseData.utilitiesIncluded || []) as any,
     petPolicy: rawLeaseData.petPolicy || defaultLeaseFormValues.petPolicy,
     renewalOptions:
       rawLeaseData.renewalOptions || defaultLeaseFormValues.renewalOptions,

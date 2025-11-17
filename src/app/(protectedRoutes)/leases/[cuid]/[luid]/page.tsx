@@ -1,7 +1,7 @@
 "use client";
 
-import { useLeaseDetailLogic } from "./hook";
 import { LeaseDetailView } from "./view";
+import { useLeaseDetailLogic } from "./hook";
 
 interface LeaseDetailPageProps {
   params: Promise<{
