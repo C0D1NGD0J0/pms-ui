@@ -49,7 +49,9 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({
     {
       label: "Pets Allowed",
       value: leaseData.petPolicy.allowed
-        ? `Allowed - ${leaseData.petPolicy.maxPets} Pets`
+        ? (leaseData.petPolicy.maxPets != null
+            ? `Allowed - ${leaseData.petPolicy.maxPets} Pets`
+            : "Allowed")
         : "Not Allowed",
     },
     { label: "Parking Spaces", value: leaseData.parkingSpaces || 0 },
