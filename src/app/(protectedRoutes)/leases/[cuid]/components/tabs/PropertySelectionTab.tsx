@@ -25,6 +25,7 @@ interface Props {
   filteredProperties: FilteredProperty[];
   filteredCount: number;
   cuid: string;
+  disableFields?: boolean;
 }
 
 export const PropertySelectionTab = ({
@@ -106,9 +107,12 @@ export const PropertySelectionTab = ({
               name="property.unitId"
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
-              ) => handleOnChange(value, "property.unitId")}
+              ) => {
+                handleOnChange(value, "property.unitId");
+              }}
               options={unitOptions}
               placeholder="Select unit"
+              disabled={isLoading}
               value={leaseForm.values.property.unitId || ""}
             />
           </FormField>

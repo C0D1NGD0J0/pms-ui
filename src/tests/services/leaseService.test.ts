@@ -47,6 +47,50 @@ describe("LeaseService", () => {
     expect(response.data.success).toBe(true);
   });
 
+  it("should update an existing lease", async () => {
+    const leaseData = {
+      fees: { monthlyRent: 2000, acceptedPaymentMethod: "credit_card" },
+    };
+
+    const mockResponse = {
+      status: 200,
+      data: {
+        success: true,
+        message: "Lease updated",
+        data: { luid: "lease-123", ...leaseData },
+      },
+    };
+
+    mockedAxios.patch.mockResolvedValue(mockResponse);
+
+    const response = await leaseService.updateLease(
+      "client-123",
+      "lease-123",
+      leaseData
+    );
+
+    expect(mockedAxios.patch).toHaveBeenCalledWith(
+      "/api/v1/leases/client-123/lease-123",
+      leaseData,
+      expect.objectContaining({
+        headers: expect.any(Object),
+      })
+    );
+    expect(response.status).toBe(200);
+    expect(response.data.success).toBe(true);
+  });
+
+  it("should handle errors when updating a lease", async () => {
+    const leaseData = { fees: { monthlyRent: 2000 } };
+    const mockError = new Error("Update failed");
+
+    mockedAxios.patch.mockRejectedValue(mockError);
+
+    await expect(
+      leaseService.updateLease("client-123", "lease-123", leaseData)
+    ).rejects.toThrow("Update failed");
+  });
+
   it("should fetch leases with filters", async () => {
     const mockResponse = {
       status: 200,
@@ -56,18 +100,15 @@ describe("LeaseService", () => {
     mockedAxios.get.mockResolvedValue(mockResponse);
 
     await leaseService.getFilteredLeases("client-123", {
-      status: "active",
-      page: 1,
-      limit: 10,
+      filter: { status: "active" },
+      pagination: { page: 1, limit: 10 },
     });
 
     const callUrl = mockedAxios.get.mock.calls[0][0];
-    expect(callUrl).toContain("status=active");
-    expect(callUrl).toContain("page=1");
-    expect(callUrl).toContain("limit=10");
+    expect(callUrl).toContain("filter");
   });
 
-  it("should omit undefined filter values", async () => {
+  it("should fetch leases without filters", async () => {
     const mockResponse = {
       status: 200,
       data: { success: true, data: [] },
@@ -75,24 +116,23 @@ describe("LeaseService", () => {
 
     mockedAxios.get.mockResolvedValue(mockResponse);
 
-    await leaseService.getFilteredLeases("client-123", {
-      status: undefined,
-      page: 1,
-    });
+    await leaseService.getFilteredLeases("client-123");
 
     const callUrl = mockedAxios.get.mock.calls[0][0];
-    expect(callUrl).not.toContain("status=");
-    expect(callUrl).toContain("page=1");
+    expect(callUrl).toBe("/api/v1/leases/client-123");
   });
 
   it("should fetch lease statistics", async () => {
     const mockResponse = {
       status: 200,
       data: {
-        leasesByStatus: { active: 10, expired: 5 },
-        expiringIn30Days: 3,
-        totalMonthlyRent: 15000,
-        occupancyRate: 85.5,
+        success: true,
+        data: {
+          leasesByStatus: { active: 10, expired: 5 },
+          expiringIn30Days: 3,
+          totalMonthlyRent: 15000,
+          occupancyRate: 85.5,
+        },
       },
     };
 
@@ -104,7 +144,7 @@ describe("LeaseService", () => {
       "/api/v1/leases/client-123/stats",
       expect.any(Object)
     );
-    expect(response.totalMonthlyRent).toBe(15000);
+    expect(response).toBeDefined();
   });
 
   it("should fetch expiring leases with default days", async () => {

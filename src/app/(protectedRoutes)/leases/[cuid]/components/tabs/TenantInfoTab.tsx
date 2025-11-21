@@ -23,6 +23,7 @@ interface Props {
   tenantSelectionType: "existing" | "invite";
   isLoadingTenants: boolean;
   onTenantSelectionTypeChange: (type: "existing" | "invite") => void;
+  disableFields?: boolean;
 }
 
 export const TenantInfoTab = ({
@@ -32,6 +33,7 @@ export const TenantInfoTab = ({
   tenantSelectionType,
   isLoadingTenants,
   onTenantSelectionTypeChange,
+  disableFields,
 }: Props) => {
   const handleTypeChange = (
     value: string | React.ChangeEvent<HTMLSelectElement>
@@ -58,6 +60,7 @@ export const TenantInfoTab = ({
               { value: "invite", label: "Invite New Tenant" },
             ]}
             value={tenantSelectionType}
+            disabled={disableFields}
           />
         </FormField>
       </div>
@@ -82,7 +85,7 @@ export const TenantInfoTab = ({
                 isLoadingTenants ? "Loading tenants..." : "Select tenant"
               }
               value={leaseForm.values.tenantInfo.id || ""}
-              disabled={isLoadingTenants}
+              disabled={isLoadingTenants || disableFields}
             />
           </FormField>
         </div>
@@ -108,6 +111,7 @@ export const TenantInfoTab = ({
                 placeholder="Enter tenant's first name"
                 value={leaseForm.values.tenantInfo.firstName || ""}
                 hasError={!!leaseForm.errors["tenantInfo.firstName"]}
+                disabled={disableFields}
               />
             </FormField>
           </div>
@@ -128,6 +132,7 @@ export const TenantInfoTab = ({
                 placeholder="Enter tenant's last name"
                 value={leaseForm.values.tenantInfo.lastName || ""}
                 hasError={!!leaseForm.errors["tenantInfo.lastName"]}
+                disabled={disableFields}
               />
             </FormField>
           </div>
@@ -148,6 +153,7 @@ export const TenantInfoTab = ({
                 placeholder="Enter tenant email"
                 value={leaseForm.values.tenantInfo.email || ""}
                 hasError={!!leaseForm.errors["tenantInfo.email"]}
+                disabled={disableFields}
               />
             </FormField>
           </div>

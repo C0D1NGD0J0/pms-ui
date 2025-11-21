@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { PropertyTypeManager } from "@utils/propertyTypeManager";
 import {
   SigningMethodEnum,
   PaymentMethodEnum,
@@ -12,6 +11,7 @@ const leasePropertySchema = z.object({
   address: z.string().optional(),
   unitId: z.string().optional(),
   propertyType: z.string().optional(),
+  hasUnits: z.boolean().optional(),
 });
 
 const leaseFeesSchema = z.object({
@@ -264,19 +264,14 @@ export const leaseSchema = z
   )
   .refine(
     (data) => {
-      // Multi-unit properties must have a unitId
-      if (data.property.propertyType) {
-        const requiresUnit = PropertyTypeManager.supportsMultipleUnits(
-          data.property.propertyType
-        );
-        if (requiresUnit) {
-          return data.property.unitId && data.property.unitId.trim() !== "";
-        }
+      // Properties with units must have a unitId selected
+      if (data.property.hasUnits) {
+        return data.property.unitId && data.property.unitId.trim() !== "";
       }
       return true;
     },
     {
-      message: "Unit selection is required for this property type",
+      message: "Unit selection is required for this property",
       path: ["property", "unitId"],
     }
   )
@@ -342,6 +337,7 @@ export const leaseTabFields = {
     "fees.securityDeposit",
     "fees.rentDueDay",
     "fees.currency",
+    "fees.acceptedPaymentMethod",
     "fees.lateFeeAmount",
     "fees.lateFeeDays",
     "fees.lateFeeType",

@@ -380,3 +380,10 @@ RESPONSIVE DESIGN
   outline: 2px solid hslaGen($primary-color, 1);
   outline-offset: 2px;
 }
+
+// Preview actions (for buttons in preview content)
+.preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+}

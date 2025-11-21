@@ -42,17 +42,9 @@ export const AdditionalTermsTab = ({
   return (
     <>
       {/* Utilities Section */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h4 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Utilities Included
-        </h4>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-            gap: "0.75rem",
-          }}
-        >
+      <div className="mb-4">
+        <h4 className="mb-2">Utilities Included</h4>
+        <div className="utilities-grid">
           {utilities.map((utility) => (
             <FormField
               key={utility.value}
@@ -80,10 +72,8 @@ export const AdditionalTermsTab = ({
       </div>
 
       {/* Pet Policy Section */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h4 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Pet Policy
-        </h4>
+      <div className="mb-4">
+        <h4 className="mb-2">Pet Policy</h4>
         <div className="toggle-container">
           <div className="toggle-label">
             <h4>Pets Allowed</h4>
@@ -189,10 +179,8 @@ export const AdditionalTermsTab = ({
       </div>
 
       {/* Renewal Options Section */}
-      <div style={{ marginBottom: "2rem" }}>
-        <h4 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Renewal Options
-        </h4>
+      <div className="mb-4">
+        <h4 className="mb-2">Renewal Options</h4>
         <div className="toggle-container">
           <div className="toggle-label">
             <h4>Auto-Renew</h4>
@@ -274,9 +262,7 @@ export const AdditionalTermsTab = ({
 
       {/* Internal Notes Section */}
       <div>
-        <h4 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Internal Notes
-        </h4>
+        <h4 className="mb-2">Internal Notes</h4>
         <div className="form-fields">
           <FormField
             error={{
@@ -294,14 +280,7 @@ export const AdditionalTermsTab = ({
               rows={4}
               maxLength={2000}
             />
-            <p
-              style={{
-                fontSize: "0.875rem",
-                color: "var(--text-muted)",
-                marginTop: "0.5rem",
-                textAlign: "right",
-              }}
-            >
+            <p className="muted mt-1 text-small text-right">
               {leaseForm.values.internalNotes?.length || 0} / 2000 characters
             </p>
           </FormField>

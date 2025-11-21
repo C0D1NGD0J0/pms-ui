@@ -32,15 +32,15 @@ export const LeasePreviewModal: React.FC<LeasePreviewModalProps> = ({
                 type="button"
                 label="Generate Preview"
                 onClick={onGeneratePreview}
-                style={{ marginTop: "1rem" }}
+                className="mt-2"
               />
             </div>
           )}
 
           {isLoading && (
-            <div className="loading-state">
+            <div className="loading-overlay">
               <i className="bx bx-loader-alt bx-spin"></i>
-              <p style={{ marginTop: "1rem" }}>Loading preview...</p>
+              <p>Loading preview...</p>
             </div>
           )}
 
@@ -50,7 +50,7 @@ export const LeasePreviewModal: React.FC<LeasePreviewModalProps> = ({
                 type="button"
                 label="Refresh Preview"
                 onClick={onGeneratePreview}
-                style={{ marginBottom: "1rem" }}
+                className="mb-2"
               />
               <DocumentPreview
                 type={"html"}

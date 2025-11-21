@@ -28,17 +28,8 @@ export const CoTenantsTab = ({
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "1rem",
-        }}
-      >
-        <h4 style={{ fontSize: "1rem", fontWeight: 600, margin: 0 }}>
-          Co-Tenants (Optional)
-        </h4>
+      <div className="section-header-with-action mb-2">
+        <h4 className="mb-0">Co-Tenants (Optional)</h4>
         <Button
           className="btn btn-outline btn-sm"
           label="Add Co-Tenant"
@@ -48,26 +39,9 @@ export const CoTenantsTab = ({
       </div>
 
       {coTenants.map((coTenant, index) => (
-        <div
-          key={index}
-          style={{
-            border: "1px solid var(--border-color)",
-            borderRadius: "8px",
-            padding: "1rem",
-            marginBottom: "1rem",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "1rem",
-            }}
-          >
-            <h5 style={{ fontSize: "0.875rem", fontWeight: 600, margin: 0 }}>
-              Co-Tenant {index + 1}
-            </h5>
+        <div key={index} className="cotenant-card mb-2">
+          <div className="cotenant-card__header">
+            <h5 className="mb-0">Co-Tenant {index + 1}</h5>
             {coTenants.length > 0 && (
               <Button
                 className="btn btn-outline btn-sm"

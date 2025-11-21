@@ -14,10 +14,8 @@ interface Props {
 export const DocumentsTab = ({ leaseForm, handleOnChange }: Props) => {
   return (
     <>
-      <div style={{ marginBottom: "2rem" }}>
-        <h4 style={{ marginBottom: "1rem", fontSize: "1rem", fontWeight: 600 }}>
-          Lease Documents
-        </h4>
+      <div className="mb-4">
+        <h4 className="mb-2">Lease Documents</h4>
         <div className="form-fields">
           <FormField
             error={{
@@ -34,13 +32,7 @@ export const DocumentsTab = ({ leaseForm, handleOnChange }: Props) => {
               maxFiles={10}
               totalSizeAllowed={50}
             />
-            <p
-              style={{
-                fontSize: "0.875rem",
-                color: "var(--text-muted)",
-                marginTop: "0.5rem",
-              }}
-            >
+            <p className="muted mt-1 text-small">
               Upload lease agreements, addendums, or other related documents
               (PDF, DOC, DOCX)
             </p>

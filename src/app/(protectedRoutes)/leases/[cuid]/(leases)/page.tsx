@@ -1,7 +1,7 @@
 "use client";
 
-import { LeasesListView } from "./(leases)/view";
-import { useLeasesListLogic } from "./(leases)/hook";
+import { LeasesListView } from "./view";
+import { useLeasesListLogic } from "./hook";
 
 export default function LeasesPage() {
   const logicProps = useLeasesListLogic();

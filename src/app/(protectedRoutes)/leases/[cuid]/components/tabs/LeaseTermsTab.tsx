@@ -72,7 +72,7 @@ export const LeaseTermsTab = ({ leaseForm, handleOnChange }: Props) => {
       {
         value: "residential-apartment",
         label: "Residential - Apartment/Condo",
-        propertyTypes: ["apartment", "condominium"],
+        propertyTypes: ["apartment", "condominium", "condo"],
       },
       {
         value: "commercial-office",
@@ -87,23 +87,35 @@ export const LeaseTermsTab = ({ leaseForm, handleOnChange }: Props) => {
       {
         value: "short-term-rental",
         label: "Short-Term Rental Agreement",
-        propertyTypes: ["house", "townhouse", "apartment", "condominium"],
+        propertyTypes: [
+          "house",
+          "townhouse",
+          "apartment",
+          "condominium",
+          "condo",
+        ],
       },
     ];
 
-    // If no property selected, show all templates (excluding propertyTypes)
+    // If no property selected or no propertyType, show only residential templates
     if (!propertyType) {
-      return allTemplates.map(({ propertyTypes: _, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+      return allTemplates
+        .filter(
+          (t) =>
+            t.value === "" ||
+            t.value.startsWith("residential") ||
+            t.value === "short-term-rental"
+        )
+        .map(({ propertyTypes: _, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
     }
 
     // filter templates based on property type (excluding propertyTypes)
-    return allTemplates
-      .filter(
-        (template) =>
-          !template.propertyTypes ||
-          template.propertyTypes.includes(propertyType)
-      )
-      .map(({ propertyTypes: _, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
+    const filtered = allTemplates.filter(
+      (template) =>
+        !template.propertyTypes || template.propertyTypes.includes(propertyType)
+    );
+
+    return filtered.map(({ propertyTypes: _, ...rest }) => rest); // eslint-disable-line @typescript-eslint/no-unused-vars
   }, [leaseForm.values.property.propertyType]);
 
   return (

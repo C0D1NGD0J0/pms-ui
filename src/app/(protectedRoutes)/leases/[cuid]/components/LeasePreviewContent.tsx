@@ -10,7 +10,6 @@ export const LeasePreviewContent: React.FC<LeasePreviewContentProps> = ({
   activeSection,
 }) => (
   <div className="lease-preview">
-    {/* Property Information */}
     <section className="preview-section">
       <header className="section-header">
         <i className="bx bx-building"></i>
@@ -46,7 +45,6 @@ export const LeasePreviewContent: React.FC<LeasePreviewContentProps> = ({
       </dl>
     </section>
 
-    {/* Financial Summary */}
     <section className="preview-section">
       <header className="section-header">
         <i className="bx bx-dollar-circle"></i>
@@ -74,7 +72,6 @@ export const LeasePreviewContent: React.FC<LeasePreviewContentProps> = ({
       </dl>
     </section>
 
-    {/* Progress Indicator */}
     <section className="preview-section">
       <header className="section-header">
         <i className="bx bx-check-circle"></i>
