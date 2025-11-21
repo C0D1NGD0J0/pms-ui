@@ -172,7 +172,6 @@ export function useLeaseFormManagement({
       if (actualField === "property.id" && typeof actualValue === "string") {
         const property = properties.find((p) => p.id === actualValue);
         setSelectedProperty(property || null);
-        console.log(property, "Selected Property:");
         if (property) {
           // reset entire property object with new property data
           const hasUnits = property.units && property.units.length > 0;
