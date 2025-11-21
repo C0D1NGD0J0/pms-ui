@@ -82,7 +82,7 @@ export function usePropertyEditForm({
 
       console.log(values, "Changed Values:", originalValues);
       if (changedValues) {
-        // await updatePropertyMutation.mutateAsync(changedValues);
+        await updatePropertyMutation.mutateAsync(changedValues);
       }
       openNotification(
         "success",
