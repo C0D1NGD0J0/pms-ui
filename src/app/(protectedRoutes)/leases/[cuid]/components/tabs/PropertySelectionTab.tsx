@@ -81,7 +81,6 @@ export const PropertySelectionTab = ({
             onChange={(
               value: string | React.ChangeEvent<HTMLSelectElement>
             ) => {
-              console.log("Selected property value:", value);
               handleOnChange(value, "property.id");
             }}
             options={propertyOptions}
@@ -109,7 +108,6 @@ export const PropertySelectionTab = ({
               onChange={(
                 value: string | React.ChangeEvent<HTMLSelectElement>
               ) => {
-                console.log("Selected unit value:", value);
                 handleOnChange(value, "property.unitId");
               }}
               options={unitOptions}
