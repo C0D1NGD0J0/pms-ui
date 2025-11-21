@@ -43,6 +43,32 @@ class LeaseService {
     }
   }
 
+  async updateLease(
+    cuid: string,
+    luid: string,
+    leaseData: Partial<LeaseFormValues>
+  ) {
+    try {
+      const { data: requestData, headers } = prepareRequestData(leaseData);
+
+      const config = {
+        ...this.axiosConfig,
+        headers: {
+          ...headers,
+        },
+      };
+
+      const result = await axios.patch(
+        `${this.baseUrl}/${cuid}/${luid}`,
+        requestData,
+        config
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getLeaseByLuid(
     cuid: string,
     luid: string,
@@ -132,7 +158,7 @@ class LeaseService {
   async previewLeaseHTMLFormat(cuid: string, luid: string) {
     try {
       const result = await axios.get<IServerResponse<{ html: string }>>(
-        `${this.baseUrl}/${cuid}/${luid}/preview`,
+        `${this.baseUrl}/${cuid}/${luid}/preview_lease`,
         this.axiosConfig
       );
       return result.data;

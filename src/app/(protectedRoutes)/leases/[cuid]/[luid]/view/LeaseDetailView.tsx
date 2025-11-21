@@ -7,7 +7,9 @@ import { Loading } from "@src/components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { PanelsWrapper, PanelContent, Panel } from "@components/Panel";
+import { IUnifiedPermissions } from "@interfaces/permission.interface";
 import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
+import { LeaseDetailResponse, LeaseDetailData } from "@interfaces/lease.interface";
 import { PendingChangesReviewModal } from "@src/components/PendingChangesReviewModal";
 
 import { LeaseHeader } from "../components/LeaseHeader";
@@ -19,11 +21,11 @@ import { SendForSignatureModal } from "../components/SendForSignatureModal";
 interface LeaseDetailViewProps {
   cuid: string;
   luid: string;
-  lease: any;
-  responseData: any;
+  lease: LeaseDetailData | undefined;
+  responseData: LeaseDetailResponse["data"] | undefined;
   isLoading: boolean;
-  error: any;
-  permissions: any;
+  error: Error | null;
+  permissions: IUnifiedPermissions;
   previewHtml: string;
   isLoadingPreview: boolean;
   showSignatureModal: boolean;
@@ -125,10 +127,10 @@ export function LeaseDetailView({
         subtitle=""
         withBreadcrumb={true}
         headerBtn={
-          <div style={{ display: "flex", gap: "1rem" }}>
+          <div className="header-actions">
             {permissions.isManagerOrAbove && (
               <Link
-                href={`/leases/${cuid}/new?luid=${luid}`}
+                href={`/leases/${cuid}/${luid}/edit`}
                 className="btn btn-outline"
               >
                 <i className="bx bx-edit"></i>
@@ -159,23 +161,27 @@ export function LeaseDetailView({
           onViewChanges={handleViewChanges}
         />
       ) : (
-        <LeaseHeader
-          luid={lease.leaseNumber}
-          status={lease.status}
-          propertyName={responseData.property.name}
-          propertyAddress={lease.property.address}
-          actions={leaseActions}
-        />
+        lease && responseData && (
+          <LeaseHeader
+            luid={lease.leaseNumber}
+            status={lease.status}
+            propertyName={responseData.property.name}
+            propertyAddress={lease.property.address}
+            actions={leaseActions}
+          />
+        )
       )}
 
-      <LeaseOverviewCards
-        startDate={lease.duration.startDate.toLocaleString()}
-        endDate={lease.duration.endDate.toLocaleString()}
-        monthlyRent={lease.fees.monthlyRent}
-        securityDeposit={lease.fees.securityDeposit}
-        currency={lease.fees.currency}
-        rentDueDay={lease.fees.rentDueDay}
-      />
+      {lease && (
+        <LeaseOverviewCards
+          startDate={lease.duration.startDate.toLocaleString()}
+          endDate={lease.duration.endDate.toLocaleString()}
+          monthlyRent={lease.fees.monthlyRent}
+          securityDeposit={lease.fees.securityDeposit}
+          currency={lease.fees.currency}
+          rentDueDay={lease.fees.rentDueDay}
+        />
+      )}
 
       <div className="lease-content-grid">
         <div>
@@ -193,20 +199,24 @@ export function LeaseDetailView({
           </PanelsWrapper>
         </div>
 
-        <LeaseSidebar
-          timeline={responseData.timeline}
-          renewalNoticeDays={lease.renewalOptions?.noticePeriodDays}
-        />
+        {responseData && lease && (
+          <LeaseSidebar
+            timeline={responseData.timeline}
+            renewalNoticeDays={lease.renewalOptions?.noticePeriodDays}
+          />
+        )}
       </div>
 
-      <SendForSignatureModal
-        isOpen={showSignatureModal}
-        onClose={() => setShowSignatureModal(false)}
-        onConfirm={handleSendForSignature}
-        tenantName={lease.tenant?.fullname || ""}
-        coTenants={lease.coTenants || []}
-        isLoading={isSendingSignature}
-      />
+      {lease && (
+        <SendForSignatureModal
+          isOpen={showSignatureModal}
+          onClose={() => setShowSignatureModal(false)}
+          onConfirm={handleSendForSignature}
+          tenantName={lease.tenant?.fullname || ""}
+          coTenants={lease.coTenants || []}
+          isLoading={isSendingSignature}
+        />
+      )}
 
       <LeasePreviewModal
         isOpen={showPreviewModal}
@@ -216,7 +226,7 @@ export function LeaseDetailView({
         onGeneratePreview={handleGeneratePreview}
       />
 
-      {responseData?.lease?.pendingChangesPreview && (
+      {responseData?.lease?.pendingChangesPreview && lease && (
         <PendingChangesReviewModal
           visible={isChangesModalOpen}
           entityType="lease"

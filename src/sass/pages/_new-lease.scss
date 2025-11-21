@@ -106,4 +106,37 @@
       }
     }
   }
+
+  // Co-Tenant Card
+  .cotenant-card {
+    border: 1px solid hslaGen($light-grey-color);
+    border-radius: $border-radius-md;
+    padding: $space-lg;
+    background: hslaGen($white-color);
+
+    &__header {
+      @include flex(row, space-between, center, $space-md);
+      margin-bottom: $space-lg;
+      padding-bottom: $space-md;
+      border-bottom: 1px solid hslaGen($light-grey-color, 0.5);
+
+      h5 {
+        font-size: $fs-sm;
+        font-weight: $fw-bold;
+        color: hslaGen($primary-color);
+      }
+    }
+  }
+
+  // Utilities Grid
+  .utilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: $space-md;
+  }
+
+  // Section Header with Action
+  .section-header-with-action {
+    @include flex(row, space-between, center, $space-md);
+  }
 }

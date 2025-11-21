@@ -1,24 +1,38 @@
 "use client";
 
 import Link from "next/link";
-import { Table } from "@components/Table";
 import { InsightCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
+import { TableColumn, Table } from "@components/Table";
 import { PanelsWrapper, Panel } from "@components/Panel";
+import { FilterOption } from "@interfaces/common.interface";
+import { LeaseListItem } from "@interfaces/lease.interface";
 
 interface LeasesListViewProps {
   cuid: string;
-  leases: any[];
+  leases: LeaseListItem[];
   totalCount: number;
   isLoading: boolean;
-  pagination: any;
-  filters: any;
-  filterOptions: any[];
+  pagination: {
+    page: number;
+    limit: number;
+    total?: number;
+    order?: "asc" | "desc" | "";
+  };
+  filters: Record<string, unknown>;
+  filterOptions: FilterOption[];
   handleSortDirectionChange: (direction: "asc" | "desc") => void;
   handlePageChange: (page: number, pageSize?: number) => void;
-  handleFilterChange: (key: string, value: any) => void;
-  insightData: any[];
-  leaseColumns: any[];
+  handleFilterChange: (key: string, value: unknown) => void;
+  insightData: Array<{
+    id?: string;
+    title: string;
+    value: string | number;
+    icon?: React.ReactElement | string;
+    description?: React.ReactElement;
+    trend?: string;
+  }>;
+  leaseColumns: TableColumn<LeaseListItem>[];
 }
 
 export function LeasesListView({
@@ -71,7 +85,7 @@ export function LeasesListView({
               searchOpts={null}
               filterOpts={{
                 isVisible: true,
-                value: filters?.status || "",
+                value: (filters?.status as string) || "",
                 options: filterOptions,
                 onFilterChange: (value: string) => {
                   handleFilterChange("status", value);

@@ -1,16 +1,18 @@
 "use client";
 
+import { UseFormReturnType } from "@mantine/form";
 import { PageHeader } from "@components/PageElements";
 import { Button, Modal } from "@components/FormElements";
+import { LeaseFormValues } from "@interfaces/lease.interface";
 import { AccordionContainer, AccordionItem } from "@components/Accordion";
-import { DocumentPreview } from "@components/DocumentPreview/DocumentPreview";
 
 interface LeaseFormViewProps {
   cuid: string;
-  leaseForm: any;
+  leaseForm: UseFormReturnType<
+    LeaseFormValues,
+    (values: LeaseFormValues) => LeaseFormValues
+  >;
   isSubmitting: boolean;
-  html: string;
-  isLoadingPreview: boolean;
   isFormValid: boolean;
   accordionItems: AccordionItem[];
   showCoTenantWarning: boolean;
@@ -20,16 +22,12 @@ interface LeaseFormViewProps {
   duplicateError: string | null;
   handleCreateLease: () => void;
   handleConfirmWithoutCoTenants: () => void;
-  handlePreviewClick: () => void;
   handleCancel: () => void;
-  clearPreview: () => void;
 }
 
 export function LeaseFormView({
   cuid,
   isSubmitting,
-  html,
-  isLoadingPreview,
   isFormValid,
   accordionItems,
   showCoTenantWarning,
@@ -39,9 +37,7 @@ export function LeaseFormView({
   duplicateError,
   handleCreateLease,
   handleConfirmWithoutCoTenants,
-  handlePreviewClick,
   handleCancel,
-  clearPreview,
 }: LeaseFormViewProps) {
   return (
     <div className="page-container">
@@ -94,83 +90,7 @@ export function LeaseFormView({
             defaultActiveId="property"
             ariaLabel="Create lease form sections"
             onChange={() => {}}
-            showPreviewDrawer={isFormValid}
-            previewTitle="Lease Review"
-            renderPreview={() => {
-              if (!html && !isLoadingPreview) {
-                return (
-                  <div style={{ padding: "2rem", textAlign: "center" }}>
-                    <p
-                      style={{
-                        marginBottom: "1rem",
-                        color: "var(--text-muted)",
-                      }}
-                    >
-                      Click &quot;Generate Preview&quot; to view the lease
-                      template with your data
-                    </p>
-                    <Button
-                      className="btn btn-primary"
-                      label="Generate Preview"
-                      icon={<i className="bx bx-file-blank"></i>}
-                      onClick={handlePreviewClick}
-                      disabled={!isFormValid}
-                    />
-                  </div>
-                );
-              }
-
-              if (isLoadingPreview) {
-                return (
-                  <div style={{ padding: "2rem", textAlign: "center" }}>
-                    <i
-                      className="bx bx-loader-alt bx-spin"
-                      style={{ fontSize: "2rem" }}
-                    ></i>
-                    <p style={{ marginTop: "1rem" }}>Loading preview...</p>
-                  </div>
-                );
-              }
-
-              if (html) {
-                return (
-                  <div>
-                    <div style={{ marginBottom: "1rem", textAlign: "right" }}>
-                      <Button
-                        className="btn btn-outline btn-sm"
-                        label="Refresh Preview"
-                        icon={<i className="bx bx-refresh"></i>}
-                        onClick={handlePreviewClick}
-                      />
-                    </div>
-                    <DocumentPreview
-                      type="html"
-                      content={html}
-                      height="600px"
-                      renderMode="iframe"
-                    />
-                  </div>
-                );
-              }
-
-              return null;
-            }}
-            previewActions={
-              html ? (
-                <Button
-                  className="btn btn-primary btn-block"
-                  label="Create Lease"
-                  icon={<i className="bx bx-check"></i>}
-                  onClick={handleCreateLease}
-                  disabled={isSubmitting || !isFormValid}
-                />
-              ) : null
-            }
-            onPreviewToggle={(isOpen) => {
-              if (!isOpen) {
-                clearPreview();
-              }
-            }}
+            showPreviewDrawer={false}
           />
 
           <div className="form-actions">
@@ -203,21 +123,20 @@ export function LeaseFormView({
         >
           <Modal.Header title="No Co-Tenants Added" />
           <Modal.Content>
-            <div
-              style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}
-            >
-              <i
-                className="bx bx-info-circle"
-                style={{ fontSize: "2rem", color: "var(--warning)" }}
-              ></i>
-              <div>
-                <p style={{ marginBottom: "1rem" }}>
-                  You haven&apos;t added any co-tenants to this lease.
-                </p>
-                <p style={{ marginBottom: "0" }}>
-                  If you proceed without adding co-tenants, they will not appear
-                  on the lease document and will not have signing rights.
-                </p>
+            <div className="banner banner-warning">
+              <div className="banner-content">
+                <div className="banner-content__icon">
+                  <i className="bx bx-info-circle"></i>
+                </div>
+                <div className="banner-content__info">
+                  <p className="mb-2">
+                    You haven&apos;t added any co-tenants to this lease.
+                  </p>
+                  <p className="mb-0">
+                    If you proceed without adding co-tenants, they will not appear
+                    on the lease document and will not have signing rights.
+                  </p>
+                </div>
               </div>
             </div>
           </Modal.Content>

@@ -1,5 +1,10 @@
+"use client";
+
+import React from "react";
 import { useForm } from "@mantine/form";
+import { AccordionItem } from "@components/Accordion";
 import { zodResolver } from "mantine-form-zod-resolver";
+import { transformLeaseForEdit } from "@utils/leaseHelpers";
 import { leaseTabFields, leaseSchema } from "@validations/lease.validations";
 import { useCallback, ChangeEvent, useEffect, useState, useMemo } from "react";
 import {
@@ -9,25 +14,48 @@ import {
   UtilityEnum,
 } from "@interfaces/lease.interface";
 
+import { useGetLeasePreview } from "./useLeasePreview";
+import { useGetLeaseByLuid } from "./useGetLeaseByLuid";
 import { useAvailableTenants } from "./useAvailableTenants";
 import { useLeaseDuplication } from "./useLeaseDuplication";
 import { useLeaseableProperties } from "./useLeaseableProperties";
+import {
+  PropertySelectionTab,
+  FinancialDetailsTab,
+  AdditionalTermsTab,
+  LeaseTermsTab,
+  TenantInfoTab,
+  SignatureTab,
+  CoTenantsTab,
+  DocumentsTab,
+} from "../components";
 
-export type LeaseFormBaseProps = {
-  initialValues?: LeaseFormValues;
+export type LeaseFormMode = "create" | "edit";
+
+export type LeaseFormManagementProps = {
   cuid: string;
+  mode: LeaseFormMode;
+  luid?: string;
+  initialValues?: LeaseFormValues;
 };
 
-export function useLeaseFormBase({
-  initialValues = defaultLeaseFormValues,
+export function useLeaseFormManagement({
   cuid,
-}: LeaseFormBaseProps) {
+  mode,
+  luid,
+  initialValues = defaultLeaseFormValues,
+}: LeaseFormManagementProps) {
   const [selectedProperty, setSelectedProperty] =
     useState<LeaseableProperty | null>(null);
 
   const [tenantSelectionType, setTenantSelectionType] = useState<
     "existing" | "invite"
   >("existing");
+
+  const [showPreview, setShowPreview] = useState(false);
+  const [originalValues, setOriginalValues] = useState<LeaseFormValues | null>(
+    null
+  );
 
   const leaseForm = useForm<LeaseFormValues>({
     initialValues,
@@ -41,7 +69,22 @@ export function useLeaseFormBase({
     duplicateSource,
     duplicateData,
     error: duplicateError,
-  } = useLeaseDuplication(cuid);
+  } = useLeaseDuplication(mode === "create" ? cuid : "");
+
+  const {
+    data: leaseDataResponse,
+    isLoading: isLoadingEdit,
+    isError: isEditError,
+  } = useGetLeaseByLuid(
+    mode === "edit" && luid ? cuid : "",
+    mode === "edit" && luid ? luid : "",
+    false
+  );
+
+  const { previewHtml, isLoadingPreview, fetchPreview } = useGetLeasePreview(
+    mode === "edit" && luid ? cuid : "",
+    mode === "edit" && luid ? luid : ""
+  );
 
   const { data: propertiesResult, isLoading: isLoadingProperties } =
     useLeaseableProperties(true);
@@ -126,37 +169,20 @@ export function useLeaseFormBase({
         actualField = field || name;
       }
 
-      if (
-        actualField &&
-        typeof actualField === "string" &&
-        actualField.includes(".")
-      ) {
-        const [parent, child] = actualField.split(".");
-        const parentValue = leaseForm.values[parent as keyof LeaseFormValues];
-        if (
-          parentValue &&
-          typeof parentValue === "object" &&
-          !Array.isArray(parentValue)
-        ) {
-          leaseForm.setFieldValue(parent as any, {
-            ...parentValue,
-            [child]: actualValue,
-          });
-        }
-      } else if (actualField) {
-        leaseForm.setFieldValue(actualField as any, actualValue);
-      }
-
       if (actualField === "property.id" && typeof actualValue === "string") {
         const property = properties.find((p) => p.id === actualValue);
         setSelectedProperty(property || null);
-
+        console.log(property, "Selected Property:");
         if (property) {
-          leaseForm.setFieldValue("property.address", property.address);
-          leaseForm.setFieldValue(
-            "property.propertyType",
-            property.propertyType
-          );
+          // reset entire property object with new property data
+          const hasUnits = property.units && property.units.length > 0;
+          leaseForm.setFieldValue("property", {
+            id: property.id,
+            address: property.address,
+            propertyType: property.propertyType,
+            unitId: "",
+            hasUnits,
+          });
 
           const propertyType = property.propertyType?.toLowerCase();
           let templateType = "residential-single-family";
@@ -197,6 +223,26 @@ export function useLeaseFormBase({
             }
           }
         }
+      } else if (
+        actualField &&
+        typeof actualField === "string" &&
+        actualField.includes(".")
+      ) {
+        const [parent, child] = actualField.split(".");
+        const parentValue = leaseForm.values[parent as keyof LeaseFormValues];
+        if (
+          parentValue &&
+          typeof parentValue === "object" &&
+          !Array.isArray(parentValue)
+        ) {
+          leaseForm.setFieldValue(parent as any, {
+            ...parentValue,
+            [child]: actualValue,
+          });
+        }
+      } else if (actualField) {
+        // Handle non-nested fields
+        leaseForm.setFieldValue(actualField as any, actualValue);
       }
 
       if (
@@ -277,23 +323,16 @@ export function useLeaseFormBase({
     [leaseForm]
   );
 
-  useEffect(() => {
-    if (duplicateData && !isDuplicating) {
-      leaseForm.setValues({
-        ...defaultLeaseFormValues,
-        ...duplicateData,
-      });
-
-      if (duplicateData.property?.id) {
-        const property = properties.find((p) => p.id === duplicateData.property?.id);
-        setSelectedProperty(property || null);
-      }
+  const handlePreviewClick = useCallback(() => {
+    if (mode === "edit") {
+      fetchPreview();
+      setShowPreview(true);
     }
-  }, [duplicateData, isDuplicating, properties]);
+  }, [mode, fetchPreview]);
 
-  useEffect(() => {
-    leaseForm.validate();
-  }, [leaseForm.values]);
+  const clearPreview = useCallback(() => {
+    setShowPreview(false);
+  }, []);
 
   const hasTabErrors = useCallback(
     (tabId: string): boolean => {
@@ -358,7 +397,8 @@ export function useLeaseFormBase({
             values.fees.monthlyRent > 0 &&
             values.fees.securityDeposit >= 0 &&
             values.fees.rentDueDay >= 1 &&
-            values.fees.rentDueDay <= 31
+            values.fees.rentDueDay <= 31 &&
+            values.fees.acceptedPaymentMethod
           );
 
         case "signature":
@@ -376,20 +416,249 @@ export function useLeaseFormBase({
     [leaseForm.values, selectedProperty]
   );
 
+  useEffect(() => {
+    if (mode === "create" && duplicateData && !isDuplicating) {
+      leaseForm.setValues({
+        ...defaultLeaseFormValues,
+        ...duplicateData,
+      });
+
+      if (duplicateData.property?.id) {
+        const property = properties.find(
+          (p) => p.id === duplicateData.property?.id
+        );
+        setSelectedProperty(property || null);
+      }
+    }
+  }, [mode, duplicateData, isDuplicating, properties]);
+
+  useEffect(() => {
+    if (
+      mode === "edit" &&
+      leaseDataResponse?.lease &&
+      !isLoadingEdit &&
+      properties.length > 0
+    ) {
+      const transformedData = transformLeaseForEdit(leaseDataResponse.lease);
+
+      // Find the property to check if it has units
+      let propertyHasUnits = false;
+      if (transformedData.property?.id) {
+        const property = properties.find(
+          (p) => p.id === transformedData.property?.id
+        );
+        setSelectedProperty(property || null);
+        propertyHasUnits = Boolean(
+          property?.units && property.units.length > 0
+        );
+      }
+
+      const formValues: Partial<LeaseFormValues> = {
+        ...defaultLeaseFormValues,
+        ...transformedData,
+        property: {
+          id: transformedData.property?.id || "",
+          address: transformedData.property?.address,
+          unitId: transformedData.property?.unitId,
+          propertyType: transformedData.property?.propertyType,
+          hasUnits: propertyHasUnits,
+        },
+      };
+
+      leaseForm.setValues(formValues);
+      setOriginalValues(formValues as LeaseFormValues);
+
+      leaseForm.resetDirty();
+    }
+  }, [mode, leaseDataResponse, isLoadingEdit, properties]);
+
+  useEffect(() => {
+    leaseForm.validate();
+
+    if (mode === "edit" && leaseForm.isDirty()) {
+      setShowPreview(false);
+    }
+  }, [mode, leaseForm.values]);
+
+  const accordionItems: AccordionItem[] = useMemo(
+    () => [
+      {
+        id: "property",
+        label: "Property & Unit",
+        subtitle: "Select property and unit",
+        icon: <i className="bx bx-building"></i>,
+        hasError: hasTabErrors("property"),
+        isCompleted: isTabCompleted("property"),
+        content: (
+          <PropertySelectionTab
+            cuid={cuid}
+            leaseForm={leaseForm}
+            handleOnChange={handleOnChange}
+            propertyOptions={propertyOptions}
+            unitOptions={unitOptions}
+            selectedProperty={selectedProperty}
+            isLoading={isLoadingProperties}
+            filteredProperties={filteredProperties}
+            filteredCount={filteredCount}
+          />
+        ),
+      },
+      {
+        id: "tenant",
+        label: "Tenant Information",
+        subtitle: "Select or invite tenant",
+        icon: <i className="bx bx-user"></i>,
+        hasError: hasTabErrors("tenant"),
+        isCompleted: isTabCompleted("tenant"),
+        content: (
+          <TenantInfoTab
+            leaseForm={leaseForm}
+            handleOnChange={handleOnChange}
+            tenantOptions={tenantOptions}
+            tenantSelectionType={tenantSelectionType}
+            isLoadingTenants={isLoadingTenants}
+            onTenantSelectionTypeChange={handleTenantSelectionTypeChange}
+            disableFields={mode === "edit"}
+          />
+        ),
+      },
+      {
+        id: "lease-terms",
+        label: "Lease Terms",
+        subtitle: "Define lease duration and terms",
+        icon: <i className="bx bx-file-blank"></i>,
+        hasError: hasTabErrors("leaseTerms"),
+        isCompleted: isTabCompleted("leaseTerms"),
+        content: (
+          <LeaseTermsTab
+            leaseForm={leaseForm}
+            handleOnChange={handleOnChange}
+          />
+        ),
+      },
+      {
+        id: "financial",
+        label: "Financial Details",
+        subtitle: "Set rent, deposits, and fees",
+        icon: <i className="bx bx-dollar-circle"></i>,
+        hasError: hasTabErrors("financial"),
+        isCompleted: isTabCompleted("financial"),
+        content: (
+          <FinancialDetailsTab
+            leaseForm={leaseForm}
+            handleOnChange={handleOnChange}
+          />
+        ),
+      },
+      {
+        id: "signature",
+        label: "Signature Settings",
+        subtitle: "Configure signing method",
+        icon: <i className="bx bx-pen"></i>,
+        hasError: hasTabErrors("signature"),
+        isCompleted: isTabCompleted("signature"),
+        content: (
+          <SignatureTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
+        ),
+      },
+      {
+        id: "additional",
+        label: "Additional Terms",
+        subtitle: "Utilities, pet policy, renewals",
+        icon: <i className="bx bx-cog"></i>,
+        hasError: hasTabErrors("additional"),
+        isCompleted: isTabCompleted("additional"),
+        content: (
+          <AdditionalTermsTab
+            leaseForm={leaseForm}
+            handleOnChange={handleOnChange}
+            handleUtilityToggle={handleUtilityToggle}
+          />
+        ),
+      },
+      {
+        id: "cotenants",
+        label: "Co-Tenants",
+        subtitle: "Add additional tenants (optional)",
+        icon: <i className="bx bx-group"></i>,
+        hasError: hasTabErrors("cotenants"),
+        isCompleted: isTabCompleted("cotenants"),
+        content: (
+          <CoTenantsTab
+            leaseForm={leaseForm}
+            handleCoTenantChange={handleCoTenantChange}
+            addCoTenant={addCoTenant}
+            removeCoTenant={removeCoTenant}
+          />
+        ),
+      },
+      {
+        id: "documents",
+        label: "Documents",
+        subtitle: "Upload lease documents",
+        icon: <i className="bx bx-file"></i>,
+        hasError: hasTabErrors("documents"),
+        isCompleted: isTabCompleted("documents"),
+        content: (
+          <DocumentsTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
+        ),
+      },
+    ],
+    [
+      cuid,
+      leaseForm,
+      handleOnChange,
+      propertyOptions,
+      unitOptions,
+      selectedProperty,
+      isLoadingProperties,
+      filteredProperties,
+      filteredCount,
+      tenantOptions,
+      tenantSelectionType,
+      isLoadingTenants,
+      handleTenantSelectionTypeChange,
+      handleCoTenantChange,
+      addCoTenant,
+      removeCoTenant,
+      handleUtilityToggle,
+      hasTabErrors,
+      isTabCompleted,
+    ]
+  );
+
+  const isFormValid = leaseForm.isValid();
+
   return {
     leaseForm,
-    handleOnChange,
+    isFormValid,
+    accordionItems,
+    isLoadingProperties,
+    isLoadingTenants,
+    isDuplicating: mode === "create" ? isDuplicating : false,
+    duplicateSource: mode === "create" ? duplicateSource : null,
+    duplicateError: mode === "create" ? duplicateError : null,
+    isEditing: mode === "edit",
+    editLuid: mode === "edit" ? luid : null,
+    isLoadingEdit: mode === "edit" ? isLoadingEdit : false,
+    editError:
+      mode === "edit" && isEditError ? "Failed to load lease data" : null,
+    hasUnsavedChanges: mode === "edit" ? leaseForm.isDirty() : false,
+    originalValues: mode === "edit" ? originalValues : null,
+    html: mode === "edit" && showPreview ? previewHtml : "",
+    isLoadingPreview: mode === "edit" ? isLoadingPreview : false,
+    handlePreviewClick,
+    clearPreview,
     properties,
     propertyOptions,
     unitOptions,
     selectedProperty,
-    isLoadingProperties,
     filteredProperties,
     filteredCount,
     availableTenants,
     tenantOptions,
     tenantSelectionType,
-    isLoadingTenants,
+    handleOnChange,
     handleTenantSelectionTypeChange,
     handleCoTenantChange,
     addCoTenant,
@@ -397,8 +666,5 @@ export function useLeaseFormBase({
     handleUtilityToggle,
     hasTabErrors,
     isTabCompleted,
-    isDuplicating,
-    duplicateSource,
-    duplicateError,
   };
 }

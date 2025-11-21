@@ -79,8 +79,10 @@ export function usePropertyEditForm({
         extractChanges(originalValues, values, {
           ignoreKeys: ["cuid"],
         });
+
+      console.log(values, "Changed Values:", originalValues);
       if (changedValues) {
-        await updatePropertyMutation.mutateAsync(changedValues);
+        // await updatePropertyMutation.mutateAsync(changedValues);
       }
       openNotification(
         "success",

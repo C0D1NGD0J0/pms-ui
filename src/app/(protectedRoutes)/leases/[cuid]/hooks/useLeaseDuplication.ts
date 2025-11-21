@@ -27,7 +27,7 @@ export function useLeaseDuplication(cuid: string): UseLeaseDuplicationReturn {
     isLoading,
     isError,
     error,
-  } = useGetLeaseByLuid(cuid, duplicateLuid || "");
+  } = useGetLeaseByLuid(cuid, duplicateLuid || "", false);
 
   useEffect(() => {
     if (isError && error) {

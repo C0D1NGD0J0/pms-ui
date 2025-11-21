@@ -41,6 +41,7 @@ export interface LeaseProperty {
   address?: string;
   unitId?: string;
   propertyType?: string;
+  hasUnits?: boolean;
 }
 
 export interface LeaseFees {

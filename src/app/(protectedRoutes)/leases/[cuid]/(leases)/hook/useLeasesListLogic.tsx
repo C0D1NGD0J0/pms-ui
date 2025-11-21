@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAuth } from "@src/store";
 import React, { useMemo } from "react";
+import { formatCurrency } from "@utils/currencyMapper";
 import { renderTruncatedText } from "@src/components/Utils";
 import { LeaseListItem } from "@src/interfaces/lease.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
@@ -121,17 +122,15 @@ export function useLeasesListLogic() {
         title: "End Date",
         dataIndex: "endDate",
         key: "endDate",
-        render: (a: LeaseListItem) => {
-          return new Date(a.endDate).toLocaleDateString();
+        render: (endDate: string) => {
+          return new Date(endDate).toLocaleDateString();
         },
       },
       {
         title: "Monthly Rent",
         dataIndex: "monthlyRent",
-        render: (monthlyRent: any) =>
-          `$${monthlyRent?.toLocaleString() || 0} ${
-            monthlyRent?.currency || "USD"
-          }`,
+        render: (monthlyRent: number, record: LeaseListItem) =>
+          formatCurrency(monthlyRent, record.currency || "USD"),
       },
       {
         title: "Status",
@@ -177,7 +176,7 @@ export function useLeasesListLogic() {
             {permissions.isManagerOrAbove && (
               <>
                 <Link
-                  href={`/leases/${cuid}/new?luid=${luid}`}
+                  href={`/leases/${cuid}/${luid}/edit`}
                   className="action-icon edit-icon"
                   title="Edit Lease"
                 >
