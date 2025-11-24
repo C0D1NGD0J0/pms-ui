@@ -19,7 +19,6 @@ import {
   Panel,
 } from "@components/Panel";
 import {
-  PendingChangesBanner,
   PropertyChangesModal,
   PropertyManager,
   PropertyMetrics,
@@ -366,14 +365,15 @@ export default function PropertyShow({ params }: PropertyShowProps) {
       />
 
       {data?.property?.pendingChangesPreview && (
-        <PendingChangesBanner
-          property={data.property}
-          pendingChanges={data.property.pendingChangesPreview}
-          requesterName={
-            data.property?.pendingChanges?.displayName || "Unknown User"
-          }
-          onViewChanges={handleViewChanges}
-        />
+        <div className="alert-info">
+          <p>
+            Property has pending changes from{" "}
+            {data.property?.pendingChanges?.displayName || "Unknown User"}
+          </p>
+          <button onClick={handleViewChanges} className="btn btn-sm">
+            View Changes
+          </button>
+        </div>
       )}
 
       <div className="property-layout">

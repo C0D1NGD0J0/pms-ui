@@ -1,10 +1,12 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
+import { useFormattedInput } from "@hooks/useFormattedInput";
 import { LeaseFormValues } from "@interfaces/lease.interface";
+import { centsToDollars, dollarsToCents } from "@utils/currencyMapper";
 import {
   FormField,
-  FormLabel,
   FormInput,
+  FormLabel,
   Select,
 } from "@components/FormElements";
 
@@ -17,6 +19,36 @@ interface Props {
 }
 
 export const FinancialDetailsTab = ({ leaseForm, handleOnChange }: Props) => {
+  const monthlyRentInput = useFormattedInput({
+    value: leaseForm.values.fees.monthlyRent,
+    onChange: (cents: number) =>
+      leaseForm.setFieldValue("fees.monthlyRent", cents),
+    formatForDisplay: (cents: number | undefined | null) =>
+      centsToDollars(cents ?? 0),
+    parseFromInput: (str: string) => dollarsToCents(str),
+    validateInput: (str: string) => str === "" || /^\d*\.?\d{0,2}$/.test(str),
+  });
+
+  const securityDepositInput = useFormattedInput({
+    value: leaseForm.values.fees.securityDeposit,
+    onChange: (cents: number) =>
+      leaseForm.setFieldValue("fees.securityDeposit", cents),
+    formatForDisplay: (cents: number | undefined | null) =>
+      centsToDollars(cents ?? 0),
+    parseFromInput: (str: string) => dollarsToCents(str),
+    validateInput: (str: string) => str === "" || /^\d*\.?\d{0,2}$/.test(str),
+  });
+
+  const lateFeeAmountInput = useFormattedInput({
+    value: leaseForm.values.fees.lateFeeAmount ?? 0,
+    onChange: (cents: number) =>
+      leaseForm.setFieldValue("fees.lateFeeAmount", cents),
+    formatForDisplay: (cents: number | undefined | null) =>
+      centsToDollars(cents ?? 0),
+    parseFromInput: (str: string) => dollarsToCents(str),
+    validateInput: (str: string) => str === "" || /^\d*\.?\d{0,2}$/.test(str),
+  });
+
   const currencyOptions = [
     { value: "USD", label: "USD - US Dollar" },
     { value: "CAD", label: "CAD - Canadian Dollar" },
@@ -48,15 +80,15 @@ export const FinancialDetailsTab = ({ leaseForm, handleOnChange }: Props) => {
         >
           <FormLabel htmlFor="monthlyRent" label="Monthly Rent" required />
           <FormInput
+            type="text"
             id="monthlyRent"
+            placeholder="0.00"
             name="fees.monthlyRent"
-            type="number"
-            onChange={handleOnChange}
-            placeholder="Enter monthly rent"
-            value={leaseForm.values.fees.monthlyRent?.toString() || ""}
+            onChange={monthlyRentInput.handleChange}
+            onFocus={monthlyRentInput.handleFocus}
+            onBlur={monthlyRentInput.handleBlur}
             hasError={!!leaseForm.errors["fees.monthlyRent"]}
-            min="0"
-            step="0.01"
+            value={monthlyRentInput.displayValue}
           />
         </FormField>
         <FormField
@@ -71,15 +103,15 @@ export const FinancialDetailsTab = ({ leaseForm, handleOnChange }: Props) => {
             required
           />
           <FormInput
+            type="text"
+            placeholder="0.00"
             id="securityDeposit"
+            onChange={securityDepositInput.handleChange}
+            onFocus={securityDepositInput.handleFocus}
+            onBlur={securityDepositInput.handleBlur}
             name="fees.securityDeposit"
-            type="number"
-            onChange={handleOnChange}
-            placeholder="Enter security deposit"
-            value={leaseForm.values.fees.securityDeposit?.toString() || ""}
             hasError={!!leaseForm.errors["fees.securityDeposit"]}
-            min="0"
-            step="0.01"
+            value={securityDepositInput.displayValue}
           />
         </FormField>
       </div>
@@ -154,15 +186,15 @@ export const FinancialDetailsTab = ({ leaseForm, handleOnChange }: Props) => {
         >
           <FormLabel htmlFor="lateFeeAmount" label="Late Fee Amount" />
           <FormInput
+            type="text"
+            placeholder="0.00"
             id="lateFeeAmount"
             name="fees.lateFeeAmount"
-            type="number"
-            onChange={handleOnChange}
-            placeholder="Enter late fee amount"
-            value={leaseForm.values.fees.lateFeeAmount?.toString() || ""}
+            onChange={lateFeeAmountInput.handleChange}
+            onFocus={lateFeeAmountInput.handleFocus}
+            onBlur={lateFeeAmountInput.handleBlur}
             hasError={!!leaseForm.errors["fees.lateFeeAmount"]}
-            min="0"
-            step="0.01"
+            value={lateFeeAmountInput.displayValue}
           />
         </FormField>
         <FormField

@@ -129,8 +129,14 @@ export function useLeasesListLogic() {
       {
         title: "Monthly Rent",
         dataIndex: "monthlyRent",
-        render: (monthlyRent: number, record: LeaseListItem) =>
-          formatCurrency(monthlyRent, record.currency || "USD"),
+        render: (monthlyRent: number, record: LeaseListItem) => {
+          console.log(
+            monthlyRent,
+            "Rendering monthly rent for record:",
+            record
+          );
+          return formatCurrency(monthlyRent, record.currency || "USD");
+        },
       },
       {
         title: "Status",

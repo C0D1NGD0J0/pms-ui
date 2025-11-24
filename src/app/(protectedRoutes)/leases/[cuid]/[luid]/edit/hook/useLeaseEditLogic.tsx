@@ -68,6 +68,39 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     },
   });
 
+  const signatureRequestMutation = useMutation({
+    mutationFn: ({
+      cuid,
+      luid,
+      action,
+    }: {
+      cuid: string;
+      luid: string;
+      action: "send" | "resend" | "cancel";
+    }) => leaseService.signatureRequest(cuid, luid, action),
+    onSuccess: (result) => {
+      if (result.data?.success) {
+        openNotification(
+          "success",
+          "Signature Request Sent",
+          "Lease document has been sent for signature!"
+        );
+      } else {
+        openNotification(
+          "error",
+          "Signature Request Failed",
+          result.data?.message || "Failed to send signature request"
+        );
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Failed to send signature request. Please try again.";
+      openNotification("error", "Signature Request Failed", errorMessage);
+    },
+  });
+
   const handleUpdateSubmit = useCallback(async () => {
     if (!formManagement.originalValues) {
       console.warn("Original values not available for comparison");
@@ -151,6 +184,13 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     handleUpdateSubmit,
   ]);
 
+  const handleSignatureRequest = useCallback(
+    async (action: "send" | "resend" | "cancel") => {
+      signatureRequestMutation.mutateAsync({ cuid, luid, action });
+    },
+    [cuid, luid, signatureRequestMutation]
+  );
+
   const handleConfirmPropertyChange = useCallback(() => {
     setShowPropertyChangeWarning(false);
 
@@ -200,5 +240,9 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     handlePreviewClick: formManagement.handlePreviewClick,
     handleCancel,
     clearPreview: formManagement.clearPreview,
+
+    requestSignatures: handleSignatureRequest,
+    signatureRequestError: signatureRequestMutation.error,
+    isSignatureRequestLoading: signatureRequestMutation.isPending,
   };
 }

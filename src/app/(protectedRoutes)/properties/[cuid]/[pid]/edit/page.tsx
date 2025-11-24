@@ -3,22 +3,22 @@ import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
+import { PropertyChangesModal } from "@components/Property";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { TabContainer, TabListItem, TabList } from "@components/Tab";
-import { usePropertyFormBase } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
-import {
-  PendingChangesBanner,
-  PropertyChangesModal,
-} from "@components/Property";
+import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
 import {
   PanelsWrapper,
   PanelContent,
   PanelHeader,
   Panel,
 } from "@components/Panel";
-import { usePropertyData } from "@app/(protectedRoutes)/properties/[cuid]/hooks/usePropertyData";
-import { usePropertyEditForm } from "@app/(protectedRoutes)/properties/[cuid]/hooks/usePropertyEditForm";
+import {
+  usePropertyEditForm,
+  usePropertyFormBase,
+  usePropertyData,
+} from "@properties/hooks";
 import {
   PropertyInfoTab,
   BasicInfoTab,
@@ -26,7 +26,7 @@ import {
   DocumentsTab,
   FinancialTab,
   UnitsTab,
-} from "@app/(protectedRoutes)/properties/[cuid]/components";
+} from "@properties/components";
 
 interface EditPropertyProps {
   params: Promise<{ pid: string }>;
@@ -202,12 +202,13 @@ export default function EditProperty({ params }: EditPropertyProps) {
     <div className="page edit-property">
       {data?.property?.pendingChangesPreview && (
         <PendingChangesBanner
-          property={data.property}
-          pendingChanges={data.property.pendingChangesPreview}
-          requesterName={
-            data.property?.pendingChanges?.displayName || "Unknown User"
-          }
+          entityType="property"
           onViewChanges={handleViewChanges}
+          updatedAt={
+            data.property?.pendingChanges?.updatedAt || new Date().toISOString()
+          }
+          pendingChanges={data.property.pendingChangesPreview}
+          requesterName={data.property?.pendingChanges?.displayName || ""}
         />
       )}
       <PageHeader

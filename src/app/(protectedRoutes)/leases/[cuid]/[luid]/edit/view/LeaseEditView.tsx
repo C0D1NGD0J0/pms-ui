@@ -1,5 +1,6 @@
 "use client";
 
+import { Loading } from "@components/Loading";
 import { UseFormReturnType } from "@mantine/form";
 import { PageHeader } from "@components/PageElements";
 import { Button, Modal } from "@components/FormElements";
@@ -25,6 +26,9 @@ interface LeaseEditViewProps {
   setShowPropertyChangeWarning: (show: boolean) => void;
   isEditing: boolean;
   editLuid: string | null;
+  requestSignatures: (action: "send" | "resend" | "cancel") => Promise<void>;
+  signatureRequestError: any;
+  isSignatureRequestLoading: boolean;
   isLoadingEdit: boolean;
   editError: string | null;
   handleUpdateLease: () => void;
@@ -49,6 +53,12 @@ export function LeaseEditView({
   editLuid,
   isLoadingEdit,
   editError,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  requestSignatures: _requestSignatures, // TODO: Will be used for signature request feature
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  signatureRequestError: _signatureRequestError, // TODO: Will be used for signature request feature
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  isSignatureRequestLoading: _isSignatureRequestLoading, // TODO: Will be used for signature request feature
   handleUpdateLease,
   handleConfirmPropertyChange,
   handleConfirmWithoutCoTenants,
@@ -56,6 +66,43 @@ export function LeaseEditView({
   handleCancel,
   clearPreview,
 }: LeaseEditViewProps) {
+  if (isLoadingEdit) {
+    return <Loading description="Loading lease data..." />;
+  }
+
+  if (editError) {
+    return (
+      <div className="page-container">
+        <div className="page add-lease">
+          <PageHeader
+            title="Edit Lease"
+            headerBtn={
+              <Button
+                label="Back"
+                className="btn btn-outline"
+                onClick={handleCancel}
+                icon={<i className="bx bx-arrow-back"></i>}
+              />
+            }
+          />
+          <div className="empty-state">
+            <div className="empty-state__icon error">
+              <i className="bx bx-error-circle"></i>
+            </div>
+            <h3>Failed to Load Lease</h3>
+            <p className="muted">{editError}</p>
+            <Button
+              label="Go Back"
+              className="btn btn-outline"
+              onClick={handleCancel}
+              icon={<i className="bx bx-arrow-back"></i>}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-container">
       <div className="page add-lease">
@@ -71,7 +118,7 @@ export function LeaseEditView({
           }
         />
 
-        {isEditing && editLuid && !isLoadingEdit && (
+        {isEditing && editLuid && (
           <div className="duplication-banner">
             <i className="bx bx-edit"></i>
             <div className="duplication-banner__content">
@@ -81,20 +128,6 @@ export function LeaseEditView({
                 Note: Tenant fields cannot be changed after lease creation
               </span>
             </div>
-          </div>
-        )}
-
-        {isLoadingEdit && (
-          <div className="loading-overlay">
-            <i className="bx bx-loader-alt bx-spin"></i>
-            <p>Loading lease data for editing...</p>
-          </div>
-        )}
-
-        {editError && (
-          <div className="error-banner">
-            <i className="bx bx-error"></i>
-            <span>Failed to load lease: {editError}</span>
           </div>
         )}
 
@@ -253,7 +286,9 @@ export function LeaseEditView({
                 </div>
                 <div className="banner-content__info">
                   <p className="mb-2">
-                    <strong>You have changed the property for this lease.</strong>
+                    <strong>
+                      You have changed the property for this lease.
+                    </strong>
                   </p>
                   <p className="mb-2">
                     Please ensure you have reviewed and updated the financial

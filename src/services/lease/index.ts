@@ -6,7 +6,6 @@ import { NestedQueryParams } from "@src/interfaces/common.interface";
 import {
   LeaseablePropertiesMetadata,
   LeaseDetailResponse,
-  LeasePreviewRequest,
   LeaseListResponse,
   LeaseableProperty,
   LeaseFormValues,
@@ -139,22 +138,6 @@ class LeaseService {
     }
   }
 
-  async previewLeaseTemplate(
-    cuid: string,
-    leaseData: Partial<LeasePreviewRequest>
-  ) {
-    try {
-      const result = await axios.post<IServerResponse<{ html: string }>>(
-        `${this.baseUrl}/${cuid}/preview`,
-        leaseData,
-        this.axiosConfig
-      );
-      return result.data;
-    } catch (error) {
-      throw error;
-    }
-  }
-
   async previewLeaseHTMLFormat(cuid: string, luid: string) {
     try {
       const result = await axios.get<IServerResponse<{ html: string }>>(
@@ -177,6 +160,25 @@ class LeaseService {
         }>
       >(
         `${this.propertyBaseUrl}/${cuid}/leaseable${queryString}`,
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async signatureRequest(
+    cuid: string,
+    luid: string,
+    action: "send" | "resend" | "cancel"
+  ) {
+    try {
+      const result = await axios.post<
+        IServerResponse<{ success: boolean; message: string }>
+      >(
+        `${this.baseUrl}/${cuid}/${luid}/signature_request`,
+        { action },
         this.axiosConfig
       );
       return result;

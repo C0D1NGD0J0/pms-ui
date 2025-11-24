@@ -183,35 +183,6 @@ describe("LeaseService", () => {
     );
   });
 
-  it("should generate lease preview", async () => {
-    const leaseData = {
-      templateType: "residential-single-family",
-      propertyId: "prop-123",
-      monthlyRent: 1500,
-    };
-
-    const mockResponse = {
-      status: 200,
-      data: {
-        success: true,
-        data: { html: "<html>Preview content</html>" },
-      },
-    };
-
-    mockedAxios.post.mockResolvedValue(mockResponse);
-
-    const response = await leaseService.previewLeaseTemplate(
-      "client-123",
-      leaseData
-    );
-
-    expect(mockedAxios.post).toHaveBeenCalledWith(
-      "/api/v1/leases/client-123/preview",
-      leaseData,
-      expect.any(Object)
-    );
-    expect(response.data.html).toContain("Preview content");
-  });
 
   it("should fetch leaseable properties without units", async () => {
     const mockResponse = {
