@@ -32,8 +32,9 @@ export interface StatsDistribution {
 }
 
 export interface ServerResponse<T> {
+  message?: string;
   success: boolean;
-  msg?: string;
+  msg?: string; // keeping for backward compatibility
   data: T;
 }
 

@@ -133,7 +133,7 @@ const NotificationsPage = () => {
             label="Mark All as Read"
             onClick={handleMarkAllAsRead}
             disabled={unreadCount === 0}
-            icon={<i className="bx bx-check-double"></i>}
+            icon={<i className="bx success bx-check-double"></i>}
           />
         </div>
       </div>

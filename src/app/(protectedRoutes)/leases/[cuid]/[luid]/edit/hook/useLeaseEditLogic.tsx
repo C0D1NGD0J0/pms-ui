@@ -33,6 +33,7 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
   const [showCoTenantWarning, setShowCoTenantWarning] = useState(false);
   const [showPropertyChangeWarning, setShowPropertyChangeWarning] =
     useState(false);
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
 
   const updateLeaseMutation = useMutation({
     mutationFn: ({
@@ -62,9 +63,8 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     },
     onError: (error: any) => {
       const errorMessage =
-        error.response?.data?.message ||
-        "Failed to update lease. Please try again.";
-      openNotification("error", "Update Failed", errorMessage);
+        error?.message || "Failed to update lease. Please try again.";
+      openNotification("error", "Update Lease Failed", errorMessage);
     },
   });
 
@@ -79,24 +79,24 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
       action: "send" | "resend" | "cancel";
     }) => leaseService.signatureRequest(cuid, luid, action),
     onSuccess: (result) => {
-      if (result.data?.success) {
+      console.log("Signature request result:", result);
+      if (result.success) {
         openNotification(
           "success",
           "Signature Request Sent",
-          "Lease document has been sent for signature!"
+          result?.message || "Signature request has been sent successfully!"
         );
       } else {
         openNotification(
           "error",
           "Signature Request Failed",
-          result.data?.message || "Failed to send signature request"
+          result.message || "Failed to send signature request"
         );
       }
     },
     onError: (error: any) => {
       const errorMessage =
-        error.response?.data?.message ||
-        "Failed to send signature request. Please try again.";
+        error?.message || "Failed to send signature request. Please try again.";
       openNotification("error", "Signature Request Failed", errorMessage);
     },
   });
@@ -142,7 +142,7 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
       } else {
         openNotification("info", "No Changes", "No changes detected to update");
       }
-    } catch (error) {
+    } catch (error: { message?: string } | any) {
       console.error("Error updating lease:", error);
     }
   }, [
@@ -186,7 +186,8 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
 
   const handleSignatureRequest = useCallback(
     async (action: "send" | "resend" | "cancel") => {
-      signatureRequestMutation.mutateAsync({ cuid, luid, action });
+      await signatureRequestMutation.mutateAsync({ cuid, luid, action });
+      setShowSignatureModal(false);
     },
     [cuid, luid, signatureRequestMutation]
   );
@@ -229,6 +230,8 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     setShowCoTenantWarning,
     showPropertyChangeWarning,
     setShowPropertyChangeWarning,
+    showSignatureModal,
+    setShowSignatureModal,
     isEditing: formManagement.isEditing,
     editLuid: formManagement.editLuid || null,
     isLoadingEdit: formManagement.isLoadingEdit,

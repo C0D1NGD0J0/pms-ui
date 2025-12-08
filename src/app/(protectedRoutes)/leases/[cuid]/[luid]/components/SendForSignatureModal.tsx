@@ -61,8 +61,8 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
           <i className="bx bx-info-circle"></i>
           <p>
             Each recipient will receive an email with a secure link to review
-            and sign the lease agreement. You&apos;ll be notified once all signatures
-            are collected.
+            and sign the lease agreement. You&apos;ll be notified once all
+            signatures are collected.
           </p>
         </div>
       </Modal.Content>
@@ -79,7 +79,13 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
           type="button"
           className="btn-primary"
           label={isLoading ? "Sending..." : "Send for Signature"}
-          icon={<i className="bx bx-send"></i>}
+          icon={
+            <i
+              className={
+                isLoading ? "bx bx-loader-alt bx-spin" : "bx bx-send ghost"
+              }
+            ></i>
+          }
           onClick={onConfirm}
           disabled={isLoading}
         />

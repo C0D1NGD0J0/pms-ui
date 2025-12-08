@@ -66,10 +66,10 @@ const NotificationActions: React.FC<NotificationActionsProps> = ({
       {/* Show Delete for read notifications */}
       {!isTransient && notification.isRead && (
         <Button
-          className="action-button secondary"
+          className="btn btn-outline"
           label="Delete"
           onClick={() => onDelete(notification.nuid)}
-          icon={<i className="bx bx-trash"></i>}
+          icon={<i className="bx bx-trash danger"></i>}
         />
       )}
     </div>

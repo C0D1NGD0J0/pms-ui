@@ -7,6 +7,7 @@ import { Button, Modal } from "@components/FormElements";
 import { LeaseFormValues } from "@interfaces/lease.interface";
 import { AccordionContainer, AccordionItem } from "@components/Accordion";
 import { DocumentPreview } from "@components/DocumentPreview/DocumentPreview";
+import { SendForSignatureModal } from "@leases/[luid]/components/SendForSignatureModal";
 
 interface LeaseEditViewProps {
   cuid: string;
@@ -24,6 +25,8 @@ interface LeaseEditViewProps {
   setShowCoTenantWarning: (show: boolean) => void;
   showPropertyChangeWarning: boolean;
   setShowPropertyChangeWarning: (show: boolean) => void;
+  showSignatureModal: boolean;
+  setShowSignatureModal: (show: boolean) => void;
   isEditing: boolean;
   editLuid: string | null;
   requestSignatures: (action: "send" | "resend" | "cancel") => Promise<void>;
@@ -40,6 +43,7 @@ interface LeaseEditViewProps {
 }
 
 export function LeaseEditView({
+  leaseForm,
   isSubmitting,
   html,
   isLoadingPreview,
@@ -49,16 +53,16 @@ export function LeaseEditView({
   setShowCoTenantWarning,
   showPropertyChangeWarning,
   setShowPropertyChangeWarning,
+  showSignatureModal,
+  setShowSignatureModal,
   isEditing,
   editLuid,
   isLoadingEdit,
   editError,
+  requestSignatures,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  requestSignatures: _requestSignatures, // TODO: Will be used for signature request feature
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  signatureRequestError: _signatureRequestError, // TODO: Will be used for signature request feature
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  isSignatureRequestLoading: _isSignatureRequestLoading, // TODO: Will be used for signature request feature
+  signatureRequestError,
+  isSignatureRequestLoading,
   handleUpdateLease,
   handleConfirmPropertyChange,
   handleConfirmWithoutCoTenants,
@@ -217,6 +221,23 @@ export function LeaseEditView({
               onClick={handleCancel}
             />
             <Button
+              className="btn btn-danger"
+              label={
+                isSignatureRequestLoading ? "Sending..." : "Send for Signature"
+              }
+              icon={
+                <i
+                  className={
+                    isSignatureRequestLoading
+                      ? "bx bx-loader-alt bx-spin"
+                      : "bx bx-send ghost"
+                  }
+                ></i>
+              }
+              onClick={() => setShowSignatureModal(true)}
+              disabled={isSignatureRequestLoading || !isFormValid}
+            />
+            <Button
               className="btn btn-primary"
               label={isSubmitting ? "Updating..." : "Update Lease"}
               icon={
@@ -316,6 +337,24 @@ export function LeaseEditView({
             />
           </Modal.Footer>
         </Modal>
+
+        <SendForSignatureModal
+          isOpen={showSignatureModal}
+          onClose={() => setShowSignatureModal(false)}
+          onConfirm={() => requestSignatures("send")}
+          tenantName={
+            `${leaseForm.values.tenantInfo?.firstName || ""} ${
+              leaseForm.values.tenantInfo?.lastName || ""
+            }`.trim() || "Tenant"
+          }
+          coTenants={
+            leaseForm.values.coTenants?.map((ct) => ({
+              name: ct.name,
+              email: ct.email,
+            })) || []
+          }
+          isLoading={isSignatureRequestLoading}
+        />
       </div>
     </div>
   );

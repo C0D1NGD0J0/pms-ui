@@ -68,6 +68,24 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
   const [api, contextHolder] = notification.useNotification();
   const [messageApi, messageContextHolder] = message.useMessage();
 
+  const notificationStyles = {
+    container: {
+      whiteSpace: "pre-line" as const,
+      borderRadius: "8px",
+      boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+    },
+    message: {
+      fontWeight: 600,
+      fontSize: "16px",
+      marginBottom: "8px",
+    },
+    description: {
+      fontSize: "14px",
+      lineHeight: "1.5",
+      color: "rgba(0, 0, 0, 0.65)",
+    },
+  };
+
   const openNotification = (
     type: NotificationInstance,
     title: string,
@@ -88,23 +106,28 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       ];
 
       api[type]({
-        message: title,
+        message: <span style={notificationStyles.message}>{title}</span>,
         placement: "topRight",
         actions,
         key,
         duration: 0,
-        style: { whiteSpace: "pre-line" },
+        style: notificationStyles.container,
         onClick: opts.onClose,
-        description: description,
+        description: (
+          <span style={notificationStyles.description}>{description}</span>
+        ),
       });
       return;
     }
 
     api[type]({
       duration: opts?.duration || 4,
-      message: title,
+      message: <span style={notificationStyles.message}>{title}</span>,
       placement: "topRight",
-      description: description,
+      description: (
+        <span style={notificationStyles.description}>{description}</span>
+      ),
+      style: notificationStyles.container,
     });
   };
 
@@ -167,13 +190,15 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
     ];
 
     api[type]({
-      message: title,
-      description: content,
+      message: <span style={notificationStyles.message}>{title}</span>,
+      description: (
+        <span style={notificationStyles.description}>{content}</span>
+      ),
       placement: "topRight",
       actions,
       key,
       duration: 0,
-      style: { whiteSpace: "pre-line" },
+      style: notificationStyles.container,
     });
   };
 
