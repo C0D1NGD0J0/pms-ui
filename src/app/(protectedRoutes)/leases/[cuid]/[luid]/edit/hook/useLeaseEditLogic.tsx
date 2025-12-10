@@ -234,6 +234,7 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     setShowSignatureModal,
     isEditing: formManagement.isEditing,
     editLuid: formManagement.editLuid || null,
+    leaseStatus: formManagement.leaseStatus,
     isLoadingEdit: formManagement.isLoadingEdit,
     editError: formManagement.editError,
     hasUnsavedChanges: formManagement.hasUnsavedChanges,

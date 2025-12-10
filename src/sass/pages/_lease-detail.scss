@@ -73,11 +73,43 @@
       );
     }
 
+    &.pending_signature {
+      background: linear-gradient(
+        135deg,
+        hslaGen($blue-ink-color) 0%,
+        #0066cc 100%
+      );
+    }
+
     &.expiring {
       background: linear-gradient(
         135deg,
         hslaGen($danger-color) 0%,
         #ff0000 100%
+      );
+    }
+
+    &.expired {
+      background: linear-gradient(
+        135deg,
+        #ff8c00 0%,
+        #ff6600 100%
+      );
+    }
+
+    &.terminated {
+      background: linear-gradient(
+        135deg,
+        #6c757d 0%,
+        #495057 100%
+      );
+    }
+
+    &.cancelled {
+      background: linear-gradient(
+        135deg,
+        #343a40 0%,
+        #212529 100%
       );
     }
 

@@ -1,8 +1,11 @@
 "use client";
 
+import { leaseService } from "@services/lease";
 import { TabItem } from "@components/Tab/interface";
 import { DocumentsTab } from "@components/UserDetail";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useNotification } from "@src/hooks/useNotification";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useState, use } from "react";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
@@ -24,6 +27,8 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const router = useRouter();
   const permissions = useUnifiedPermissions();
   const { luid, cuid } = use(params);
+  const queryClient = useQueryClient();
+  const { openNotification } = useNotification();
   const {
     data: responseData,
     isLoading,
@@ -40,6 +45,11 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [isSendingSignature, setIsSendingSignature] = useState(false);
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
+  const [showManualActivationModal, setShowManualActivationModal] =
+    useState(false);
+  const [showTerminateModal, setShowTerminateModal] = useState(false);
+  const [showCancelSignatureModal, setShowCancelSignatureModal] =
+    useState(false);
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -126,7 +136,106 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     fetchPreview();
   }, [fetchPreview]);
 
+  const manualActivationMutation = useMutation({
+    mutationFn: (data: { notes?: string }) =>
+      leaseService.manuallyActivateLease(cuid, luid, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lease", cuid, luid] });
+      openNotification(
+        "success",
+        "Lease Activated",
+        "Lease has been manually activated. Tenant can now access their portal."
+      );
+      setShowManualActivationModal(false);
+    },
+    onError: (error: any) => {
+      openNotification(
+        "error",
+        "Activation Failed",
+        error?.response?.data?.message ||
+          "Failed to activate lease. Please try again."
+      );
+    },
+  });
+
+  const terminateMutation = useMutation({
+    mutationFn: (data: {
+      terminationDate: string;
+      reason: string;
+      refundAmount?: number;
+      notes?: string;
+    }) => leaseService.terminateLease(cuid, luid, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lease", cuid, luid] });
+      openNotification(
+        "success",
+        "Lease Terminated",
+        "Lease has been terminated. Security deposit processing has been initiated."
+      );
+      setShowTerminateModal(false);
+    },
+    onError: (error: any) => {
+      openNotification(
+        "error",
+        "Termination Failed",
+        error?.response?.data?.message ||
+          "Failed to terminate lease. Please try again."
+      );
+    },
+  });
+
+  const cancelSignatureMutation = useMutation({
+    mutationFn: () => leaseService.signatureRequest(cuid, luid, "cancel"),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["lease", cuid, luid] });
+      openNotification(
+        "success",
+        "Signature Request Cancelled",
+        "The signature request has been cancelled successfully."
+      );
+      setShowCancelSignatureModal(false);
+    },
+    onError: (error: any) => {
+      openNotification(
+        "error",
+        "Cancellation Failed",
+        error?.response?.data?.message ||
+          "Failed to cancel signature request. Please try again."
+      );
+    },
+  });
+
+  const handleManualActivation = useCallback(
+    async (notes?: string) => {
+      await manualActivationMutation.mutateAsync({ notes });
+    },
+    [manualActivationMutation]
+  );
+
+  const handleTerminateLease = useCallback(
+    async (data: {
+      terminationDate: string;
+      reason: string;
+      refundAmount?: number;
+      notes?: string;
+    }) => {
+      await terminateMutation.mutateAsync(data);
+    },
+    [terminateMutation]
+  );
+
+  const handleCancelSignatureRequest = useCallback(async () => {
+    await cancelSignatureMutation.mutateAsync();
+  }, [cancelSignatureMutation]);
+
   const isDraftStatus = lease?.status === "draft";
+  const isPendingSignatureStatus = lease?.status === "pending_signature";
+  const isActiveStatus = lease?.status === "active";
+  const isTerminatedStatus = lease?.status === "terminated";
+  const isExpiredStatus = lease?.status === "expired";
+  const isCancelledStatus = lease?.status === "cancelled";
+  const isReadOnlyStatus =
+    isTerminatedStatus || isExpiredStatus || isCancelledStatus;
 
   const tabItems: TabItem[] = lease
     ? [
@@ -164,7 +273,7 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
           content: (
             <DocumentsTab
               userType="tenant"
-              documents={responseData.documents.map((doc) => ({
+              documents={responseData?.documents?.map((doc) => ({
                 id: doc.key,
                 title: doc.documentType
                   .replace(/_/g, " ")
@@ -208,6 +317,15 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     isSendingSignature,
     isChangesModalOpen,
     isDraftStatus,
+    isPendingSignatureStatus,
+    isActiveStatus,
+    isReadOnlyStatus,
+    showManualActivationModal,
+    setShowManualActivationModal,
+    showTerminateModal,
+    setShowTerminateModal,
+    showCancelSignatureModal,
+    setShowCancelSignatureModal,
     tabItems,
     handleBack,
     handleViewChanges,
@@ -218,5 +336,11 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     handleSendForSignature,
     handlePreviewLease,
     handleGeneratePreview,
+    handleManualActivation,
+    handleTerminateLease,
+    handleCancelSignatureRequest,
+    isManualActivationLoading: manualActivationMutation.isPending,
+    isTerminateLoading: terminateMutation.isPending,
+    isCancelSignatureLoading: cancelSignatureMutation.isPending,
   };
 }

@@ -244,4 +244,137 @@ describe("LeaseService", () => {
     );
     expect(response.data.data.items[0].units).toBeDefined();
   });
+
+  it("should manually activate a lease", async () => {
+    const activationData = {
+      notes: "Signed in person on 2025-12-10",
+    };
+
+    const mockResponse = {
+      status: 200,
+      data: {
+        success: true,
+        message: "Lease activated successfully",
+        data: {
+          luid: "lease-123",
+          status: "active",
+        },
+      },
+    };
+
+    mockedAxios.post.mockResolvedValue(mockResponse);
+
+    const response = await leaseService.manuallyActivateLease(
+      "client-123",
+      "lease-123",
+      activationData
+    );
+
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      "/api/v1/leases/client-123/lease-123/activate",
+      activationData,
+      expect.any(Object)
+    );
+    expect(response.status).toBe(200);
+    expect(response.data.success).toBe(true);
+    expect(response.data.data.status).toBe("active");
+  });
+
+  it("should handle errors when manually activating a lease", async () => {
+    const mockError = new Error("Activation failed");
+
+    mockedAxios.post.mockRejectedValue(mockError);
+
+    await expect(
+      leaseService.manuallyActivateLease("client-123", "lease-123", {})
+    ).rejects.toThrow("Activation failed");
+  });
+
+  it("should terminate a lease", async () => {
+    const terminationData = {
+      terminationDate: "2025-12-31",
+      reason: "Tenant requested early termination",
+      refundAmount: 150000,
+      notes: "Full security deposit refund",
+    };
+
+    const mockResponse = {
+      status: 200,
+      data: {
+        success: true,
+        message: "Lease terminated successfully",
+        data: {
+          luid: "lease-123",
+          status: "terminated",
+          terminationDate: "2025-12-31",
+        },
+      },
+    };
+
+    mockedAxios.post.mockResolvedValue(mockResponse);
+
+    const response = await leaseService.terminateLease(
+      "client-123",
+      "lease-123",
+      terminationData
+    );
+
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      "/api/v1/leases/client-123/lease-123/terminate",
+      terminationData,
+      expect.any(Object)
+    );
+    expect(response.status).toBe(200);
+    expect(response.data.success).toBe(true);
+    expect(response.data.data.status).toBe("terminated");
+  });
+
+  it("should terminate a lease without refund amount", async () => {
+    const terminationData = {
+      terminationDate: "2025-12-31",
+      reason: "Lease violation",
+      notes: "No refund due to damages",
+    };
+
+    const mockResponse = {
+      status: 200,
+      data: {
+        success: true,
+        message: "Lease terminated successfully",
+        data: {
+          luid: "lease-123",
+          status: "terminated",
+        },
+      },
+    };
+
+    mockedAxios.post.mockResolvedValue(mockResponse);
+
+    const response = await leaseService.terminateLease(
+      "client-123",
+      "lease-123",
+      terminationData
+    );
+
+    expect(mockedAxios.post).toHaveBeenCalledWith(
+      "/api/v1/leases/client-123/lease-123/terminate",
+      terminationData,
+      expect.any(Object)
+    );
+    expect(response.data.success).toBe(true);
+  });
+
+  it("should handle errors when terminating a lease", async () => {
+    const terminationData = {
+      terminationDate: "2025-12-31",
+      reason: "Test reason",
+    };
+    const mockError = new Error("Termination failed");
+
+    mockedAxios.post.mockRejectedValue(mockError);
+
+    await expect(
+      leaseService.terminateLease("client-123", "lease-123", terminationData)
+    ).rejects.toThrow("Termination failed");
+  });
 });

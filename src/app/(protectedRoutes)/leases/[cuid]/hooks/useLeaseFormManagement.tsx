@@ -644,6 +644,7 @@ export function useLeaseFormManagement({
       mode === "edit" && isEditError ? "Failed to load lease data" : null,
     hasUnsavedChanges: mode === "edit" ? leaseForm.isDirty() : false,
     originalValues: mode === "edit" ? originalValues : null,
+    leaseStatus: mode === "edit" ? leaseDataResponse?.lease?.status : null,
     html: mode === "edit" && showPreview ? previewHtml : "",
     isLoadingPreview: mode === "edit" ? isLoadingPreview : false,
     handlePreviewClick,

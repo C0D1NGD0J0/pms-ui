@@ -186,6 +186,45 @@ class LeaseService {
       throw error;
     }
   }
+
+  async manuallyActivateLease(
+    cuid: string,
+    luid: string,
+    data: { notes?: string }
+  ) {
+    try {
+      const result = await axios.post<IServerResponse<Lease>>(
+        `${this.baseUrl}/${cuid}/${luid}/activate`,
+        data,
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async terminateLease(
+    cuid: string,
+    luid: string,
+    data: {
+      terminationDate: string;
+      reason: string;
+      refundAmount?: number;
+      notes?: string;
+    }
+  ) {
+    try {
+      const result = await axios.post<IServerResponse<Lease>>(
+        `${this.baseUrl}/${cuid}/${luid}/terminate`,
+        data,
+        this.axiosConfig
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const leaseService = new LeaseService();

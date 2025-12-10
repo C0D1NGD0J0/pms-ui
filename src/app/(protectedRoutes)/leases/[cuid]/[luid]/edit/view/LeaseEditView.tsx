@@ -29,6 +29,7 @@ interface LeaseEditViewProps {
   setShowSignatureModal: (show: boolean) => void;
   isEditing: boolean;
   editLuid: string | null;
+  leaseStatus?: string | null;
   requestSignatures: (action: "send" | "resend" | "cancel") => Promise<void>;
   signatureRequestError: any;
   isSignatureRequestLoading: boolean;
@@ -57,6 +58,7 @@ export function LeaseEditView({
   setShowSignatureModal,
   isEditing,
   editLuid,
+  leaseStatus,
   isLoadingEdit,
   editError,
   requestSignatures,
@@ -70,6 +72,8 @@ export function LeaseEditView({
   handleCancel,
   clearPreview,
 }: LeaseEditViewProps) {
+  const isReadOnlyStatus = leaseStatus && ["active", "terminated", "expired", "cancelled"].includes(leaseStatus);
+
   if (isLoadingEdit) {
     return <Loading description="Loading lease data..." />;
   }
@@ -131,6 +135,28 @@ export function LeaseEditView({
               <span style={{ marginTop: "4px", fontSize: "13px" }}>
                 Note: Tenant fields cannot be changed after lease creation
               </span>
+            </div>
+          </div>
+        )}
+
+        {leaseStatus && ["active", "terminated", "expired", "cancelled"].includes(leaseStatus) && (
+          <div className="banner banner-warning" style={{ marginBottom: "2rem" }}>
+            <div className="banner-content">
+              <div className="banner-content__icon">
+                <i className="bx bx-lock-alt"></i>
+              </div>
+              <div className="banner-content__info">
+                <p>
+                  <strong>This lease cannot be edited</strong>
+                </p>
+                <p className="mb-0">
+                  Leases with status &apos;{leaseStatus}&apos; are read-only. 
+                  {leaseStatus === "active" && " To make changes, you must terminate the lease first."}
+                  {leaseStatus === "terminated" && " This lease has been terminated and cannot be modified."}
+                  {leaseStatus === "expired" && " This lease has expired and cannot be modified."}
+                  {leaseStatus === "cancelled" && " This lease has been cancelled and cannot be modified."}
+                </p>
+              </div>
             </div>
           </div>
         )}
@@ -248,7 +274,7 @@ export function LeaseEditView({
                 ></i>
               }
               onClick={handleUpdateLease}
-              disabled={isSubmitting || !isFormValid}
+              disabled={isSubmitting || !isFormValid || !!isReadOnlyStatus}
             />
           </div>
         </div>

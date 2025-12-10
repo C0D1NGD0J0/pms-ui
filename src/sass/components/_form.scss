@@ -64,6 +64,14 @@
   background-color: hslaGen($white-color, 1);
 }
 
+// Field hint/description text
+.field-hint {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
 // Form label
 .form-label {
   display: block;
