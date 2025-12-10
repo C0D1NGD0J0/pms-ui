@@ -34,7 +34,7 @@ describe("currencyMapper", () => {
       expect(CURRENCY_DICTIONARY.NGN).toEqual({
         name: "naira",
         symbol: "₦",
-        icon: "bx-money",
+        icon: "bx-money-withdraw",
       });
     });
 
