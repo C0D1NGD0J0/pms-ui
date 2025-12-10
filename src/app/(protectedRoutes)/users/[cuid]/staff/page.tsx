@@ -8,6 +8,7 @@ import { ChartContainer } from "@components/Charts";
 import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { AddUserModal } from "@components/UserManagement";
 import { generateLegendColors } from "@utils/employeeUtils";
 import { PageHeader } from "@components/PageElements/Header";
@@ -31,7 +32,7 @@ interface StaffPageProps {
   }>;
 }
 
-export default function StaffPage({ params }: StaffPageProps) {
+function StaffPage({ params }: StaffPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -45,7 +46,7 @@ export default function StaffPage({ params }: StaffPageProps) {
     sortOptions,
     pagination,
     totalCount,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleSortByChange,
     isLoading,
@@ -138,7 +139,7 @@ export default function StaffPage({ params }: StaffPageProps) {
                 filterOptions={sortOptions}
                 handlePageChange={handlePageChange}
                 handleSortByChange={handleSortByChange}
-                handleSortChange={handleSortChange}
+                handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditEmployee}
                 onToggleStatus={handleToggleEmployeeStatus}
@@ -228,3 +229,5 @@ export default function StaffPage({ params }: StaffPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(StaffPage);

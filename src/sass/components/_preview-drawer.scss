@@ -1,0 +1,389 @@
+@use "../abstract/index" as *;
+
+/*=====================================
+MODERN PREVIEW DRAWER COMPONENT
+=====================================*/
+
+// Preview Drawer - Clean, modern design
+.preview-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1050;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+
+  &.preview-drawer-open {
+    pointer-events: auto;
+
+    .preview-drawer-overlay {
+      opacity: 1;
+      backdrop-filter: blur(4px);
+    }
+
+    .preview-drawer-content {
+      transform: translateX(0);
+      box-shadow: -20px 0 60px rgba(0, 0, 0, 0.25);
+    }
+  }
+}
+
+.preview-drawer-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6); // Increased opacity for better visibility
+  opacity: 0;
+  backdrop-filter: blur(0);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.preview-drawer-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 520px;
+  max-width: 85vw;
+  background: hslaGen($white-color, 1);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  border-left: 1px solid hslaGen($grey-color, 0.1);
+
+  // Modern glass effect border
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+      180deg,
+      hslaGen($primary-color, 1) 0%,
+      hslaGen($secondary-color, 1) 50%,
+      hslaGen($success-color, 1) 100%
+    );
+    border-radius: 0 2px 2px 0;
+  }
+}
+
+.preview-drawer-header {
+  padding: $space-xl $space-xl $space-lg;
+  border-bottom: 1px solid hslaGen($grey-color, 0.1);
+  background: linear-gradient(
+    135deg,
+    hslaGen($white-color, 1) 0%,
+    hslaGen($background-color, 0.5) 100%
+  );
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+
+  // Subtle pattern overlay
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(
+        circle at 20% 50%,
+        hslaGen($primary-color, 0.03) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        circle at 80% 20%,
+        hslaGen($secondary-color, 0.03) 0%,
+        transparent 50%
+      );
+    pointer-events: none;
+  }
+}
+
+.preview-drawer-header h3 {
+  margin: 0;
+  font-size: $fs-lg;
+  font-weight: $fw-bold;
+  color: hslaGen($primary-color, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.preview-drawer-close {
+  background: hslaGen($white-color, 0.8);
+  border: 1px solid hslaGen($grey-color, 0.2);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  color: hslaGen($grey-color, 1);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: $fs-md;
+  position: relative;
+  z-index: 1;
+
+  &:hover {
+    background: hslaGen($danger-color, 0.1);
+    border-color: hslaGen($danger-color, 0.3);
+    color: hslaGen($danger-color, 1);
+    transform: rotate(90deg) scale(1.1);
+  }
+}
+
+.preview-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $space-xl;
+  background: linear-gradient(
+    180deg,
+    hslaGen($background-color, 0.2) 0%,
+    hslaGen($white-color, 1) 20%,
+    hslaGen($white-color, 1) 100%
+  );
+
+  // Enhanced scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: hslaGen($background-color, 0.3);
+    border-radius: 4px;
+    margin: $space-sm;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      180deg,
+      hslaGen($primary-color, 0.4),
+      hslaGen($primary-color, 0.6)
+    );
+    border-radius: 4px;
+
+    &:hover {
+      background: linear-gradient(
+        180deg,
+        hslaGen($primary-color, 0.6),
+        hslaGen($primary-color, 0.8)
+      );
+    }
+  }
+}
+
+.preview-drawer-footer {
+  padding: $space-lg $space-xl $space-xl;
+  border-top: 1px solid hslaGen($grey-color, 0.1);
+  background: linear-gradient(
+    135deg,
+    hslaGen($white-color, 1) 0%,
+    hslaGen($background-color, 0.3) 100%
+  );
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/*=====================================
+SEMANTIC PREVIEW CONTENT STYLES
+=====================================*/
+
+// Main container
+.lease-preview {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+// Section styles
+.preview-section {
+  background: hslaGen($white-color, 1);
+  border: 1px solid hslaGen($grey-color, 0.12);
+  border-radius: $border-radius-md;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: hslaGen($primary-color, 0.2);
+  }
+}
+
+// Section header with icon
+.section-header {
+  background: hslaGen($background-color, 0.4);
+  padding: $space-sm $space-md;
+  border-bottom: 1px solid hslaGen($grey-color, 0.1);
+  display: flex;
+  align-items: center;
+  gap: $space-xs;
+
+  i {
+    font-size: $fs-sm;
+    color: hslaGen($primary-color, 1);
+    width: 16px;
+    text-align: center;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: $fs-sm;
+    font-weight: $fw-bold;
+    color: hslaGen($primary-color, 1);
+  }
+}
+
+// Definition list for key-value pairs
+.info-list {
+  margin: 0;
+  padding: $space-md;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: $space-xs 0;
+  border-bottom: 1px solid hslaGen($grey-color, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  dt {
+    font-size: $fs-xsm;
+    font-weight: $fw-normal;
+    color: hslaGen($grey-color, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+
+  dd {
+    font-size: $fs-sm;
+    font-weight: $fw-normal;
+    color: hslaGen($primary-color, 1);
+    margin: 0;
+
+    em {
+      color: hslaGen($grey-color, 0.7);
+      font-style: italic;
+    }
+
+    &.amount {
+      font-weight: $fw-bold;
+      color: hslaGen($success-color, 1);
+    }
+
+    &.current-section {
+      font-weight: $fw-bold;
+      color: hslaGen($primary-color, 1);
+      text-transform: capitalize;
+    }
+  }
+}
+
+// Progress specific styles
+.progress-info {
+  padding: $space-md;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 6px;
+  background: hslaGen($grey-color, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: $space-sm 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    hslaGen($primary-color, 1),
+    hslaGen($secondary-color, 1)
+  );
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: $fs-xsm;
+  color: hslaGen($grey-color, 1);
+  text-align: center;
+  display: block;
+  font-weight: $fw-normal;
+  margin-top: $space-xs;
+}
+
+/*=====================================
+ANIMATIONS
+=====================================*/
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/*=====================================
+RESPONSIVE DESIGN
+=====================================*/
+
+// @include breakpoint(map-get($breakpoints, "md"), max) {
+//   .preview-drawer-content {
+//     width: 100%;
+//     max-width: none;
+//   }
+
+//   .preview-drawer-header {
+//     padding: $space-lg;
+//   }
+
+//   .preview-drawer-body {
+//     padding: $space-lg;
+//   }
+
+//   .preview-drawer-footer {
+//     padding: $space-md $space-lg;
+//   }
+
+//   .preview-item {
+//     flex-direction: column;
+//     align-items: flex-start;
+//     gap: $space-xs;
+//   }
+
+//   .preview-label {
+//     min-width: auto;
+//     margin-bottom: $space-xs;
+//   }
+
+//   .preview-value {
+//     text-align: left;
+//   }
+// }
+
+// Focus styles for accessibility
+.preview-drawer-close:focus {
+  outline: 2px solid hslaGen($primary-color, 1);
+  outline-offset: 2px;
+}
+
+// Preview actions (for buttons in preview content)
+.preview-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: $space-sm;
+}

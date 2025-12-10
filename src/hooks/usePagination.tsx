@@ -1,11 +1,12 @@
 import { useCallback, useState } from "react";
-import { IPaginationQuery } from "@interfaces/utils.interface";
+import { PaginationQuery } from "@src/interfaces/common.interface";
 
 export interface PaginationConfig {
   initialPage?: number;
   initialLimit?: number;
   initialSortBy?: string;
-  initialSort?: "asc" | "desc" | "";
+  initialOrder?: "asc" | "desc";
+  initialFilters?: Record<string, any>;
 }
 
 export const useTablePagination = (config: PaginationConfig = {}) => {
@@ -13,15 +14,18 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     initialPage = 1,
     initialLimit = 10,
     initialSortBy = "",
-    initialSort = "",
+    initialOrder = "asc",
+    initialFilters = {},
   } = config;
 
-  const [pagination, setPagination] = useState<IPaginationQuery>({
-    sort: initialSort,
+  const [pagination, setPagination] = useState<PaginationQuery>({
     page: initialPage,
     limit: initialLimit,
     sortBy: initialSortBy,
+    order: initialOrder as "asc" | "desc" | "",
   });
+
+  const [filters, setFilters] = useState(initialFilters);
 
   const handlePageChange = useCallback((page: number) => {
     setPagination((prev) => ({
@@ -38,32 +42,44 @@ export const useTablePagination = (config: PaginationConfig = {}) => {
     }));
   }, []);
 
-  const handleSortChange = useCallback(
-    (sort: "asc" | "desc") => {
-      if (pagination.sortBy === "") {
-        return;
-      }
-      setPagination((prev) => ({
+  const handleSortDirectionChange = useCallback(() => {
+    setPagination((prev) => {
+      const currentOrder = prev.order || "desc"; // Default to desc if empty/undefined
+      const newOrder = currentOrder === "asc" ? "desc" : "asc";
+      return {
         ...prev,
-        sort,
-      }));
-    },
-    [pagination.sortBy]
-  );
+        order: newOrder,
+      };
+    });
+  }, []);
 
   const handleSortByChange = useCallback((sortBy: string) => {
     setPagination((prev) => ({
       ...prev,
       sortBy,
-      sort: sortBy === "" ? "" : prev.sort || "desc",
+      order: sortBy === "" ? "asc" : prev.order || "desc",
+    }));
+  }, []);
+
+  const handleFilterChange = useCallback((key: string, value: any) => {
+    setFilters((prev) => ({
+      ...prev,
+      [key]: value === "" ? undefined : value,
+    }));
+    // Reset to first page when filter changes
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
     }));
   }, []);
 
   return {
     pagination,
+    filters,
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
     handleSortByChange,
+    handleFilterChange,
+    handleSortDirectionChange,
   };
 };

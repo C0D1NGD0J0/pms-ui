@@ -160,6 +160,117 @@
   }
 }
 
+// Send for signature modal styles
+.send-signature-info {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-lg;
+  padding: $space-lg;
+  background-color: hslaGen($primary-color, 0.05);
+  border-radius: $border-radius-md;
+  border-left: 4px solid hslaGen($primary-color, 1);
+  margin-bottom: $space-xl;
+
+  .info-icon {
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    flex-shrink: 0;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background-color: hslaGen($primary-color, 0.1);
+
+    i {
+      font-size: $fs-xlg;
+      color: hslaGen($primary-color, 1);
+    }
+  }
+
+  .info-text {
+    margin: 0;
+    font-size: $fs-sm;
+    align-self: center;
+    font-weight: $fw-bold;
+    line-height: $base-line-height;
+    color: hslaGen($dark-grey-color, 1);
+  }
+}
+
+.recipients-list {
+  margin-bottom: $space-xl;
+  max-height: 300px;
+  overflow-y: auto;
+
+  .recipient-item {
+    display: flex;
+    align-items: center;
+    gap: $space-md;
+    padding: $space-md;
+    border: 1px solid hslaGen($light-grey-color, 1);
+    border-radius: $border-radius-md;
+    background-color: hslaGen($white-color, 1);
+    transition: all 0.2s ease;
+
+    &:not(:last-child) {
+      margin-bottom: $space-md;
+    }
+
+    &:hover {
+      border-color: hslaGen($primary-color, 0.3);
+      background-color: hslaGen($primary-color, 0.02);
+    }
+
+    > i {
+      flex-shrink: 0;
+      font-size: $fs-xlg;
+      color: hslaGen($primary-color, 0.7);
+    }
+
+    .recipient-details {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: $space-xs;
+
+      strong {
+        font-size: $fs-md;
+        font-weight: $fw-bold;
+        color: hslaGen($dark-grey-color, 1);
+      }
+
+      .recipient-label {
+        font-size: $fs-sm;
+        color: hslaGen($grey-color, 1);
+      }
+    }
+  }
+}
+
+.modal-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-md;
+  padding: $space-md;
+  background-color: hslaGen($alice-blue-color, 1);
+  border-radius: $border-radius-md;
+  border: 1px solid hslaGen($primary-color, 0.15);
+
+  > i {
+    flex-shrink: 0;
+    font-size: $fs-lg;
+    color: hslaGen($primary-color, 1);
+    margin-top: $space-xs;
+  }
+
+  p {
+    margin: 0;
+    font-size: $fs-sm;
+    color: hslaGen($dark-grey-color, 1);
+    line-height: $base-line-height;
+  }
+}
+
 @keyframes modal-fade-in {
   from {
     opacity: 0;

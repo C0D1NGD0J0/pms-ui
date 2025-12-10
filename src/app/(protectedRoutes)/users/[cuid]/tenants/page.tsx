@@ -42,7 +42,7 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     sortOptions,
     pagination,
     totalCount,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleSortByChange,
     isLoading,
@@ -165,7 +165,7 @@ export default function TenantsPage({ params }: TenantsPageProps) {
                 filterOptions={sortOptions}
                 handlePageChange={handlePageChange}
                 handleSortByChange={handleSortByChange}
-                handleSortChange={handleSortChange}
+                handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditTenant}
                 onViewDetails={handleViewTenantDetails}

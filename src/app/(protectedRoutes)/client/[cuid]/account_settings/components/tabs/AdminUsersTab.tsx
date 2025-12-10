@@ -24,7 +24,7 @@ export function AdminUsersTab({
     sortOptions,
     pagination,
     totalCount,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleSortByChange,
     isLoading,
@@ -55,7 +55,7 @@ export function AdminUsersTab({
         filterOptions={sortOptions}
         handlePageChange={handlePageChange}
         handleSortByChange={handleSortByChange}
-        handleSortChange={handleSortChange}
+        handleSortDirectionChange={handleSortDirectionChange}
         isLoading={isLoading}
         onEdit={handleEditAdmin}
         onToggleStatus={handleToggleAdminStatus}

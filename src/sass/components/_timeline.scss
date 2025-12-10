@@ -1,0 +1,79 @@
+@use "../abstract/index" as *;
+
+.timeline {
+  position: relative;
+  padding-left: 3rem;
+  list-style: none;
+  margin: 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: $space-sm;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(
+      180deg,
+      hslaGen($primary-color) 0%,
+      #e9ecef 100%
+    );
+  }
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: $fs-xlg;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: -2.4rem;
+    top: $base-margin;
+    width: 1.6rem;
+    height: 1.6rem;
+    @include border-radius(50%);
+    background: hslaGen($white-color);
+    border: 3px solid hslaGen($primary-color);
+    z-index: 1;
+  }
+
+  &.completed::before {
+    background: hslaGen($success-color);
+    border-color: hslaGen($success-color);
+  }
+
+  &.upcoming::before {
+    background: hslaGen($white-color);
+    border-color: #e9ecef;
+  }
+
+  &__date {
+    font-size: $fs-sm;
+    color: hslaGen($grey-color);
+    font-weight: $fw-bold;
+    margin-bottom: $base-margin;
+  }
+
+  &__title {
+    font-size: $base-font-size;
+    color: hslaGen($primary-color);
+    font-weight: $fw-bold;
+    margin-bottom: $space-xs;
+  }
+
+  &__desc {
+    font-size: 1.3rem;
+    color: hslaGen($grey-color);
+  }
+
+  &:focus-visible {
+    outline: 2px solid hslaGen($primary-color);
+    outline-offset: 2px;
+    @include border-radius($border-radius-lg);
+  }
+}

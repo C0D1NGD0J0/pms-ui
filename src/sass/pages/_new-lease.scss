@@ -1,0 +1,142 @@
+@use "../abstract/index" as *;
+@use "sass:map";
+
+// New Lease Page Styles
+.add-lease {
+  // Info Banner (used in PropertySelectionTab and SignatureTab)
+  .info-banner,
+  .alert-warning {
+    margin-bottom: $space-lg;
+    padding: $space-md;
+    @include border-radius($border-radius-md);
+    @include flex(row, flex-start, flex-start, map.get($grid-gaps, "sm"));
+  }
+
+  // Info Banner (blue - for informational messages)
+  .info-banner {
+    background-color: hslaGen($alice-blue-color);
+    border-left: 4px solid hslaGen($primary-color);
+
+    p {
+      margin: 0;
+      font-size: $fs-sm;
+
+      strong {
+        display: block;
+      }
+    }
+
+    ul {
+      margin: $space-sm 0 0 $space-lg;
+      padding-left: 0;
+      font-size: $fs-xsm;
+
+      li {
+        margin-bottom: $space-xs;
+
+        strong {
+          font-weight: $fw-normal;
+        }
+      }
+    }
+  }
+
+  // Warning Banner (yellow - for warnings/alerts)
+  .alert-warning {
+    background-color: hslaGen($light-gold-color);
+    border: 1px solid hslaGen($warning-color);
+
+    i {
+      font-size: $fs-lg;
+      color: hslaGen($warning-color);
+      flex-shrink: 0;
+    }
+
+    > div {
+      flex: 1;
+
+      strong {
+        margin-bottom: $space-sm;
+        font-size: $fs-sm;
+      }
+
+      p {
+        margin: 0 0 $space-sm 0;
+        font-size: $fs-sm;
+      }
+
+      ul {
+        margin: $space-sm 0;
+        list-style: inside disc;
+        padding-left: $space-lg;
+
+        li {
+          margin-bottom: $space-xs;
+
+          strong {
+            font-weight: $fw-normal;
+          }
+        }
+      }
+
+      a {
+        color: hslaGen($primary-color);
+        text-decoration: underline;
+        font-size: $fs-sm;
+
+        &:hover {
+          color: hslaGen($blue-ink-color);
+        }
+      }
+    }
+  }
+
+  // Form Actions (bottom buttons)
+  .form-actions {
+    margin-top: $space-xl;
+    padding: $space-lg;
+    border-top: 1px solid hslaGen($light-grey-color, 0.3);
+    @include flex(row, flex-end, center, $space-md);
+
+    @include breakpoint(sm, max) {
+      @include flex(column, stretch, stretch, $space-sm);
+
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+
+  // Co-Tenant Card
+  .cotenant-card {
+    border: 1px solid hslaGen($light-grey-color);
+    border-radius: $border-radius-md;
+    padding: $space-lg;
+    background: hslaGen($white-color);
+
+    &__header {
+      @include flex(row, space-between, center, $space-md);
+      margin-bottom: $space-lg;
+      padding-bottom: $space-md;
+      border-bottom: 1px solid hslaGen($light-grey-color, 0.5);
+
+      h5 {
+        font-size: $fs-sm;
+        font-weight: $fw-bold;
+        color: hslaGen($primary-color);
+      }
+    }
+  }
+
+  // Utilities Grid
+  .utilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: $space-md;
+  }
+
+  // Section Header with Action
+  .section-header-with-action {
+    @include flex(row, space-between, center, $space-md);
+  }
+}

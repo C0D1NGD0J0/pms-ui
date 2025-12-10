@@ -12,7 +12,7 @@ interface EmployeeTableViewProps {
   filterOptions: FilterOption[];
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
-  handleSortChange: (sort: "asc" | "desc") => void;
+  handleSortDirectionChange: () => void;
   isLoading?: boolean;
   onEdit: (employee: FilteredUserTableData) => void;
   onToggleStatus: (employeeId: string, isActive: boolean) => void;
@@ -28,7 +28,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   filterOptions,
   handlePageChange,
   handleSortByChange,
-  handleSortChange,
+  handleSortDirectionChange,
   isLoading = false,
   onEdit,
   onToggleStatus,
@@ -197,9 +197,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
           handleSortByChange(value);
         },
         sortDirection: pagination.sort,
-        onSortDirectionChange: (sort: "asc" | "desc") => {
-          handleSortChange(sort);
-        },
+        onSortDirectionChange: handleSortDirectionChange,
       }}
       pagination={{
         total: totalCount,

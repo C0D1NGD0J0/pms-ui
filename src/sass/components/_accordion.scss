@@ -75,10 +75,6 @@
     font-weight: $fw-bold;
   }
 
-  &.completed {
-    color: hslaGen($success-color, 1);
-  }
-
   &.has-error {
     .error-indicator {
       position: absolute;
@@ -136,20 +132,69 @@
   font-size: $fs-md;
 }
 
+// Preview Controls
+.accordion-preview-controls {
+  margin-top: $space-lg;
+  padding-top: $space-lg;
+  border-top: 1px solid hslaGen($grey-color, 0.2);
+}
+
+.accordion-preview-btn {
+  width: 100%;
+  padding: $space-md;
+  border: 2px solid hslaGen($primary-color, 0.2);
+  border-radius: $border-radius-lg;
+  background: linear-gradient(
+    135deg,
+    hslaGen($primary-color, 0.05),
+    hslaGen($primary-color, 0.1)
+  );
+  color: hslaGen($primary-color, 1);
+  font-weight: $fw-bold;
+  font-size: $fs-base;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $space-sm;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  i {
+    font-size: $fs-lg;
+  }
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      hslaGen($primary-color, 0.1),
+      hslaGen($primary-color, 0.2)
+    );
+    border-color: hslaGen($primary-color, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px hslaGen($primary-color, 0.15);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
 // Accordion sections
 .accordion-sections {
   display: flex;
   flex-direction: column;
   gap: $space-md;
   flex: 1;
-  min-height: 500px;
+  min-height: 50rem;
 }
 
 .accordion-section {
   background: hslaGen($white-color, 1);
   border-radius: $base-border-radius;
   box-shadow: $box-shadow;
-  overflow: hidden;
+  height: max-content;
   transition: all 0.3s ease;
 
   &.completed {
@@ -310,6 +355,78 @@
     color: hslaGen($grey-color, 1);
     margin: 0;
   }
+}
+
+// Preview Panel
+.accordion-preview-panel {
+  position: sticky;
+  top: $space-md;
+  height: fit-content;
+  max-height: calc(100vh - #{$space-xl});
+  background: hslaGen($white-color, 1);
+  border-radius: $base-border-radius;
+  box-shadow: $box-shadow;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: hslaGen($background-color, 0.5);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: hslaGen($grey-color, 0.3);
+    border-radius: 4px;
+
+    &:hover {
+      background: hslaGen($grey-color, 0.5);
+    }
+  }
+
+  @include breakpoint("1024px", max) {
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+}
+
+// Preview Component
+.accordion-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.accordion-preview-header {
+  padding: $space-lg;
+  border-bottom: 1px solid hslaGen($grey-color, 0.2);
+  background: hslaGen($background-color, 0.5);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.accordion-preview-title {
+  font-size: $fs-md;
+  font-weight: $fw-bold;
+  margin-bottom: $space-xs;
+  color: hslaGen($primary-color, 1);
+}
+
+.accordion-preview-subtitle {
+  font-size: $fs-sm;
+  color: hslaGen($grey-color, 1);
+  margin: 0;
+}
+
+.accordion-preview-content {
+  padding: $space-lg;
+  flex: 1;
 }
 
 // Responsive adjustments

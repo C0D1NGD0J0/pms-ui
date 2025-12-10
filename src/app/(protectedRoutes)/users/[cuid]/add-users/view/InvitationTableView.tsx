@@ -18,7 +18,7 @@ interface InvitationTableViewProps {
   totalCount: number;
   cuid: string;
   pagination: IPaginationQuery;
-  handleSortChange: (sort: "asc" | "desc") => void;
+  handleSortDirectionChange: () => void;
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
   isResending?: boolean;
@@ -35,7 +35,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
   filterOptions,
   totalCount,
   pagination,
-  handleSortChange,
+  handleSortDirectionChange,
   handlePageChange,
   handleSortByChange,
   isResending = false,
@@ -221,9 +221,7 @@ export const InvitationTableView: React.FC<InvitationTableViewProps> = ({
                   handleSortByChange(value);
                 },
                 sortDirection: pagination.sort,
-                onSortDirectionChange: (sort: "asc" | "desc") => {
-                  handleSortChange(sort);
-                },
+                onSortDirectionChange: handleSortDirectionChange,
               }}
               pagination={{
                 total: totalCount,

@@ -1,6 +1,10 @@
 import _ from "lodash";
 import axios, { AxiosError } from "axios";
-import { IErrorReturnData, ParsedError } from "@interfaces/index";
+import {
+  NestedQueryParams,
+  IErrorReturnData,
+  ParsedError,
+} from "@interfaces/index";
 
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
   const phoneRegex =
@@ -245,3 +249,33 @@ export function parseError(error: any): ParsedError {
     statusCode: error.status || error.statusCode,
   };
 }
+
+export const buildNestedQuery = (params: NestedQueryParams): string => {
+  const queryString = new URLSearchParams();
+
+  if (params.pagination) {
+    Object.entries(params.pagination).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        queryString.append(`pagination[${key}]`, value.toString());
+      }
+    });
+  }
+
+  if (params.filter) {
+    Object.entries(params.filter).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        queryString.append(`filter[${key}]`, value.toString());
+      }
+    });
+  }
+
+  if (params.meta) {
+    Object.entries(params.meta).forEach(([key, value]) => {
+      if (value !== undefined && value !== "") {
+        queryString.append(`meta[${key}]`, value.toString());
+      }
+    });
+  }
+
+  return queryString.toString();
+};

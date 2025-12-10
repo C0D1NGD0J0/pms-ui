@@ -5,6 +5,7 @@ import { Loading } from "@components/Loading";
 import { Skeleton } from "@components/Skeleton";
 import { Button } from "@components/FormElements";
 import { TabItem } from "@components/Tab/interface";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { TabContainer } from "@components/Tab/components";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
@@ -31,7 +32,7 @@ interface VendorDetailPageProps {
   }>;
 }
 
-export default function VendorDetailPage({ params }: VendorDetailPageProps) {
+function VendorDetailPage({ params }: VendorDetailPageProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { cuid, vuid } = React.use(params);
@@ -313,3 +314,5 @@ export default function VendorDetailPage({ params }: VendorDetailPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(VendorDetailPage);

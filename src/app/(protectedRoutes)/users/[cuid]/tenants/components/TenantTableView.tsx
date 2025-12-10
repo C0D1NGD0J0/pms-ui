@@ -4,7 +4,10 @@ import { Button } from "@components/FormElements";
 import { TableColumn, Table } from "@components/Table";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { IPaginationQuery, FilterOption } from "@interfaces/utils.interface";
+import {
+  IPaginationQuery,
+  FilterOption,
+} from "@interfaces/utils.interface";
 import {
   getLeaseStatusBadgeClass,
   getRentStatusBadgeClass,
@@ -18,7 +21,7 @@ interface TenantTableViewProps {
   filterOptions: FilterOption[];
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
-  handleSortChange: (sort: "asc" | "desc") => void;
+  handleSortDirectionChange: () => void;
   isLoading?: boolean;
   onEdit: (tenant: FilteredUserTableData) => void;
   onViewDetails: (tenant: FilteredUserTableData) => void;
@@ -33,7 +36,7 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
   filterOptions,
   handlePageChange,
   handleSortByChange,
-  handleSortChange,
+  handleSortDirectionChange,
   isLoading = false,
   onEdit,
   onViewDetails,
@@ -165,9 +168,7 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
           handleSortByChange(value);
         },
         sortDirection: pagination.sort,
-        onSortDirectionChange: (sort: "asc" | "desc") => {
-          handleSortChange(sort);
-        },
+        onSortDirectionChange: handleSortDirectionChange,
       }}
       pagination={{
         total: totalCount,

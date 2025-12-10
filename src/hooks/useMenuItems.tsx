@@ -36,19 +36,19 @@ export const useMenuItems = () => {
           visible: () => permissions.canAccess("dashboard"),
         },
         {
-          path: "/properties",
+          path: `/properties/${currentUser?.client.cuid}`,
           icon: "bx bx-building-house",
           label: "Properties",
           visible: () => permissions.canAccess("properties"),
         },
         {
-          path: "/leases",
+          path: `/leases/${currentUser?.client.cuid}`,
           icon: "bx bx-book-open",
           label: "Leases",
           visible: () => permissions.canAccess("leases"),
         },
         {
-          path: "/service-requests",
+          path: `/service_requests/${currentUser?.client.cuid}`,
           icon: "bx bxs-briefcase-alt",
           label: "Service Requests",
           visible: () => permissions.canAccess("service_requests"),

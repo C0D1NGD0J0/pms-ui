@@ -16,6 +16,7 @@ interface FormInputProps {
     | "time";
   value?: string | number;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
+  onFocus?: (e: FocusEvent<HTMLInputElement>) => void;
   onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
   onkeydown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   placeholder?: string;
@@ -42,6 +43,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       type = "text",
       value,
       onChange,
+      onFocus,
       onBlur,
       onkeydown,
       placeholder = " ",
@@ -76,7 +78,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
       .filter(Boolean)
       .join(" ");
 
-    // Always render with wrapper to support both individual disabled and form inert states
+    // always render with wrapper to support both individual disabled and form inert states
     return (
       <div className="form-input-wrapper">
         <input
@@ -86,6 +88,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
           type={type}
           value={value}
           onChange={readOnly ? () => "" : onChange}
+          onFocus={onFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
           className={inputClasses}

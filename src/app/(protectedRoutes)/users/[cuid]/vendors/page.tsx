@@ -8,6 +8,7 @@ import { ChartContainer } from "@components/Charts";
 import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { AddUserModal } from "@components/UserManagement";
 import { PageHeader } from "@components/PageElements/Header";
 import { generateLegendColors } from "@src/utils/employeeUtils";
@@ -29,7 +30,7 @@ interface VendorsPageProps {
   }>;
 }
 
-export default function VendorsPage({ params }: VendorsPageProps) {
+function VendorsPage({ params }: VendorsPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -43,7 +44,7 @@ export default function VendorsPage({ params }: VendorsPageProps) {
     serviceOptions,
     pagination,
     totalCount,
-    handleSortChange,
+    handleSortDirectionChange,
     handlePageChange,
     handleServiceTypeFilter,
     isLoading,
@@ -184,7 +185,7 @@ export default function VendorsPage({ params }: VendorsPageProps) {
                 filterOptions={serviceOptions}
                 handlePageChange={handlePageChange}
                 handleSortByChange={handleServiceTypeFilter}
-                handleSortChange={handleSortChange}
+                handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditVendor}
                 onMessage={handleMessageVendor}
@@ -265,3 +266,5 @@ export default function VendorsPage({ params }: VendorsPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(VendorsPage);

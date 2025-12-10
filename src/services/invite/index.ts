@@ -1,12 +1,13 @@
 import axios from "@configs/axios";
+import { buildNestedQuery } from "@utils/helpers";
 import { withErrorHandling } from "@utils/serviceHelper";
+import { NestedQueryParams } from "@interfaces/common.interface";
 import { AccountSetupFormValues } from "@src/validations/invitation.validations";
 import {
   IInvitationAcceptResponse,
   IResendInvitationData,
   IInvitationTableData,
   IInvitationFormData,
-  IInvitationQuery,
   IInvitationStats,
   IUserRole,
 } from "@src/interfaces/invitation.interface";
@@ -91,24 +92,15 @@ class InvitationService {
     }
   }
 
-  async getInvitations(cuid: string, query: IInvitationQuery) {
+  async getInvitations(cuid: string, params?: NestedQueryParams) {
     try {
-      const params = new URLSearchParams({
-        page: query.page?.toString() || "1",
-        limit: query.limit?.toString() || "10",
-        ...(query.sort && { sort: query.sort }),
-        ...(query.sortBy && { sortBy: query.sortBy }),
-        ...(query.status && { status: query.status }),
-        ...(query.role && { role: query.role }),
-      });
+      const queryString = buildNestedQuery(params || {});
+      let url = `${this.baseUrl}/clients/${cuid}`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
 
-      const response = await axios.get(
-        `${this.baseUrl}/clients/${cuid}?${params.toString()}`,
-        {
-          ...this.axiosConfig,
-        }
-      );
-
+      const response = await axios.get(url, this.axiosConfig);
       return response;
     } catch (error) {
       console.error("Error fetching invitations:", error);

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { AccordionContext } from "../hook";
+import { PreviewDrawer } from "./PreviewDrawer";
 import { AccordionSection } from "./AccordionSection";
 import { AccordionContainerProps } from "../interface";
 
@@ -12,7 +13,15 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
   allowMultipleOpen = false,
   className = "",
   ariaLabel = "Accordion",
+  // Drawer props
+  showPreviewDrawer = false,
+  renderPreview,
+  onPreviewToggle,
+  previewData,
+  previewTitle = "Preview",
+  previewActions,
 }) => {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(
     defaultActiveId || items[0]?.id || null
   );
@@ -53,6 +62,19 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
   const completedCount = items.filter(
     (item) => item.isCompleted || completedIds.has(item.id)
   ).length;
+
+  const activeItem = items.find((item) => item.id === activeId) || null;
+
+  const handleDrawerToggle = () => {
+    setIsDrawerOpen(!isDrawerOpen);
+    if (onPreviewToggle) {
+      onPreviewToggle(previewData);
+    }
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
 
   return (
     <AccordionContext.Provider
@@ -113,6 +135,20 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
                 </span>
               </div>
             </div>
+
+            {/* Preview Drawer Toggle Button */}
+            {showPreviewDrawer && (
+              <div className="accordion-preview-controls">
+                <button
+                  className="accordion-preview-btn"
+                  onClick={handleDrawerToggle}
+                  aria-label="Toggle preview drawer"
+                >
+                  <i className="bx bx-show"></i>
+                  <span>Preview</span>
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -142,6 +178,18 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
           )}
         </div>
       </div>
+
+      {/* Preview Drawer */}
+      {showPreviewDrawer && (
+        <PreviewDrawer
+          isOpen={isDrawerOpen}
+          onClose={handleDrawerClose}
+          title={previewTitle}
+          actions={previewActions}
+        >
+          {renderPreview ? renderPreview(activeItem, activeId) : null}
+        </PreviewDrawer>
+      )}
     </AccordionContext.Provider>
   );
 };

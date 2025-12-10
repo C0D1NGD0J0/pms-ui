@@ -5,6 +5,7 @@ import { Loading } from "@components/Loading";
 import { FormSection } from "@components/FormLayout";
 import { Button, Form } from "@components/FormElements";
 import { PanelsWrapper, Panel } from "@components/Panel";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageHeader } from "@components/PageElements/Header";
 import { useGetVendor } from "@users/vendors/hooks/vendorHooks";
@@ -23,7 +24,7 @@ interface UserEditPageProps {
   }>;
 }
 
-export default function UserEditPage({ params }: UserEditPageProps) {
+function UserEditPage({ params }: UserEditPageProps) {
   const { cuid, uid } = React.use(params);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -274,3 +275,5 @@ export default function UserEditPage({ params }: UserEditPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(UserEditPage);

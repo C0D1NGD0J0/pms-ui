@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useNotification } from "@hooks/useNotification";
 import { vendorService, userService } from "@src/services";
+import {
+  IFilteredVendorsParams,
+  VendorStats,
+} from "@src/interfaces";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { COMMON_STATUS_OPTIONS, COMMON_SORT_OPTIONS } from "@utils/constants";
 import {
@@ -8,15 +12,19 @@ import {
   VendorDetailResponse,
 } from "@interfaces/user.interface";
 import {
-  IFilteredVendorsParams,
-  VendorQueryParams,
-  VendorStats,
-} from "@src/interfaces";
-import {
   VENDOR_SERVICE_OPTIONS,
   VENDOR_QUERY_KEYS,
   USER_QUERY_KEYS,
 } from "@utils/constants";
+
+// Local VendorQueryParams interface
+interface VendorQueryParams {
+  status?: "active" | "inactive";
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sort?: "asc" | "desc";
+}
 
 export const useGetVendor = (
   cuid: string,
@@ -103,7 +111,7 @@ export const useGetVendors = (
   });
 
   const updateQueryParams = (newParams: Partial<VendorQueryParams>) => {
-    setQueryParams((prev) => ({
+    setQueryParams((prev: VendorQueryParams) => ({
       ...prev,
       ...newParams,
     }));
@@ -117,8 +125,10 @@ export const useGetVendors = (
     updateQueryParams({ limit, page: 1 });
   };
 
-  const handleSortChange = (sort: "asc" | "desc") => {
-    updateQueryParams({ sort });
+  const handleSortDirectionChange = () => {
+    const currentSort = queryParams.sort || "desc";
+    const newSort = currentSort === "asc" ? "desc" : "asc";
+    updateQueryParams({ sort: newSort });
   };
 
   const handleSortByChange = (sortBy: string) => {
@@ -157,7 +167,7 @@ export const useGetVendors = (
 
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
+    handleSortDirectionChange,
     handleSortByChange,
     handleStatusFilter,
     handleServiceTypeFilter,
@@ -252,7 +262,7 @@ export const useGetVendorTeamMembers = (
   });
 
   const updateQueryParams = (newParams: Partial<VendorQueryParams>) => {
-    setQueryParams((prev) => ({
+    setQueryParams((prev: VendorQueryParams) => ({
       ...prev,
       ...newParams,
     }));
@@ -266,8 +276,10 @@ export const useGetVendorTeamMembers = (
     updateQueryParams({ limit, page: 1 });
   };
 
-  const handleSortChange = (sort: "asc" | "desc") => {
-    updateQueryParams({ sort });
+  const handleSortDirectionChange = () => {
+    const currentSort = queryParams.sort || "desc";
+    const newSort = currentSort === "asc" ? "desc" : "asc";
+    updateQueryParams({ sort: newSort });
   };
 
   const handleSortByChange = (sortBy: string) => {
@@ -306,7 +318,7 @@ export const useGetVendorTeamMembers = (
 
     handlePageChange,
     handleLimitChange,
-    handleSortChange,
+    handleSortDirectionChange,
     handleSortByChange,
     handleStatusFilter,
     handleServiceTypeFilter,

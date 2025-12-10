@@ -127,7 +127,7 @@ export const useGetEmployees = (
     // Handlers (delegate to base hook)
     handlePageChange: baseHook.handlePageChange,
     handleLimitChange: baseHook.handleLimitChange,
-    handleSortChange: baseHook.handleSortChange,
+    handleSortDirectionChange: baseHook.handleSortDirectionChange,
     handleSortByChange: baseHook.handleSortByChange,
     handleSearch: baseHook.handleSearch,
     handleRoleFilter, // Custom employee role handler

@@ -3,6 +3,7 @@
 import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { Button } from "@src/components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { PageHeader } from "@components/PageElements/Header";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
@@ -10,7 +11,7 @@ import { AccountTabs } from "./components/AccountTabs";
 import { AccountOverview } from "./components/AccountOverview";
 import { useGetClientDetails, useClientForm } from "./hook/index";
 
-const AccountPage = ({ params }: { params: Promise<{ cuid: string }> }) => {
+function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const permissions = useUnifiedPermissions();
   const { cuid } = use(params);
@@ -146,6 +147,6 @@ const AccountPage = ({ params }: { params: Promise<{ cuid: string }> }) => {
       />
     </div>
   );
-};
+}
 
-export default AccountPage;
+export default withClientAccess(AccountPage);

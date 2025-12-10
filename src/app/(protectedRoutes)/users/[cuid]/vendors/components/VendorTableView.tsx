@@ -11,7 +11,7 @@ interface VendorTableViewProps {
   filterOptions: FilterOption[];
   handlePageChange: (page: number) => void;
   handleSortByChange: (sortBy: string) => void;
-  handleSortChange: (sort: "asc" | "desc") => void;
+  handleSortDirectionChange: () => void;
   isLoading?: boolean;
   onEdit: (vendor: FilteredUserTableData) => void;
   onMessage: (vendor: FilteredUserTableData) => void;
@@ -25,7 +25,7 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
   filterOptions,
   handlePageChange,
   handleSortByChange,
-  handleSortChange,
+  handleSortDirectionChange,
   isLoading = false,
   onEdit,
   onMessage,
@@ -159,9 +159,7 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
             handleSortByChange(value);
           },
           sortDirection: pagination.sort,
-          onSortDirectionChange: (sort: "asc" | "desc") => {
-            handleSortChange(sort);
-          },
+          onSortDirectionChange: handleSortDirectionChange,
         }}
         pagination={{
           total: totalCount,

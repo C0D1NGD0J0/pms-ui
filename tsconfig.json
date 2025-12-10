@@ -38,8 +38,9 @@
       "@test-data/*": ["src/test-data/*"],
       "@providers/*": ["src/providers/*"],
 
-      "@properties/*": ["src/app/(protectedRoutes)/properties/*"],
+      "@properties/*": ["src/app/(protectedRoutes)/properties/[cuid]/*"],
       "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/[cuid]/*"],
+      "@leases/*": ["src/app/(protectedRoutes)/leases/[cuid]/*"],
       "@users/*": ["src/app/(protectedRoutes)/users/[cuid]/*"],
       "@auth/*": ["src/app/(auth)/*"],
 

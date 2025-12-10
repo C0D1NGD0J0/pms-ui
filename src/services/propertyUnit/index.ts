@@ -1,8 +1,9 @@
 import axios from "@configs/axios";
+import { buildNestedQuery } from "@utils/helpers";
 import { UnitFormValues, IUnit } from "@interfaces/unit.interface";
 import {
   IServerResponseWithPagination,
-  IPaginationQuery,
+  NestedQueryParams,
   IServerResponse,
 } from "@interfaces/utils.interface";
 
@@ -17,17 +18,6 @@ export interface IUpdateUnitRequest extends Partial<UnitFormValues> {
 
 export interface IArchiveUnitsRequest {
   unitIds: string[];
-}
-
-export interface IUnitFilterParams {
-  unitType?: string;
-  status?: string;
-  floor?: number;
-  minRent?: number;
-  maxRent?: number;
-  minArea?: number;
-  maxArea?: number;
-  searchTerm?: string;
 }
 
 class PropertyUnitService {
@@ -53,13 +43,17 @@ class PropertyUnitService {
   async getPropertyUnits(
     cuid: string,
     pid: string,
-    pagination: IPaginationQuery,
-    filterQuery?: Partial<IUnitFilterParams>
+    params?: NestedQueryParams
   ) {
     try {
-      const queryString = this.buildQueryString(filterQuery ?? {}, pagination);
+      const queryString = buildNestedQuery(params || {});
+      let url = `${this.baseUrl}/${cuid}/client_properties/${pid}/units`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+
       const result = await axios.get<IServerResponseWithPagination<IUnit[]>>(
-        `${this.baseUrl}/${cuid}/client_properties/${pid}/units?${queryString}`,
+        url,
         this.axiosConfig
       );
       return result.data;
@@ -122,39 +116,6 @@ class PropertyUnitService {
       console.error("Error deleting unit:", error);
       throw error;
     }
-  }
-
-  private buildQueryString(
-    data: Partial<IUnitFilterParams>,
-    pagination: IPaginationQuery
-  ) {
-    const params = new URLSearchParams({
-      page: pagination.page.toString(),
-      limit: pagination.limit.toString(),
-      ...(pagination.sort && { sort: pagination.sort }),
-      ...(pagination.sortBy && { sortBy: pagination.sortBy }),
-    });
-
-    if (Object.keys(data).length === 0) return params.toString();
-
-    const filterEntries: [string, string | number | null | undefined][] = [
-      ["unitType", data.unitType],
-      ["status", data.status],
-      ["floor", data.floor],
-      ["minRent", data.minRent],
-      ["maxRent", data.maxRent],
-      ["minArea", data.minArea],
-      ["maxArea", data.maxArea],
-      ["searchTerm", data.searchTerm],
-    ];
-
-    filterEntries.forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        params.append(key, value.toString());
-      }
-    });
-
-    return params.toString();
   }
 }
 

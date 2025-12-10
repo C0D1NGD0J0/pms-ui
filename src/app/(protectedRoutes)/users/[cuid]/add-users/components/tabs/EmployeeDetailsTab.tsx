@@ -105,13 +105,11 @@ export const EmployeeDetailsTab = ({
               )
             }
             options={[
-              { value: "", label: "Select department" },
-              { value: "management", label: "Management" },
               { value: "maintenance", label: "Maintenance" },
-              { value: "leasing", label: "Leasing" },
+              { value: "management", label: "Management" },
+              { value: "operations", label: "Operations" },
               { value: "accounting", label: "Accounting" },
-              { value: "marketing", label: "Marketing" },
-              { value: "security", label: "Security" },
+              { value: "", label: "Select department" },
               { value: "other", label: "Other" },
             ]}
           />

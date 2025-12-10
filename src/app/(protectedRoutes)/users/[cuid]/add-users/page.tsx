@@ -43,9 +43,9 @@ const InviteUsers: React.FC = () => {
     invitations,
     totalCount,
     pagination,
-    handleSortChange,
     handlePageChange,
     handleSortByChange,
+    handleSortDirectionChange,
   } = useGetInvitations(client?.cuid || "");
 
   const { handleSubmit, isSubmitting } = useInvitationForm();
@@ -419,9 +419,9 @@ const InviteUsers: React.FC = () => {
           filterOptions={filterOptions}
           totalCount={totalCount}
           pagination={pagination}
-          handleSortChange={handleSortChange}
           handlePageChange={handlePageChange}
           handleSortByChange={handleSortByChange}
+          handleSortDirectionChange={handleSortDirectionChange}
           isResending={resendMutation.isPending}
           isRevoking={revokeMutation.isPending}
           loadingItemId={loadingItemId || undefined}

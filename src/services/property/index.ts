@@ -1,9 +1,11 @@
 import axios from "@configs/axios";
+import { buildNestedQuery } from "@utils/helpers";
+import { NestedQueryParams } from "@src/interfaces";
 import { prepareRequestData } from "@utils/formDataTransformer";
 import {
   IServerResponseWithPagination,
-  IPaginationQuery,
   IServerResponse,
+  PaginationQuery,
 } from "@interfaces/utils.interface";
 import {
   EditPropertyFormValues,
@@ -85,19 +87,17 @@ class PropertyService {
     }
   }
 
-  async getClientProperties(
-    cuid: string,
-    pagination: IPaginationQuery,
-    filterQuery?: Partial<IPropertyFilterParams>
-  ) {
+  async getClientProperties(cuid: string, params?: NestedQueryParams) {
     try {
-      const queryString = this.buildQueryString(filterQuery ?? {}, pagination);
+      const queryString = buildNestedQuery(params || {});
+      let url = `${this.baseUrl}/${cuid}/client_properties`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
+
       const result = await axios.get<
         IServerResponseWithPagination<IPropertyDocument[]>
-      >(
-        `${this.baseUrl}/${cuid}/client_properties?${queryString}`,
-        this.axiosConfig
-      );
+      >(url, this.axiosConfig);
       return result.data;
     } catch (error) {
       console.error("Error fetching client properties:", error);
@@ -105,21 +105,17 @@ class PropertyService {
     }
   }
 
-  async getPendingApprovals(cuid: string, pagination: IPaginationQuery) {
+  async getPendingApprovals(cuid: string, params?: NestedQueryParams) {
     try {
-      const queryString = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-        ...(pagination.sort && { sort: pagination.sort }),
-        ...(pagination.sortBy && { sortBy: pagination.sortBy }),
-      }).toString();
+      const queryString = buildNestedQuery(params || {});
+      let url = `${this.baseUrl}/${cuid}/properties/pending`;
+      if (queryString) {
+        url += `?${queryString}`;
+      }
 
       const result = await axios.get<
         IServerResponseWithPagination<IPropertyDocument[]>
-      >(
-        `${this.baseUrl}/${cuid}/properties/pending?${queryString}`,
-        this.axiosConfig
-      );
+      >(url, this.axiosConfig);
       return result.data;
     } catch (error) {
       console.error("Error fetching pending approvals:", error);
@@ -271,12 +267,12 @@ class PropertyService {
 
   private buildQueryString(
     data: Partial<IPropertyFilterParams>,
-    pagination: IPaginationQuery
+    pagination: PaginationQuery
   ) {
     const params = new URLSearchParams({
       page: pagination.page.toString(),
       limit: pagination.limit.toString(),
-      ...(pagination.sort && { sort: pagination.sort }),
+      ...(pagination.order && { order: pagination.order }),
       ...(pagination.sortBy && { sortBy: pagination.sortBy }),
     });
 

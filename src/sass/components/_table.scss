@@ -387,3 +387,10 @@ tfoot {
     color: hsl(213, 14%, 56%);
   }
 }
+
+// Truncated text for table cells with tooltip
+.truncated-text {
+  @include text-truncate;
+  display: block;
+  width: 100%;
+}

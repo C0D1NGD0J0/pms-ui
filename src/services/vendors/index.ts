@@ -1,6 +1,6 @@
 import axios from "@configs/axios";
+import { IFilteredVendorsParams } from "@src/interfaces";
 import { IListResponseWithPagination } from "@interfaces/user.interface";
-import { IFilteredVendorsParams, VendorQueryParams } from "@src/interfaces";
 
 class VendorService {
   private axiosConfig = {};
@@ -89,7 +89,7 @@ class VendorService {
   async getVendorTeamMembers(
     cuid: string,
     vuid: string,
-    pagination?: VendorQueryParams
+    pagination?: IFilteredVendorsParams
   ) {
     try {
       const q = new URLSearchParams();

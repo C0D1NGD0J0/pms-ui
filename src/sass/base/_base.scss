@@ -36,6 +36,8 @@ html {
   height: 100%;
   font-size: 62.5%; /* 1rem = 10px */
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -46,6 +48,8 @@ body {
   font-family: $font-primary;
   color: hslaGen($primary-color);
   text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  max-width: 100vw;
 
   &[data-theme="light"] {
     @include generate-theme($theme-colors-light);
