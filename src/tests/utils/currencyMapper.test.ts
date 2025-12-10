@@ -60,9 +60,9 @@ describe("currencyMapper", () => {
       expect(getCurrencyInfo("CAD")).toEqual(CURRENCY_DICTIONARY.CAD);
     });
 
-    it("should return USD for invalid currency code", () => {
+    it("should return fallback object for invalid currency code", () => {
       const result = getCurrencyInfo("INVALID");
-      expect(result).toEqual(CURRENCY_DICTIONARY.USD);
+      expect(result).toEqual({ name: "currency", symbol: "INVALID", icon: "bx-money" });
     });
 
     it("should be case-insensitive", () => {
