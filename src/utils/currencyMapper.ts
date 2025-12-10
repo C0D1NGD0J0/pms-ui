@@ -46,7 +46,6 @@ export const formatCurrency = (
   amountInCents: number | string,
   currencyCode: string = "USD"
 ): string => {
-  console.log("Formatting currency:", amountInCents, currencyCode);
   if (isNaN(Number(amountInCents))) {
     return "";
   }
