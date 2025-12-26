@@ -7,13 +7,16 @@ import { createUnitSchema } from "@validations/unit.validations";
 import { PropertyFormValues } from "@interfaces/property.interface";
 import { usePropertyFormRenderer, useNotification } from "@hooks/index";
 import { ChangeEvent, useCallback, useEffect, useState, useMemo } from "react";
-import { useGetPropertyUnits } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 import {
   UnitsFormValues,
   UnitFormValues,
   UnitStatusEnum,
   UnitTypeEnum,
 } from "@interfaces/unit.interface";
+import {
+  useGetClientPropertyManagers,
+  useGetPropertyUnits,
+} from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 
 import { useUnitNumbering } from "./useUnitNumbering";
 
@@ -40,6 +43,12 @@ export function useBaseUnitForm({
   const { isVisible } = usePropertyFormRenderer({
     unitType: currentUnit?.unitType,
   });
+  const { propertyManagers } = useGetClientPropertyManagers(
+    client?.cuid || "",
+    {
+      role: "all",
+    }
+  );
 
   const {
     data: savedUnitsData,
@@ -453,6 +462,12 @@ export function useBaseUnitForm({
       } else if (typeof e !== "string") {
         const { name, value, type } = e.target;
         const checked = (e.target as HTMLInputElement).checked;
+        const finalValue =
+          type === "checkbox"
+            ? checked
+            : type === "number"
+            ? Number(value)
+            : value;
 
         if (name.includes(".")) {
           const [parent, child] = name.split(".");
@@ -466,7 +481,7 @@ export function useBaseUnitForm({
               ...currentUnit,
               [parent]: {
                 ...parentValue,
-                [child]: type === "checkbox" ? checked : value,
+                [child]: finalValue,
               },
             };
             handleUnitChange(updatedUnit);
@@ -474,7 +489,7 @@ export function useBaseUnitForm({
         } else {
           const updatedUnit = {
             ...currentUnit,
-            [name]: type === "checkbox" ? checked : value,
+            [name]: finalValue,
           };
           handleUnitChange(updatedUnit);
         }
@@ -555,6 +570,7 @@ export function useBaseUnitForm({
     allowedUnitTypes,
     canAddUnit,
     isEditableItem,
+    propertyManagers,
 
     customPrefix,
     setCustomPrefix,

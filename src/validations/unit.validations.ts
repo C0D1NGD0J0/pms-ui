@@ -140,6 +140,7 @@ export function createUnitSchema(unitType: UnitType) {
       .string()
       .min(24, "Property unique ID (puid) is required")
       .max(38, "Invalid property unique ID (puid) detected."),
+    managedBy: z.string().optional(),
     specifications: specificationsSchema,
     amenities: amenitiesSchema,
     utilities: utilitiesSchema,
@@ -175,6 +176,7 @@ export const unitSchema = z.object({
     )
     .max(80, "Floor cannot exceed 80"),
   isActive: z.boolean().default(true),
+  managedBy: z.string().optional(),
   specifications: z.object({
     totalArea: z
       .number()

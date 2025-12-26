@@ -33,8 +33,8 @@ interface EditPropertyProps {
 }
 
 export default function EditProperty({ params }: EditPropertyProps) {
-  const { pid } = use(params);
   const router = useRouter();
+  const { pid } = use(params);
   const searchParams = useSearchParams();
 
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);

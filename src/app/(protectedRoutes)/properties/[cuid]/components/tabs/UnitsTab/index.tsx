@@ -54,6 +54,7 @@ export function UnitsTab({ property }: Props) {
     totalUnitsCreated,
     newUnits,
     hasUnsavedChanges,
+    propertyManagers,
   } = useUnitForm({ property });
   const canAddMoreUnits = property.unitInfo?.canAddUnit || canAddUnit;
   const pendingUnits = newUnits.filter(
@@ -309,6 +310,7 @@ export function UnitsTab({ property }: Props) {
             onFieldChange={handleOnChange}
             unitTypeOptions={formConfig?.unitTypes || []}
             unitStatusOptions={formConfig?.unitStatus || []}
+            propertyManagers={propertyManagers}
           />
         </FormSection>
 

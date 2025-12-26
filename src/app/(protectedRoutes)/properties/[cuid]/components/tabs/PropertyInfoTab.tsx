@@ -64,7 +64,7 @@ export function PropertyInfoTab({
       value: status,
       label: status.charAt(0).toUpperCase() + status.slice(1).replace("_", " "),
     })) || [];
-  console.log(form.errors, "------", form.values);
+
   return (
     <>
       <FormSection
@@ -91,16 +91,13 @@ export function PropertyInfoTab({
                 id="totalArea"
                 name="specifications.totalArea"
                 type="number"
-                value={form.values.specifications?.totalArea?.toString() || 0}
+                value={form.values.specifications?.totalArea}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.totalArea", numValue);
+                  form.setFieldValue("specifications.totalArea", Number(value));
                 }}
                 placeholder="Enter total area"
-                min={
-                  formConfig?.specifications?.totalArea?.min?.toString() || "0"
-                }
+                min={formConfig?.specifications?.totalArea?.min}
                 hasError={!!form.errors["specifications.totalArea"]}
               />
             </FormField>
@@ -125,16 +122,16 @@ export function PropertyInfoTab({
                 id="lotSize"
                 name="specifications.lotSize"
                 type="number"
-                value={form.values.specifications.lotSize?.toString() || ""}
+                value={form.values.specifications.lotSize}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.lotSize", numValue);
+                  form.setFieldValue(
+                    "specifications.lotSize",
+                    parseInt(value, 10)
+                  );
                 }}
                 placeholder="Enter lot size"
-                min={
-                  formConfig?.specifications?.lotSize?.min?.toString() || "0"
-                }
+                min={formConfig?.specifications?.lotSize?.min}
                 hasError={!!form.errors["specifications.lotSize"]}
               />
             </FormField>
@@ -161,16 +158,13 @@ export function PropertyInfoTab({
                 id="bedrooms"
                 name="specifications.bedrooms"
                 type="number"
-                value={form.values.specifications.bedrooms.toString()}
+                value={form.values.specifications.bedrooms}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.bedrooms", numValue);
+                  form.setFieldValue("specifications.bedrooms", Number(value));
                 }}
                 placeholder="Enter number of bedrooms"
-                min={
-                  formConfig?.specifications?.bedrooms?.min?.toString() || "0"
-                }
+                min={formConfig?.specifications?.bedrooms?.min}
                 hasError={!!form.errors["specifications.bedrooms"]}
               />
             </FormField>
@@ -195,16 +189,13 @@ export function PropertyInfoTab({
                 id="bathrooms"
                 name="specifications.bathrooms"
                 type="number"
-                value={form.values.specifications.bathrooms.toString()}
+                value={form.values.specifications.bathrooms}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.bathrooms", numValue);
+                  form.setFieldValue("specifications.bathrooms", Number(value));
                 }}
                 placeholder="Enter number of bathrooms"
-                min={
-                  formConfig?.specifications?.bathrooms?.min?.toString() || "0"
-                }
+                min={formConfig?.specifications?.bathrooms?.min}
                 step="0.5"
                 hasError={!!form.errors["specifications.bathrooms"]}
               />
@@ -232,14 +223,13 @@ export function PropertyInfoTab({
                 id="floors"
                 name="specifications.floors"
                 type="number"
-                value={form.values.specifications.floors.toString()}
+                value={form.values.specifications.floors}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.floors", numValue);
+                  form.setFieldValue("specifications.floors", Number(value));
                 }}
                 placeholder="Enter number of floors"
-                min={formConfig?.specifications?.floors?.min?.toString() || "1"}
+                min={formConfig?.specifications?.floors?.min}
                 hasError={!!form.errors["specifications.floors"]}
               />
             </FormField>
@@ -262,17 +252,16 @@ export function PropertyInfoTab({
                 id="garageSpaces"
                 name="specifications.garageSpaces"
                 type="number"
-                value={form.values.specifications.garageSpaces.toString()}
+                value={form.values.specifications.garageSpaces}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.garageSpaces", numValue);
+                  form.setFieldValue(
+                    "specifications.garageSpaces",
+                    Number(value)
+                  );
                 }}
                 placeholder="Enter number of garage spaces"
-                min={
-                  formConfig?.specifications?.garageSpaces?.min?.toString() ||
-                  "0"
-                }
+                min={formConfig?.specifications?.garageSpaces?.min}
                 hasError={!!form.errors["specifications.garageSpaces"]}
               />
             </FormField>
@@ -301,16 +290,15 @@ export function PropertyInfoTab({
                 id="maxOccupants"
                 onChange={(e) => {
                   const value = e.target.value;
-                  const numValue = value === "" ? 0 : parseInt(value, 10);
-                  form.setFieldValue("specifications.maxOccupants", numValue);
+                  form.setFieldValue(
+                    "specifications.maxOccupants",
+                    Number(value)
+                  );
                 }}
                 name="specifications.maxOccupants"
                 placeholder="Enter maximum number of occupants"
-                value={form.values.specifications?.maxOccupants || 0}
-                min={
-                  formConfig?.specifications?.maxOccupants?.min?.toString() ||
-                  "1"
-                }
+                value={form.values.specifications?.maxOccupants}
+                min={formConfig?.specifications?.maxOccupants?.min}
                 hasError={!!form.errors["specifications.maxOccupants"]}
               />
             </FormField>
@@ -365,17 +353,13 @@ export function PropertyInfoTab({
                 id="maxAllowedUnits"
                 name="maxAllowedUnits"
                 type="number"
-                value={form.values.maxAllowedUnits?.toString() || "1"}
+                value={form.values.maxAllowedUnits}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const defaultUnits =
-                    PropertyTypeManager.getDefaultUnits(propertyType);
-                  const numValue =
-                    value === "" ? defaultUnits : parseInt(value, 10);
-                  form.setFieldValue("maxAllowedUnits", numValue);
+                  form.setFieldValue("maxAllowedUnits", parseInt(value, 10));
                 }}
                 placeholder="Enter total building units"
-                min={1}
+                min={formConfig?.specifications?.maxAllowedUnits?.min}
                 max={250}
                 hasError={!!form.errors["maxAllowedUnits"]}
               />

@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Modal } from "@components/FormElements/Modal";
 import { useNotification } from "@hooks/useNotification";
 import { FileInput, Button } from "@components/FormElements";
-import { useCsvUpload } from "@app/(protectedRoutes)/properties/[cuid]/hooks/useCsvUpload";
+import { useCsvUpload } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 
 interface CSVUploadModalProps {
   isOpen: boolean;
