@@ -1,5 +1,6 @@
 export enum LeaseStatusEnum {
   DRAFT = "draft",
+  DRAFT_RENEWAL = "draft_renewal",
   PENDING_SIGNATURE = "pending_signature",
   ACTIVE = "active",
   EXPIRED = "expired",
@@ -531,4 +532,37 @@ export interface LeaseFinancialSummary {
   totalOwed: number;
   lastPaymentDate: string | null;
   nextPaymentDate: string;
+}
+
+// Lease Renewal Interfaces
+export interface LeaseRenewalFormValues {
+  duration: LeaseDuration;
+  fees: LeaseFees;
+  renewalOptions?: RenewalOptions & {
+    enableAutoSendForSignature?: boolean;
+    daysBeforeExpiryToAutoSendSignature?: number;
+    daysBeforeExpiryToGenerateRenewal?: number;
+  };
+  petPolicy?: PetPolicy;
+  coTenants?: CoTenant[];
+  utilitiesIncluded?: UtilityEnum[];
+  legalTerms?: string;
+  internalNotes?: string;
+}
+
+export interface LeaseRenewalRequest extends LeaseRenewalFormValues {
+  previousLeaseId: string;
+}
+
+export interface LeaseRenewalResponse {
+  success: boolean;
+  message: string;
+  data: {
+    luid: string;
+    status: LeaseStatusEnum.DRAFT_RENEWAL;
+    approvalStatus: string;
+    previousLeaseId: string;
+    duration: LeaseDuration;
+    fees: LeaseFees;
+  };
 }

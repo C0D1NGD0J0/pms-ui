@@ -3,18 +3,17 @@
 import { leaseService } from "@services/lease";
 import { TabItem } from "@components/Tab/interface";
 import { DocumentsTab } from "@components/UserDetail";
+import { useGetLeaseByLuid } from "@leases/hooks/index";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@src/hooks/useNotification";
+import { ActivityTab } from "@leases/components/ActivityTab";
+import { FinancialTab } from "@leases/components/FinancialTab";
+import { useGetLeasePreview } from "@leases/hooks/useLeasePreview";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useState, use } from "react";
+import { LeaseDetailsTab } from "@leases/components/LeaseDetailsTab";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-
-import { useGetLeaseByLuid } from "../../hooks/index";
-import { ActivityTab } from "../components/ActivityTab";
-import { FinancialTab } from "../components/FinancialTab";
-import { LeaseDetailsTab } from "../components/LeaseDetailsTab";
-import { useGetLeasePreview } from "../../hooks/useLeasePreview";
-import { PropertyTenantTab } from "../components/PropertyTenantTab";
+import { PropertyTenantTab } from "@leases/components/PropertyTenantTab";
 
 interface UseLeaseDetailLogicProps {
   params: Promise<{

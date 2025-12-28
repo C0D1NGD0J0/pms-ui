@@ -225,6 +225,28 @@ class LeaseService {
       throw error;
     }
   }
+
+  async renewLease(cuid: string, luid: string, renewalData: any) {
+    try {
+      const { data: requestData, headers } = prepareRequestData(renewalData);
+
+      const config = {
+        ...this.axiosConfig,
+        headers: {
+          ...headers,
+        },
+      };
+
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/${luid}/renew_lease`,
+        requestData,
+        config
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const leaseService = new LeaseService();

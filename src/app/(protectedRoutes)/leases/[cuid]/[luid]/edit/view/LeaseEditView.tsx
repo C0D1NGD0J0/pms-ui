@@ -7,7 +7,7 @@ import { Button, Modal } from "@components/FormElements";
 import { LeaseFormValues } from "@interfaces/lease.interface";
 import { AccordionContainer, AccordionItem } from "@components/Accordion";
 import { DocumentPreview } from "@components/DocumentPreview/DocumentPreview";
-import { SendForSignatureModal } from "@leases/[luid]/components/SendForSignatureModal";
+import { SendForSignatureModal } from "@leases/components/SendForSignatureModal";
 
 interface LeaseEditViewProps {
   cuid: string;
@@ -72,7 +72,9 @@ export function LeaseEditView({
   handleCancel,
   clearPreview,
 }: LeaseEditViewProps) {
-  const isReadOnlyStatus = leaseStatus && ["active", "terminated", "expired", "cancelled"].includes(leaseStatus);
+  const isReadOnlyStatus =
+    leaseStatus &&
+    ["active", "terminated", "expired", "cancelled"].includes(leaseStatus);
 
   if (isLoadingEdit) {
     return <Loading description="Loading lease data..." />;
@@ -139,27 +141,37 @@ export function LeaseEditView({
           </div>
         )}
 
-        {leaseStatus && ["active", "terminated", "expired", "cancelled"].includes(leaseStatus) && (
-          <div className="banner banner-warning" style={{ marginBottom: "2rem" }}>
-            <div className="banner-content">
-              <div className="banner-content__icon">
-                <i className="bx bx-lock-alt"></i>
-              </div>
-              <div className="banner-content__info">
-                <p>
-                  <strong>This lease cannot be edited</strong>
-                </p>
-                <p className="mb-0">
-                  Leases with status &apos;{leaseStatus}&apos; are read-only. 
-                  {leaseStatus === "active" && " To make changes, you must terminate the lease first."}
-                  {leaseStatus === "terminated" && " This lease has been terminated and cannot be modified."}
-                  {leaseStatus === "expired" && " This lease has expired and cannot be modified."}
-                  {leaseStatus === "cancelled" && " This lease has been cancelled and cannot be modified."}
-                </p>
+        {leaseStatus &&
+          ["active", "terminated", "expired", "cancelled"].includes(
+            leaseStatus
+          ) && (
+            <div
+              className="banner banner-warning"
+              style={{ marginBottom: "2rem" }}
+            >
+              <div className="banner-content">
+                <div className="banner-content__icon">
+                  <i className="bx bx-lock-alt"></i>
+                </div>
+                <div className="banner-content__info">
+                  <p>
+                    <strong>This lease cannot be edited</strong>
+                  </p>
+                  <p className="mb-0">
+                    Leases with status &apos;{leaseStatus}&apos; are read-only.
+                    {leaseStatus === "active" &&
+                      " To make changes, you must terminate the lease first."}
+                    {leaseStatus === "terminated" &&
+                      " This lease has been terminated and cannot be modified."}
+                    {leaseStatus === "expired" &&
+                      " This lease has expired and cannot be modified."}
+                    {leaseStatus === "cancelled" &&
+                      " This lease has been cancelled and cannot be modified."}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
         <div className="resource-form">
           <AccordionContainer

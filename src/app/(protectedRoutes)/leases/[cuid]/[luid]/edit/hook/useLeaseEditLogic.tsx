@@ -6,10 +6,9 @@ import { leaseService } from "@services/lease";
 import { extractChanges } from "@utils/helpers";
 import { useMutation } from "@tanstack/react-query";
 import React, { useCallback, useState } from "react";
+import { useLeaseFormManagement } from "@leases/hooks";
 import { useNotification } from "@hooks/useNotification";
 import { LeaseFormValues } from "@interfaces/lease.interface";
-
-import { useLeaseFormManagement } from "../../../hooks";
 
 interface UseLeaseEditLogicProps {
   params: Promise<{

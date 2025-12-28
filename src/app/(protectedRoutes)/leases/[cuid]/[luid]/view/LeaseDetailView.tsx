@@ -6,19 +6,21 @@ import { Loading } from "@src/components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { Button, Modal } from "@components/FormElements";
+import { LeaseHeader } from "@leases/components/LeaseHeader";
+import { LeaseSidebar } from "@leases/components/LeaseSidebar";
 import { PanelsWrapper, PanelContent, Panel } from "@components/Panel";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
+import { LeasePreviewModal } from "@leases/components/LeasePreviewModal";
+import { LeaseOverviewCards } from "@leases/components/LeaseOverviewCards";
 import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
-import { LeaseDetailResponse, LeaseDetailData } from "@interfaces/lease.interface";
+import { TerminateLeaseModal } from "@leases/components/TerminateLeaseModal";
+import { SendForSignatureModal } from "@leases/components/SendForSignatureModal";
+import { ManualActivationModal } from "@leases/components/ManualActivationModal";
 import { PendingChangesReviewModal } from "@src/components/PendingChangesReviewModal";
-
-import { LeaseHeader } from "../components/LeaseHeader";
-import { LeaseSidebar } from "../components/LeaseSidebar";
-import { LeasePreviewModal } from "../components/LeasePreviewModal";
-import { LeaseOverviewCards } from "../components/LeaseOverviewCards";
-import { TerminateLeaseModal } from "../components/TerminateLeaseModal";
-import { SendForSignatureModal } from "../components/SendForSignatureModal";
-import { ManualActivationModal } from "../components/ManualActivationModal";
+import {
+  LeaseDetailResponse,
+  LeaseDetailData,
+} from "@interfaces/lease.interface";
 
 interface LeaseDetailViewProps {
   cuid: string;
@@ -163,12 +165,21 @@ export function LeaseDetailView({
       )}
 
       {isActiveStatus && permissions.isManagerOrAbove && (
-        <Button
-          className="btn btn-danger"
-          label="Terminate Lease"
-          icon={<i className="bx bx-error-circle ghost"></i>}
-          onClick={() => setShowTerminateModal(true)}
-        />
+        <>
+          <Link
+            href={`/leases/${cuid}/${luid}/renew`}
+            className="btn btn-primary"
+          >
+            <i className="bx bx-refresh"></i>
+            Renew Lease
+          </Link>
+          <Button
+            className="btn btn-danger"
+            label="Terminate Lease"
+            icon={<i className="bx bx-error-circle ghost"></i>}
+            onClick={() => setShowTerminateModal(true)}
+          />
+        </>
       )}
 
       {!isReadOnlyStatus && permissions.isManagerOrAbove && (
@@ -224,7 +235,8 @@ export function LeaseDetailView({
           onViewChanges={handleViewChanges}
         />
       ) : (
-        lease && responseData && (
+        lease &&
+        responseData && (
           <LeaseHeader
             luid={lease.leaseNumber}
             status={lease.status}

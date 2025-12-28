@@ -5,3 +5,4 @@ export { useGetLeasePreview, useLeasePreview } from "./useLeasePreview";
 export { useLeaseableProperties } from "./useLeaseableProperties";
 export { useLeaseFormManagement } from "./useLeaseFormManagement";
 export { useLeaseDuplication } from "./useLeaseDuplication";
+export { useLeaseRenewal } from "./useLeaseRenewal";
