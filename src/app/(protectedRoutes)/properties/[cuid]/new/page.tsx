@@ -41,15 +41,27 @@ export default function CreateProperty() {
   const permission = useUnifiedPermissions();
   const { isSubmitting, handleSubmit } = usePropertyForm();
 
-  const handleOpenCSVModal = () => {
+  const handleOpenCSVModal = React.useCallback(() => {
     setIsCSVModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseCSVModal = () => {
+  const handleCloseCSVModal = React.useCallback(() => {
     setIsCSVModalOpen(false);
-  };
+  }, []);
 
-  const tabs = [
+  const handleReset = React.useCallback(() => {
+    propertyForm.reset();
+  }, [propertyForm]);
+
+  const handleNextTab = React.useCallback(() => {
+    const tabs = ["basic", "property", "amenities", "documents"];
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+    }
+  }, [activeTab, setActiveTab]);
+
+  const tabs = React.useMemo(() => [
     {
       key: "basic",
       tabLabel: "Basic information",
@@ -110,7 +122,19 @@ export default function CreateProperty() {
         />
       ),
     },
-  ];
+  ], [
+    saveAddress,
+    propertyForm,
+    handleOnChange,
+    propertyManagers,
+    propertyTypeOptions,
+    propertyStatusOptions,
+    formConfig,
+    permission,
+    documentTypeOptions,
+    propertyForm.values.propertyType,
+    propertyForm.values.maxAllowedUnits,
+  ]);
 
   if (formConfigLoading) {
     return <Loading size="regular" description="Setting up propertyForm..." />;
@@ -181,21 +205,14 @@ export default function CreateProperty() {
                 <Button
                   className="btn btn-default btn-grow"
                   label="Cancel"
-                  onClick={() => propertyForm.reset()}
+                  onClick={handleReset}
                 />
 
                 {activeTab !== "documents" ? (
                   <Button
                     className="btn btn-primary btn-grow"
                     label="Next"
-                    onClick={() => {
-                      const currentIndex = tabs.findIndex(
-                        (tab) => tab.key === activeTab
-                      );
-                      if (currentIndex < tabs.length - 1) {
-                        setActiveTab(tabs[currentIndex + 1].key);
-                      }
-                    }}
+                    onClick={handleNextTab}
                   />
                 ) : (
                   <Button

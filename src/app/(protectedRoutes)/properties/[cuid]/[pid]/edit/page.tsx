@@ -102,7 +102,37 @@ export default function EditProperty({ params }: EditPropertyProps) {
       permission.isManagerOrAbove
     : true;
 
-  const tabs = [
+  const handleBack = React.useCallback(() => {
+    router.back();
+  }, [router]);
+
+  const handleHistoryBack = React.useCallback(() => {
+    window.history.back();
+  }, []);
+
+  const handlePreviousTab = React.useCallback(() => {
+    const tabKeys = ["basic", "financial", "property", "amenities", "documents"];
+    if (propertyData?.unitInfo?.canAddUnit) {
+      tabKeys.push("units");
+    }
+    const currentIndex = tabKeys.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabKeys[currentIndex - 1]);
+    }
+  }, [activeTab, setActiveTab, propertyData?.unitInfo?.canAddUnit]);
+
+  const handleNextTab = React.useCallback(() => {
+    const tabKeys = ["basic", "financial", "property", "amenities", "documents"];
+    if (propertyData?.unitInfo?.canAddUnit) {
+      tabKeys.push("units");
+    }
+    const currentIndex = tabKeys.indexOf(activeTab);
+    if (currentIndex < tabKeys.length - 1) {
+      setActiveTab(tabKeys[currentIndex + 1]);
+    }
+  }, [activeTab, setActiveTab, propertyData?.unitInfo?.canAddUnit]);
+
+  const tabs = React.useMemo(() => [
     {
       key: "basic",
       isVisible: true,
@@ -188,7 +218,22 @@ export default function EditProperty({ params }: EditPropertyProps) {
       isVisible: propertyData?.unitInfo?.canAddUnit,
       content: <UnitsTab property={propertyForm.values} />,
     },
-  ].filter((tab) => isTabVisible(tab.key));
+  ].filter((tab) => isTabVisible(tab.key)), [
+    saveAddress,
+    propertyForm,
+    handleOnChange,
+    propertyManagers,
+    propertyTypeOptions,
+    propertyStatusOptions,
+    formConfig,
+    permission,
+    documentTypeOptions,
+    propertyData?.unitInfo?.canAddUnit,
+    isTabVisible,
+    canEdit,
+    propertyForm.values.propertyType,
+    propertyForm.values.maxAllowedUnits,
+  ]);
 
   if (isDataLoading) {
     return <Loading size="regular" description="Loading property data..." />;
@@ -218,7 +263,7 @@ export default function EditProperty({ params }: EditPropertyProps) {
             <Button
               className="btn btn-default mr-2"
               label="Back"
-              onClick={() => router.back()}
+              onClick={handleBack}
               icon={<i className="bx bx-arrow-back"></i>}
             />
             {activeTab !== "units" && (
@@ -281,20 +326,13 @@ export default function EditProperty({ params }: EditPropertyProps) {
                     <Button
                       className="btn btn-default btn-grow"
                       label="Cancel"
-                      onClick={() => window.history.back()}
+                      onClick={handleHistoryBack}
                     />
                   ) : (
                     <Button
                       className="btn btn-default btn-grow"
                       label="Back"
-                      onClick={() => {
-                        const currentIndex = tabs.findIndex(
-                          (tab) => tab.key === activeTab
-                        );
-                        if (currentIndex > 0) {
-                          setActiveTab(tabs[currentIndex - 1].key);
-                        }
-                      }}
+                      onClick={handlePreviousTab}
                     />
                   )}
 
@@ -302,14 +340,7 @@ export default function EditProperty({ params }: EditPropertyProps) {
                     <Button
                       className="btn btn-primary btn-grow"
                       label="Next"
-                      onClick={() => {
-                        const currentIndex = tabs.findIndex(
-                          (tab) => tab.key === activeTab
-                        );
-                        if (currentIndex < tabs.length - 1) {
-                          setActiveTab(tabs[currentIndex + 1].key);
-                        }
-                      }}
+                      onClick={handleNextTab}
                     />
                   ) : (
                     <Button
