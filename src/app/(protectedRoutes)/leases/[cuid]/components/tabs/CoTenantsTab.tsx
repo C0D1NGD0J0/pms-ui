@@ -1,6 +1,6 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
-import { LeaseFormValues } from "@interfaces/lease.interface";
+import { LeaseFormValues, CoTenant } from "@interfaces/lease.interface";
 import {
   FormField,
   FormLabel,
@@ -13,7 +13,11 @@ interface Props {
     LeaseFormValues,
     (values: LeaseFormValues) => LeaseFormValues
   >;
-  handleCoTenantChange: (index: number, field: string, value: string) => void;
+  handleCoTenantChange: (
+    index: number,
+    field: keyof CoTenant,
+    value: string
+  ) => void;
   addCoTenant: () => void;
   removeCoTenant: (index: number) => void;
 }

@@ -276,12 +276,19 @@ export const AdditionalTermsTab = ({
               name="internalNotes"
               onChange={handleOnChange}
               placeholder="Add any internal notes about this lease (for internal use only)..."
-              value={leaseForm.values.internalNotes || ""}
+              value={
+                typeof leaseForm.values.internalNotes === "string"
+                  ? leaseForm.values.internalNotes
+                  : ""
+              }
               rows={4}
               maxLength={2000}
             />
             <p className="muted mt-1 text-small text-right">
-              {leaseForm.values.internalNotes?.length || 0} / 2000 characters
+              {typeof leaseForm.values.internalNotes === "string"
+                ? leaseForm.values.internalNotes?.length || 0
+                : 0}{" "}
+              / 2000 characters
             </p>
           </FormField>
         </div>
