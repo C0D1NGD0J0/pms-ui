@@ -83,6 +83,9 @@ export interface RenewalOptions {
   autoRenew: boolean;
   noticePeriodDays?: number;
   renewalTermMonths?: number;
+  daysBeforeExpiryToGenerateRenewal?: number;
+  daysBeforeExpiryToAutoSendSignature?: number;
+  requireApproval?: boolean;
 }
 
 export interface TenantInfo {
@@ -101,6 +104,13 @@ export interface LeaseDocument {
   size?: number;
 }
 
+export interface InternalNote {
+  note: string;
+  author: string;
+  authorId: string;
+  timestamp: string;
+}
+
 export interface LeaseFormValues {
   property: LeaseProperty;
   tenantInfo: TenantInfo;
@@ -113,7 +123,7 @@ export interface LeaseFormValues {
   coTenants?: CoTenant[];
   petPolicy?: PetPolicy;
   renewalOptions?: RenewalOptions;
-  internalNotes?: string;
+  internalNotes?: InternalNote[] | string; // TODO: Migrate to InternalNote[] format after UI update
   leaseDocument?: LeaseDocument[];
   [key: string]: any;
 }
@@ -338,6 +348,7 @@ export interface LeaseDetailResponse {
     timeline: LeaseTimeline;
     permissions: LeaseUserPermissions;
     financialSummary: LeaseFinancialSummary;
+    renewalMetadata?: RenewalMetadata;
   };
 }
 
@@ -365,7 +376,7 @@ export interface LeaseDetailData {
   property: {
     id: string;
     unitId?: string;
-    address: string;
+    address: { fullAddress: string };
   };
   signingMethod: SigningMethodEnum;
   renewalOptions?: RenewalOptions;
@@ -375,7 +386,7 @@ export interface LeaseDetailData {
   legalTerms?: Record<string, any>;
   createdAt: string;
   updatedAt: string;
-  internalNotes?: string;
+  internalNotes?: InternalNote[] | string; // TODO: Migrate to InternalNote[] format after UI update
   approvalStatus: string;
   approvalDetails?: ApprovalDetail[];
   pendingChangesPreview?: any;
@@ -385,6 +396,7 @@ export interface LeaseDetailData {
   eSignature?: ESignature;
   tenant?: LeaseTenantDetail;
   signatures?: Signature[];
+  renewalMetadata?: RenewalMetadata;
 }
 
 export type LeasePendingChanges = {
@@ -547,7 +559,7 @@ export interface LeaseRenewalFormValues {
   coTenants?: CoTenant[];
   utilitiesIncluded?: UtilityEnum[];
   legalTerms?: string;
-  internalNotes?: string;
+  internalNotes?: InternalNote[] | string; // TODO: Migrate to InternalNote[] format after UI update
 }
 
 export interface LeaseRenewalRequest extends LeaseRenewalFormValues {
@@ -564,5 +576,45 @@ export interface LeaseRenewalResponse {
     previousLeaseId: string;
     duration: LeaseDuration;
     fees: LeaseFees;
+  };
+}
+
+/**
+ * Renewal Metadata Interface
+ * Pre-calculated renewal information for active/draft_renewal leases
+ * Only included in lease response when status is 'active' or 'draft_renewal'
+ */
+export interface RenewalMetadata {
+  daysUntilExpiry: number;
+  renewalWindowDays: number;
+  isEligible: boolean;
+  canRenew: boolean;
+  ineligibilityReason: string | null;
+  renewalDates: {
+    startDate: string;
+    endDate: string;
+    moveInDate: string;
+  };
+  renewalFormData: {
+    property: {
+      id: string;
+      unitId: string;
+    };
+    tenant: {
+      id: string;
+    };
+    duration: {
+      startDate: string;
+      endDate: string;
+      moveInDate: string;
+    };
+    fees: LeaseFees;
+    type: LeaseTypeEnum;
+    signingMethod: SigningMethodEnum;
+    renewalOptions: RenewalOptions;
+    petPolicy: PetPolicy;
+    utilitiesIncluded: string[];
+    legalTerms: string;
+    coTenants: CoTenant[];
   };
 }

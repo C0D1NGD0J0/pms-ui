@@ -238,11 +238,26 @@ class LeaseService {
       };
 
       const result = await axios.post(
-        `${this.baseUrl}/${cuid}/${luid}/renew_lease`,
+        `${this.baseUrl}/${cuid}/${luid}/lease_renewal`,
         requestData,
         config
       );
       return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getRenewalFormData(cuid: string, luid: string) {
+    try {
+      if (!luid) {
+        throw new Error("Lease Unique ID (luid) is required");
+      }
+      const result = await axios.get<IServerResponse<any>>(
+        `${this.baseUrl}/${cuid}/${luid}/lease_renewal`,
+        this.axiosConfig
+      );
+      return result.data;
     } catch (error) {
       throw error;
     }

@@ -189,6 +189,13 @@ const tenantInfoSchema = z.object({
   lastName: z.string().optional().or(z.literal("")),
 });
 
+const internalNoteSchema = z.object({
+  note: z.string(),
+  author: z.string(),
+  authorId: z.string(),
+  timestamp: z.string(),
+});
+
 export const leaseSchema = z
   .object({
     property: leasePropertySchema,
@@ -204,8 +211,7 @@ export const leaseSchema = z
     petPolicy: petPolicySchema.optional(),
     renewalOptions: renewalOptionsSchema.optional(),
     internalNotes: z
-      .string()
-      .max(2000, "Internal notes must be at most 2000 characters")
+      .union([z.string(), z.array(internalNoteSchema)])
       .optional(),
     leaseDocument: z.array(z.any()).optional(),
   })
@@ -273,6 +279,86 @@ export const leaseSchema = z
     {
       message: "Unit selection is required for this property",
       path: ["property", "unitId"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If late fee type is "fixed", late fee amount must be > 0
+      if (data.fees.lateFeeType === "fixed") {
+        return data.fees.lateFeeAmount && data.fees.lateFeeAmount > 0;
+      }
+      return true;
+    },
+    {
+      message: "Late fee amount is required when late fee type is Fixed",
+      path: ["fees", "lateFeeAmount"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If late fee type is "percentage", late fee percentage must be > 0
+      if (data.fees.lateFeeType === "percentage") {
+        return data.fees.lateFeePercentage && data.fees.lateFeePercentage > 0;
+      }
+      return true;
+    },
+    {
+      message:
+        "Late fee percentage is required when late fee type is Percentage",
+      path: ["fees", "lateFeePercentage"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If late fee type is selected, late fee days must be > 0
+      if (data.fees.lateFeeType) {
+        return data.fees.lateFeeDays && data.fees.lateFeeDays > 0;
+      }
+      return true;
+    },
+    {
+      message:
+        "Late fee grace period (days) is required when late fee type is selected",
+      path: ["fees", "lateFeeDays"],
+    }
+  );
+
+// Renewal-specific schemas (relaxed validation for pre-filled fields)
+const leaseRenewalTenantSchema = z.object({
+  id: z.string().min(1, "Tenant is required"), // Only validate tenant ID exists
+  email: z.string().optional(),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+});
+
+// Lease renewal schema - built from scratch with relaxed property/tenant validation
+export const leaseRenewalSchema = z
+  .object({
+    duration: leaseDurationSchema,
+    fees: leaseFeesSchema,
+    type: z.nativeEnum(LeaseTypeEnum, {
+      required_error: "Lease type is required",
+    }),
+    signingMethod: z.nativeEnum(SigningMethodEnum).optional(),
+    utilitiesIncluded: z.array(z.nativeEnum(UtilityEnum)).optional(),
+    coTenants: z.array(coTenantSchema).optional(),
+    petPolicy: petPolicySchema.optional(),
+    renewalOptions: renewalOptionsSchema.optional(),
+    internalNotes: z
+      .union([z.string(), z.array(internalNoteSchema)])
+      .optional(),
+    leaseDocument: z.array(z.any()).optional(),
+  })
+  .refine(
+    (data) => {
+      // End date must be after start date
+      const start = new Date(data.duration.startDate);
+      const end = new Date(data.duration.endDate);
+      return end > start;
+    },
+    {
+      message: "End date must be after start date",
+      path: ["duration", "endDate"],
     }
   )
   .refine(
