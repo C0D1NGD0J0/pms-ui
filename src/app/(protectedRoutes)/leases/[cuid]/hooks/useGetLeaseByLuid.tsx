@@ -31,3 +31,24 @@ export function useGetLeaseByLuid(
     isLoading: query.isLoading,
   };
 }
+
+export function useGetRenewalFormData(cuid: string, luid: string) {
+  const query = useQuery({
+    enabled: !!cuid && !!luid,
+    queryKey: LEASE_QUERY_KEYS.getRenewalFormData(cuid, luid),
+    queryFn: async () => {
+      const result = await leaseService.getRenewalFormData(cuid, luid);
+      return result;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  return {
+    data: query.data,
+    error: query.error,
+    refetch: query.refetch,
+    isError: query.isError,
+    isSuccess: query.isSuccess,
+    isLoading: query.isLoading,
+  };
+}

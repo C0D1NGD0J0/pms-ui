@@ -7,6 +7,7 @@ import { useGetLeaseByLuid } from "@leases/hooks/index";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@src/hooks/useNotification";
 import { ActivityTab } from "@leases/components/ActivityTab";
+import { LeaseStatusEnum } from "@interfaces/lease.interface";
 import { FinancialTab } from "@leases/components/FinancialTab";
 import { useGetLeasePreview } from "@leases/hooks/useLeasePreview";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -34,7 +35,7 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     error,
   } = useGetLeaseByLuid(cuid, luid);
   const lease = responseData?.lease;
-
+  console.log("Lease Detail Logic Lease:", responseData);
   const { previewHtml, isLoadingPreview, fetchPreview } = useGetLeasePreview(
     cuid,
     luid
@@ -50,6 +51,14 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const [showCancelSignatureModal, setShowCancelSignatureModal] =
     useState(false);
   const searchParams = useSearchParams();
+
+  // Redirect draft_renewal leases to renewal page
+  // Using router.replace to avoid adding to history (better UX for back button)
+  useEffect(() => {
+    if (lease && lease.status === LeaseStatusEnum.DRAFT_RENEWAL) {
+      router.replace(`/leases/${cuid}/${luid}/renew`);
+    }
+  }, [lease, cuid, luid, router]);
 
   useEffect(() => {
     const showChanges = searchParams.get("showChanges");

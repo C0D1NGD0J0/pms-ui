@@ -202,9 +202,13 @@ export function LeaseDetailView({
         withBreadcrumb={true}
         headerBtn={
           <div className="header-actions">
-            {permissions.isManagerOrAbove && (
+            {permissions.isManagerOrAbove && lease && (
               <Link
-                href={`/leases/${cuid}/${luid}/edit`}
+                href={
+                  lease.status === "draft_renewal"
+                    ? `/leases/${cuid}/${luid}/renew`
+                    : `/leases/${cuid}/${luid}/edit`
+                }
                 className="btn btn-outline"
               >
                 <i className="bx bx-edit"></i>

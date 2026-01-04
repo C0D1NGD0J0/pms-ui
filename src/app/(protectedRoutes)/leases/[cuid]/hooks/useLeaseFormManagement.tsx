@@ -645,6 +645,7 @@ export function useLeaseFormManagement({
     hasUnsavedChanges: mode === "edit" ? leaseForm.isDirty() : false,
     originalValues: mode === "edit" ? originalValues : null,
     leaseStatus: mode === "edit" ? leaseDataResponse?.lease?.status : null,
+    leaseData: mode === "edit" ? leaseDataResponse?.lease : null,
     html: mode === "edit" && showPreview ? previewHtml : "",
     isLoadingPreview: mode === "edit" ? isLoadingPreview : false,
     handlePreviewClick,

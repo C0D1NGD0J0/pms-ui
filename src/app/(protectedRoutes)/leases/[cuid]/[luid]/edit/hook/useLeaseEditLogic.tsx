@@ -9,6 +9,8 @@ import React, { useCallback, useState } from "react";
 import { useLeaseFormManagement } from "@leases/hooks";
 import { useNotification } from "@hooks/useNotification";
 import { LeaseFormValues } from "@interfaces/lease.interface";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { LeaseValidationResult, canEditLease } from "@utils/leaseHelpers";
 
 interface UseLeaseEditLogicProps {
   params: Promise<{
@@ -22,12 +24,21 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
   const router = useRouter();
   const { client } = useAuth();
   const { openNotification } = useNotification();
+  const { currentRole } = useUnifiedPermissions();
 
   const formManagement = useLeaseFormManagement({
     cuid,
     mode: "edit",
     luid,
   });
+
+  const leaseData = formManagement.leaseData;
+
+  // Validate if lease can be edited
+  const validationResult: LeaseValidationResult =
+    leaseData && !formManagement.isLoadingEdit
+      ? canEditLease(leaseData, currentRole)
+      : { canProceed: true }; // Allow during loading
 
   const [showCoTenantWarning, setShowCoTenantWarning] = useState(false);
   const [showPropertyChangeWarning, setShowPropertyChangeWarning] =
@@ -234,9 +245,11 @@ export function useLeaseEditLogic({ params }: UseLeaseEditLogicProps) {
     isEditing: formManagement.isEditing,
     editLuid: formManagement.editLuid || null,
     leaseStatus: formManagement.leaseStatus,
+    leaseData,
     isLoadingEdit: formManagement.isLoadingEdit,
     editError: formManagement.editError,
     hasUnsavedChanges: formManagement.hasUnsavedChanges,
+    validationResult,
     handleUpdateLease,
     handleConfirmPropertyChange,
     handleConfirmWithoutCoTenants,
