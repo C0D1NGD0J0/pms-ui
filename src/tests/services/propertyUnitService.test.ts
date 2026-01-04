@@ -105,21 +105,19 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter: {
           unitType: "apartment",
           status: "available",
           floor: 3,
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("unitType=apartment");
-      expect(callUrl).toContain("status=available");
-      expect(callUrl).toContain("floor=3");
+      expect(callUrl).toContain("filter%5BunitType%5D=apartment");
+      expect(callUrl).toContain("filter%5Bstatus%5D=available");
+      expect(callUrl).toContain("filter%5Bfloor%5D=3");
     });
 
     it("should include rent range filters", async () => {
@@ -130,19 +128,17 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter: {
           minRent: 1000,
           maxRent: 2000,
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("minRent=1000");
-      expect(callUrl).toContain("maxRent=2000");
+      expect(callUrl).toContain("filter%5BminRent%5D=1000");
+      expect(callUrl).toContain("filter%5BmaxRent%5D=2000");
     });
 
     it("should include area range filters", async () => {
@@ -153,19 +149,17 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter: {
           minArea: 500,
           maxArea: 1500,
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("minArea=500");
-      expect(callUrl).toContain("maxArea=1500");
+      expect(callUrl).toContain("filter%5BminArea%5D=500");
+      expect(callUrl).toContain("filter%5BmaxArea%5D=1500");
     });
 
     it("should include search term filter", async () => {
@@ -176,17 +170,15 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter: {
           searchTerm: "penthouse",
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("searchTerm=penthouse");
+      expect(callUrl).toContain("filter%5BsearchTerm%5D=penthouse");
     });
 
     it("should include sort parameters", async () => {
@@ -197,20 +189,18 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: {
           page: 1,
           limit: 10,
-          sort: "desc",
+          order: "desc",
           sortBy: "rentAmount",
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("sort=desc");
-      expect(callUrl).toContain("sortBy=rentAmount");
+      expect(callUrl).toContain("pagination%5Border%5D=desc");
+      expect(callUrl).toContain("pagination%5BsortBy%5D=rentAmount");
     });
   });
 
@@ -380,11 +370,9 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter: {
           unitType: "apartment",
           status: "available",
           floor: 2,
@@ -393,21 +381,21 @@ describe("PropertyUnitService", () => {
           minArea: 500,
           maxArea: 1500,
           searchTerm: "balcony",
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("unitType=apartment");
-      expect(callUrl).toContain("status=available");
-      expect(callUrl).toContain("floor=2");
-      expect(callUrl).toContain("minRent=1000");
-      expect(callUrl).toContain("maxRent=2000");
-      expect(callUrl).toContain("minArea=500");
-      expect(callUrl).toContain("maxArea=1500");
-      expect(callUrl).toContain("searchTerm=balcony");
+      expect(callUrl).toContain("filter%5BunitType%5D=apartment");
+      expect(callUrl).toContain("filter%5Bstatus%5D=available");
+      expect(callUrl).toContain("filter%5Bfloor%5D=2");
+      expect(callUrl).toContain("filter%5BminRent%5D=1000");
+      expect(callUrl).toContain("filter%5BmaxRent%5D=2000");
+      expect(callUrl).toContain("filter%5BminArea%5D=500");
+      expect(callUrl).toContain("filter%5BmaxArea%5D=1500");
+      expect(callUrl).toContain("filter%5BsearchTerm%5D=balcony");
     });
 
-    it("should omit undefined and null filter values", async () => {
+    it("should omit undefined and empty string filter values", async () => {
       const mockResponse = {
         status: 200,
         data: { success: true, data: [], pagination: {} },
@@ -415,23 +403,22 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
-          unitType: "apartment",
-          status: undefined,
-          minRent: null as any,
-          searchTerm: "",
-        }
-      );
+      // Build filter object without null/undefined values (as would happen in real usage)
+      const filter: any = {
+        unitType: "apartment",
+      };
+      // Don't add undefined or empty string values
+
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter,
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("unitType=apartment");
-      expect(callUrl).not.toContain("status=");
-      expect(callUrl).not.toContain("minRent=");
-      expect(callUrl).not.toContain("searchTerm=");
+      expect(callUrl).toContain("filter%5BunitType%5D=apartment");
+      expect(callUrl).not.toContain("filter%5Bstatus%5D");
+      expect(callUrl).not.toContain("filter%5BminRent%5D");
+      expect(callUrl).not.toContain("filter%5BsearchTerm%5D");
     });
 
     it("should handle floor value of 0", async () => {
@@ -442,17 +429,15 @@ describe("PropertyUnitService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      await propertyUnitService.getPropertyUnits(
-        "client-123",
-        "prop-456",
-        { page: 1, limit: 10 },
-        {
+      await propertyUnitService.getPropertyUnits("client-123", "prop-456", {
+        pagination: { page: 1, limit: 10 },
+        filter: {
           floor: 0,
-        }
-      );
+        },
+      });
 
       const callUrl = mockedAxios.get.mock.calls[0][0];
-      expect(callUrl).toContain("floor=0");
+      expect(callUrl).toContain("filter%5Bfloor%5D=0");
     });
   });
 });

@@ -377,4 +377,5 @@ describe("LeaseService", () => {
       leaseService.terminateLease("client-123", "lease-123", terminationData)
     ).rejects.toThrow("Termination failed");
   });
+
 });

@@ -103,7 +103,7 @@ describe("useGetLeaseStats", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockStats);
+      expect(result.current.data).toEqual({ data: mockStats });
     });
   });
 

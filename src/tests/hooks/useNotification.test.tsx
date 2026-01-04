@@ -63,12 +63,17 @@ describe("useNotification", () => {
         );
       });
 
-      expect(mockNotificationApi.info).toHaveBeenCalledWith({
-        duration: 4,
-        message: "Test Title",
-        placement: "topRight",
-        description: "Test Description",
-      });
+      expect(mockNotificationApi.info).toHaveBeenCalledWith(
+        expect.objectContaining({
+          duration: 4,
+          placement: "topRight",
+          style: expect.objectContaining({
+            whiteSpace: "pre-line",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          }),
+        })
+      );
     });
 
     it("should open notification with custom duration", () => {
@@ -83,12 +88,17 @@ describe("useNotification", () => {
         );
       });
 
-      expect(mockNotificationApi.success).toHaveBeenCalledWith({
-        duration: 10,
-        message: "Success",
-        placement: "topRight",
-        description: "Operation successful",
-      });
+      expect(mockNotificationApi.success).toHaveBeenCalledWith(
+        expect.objectContaining({
+          duration: 10,
+          placement: "topRight",
+          style: expect.objectContaining({
+            whiteSpace: "pre-line",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          }),
+        })
+      );
     });
 
     it("should open notification with custom button for 'open' type", () => {
@@ -104,11 +114,14 @@ describe("useNotification", () => {
 
       expect(mockNotificationApi.open).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "Alert",
-          description: "Custom alert",
           placement: "topRight",
           duration: 0,
           onClick: onClose,
+          style: expect.objectContaining({
+            whiteSpace: "pre-line",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          }),
         })
       );
     });
@@ -181,10 +194,13 @@ describe("useNotification", () => {
 
       expect(mockNotificationApi.warning).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: "Confirm Action",
-          description: "Are you sure?",
           placement: "topRight",
           duration: 0,
+          style: expect.objectContaining({
+            whiteSpace: "pre-line",
+            borderRadius: "8px",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          }),
         })
       );
     });

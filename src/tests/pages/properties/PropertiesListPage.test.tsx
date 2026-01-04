@@ -5,9 +5,15 @@ import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import PropertiesPage from "@app/(protectedRoutes)/properties/[cuid]/page";
 import { useGetAllProperties } from "@app/(protectedRoutes)/properties/[cuid]/hooks";
 
-jest.mock("@store/auth.store");
+jest.mock("@store/auth.store", () => ({
+  useAuth: jest.fn(),
+  useAuthActions: jest.fn(() => ({
+    setUser: jest.fn(),
+    logout: jest.fn(),
+  })),
+}));
 jest.mock("@hooks/useUnifiedPermissions");
-jest.mock("@properties/hooks");
+jest.mock("@app/(protectedRoutes)/properties/[cuid]/hooks");
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<

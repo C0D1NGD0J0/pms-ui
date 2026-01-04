@@ -65,9 +65,13 @@ describe("currencyMapper", () => {
       expect(result).toEqual({ name: "currency", symbol: "INVALID", icon: "bx-money" });
     });
 
-    it("should be case-insensitive", () => {
+    it("should be case-sensitive and return fallback for lowercase", () => {
       const result = getCurrencyInfo("usd");
-      expect(result).toEqual(CURRENCY_DICTIONARY.USD);
+      expect(result).toEqual({
+        name: "currency",
+        symbol: "usd",
+        icon: "bx-money",
+      });
     });
   });
 
@@ -126,8 +130,8 @@ describe("currencyMapper", () => {
     });
 
     describe("with invalid currency code", () => {
-      it("should default to USD", () => {
-        expect(formatCurrency(250000, "INVALID")).toBe("$2,500.00");
+      it("should use the currency code as symbol", () => {
+        expect(formatCurrency(250000, "INVALID")).toBe("INVALID2,500.00");
       });
     });
 

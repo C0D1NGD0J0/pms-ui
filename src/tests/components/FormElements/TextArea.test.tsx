@@ -1,6 +1,6 @@
 import { render } from "@tests/utils/test-utils";
 import { fireEvent, screen } from "@testing-library/react";
-import { Textarea } from "@components/FormElements/TextArea";
+import { TextArea } from "@components/FormElements/TextArea";
 
 describe("Textarea Component", () => {
   const defaultProps = {
@@ -15,7 +15,7 @@ describe("Textarea Component", () => {
   });
 
   it("renders basic textarea with required props", () => {
-    render(<Textarea {...defaultProps} />);
+    render(<TextArea {...defaultProps} />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toBeInTheDocument();
@@ -24,17 +24,17 @@ describe("Textarea Component", () => {
   });
 
   it("handles controlled value", () => {
-    const { rerender } = render(<Textarea {...defaultProps} value="initial text" />);
-    
+    const { rerender } = render(<TextArea {...defaultProps} value="initial text" />);
+
     expect(screen.getByDisplayValue("initial text")).toBeInTheDocument();
 
-    rerender(<Textarea {...defaultProps} value="updated text" />);
+    rerender(<TextArea {...defaultProps} value="updated text" />);
     expect(screen.getByDisplayValue("updated text")).toBeInTheDocument();
   });
 
   it("handles onChange events", () => {
     const mockOnChange = jest.fn();
-    render(<Textarea {...defaultProps} onChange={mockOnChange} />);
+    render(<TextArea {...defaultProps} onChange={mockOnChange} />);
 
     fireEvent.change(screen.getByRole("textbox"), { target: { value: "new content" } });
     expect(mockOnChange).toHaveBeenCalledTimes(1);
@@ -42,7 +42,7 @@ describe("Textarea Component", () => {
 
   it("handles onBlur events and sets touched state", () => {
     const mockOnBlur = jest.fn();
-    render(<Textarea {...defaultProps} onBlur={mockOnBlur} />);
+    render(<TextArea {...defaultProps} onBlur={mockOnBlur} />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveClass("untouched");
@@ -53,19 +53,19 @@ describe("Textarea Component", () => {
   });
 
   it("renders with placeholder", () => {
-    render(<Textarea {...defaultProps} placeholder="Enter your message" />);
+    render(<TextArea {...defaultProps} placeholder="Enter your message" />);
     expect(screen.getByPlaceholderText("Enter your message")).toBeInTheDocument();
   });
 
   it("renders with custom className", () => {
-    render(<Textarea {...defaultProps} className="custom-textarea" />);
+    render(<TextArea {...defaultProps} className="custom-textarea" />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveClass("form-input_textarea custom-textarea");
   });
 
   it("renders disabled state", () => {
-    render(<Textarea {...defaultProps} disabled />);
+    render(<TextArea {...defaultProps} disabled />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toBeDisabled();
@@ -73,7 +73,7 @@ describe("Textarea Component", () => {
   });
 
   it("renders required state", () => {
-    render(<Textarea {...defaultProps} required />);
+    render(<TextArea {...defaultProps} required />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toBeRequired();
@@ -81,7 +81,7 @@ describe("Textarea Component", () => {
   });
 
   it("renders with custom rows and maxLength", () => {
-    render(<Textarea {...defaultProps} rows={8} maxLength={500} />);
+    render(<TextArea {...defaultProps} rows={8} maxLength={500} />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveAttribute("rows", "8");
@@ -89,7 +89,7 @@ describe("Textarea Component", () => {
   });
 
   it("renders with aria attributes", () => {
-    render(<Textarea {...defaultProps} ariaLabel="Message content" ariaDescribedBy="help-text" />);
+    render(<TextArea {...defaultProps} ariaLabel="Message content" ariaDescribedBy="help-text" />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveAttribute("aria-label", "Message content");
@@ -97,7 +97,7 @@ describe("Textarea Component", () => {
   });
 
   it("sets aria-invalid when touched and required", () => {
-    render(<Textarea {...defaultProps} required />);
+    render(<TextArea {...defaultProps} required />);
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveAttribute("aria-invalid", "false");
@@ -107,7 +107,7 @@ describe("Textarea Component", () => {
   });
 
   it("renders wrapper and lock icon", () => {
-    const { container } = render(<Textarea {...defaultProps} />);
+    const { container } = render(<TextArea {...defaultProps} />);
 
     const wrapper = container.querySelector(".form-input-wrapper");
     const lockIcon = container.querySelector(".form-textarea-lock");

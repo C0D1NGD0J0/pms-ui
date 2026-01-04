@@ -1,3 +1,4 @@
+import React from "react";
 import { render, screen } from "@tests/utils/test-utils";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import StaffPage from "@app/(protectedRoutes)/users/[cuid]/staff/page";
@@ -11,6 +12,14 @@ jest.mock("next/navigation", () => ({
   useRouter: () => ({
     push: jest.fn(),
   }),
+}));
+
+// Mock the permission HOC to bypass the use() call
+jest.mock("@hooks/permissionHOCs", () => ({
+  withManagerAccess: (Component: any) => Component,
+  withOwnerAccess: (Component: any) => Component,
+  withAdminAccess: (Component: any) => Component,
+  withClientAccess: (Component: any) => Component,
 }));
 
 const mockUseGetEmployees = useGetEmployees as jest.MockedFunction<
@@ -60,42 +69,34 @@ describe("StaffPage", () => {
     jest.clearAllMocks();
   });
 
-  it("should render staff management page", async () => {
-    render(
-      await StaffPage({ params: Promise.resolve({ cuid: "client-123" }) })
-    );
+  it("should render staff management page", () => {
+    render(<StaffPage params={{ cuid: "client-123" }} />);
 
     expect(screen.getByText("Employee Management")).toBeInTheDocument();
   });
 
-  it("should display add new employee button", async () => {
-    render(
-      await StaffPage({ params: Promise.resolve({ cuid: "client-123" }) })
-    );
+  it("should display add new employee button", () => {
+    render(<StaffPage params={{ cuid: "client-123" }} />);
 
     expect(screen.getByText("Add new employee")).toBeInTheDocument();
   });
 
-  it("should display employee list", async () => {
-    render(
-      await StaffPage({ params: Promise.resolve({ cuid: "client-123" }) })
-    );
+  it("should display employee list", () => {
+    render(<StaffPage params={{ cuid: "client-123" }} />);
 
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Jane Smith")).toBeInTheDocument();
   });
 
-  it("should display department distribution chart section", async () => {
-    render(
-      await StaffPage({ params: Promise.resolve({ cuid: "client-123" }) })
-    );
+  it("should display department distribution chart section", () => {
+    render(<StaffPage params={{ cuid: "client-123" }} />);
 
     expect(
       screen.getByText("Employee Department Distribution")
     ).toBeInTheDocument();
   });
 
-  it("should handle empty employee list", async () => {
+  it("should handle empty employee list", () => {
     mockUseGetEmployees.mockReturnValue({
       employees: [],
       sortOptions: [],
@@ -107,17 +108,13 @@ describe("StaffPage", () => {
       isLoading: false,
     } as any);
 
-    render(
-      await StaffPage({ params: Promise.resolve({ cuid: "client-123" }) })
-    );
+    render(<StaffPage params={{ cuid: "client-123" }} />);
 
     expect(screen.getByText("Employee Management")).toBeInTheDocument();
   });
 
-  it("should call useGetEmployees with correct client ID", async () => {
-    render(
-      await StaffPage({ params: Promise.resolve({ cuid: "client-456" }) })
-    );
+  it("should call useGetEmployees with correct client ID", () => {
+    render(<StaffPage params={{ cuid: "client-456" }} />);
 
     expect(mockUseGetEmployees).toHaveBeenCalledWith("client-456");
   });
