@@ -2,9 +2,9 @@ import { TableColumn, Table } from "@components/Table";
 import { render, screen } from "@testing-library/react";
 
 // Mock matchMedia for Ant Design
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
-  value: jest.fn().mockImplementation(query => ({
+  value: jest.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,

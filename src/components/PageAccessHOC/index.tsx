@@ -99,7 +99,14 @@ export const withPageAccess = <P extends object>(
       };
 
       checkAccess();
-    }, [pathname, route, canAccessPage, isAuthenticated, bypassPermissionCheck, currentRole]);
+    }, [
+      pathname,
+      route,
+      canAccessPage,
+      isAuthenticated,
+      bypassPermissionCheck,
+      currentRole,
+    ]);
 
     useEffect(() => {
       if (!isLoading && !hasAccess && redirectTo) {

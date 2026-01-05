@@ -49,7 +49,9 @@ describe("Navbar Component", () => {
     expect(screen.getByText("LOGO")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Search here...")).toBeInTheDocument();
     // Auth-required items should not be visible
-    expect(screen.queryByRole("button", { name: /bx-bell/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /bx-bell/i })
+    ).not.toBeInTheDocument();
   });
 
   it("shows auth-required items when logged in", () => {

@@ -49,8 +49,10 @@ describe("RegisterView Component", () => {
 
   it("should render user info step by default", () => {
     render(<RegisterViewWrapper />);
-    
-    expect(screen.getByRole("heading", { name: "Register" })).toBeInTheDocument();
+
+    expect(
+      screen.getByRole("heading", { name: "Register" })
+    ).toBeInTheDocument();
     expect(screen.getByText("Already have an account?")).toBeInTheDocument();
     expect(screen.getByText("First name")).toBeInTheDocument();
     expect(screen.getByText("Last name")).toBeInTheDocument();
@@ -59,7 +61,7 @@ describe("RegisterView Component", () => {
 
   it("should show processing state when submitting", () => {
     render(<RegisterViewWrapper isPending={true} />);
-    
+
     expect(screen.getByText("Processing...")).toBeInTheDocument();
   });
 
@@ -90,13 +92,7 @@ describe("RegisterView Component", () => {
         },
       });
 
-      return (
-        <RegisterView 
-          form={form} 
-          {...mockProps} 
-          currentStep={1} 
-        />
-      );
+      return <RegisterView form={form} {...mockProps} currentStep={1} />;
     }
 
     render(<CorporateRegisterWrapper />);

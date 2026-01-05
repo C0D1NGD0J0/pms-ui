@@ -283,8 +283,6 @@ export const profileTabFields = {
     "settings.gdprSettings.dataRetentionPolicy",
     "settings.gdprSettings.dataProcessingConsent",
   ],
-  documents: [
-    "documents.items",
-  ],
+  documents: ["documents.items"],
   security: [], // Security settings handled separately
 } as const;

@@ -261,9 +261,7 @@ describe("UserService", () => {
       const mockResponse = {
         data: {
           success: true,
-          data: [
-            { uid: "user-1", firstName: "John", role: "manager" },
-          ],
+          data: [{ uid: "user-1", firstName: "John", role: "manager" }],
         },
       };
 
@@ -271,8 +269,7 @@ describe("UserService", () => {
 
       await userService.getClientPropertyManagers(mockCuid, params);
 
-      const expectedUrl =
-        `/api/v1/users/${mockCuid}/property_managers?role=manager&department=operations&search=john&page=1&limit=10`;
+      const expectedUrl = `/api/v1/users/${mockCuid}/property_managers?role=manager&department=operations&search=john&page=1&limit=10`;
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, {});
     });
   });
@@ -375,8 +372,7 @@ describe("UserService", () => {
 
       const result = await userService.getTenants(mockCuid, params);
 
-      const expectedUrl =
-        `/api/v1/users/${mockCuid}/filtered-tenants?status=active&search=test&page=1&limit=20&sortBy=firstName&sort=desc`;
+      const expectedUrl = `/api/v1/users/${mockCuid}/filtered-tenants?status=active&search=test&page=1&limit=20&sortBy=firstName&sort=desc`;
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, {});
       expect(result).toEqual(mockResponse.data);
     });

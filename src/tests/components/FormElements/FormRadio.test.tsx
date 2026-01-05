@@ -26,7 +26,9 @@ describe("FormRadio Component", () => {
   });
 
   it("handles checked state", () => {
-    const { rerender } = render(<FormRadio {...defaultProps} checked={false} />);
+    const { rerender } = render(
+      <FormRadio {...defaultProps} checked={false} />
+    );
     expect(screen.getByRole("radio")).not.toBeChecked();
 
     rerender(<FormRadio {...defaultProps} checked={true} />);
@@ -49,10 +51,17 @@ describe("FormRadio Component", () => {
   });
 
   it("renders with React node label", () => {
-    const customLabel = <span>Custom <strong>Radio</strong> Label</span>;
+    const customLabel = (
+      <span>
+        Custom <strong>Radio</strong> Label
+      </span>
+    );
     render(<FormRadio {...defaultProps} label={customLabel} />);
 
-    const labelElement = screen.getByRole("radio").closest(".radio-option")?.querySelector("label");
+    const labelElement = screen
+      .getByRole("radio")
+      .closest(".radio-option")
+      ?.querySelector("label");
     expect(labelElement).toHaveTextContent("Custom Radio Label");
   });
 
@@ -72,7 +81,9 @@ describe("FormRadio Component", () => {
   });
 
   it("renders with aria-label", () => {
-    render(<FormRadio {...defaultProps} ariaLabel="Custom accessibility label" />);
+    render(
+      <FormRadio {...defaultProps} ariaLabel="Custom accessibility label" />
+    );
 
     const radio = screen.getByRole("radio");
     expect(radio).toHaveAttribute("aria-label", "Custom accessibility label");
@@ -80,7 +91,9 @@ describe("FormRadio Component", () => {
 
   it("clicking label selects radio", () => {
     const mockOnChange = jest.fn();
-    render(<FormRadio {...defaultProps} onChange={mockOnChange} label="Click me" />);
+    render(
+      <FormRadio {...defaultProps} onChange={mockOnChange} label="Click me" />
+    );
 
     fireEvent.click(screen.getByText("Click me"));
     expect(mockOnChange).toHaveBeenCalledTimes(1);
@@ -89,15 +102,36 @@ describe("FormRadio Component", () => {
   it("works in radio button groups", () => {
     render(
       <div>
-        <FormRadio id="radio1" name="group" value="option1" checked={false} onChange={jest.fn()} label="Option 1" />
-        <FormRadio id="radio2" name="group" value="option2" checked={true} onChange={jest.fn()} label="Option 2" />
-        <FormRadio id="radio3" name="group" value="option3" checked={false} onChange={jest.fn()} label="Option 3" />
+        <FormRadio
+          id="radio1"
+          name="group"
+          value="option1"
+          checked={false}
+          onChange={jest.fn()}
+          label="Option 1"
+        />
+        <FormRadio
+          id="radio2"
+          name="group"
+          value="option2"
+          checked={true}
+          onChange={jest.fn()}
+          label="Option 2"
+        />
+        <FormRadio
+          id="radio3"
+          name="group"
+          value="option3"
+          checked={false}
+          onChange={jest.fn()}
+          label="Option 3"
+        />
       </div>
     );
 
     const radio1 = screen.getByLabelText("Option 1");
     const radio2 = screen.getByLabelText("Option 2");
-    
+
     expect(radio1).not.toBeChecked();
     expect(radio2).toBeChecked();
     expect(radio1).toHaveAttribute("name", "group");

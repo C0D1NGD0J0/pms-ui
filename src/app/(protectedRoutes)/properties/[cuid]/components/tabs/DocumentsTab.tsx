@@ -401,8 +401,8 @@ export function DocumentsTab({
             previewModal.file instanceof File
               ? URL.createObjectURL(previewModal.file)
               : previewModal.file?.file instanceof File
-              ? URL.createObjectURL(previewModal.file.file)
-              : previewModal.file?.url,
+                ? URL.createObjectURL(previewModal.file.file)
+                : previewModal.file?.url,
           renderMode: getRenderMode(previewModal.title || ""),
         }}
       />

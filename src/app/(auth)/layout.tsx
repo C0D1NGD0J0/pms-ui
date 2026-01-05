@@ -98,7 +98,6 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     if (!isLoggedIn && !isAuthLoading) {
       setInitializing(false);
     }
-     
   }, [isLoggedIn, isAuthLoading, setInitializing]);
 
   const LeftBox: React.FC<LeftBoxProps> = ({ meta }) => (

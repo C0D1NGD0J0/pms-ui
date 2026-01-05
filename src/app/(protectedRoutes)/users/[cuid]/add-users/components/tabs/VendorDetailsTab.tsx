@@ -319,7 +319,8 @@ export const VendorDetailsTab: React.FC<VendorDetailsTabProps> = ({
                         formData.values?.vendorInfo?.insuranceInfo
                           ?.expirationDate
                           ? new Date(
-                              formData.values?.vendorInfo?.insuranceInfo?.expirationDate
+                              formData.values?.vendorInfo?.insuranceInfo
+                                ?.expirationDate
                             )
                               .toISOString()
                               .split("T")[0]

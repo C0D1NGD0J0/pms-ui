@@ -131,8 +131,7 @@ describe("VendorService", () => {
 
       await vendorService.getFilteredVendors(mockCuid, params);
 
-      const expectedUrl =
-        `/api/v1/vendors/${mockCuid}/filteredVendors?status=active&businessType=plumbing&page=2&limit=20&sortBy=companyName&sort=asc`;
+      const expectedUrl = `/api/v1/vendors/${mockCuid}/filteredVendors?status=active&businessType=plumbing&page=2&limit=20&sortBy=companyName&sort=asc`;
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, {});
     });
 
@@ -289,8 +288,7 @@ describe("VendorService", () => {
 
       await vendorService.getVendorTeamMembers(mockCuid, mockVuid, pagination);
 
-      const expectedUrl =
-        `/api/v1/vendors/${mockCuid}/team_members/${mockVuid}?status=active&page=1&limit=10&sortBy=name&sort=asc`;
+      const expectedUrl = `/api/v1/vendors/${mockCuid}/team_members/${mockVuid}?status=active&page=1&limit=10&sortBy=name&sort=asc`;
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl);
     });
 

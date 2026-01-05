@@ -5,23 +5,15 @@ import { useAvailableTenants } from "@app/(protectedRoutes)/leases/[cuid]/hooks/
 import { useLeaseDuplication } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication";
 import { useLeaseableProperties } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties";
 
-jest.mock(
-  "@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants"
-);
-jest.mock(
-  "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties"
-);
-jest.mock(
-  "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication"
-);
+jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants");
+jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties");
+jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication");
 
 const mockUseAvailableTenants = useAvailableTenants as jest.MockedFunction<
   typeof useAvailableTenants
 >;
 const mockUseLeaseableProperties =
-  useLeaseableProperties as jest.MockedFunction<
-    typeof useLeaseableProperties
-  >;
+  useLeaseableProperties as jest.MockedFunction<typeof useLeaseableProperties>;
 const mockUseLeaseDuplication = useLeaseDuplication as jest.MockedFunction<
   typeof useLeaseDuplication
 >;

@@ -35,10 +35,7 @@ export const SendForSignatureModal: React.FC<SendForSignatureModalProps> = ({
           </p>
         </div>
 
-        <div
-          className="recipients-list"
-          
-        >
+        <div className="recipients-list">
           <div className="recipient-item">
             <i className="bx bx-user-circle"></i>
             <div className="recipient-details">

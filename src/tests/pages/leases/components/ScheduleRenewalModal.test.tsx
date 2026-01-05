@@ -23,7 +23,11 @@ const mockRenewalLease: LeaseDetailData = {
   luid: "lease-123",
   leaseNumber: "L-2024-001",
   tenant: { id: "tenant-123", fullname: "John Doe", email: "john@example.com" },
-  duration: { startDate: "2024-01-01", endDate: "2024-12-31", moveInDate: "2024-01-01" },
+  duration: {
+    startDate: "2024-01-01",
+    endDate: "2024-12-31",
+    moveInDate: "2024-01-01",
+  },
   renewalOptions: {
     autoRenew: true,
     renewalTermMonths: 12,
@@ -63,7 +67,9 @@ describe("ScheduleRenewalModal", () => {
       />
     );
 
-    expect(screen.queryByText("Schedule Lease Renewal")).not.toBeInTheDocument();
+    expect(
+      screen.queryByText("Schedule Lease Renewal")
+    ).not.toBeInTheDocument();
   });
 
   it("should display lease information", () => {
@@ -77,7 +83,9 @@ describe("ScheduleRenewalModal", () => {
     );
 
     expect(screen.getByText("L-2024-001")).toBeInTheDocument();
-    expect(screen.getByText(/7 days before the new lease starts/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/7 days before the new lease starts/i)
+    ).toBeInTheDocument();
   });
 
   it("should use custom days before expiry", () => {
@@ -98,7 +106,9 @@ describe("ScheduleRenewalModal", () => {
       />
     );
 
-    expect(screen.getByText(/14 days before the new lease starts/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/14 days before the new lease starts/i)
+    ).toBeInTheDocument();
   });
 
   it("should call onClose when Cancel is clicked", () => {

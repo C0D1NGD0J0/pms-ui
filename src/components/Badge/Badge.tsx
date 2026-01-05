@@ -11,9 +11,5 @@ export const Badge: React.FC<BadgeProps> = ({
   text,
   className = "",
 }) => {
-  return (
-    <span className={`badge ${variant} ${className}`}>
-      {text}
-    </span>
-  );
+  return <span className={`badge ${variant} ${className}`}>{text}</span>;
 };

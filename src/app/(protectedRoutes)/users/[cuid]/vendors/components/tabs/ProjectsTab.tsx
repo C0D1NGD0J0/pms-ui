@@ -15,9 +15,7 @@ interface VendorProjectsTabProps {
   vendor: VendorDetailResponse;
 }
 
-export const ProjectsTab: React.FC<VendorProjectsTabProps> = ({
-  vendor,
-}) => {
+export const ProjectsTab: React.FC<VendorProjectsTabProps> = ({ vendor }) => {
   // Prepare project data for the Table component
   const projectData: ProjectData[] =
     vendor.tasks && vendor.tasks.length > 0

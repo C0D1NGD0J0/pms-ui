@@ -183,7 +183,6 @@ describe("LeaseService", () => {
     );
   });
 
-
   it("should fetch leaseable properties without units", async () => {
     const mockResponse = {
       status: 200,
@@ -377,5 +376,4 @@ describe("LeaseService", () => {
       leaseService.terminateLease("client-123", "lease-123", terminationData)
     ).rejects.toThrow("Termination failed");
   });
-
 });

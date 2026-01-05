@@ -53,7 +53,10 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
   const activeLease = activeLeases[0];
 
   const leaseBasicInfo = [
-    { label: "Lease Status", value: <span className="badge success">Active</span> },
+    {
+      label: "Lease Status",
+      value: <span className="badge success">Active</span>,
+    },
     {
       label: "Rent Status",
       value: (
@@ -64,11 +67,10 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
               : "warning"
           }`}
         >
-          {tenant.tenantMetrics?.currentRentStatus
-            ?.charAt(0)
-            .toUpperCase() +
-            tenant.tenantMetrics?.currentRentStatus?.slice(1).replace("_", " ") ||
-            "Unknown"}
+          {tenant.tenantMetrics?.currentRentStatus?.charAt(0).toUpperCase() +
+            tenant.tenantMetrics?.currentRentStatus
+              ?.slice(1)
+              .replace("_", " ") || "Unknown"}
         </span>
       ),
     },
@@ -137,9 +139,7 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
               {tenant.tenantInfo.leaseHistory.map(
                 (lease: any, index: number) => (
                   <div key={index} className="metric-card">
-                    <span className="metric-value">
-                      {lease.propertyName}
-                    </span>
+                    <span className="metric-value">{lease.propertyName}</span>
                     <span className="metric-label">
                       Unit {lease.unitNumber} • {lease.status}
                     </span>
@@ -150,7 +150,8 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
                         marginTop: "0.25rem",
                       }}
                     >
-                      {formatDate(lease.leaseStart)} - {formatDate(lease.leaseEnd)}
+                      {formatDate(lease.leaseStart)} -{" "}
+                      {formatDate(lease.leaseEnd)}
                     </span>
                   </div>
                 )
@@ -161,9 +162,9 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({ tenant }) => {
 
       <div className="detail-info-box">
         <i className="bx bx-info-circle"></i>
-        <strong>Note:</strong> Full lease details including property information,
-        unit details, lease dates, rent amount, and lease documents will be
-        available once the lease management system is implemented.
+        <strong>Note:</strong> Full lease details including property
+        information, unit details, lease dates, rent amount, and lease documents
+        will be available once the lease management system is implemented.
       </div>
     </div>
   );

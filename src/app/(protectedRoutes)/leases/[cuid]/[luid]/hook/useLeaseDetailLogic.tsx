@@ -251,7 +251,7 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   // Check if current user can renew the lease (admin or lease creator)
   const canRenewLease = Boolean(
     permissions.isAdmin ||
-      (lease?.createdBy?._id && currentUser?.sub === lease.createdBy._id)
+    (lease?.createdBy?._id && currentUser?.sub === lease.createdBy._id)
   );
 
   const tabItems: TabItem[] = lease

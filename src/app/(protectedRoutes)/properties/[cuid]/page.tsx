@@ -51,10 +51,10 @@ export default function Properties() {
     refetch(); // Refresh the properties list
   };
 
-  if(!client?.cuid) {
+  if (!client?.cuid) {
     return <div className="page properties">No client selected.</div>;
-  };
-  
+  }
+
   const propertyColumns = [
     {
       title: "Name",

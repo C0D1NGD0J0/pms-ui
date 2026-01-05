@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface PersonalInfo {
   fullName: string;
@@ -16,7 +16,7 @@ interface PersonalInfo {
 }
 
 interface OverviewTabProps {
-  userType: 'employee' | 'vendor';
+  userType: "employee" | "vendor";
   personalInfo: PersonalInfo;
   skills: string[];
   about: string;
@@ -26,21 +26,27 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
   userType,
   personalInfo,
   skills,
-  about
+  about,
 }) => {
   return (
     <div className="overview-tab">
       <div className="info-section">
-        <h4>{userType === 'employee' ? 'Employee Information' : 'Vendor Information'}</h4>
+        <h4>
+          {userType === "employee"
+            ? "Employee Information"
+            : "Vendor Information"}
+        </h4>
         <div className="info-grid">
           <div className="info-item">
             <i className="bx bx-id-card"></i>
             <div className="info-content">
               <div className="info-label">
-                {userType === 'employee' ? 'Employee ID' : 'Vendor ID'}
+                {userType === "employee" ? "Employee ID" : "Vendor ID"}
               </div>
               <div className="info-value">
-                {userType === 'employee' ? personalInfo.employeeId : personalInfo.vendorId}
+                {userType === "employee"
+                  ? personalInfo.employeeId
+                  : personalInfo.vendorId}
               </div>
             </div>
           </div>
@@ -49,10 +55,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <i className="bx bx-calendar"></i>
             <div className="info-content">
               <div className="info-label">
-                {userType === 'employee' ? 'Hire Date' : 'Registration Date'}
+                {userType === "employee" ? "Hire Date" : "Registration Date"}
               </div>
               <div className="info-value">
-                {userType === 'employee' ? personalInfo.hireDate : personalInfo.registrationDate}
+                {userType === "employee"
+                  ? personalInfo.hireDate
+                  : personalInfo.registrationDate}
               </div>
             </div>
           </div>
@@ -61,10 +69,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <i className="bx bx-briefcase"></i>
             <div className="info-content">
               <div className="info-label">
-                {userType === 'employee' ? 'Employment Type' : 'Business Type'}
+                {userType === "employee" ? "Employment Type" : "Business Type"}
               </div>
               <div className="info-value">
-                {userType === 'employee' ? personalInfo.employmentType : personalInfo.businessType}
+                {userType === "employee"
+                  ? personalInfo.employmentType
+                  : personalInfo.businessType}
               </div>
             </div>
           </div>
@@ -73,10 +83,12 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
             <i className="bx bx-user-check"></i>
             <div className="info-content">
               <div className="info-label">
-                {userType === 'employee' ? 'Direct Manager' : 'Account Manager'}
+                {userType === "employee" ? "Direct Manager" : "Account Manager"}
               </div>
               <div className="info-value">
-                {userType === 'employee' ? personalInfo.directManager : personalInfo.accountManager}
+                {userType === "employee"
+                  ? personalInfo.directManager
+                  : personalInfo.accountManager}
               </div>
             </div>
           </div>
@@ -84,7 +96,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({
       </div>
 
       <div className="info-section">
-        <h4>{userType === 'employee' ? 'Skills & Expertise' : 'Services & Specialties'}</h4>
+        <h4>
+          {userType === "employee"
+            ? "Skills & Expertise"
+            : "Services & Specialties"}
+        </h4>
         <div>
           {skills.map((skill, index) => (
             <span key={index} className="skill-badge">

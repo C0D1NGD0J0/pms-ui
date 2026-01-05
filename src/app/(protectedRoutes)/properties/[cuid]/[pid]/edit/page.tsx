@@ -111,7 +111,13 @@ export default function EditProperty({ params }: EditPropertyProps) {
   }, []);
 
   const handlePreviousTab = React.useCallback(() => {
-    const tabKeys = ["basic", "financial", "property", "amenities", "documents"];
+    const tabKeys = [
+      "basic",
+      "financial",
+      "property",
+      "amenities",
+      "documents",
+    ];
     if (propertyData?.unitInfo?.canAddUnit) {
       tabKeys.push("units");
     }
@@ -122,7 +128,13 @@ export default function EditProperty({ params }: EditPropertyProps) {
   }, [activeTab, setActiveTab, propertyData?.unitInfo?.canAddUnit]);
 
   const handleNextTab = React.useCallback(() => {
-    const tabKeys = ["basic", "financial", "property", "amenities", "documents"];
+    const tabKeys = [
+      "basic",
+      "financial",
+      "property",
+      "amenities",
+      "documents",
+    ];
     if (propertyData?.unitInfo?.canAddUnit) {
       tabKeys.push("units");
     }
@@ -132,108 +144,112 @@ export default function EditProperty({ params }: EditPropertyProps) {
     }
   }, [activeTab, setActiveTab, propertyData?.unitInfo?.canAddUnit]);
 
-  const tabs = React.useMemo(() => [
-    {
-      key: "basic",
-      isVisible: true,
-      tabLabel: "Basic information",
-      content: (
-        <BasicInfoTab
-          permission={permission}
-          canEditProperty={canEdit}
-          saveAddress={saveAddress}
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
-          propertyManagers={propertyManagers}
-          propertyTypeOptions={propertyTypeOptions}
-          propertyStatusOptions={propertyStatusOptions}
-        />
-      ),
-    },
-    {
-      key: "financial",
-      tabLabel: "Financial",
-      isVisible: true,
-      content: (
-        <FinancialTab
-          form={propertyForm}
-          permission={permission}
-          handleOnChange={handleOnChange}
-          currencyOptions={formConfig?.currencies || []}
-        />
-      ),
-    },
-    {
-      key: "property",
-      isVisible: true,
-      tabLabel: "Property Details",
-      content: (
-        <PropertyInfoTab
-          formConfig={formConfig}
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
-          permission={permission}
-          propertyTypeOptions={propertyTypeOptions}
-          propertyStatusOptions={propertyStatusOptions}
-        />
-      ),
-    },
-    {
-      key: "amenities",
-      isVisible: true,
-      tabLabel: "Amenities",
-      content: (
-        <AmenitiesTab
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
-        />
-      ),
-    },
-    {
-      isVisible: true,
-      key: "documents",
-      tabLabel: "Photos & Documents",
-      content: (
-        <DocumentsTab
-          permission={permission}
-          propertyForm={propertyForm}
-          documentTypeOptions={
-            documentTypeOptions as {
-              value:
-                | "deed"
-                | "tax"
-                | "insurance"
-                | "inspection"
-                | "other"
-                | "lease";
-              label: string;
-            }[]
-          }
-        />
-      ),
-    },
-    {
-      key: "units",
-      tabLabel: "Units",
-      isVisible: propertyData?.unitInfo?.canAddUnit,
-      content: <UnitsTab property={propertyForm.values} />,
-    },
-  ].filter((tab) => isTabVisible(tab.key)), [
-    saveAddress,
-    propertyForm,
-    handleOnChange,
-    propertyManagers,
-    propertyTypeOptions,
-    propertyStatusOptions,
-    formConfig,
-    permission,
-    documentTypeOptions,
-    propertyData?.unitInfo?.canAddUnit,
-    isTabVisible,
-    canEdit,
-    propertyForm.values.propertyType,
-    propertyForm.values.maxAllowedUnits,
-  ]);
+  const tabs = React.useMemo(
+    () =>
+      [
+        {
+          key: "basic",
+          isVisible: true,
+          tabLabel: "Basic information",
+          content: (
+            <BasicInfoTab
+              permission={permission}
+              canEditProperty={canEdit}
+              saveAddress={saveAddress}
+              propertyForm={propertyForm}
+              handleOnChange={handleOnChange}
+              propertyManagers={propertyManagers}
+              propertyTypeOptions={propertyTypeOptions}
+              propertyStatusOptions={propertyStatusOptions}
+            />
+          ),
+        },
+        {
+          key: "financial",
+          tabLabel: "Financial",
+          isVisible: true,
+          content: (
+            <FinancialTab
+              form={propertyForm}
+              permission={permission}
+              handleOnChange={handleOnChange}
+              currencyOptions={formConfig?.currencies || []}
+            />
+          ),
+        },
+        {
+          key: "property",
+          isVisible: true,
+          tabLabel: "Property Details",
+          content: (
+            <PropertyInfoTab
+              formConfig={formConfig}
+              propertyForm={propertyForm}
+              handleOnChange={handleOnChange}
+              permission={permission}
+              propertyTypeOptions={propertyTypeOptions}
+              propertyStatusOptions={propertyStatusOptions}
+            />
+          ),
+        },
+        {
+          key: "amenities",
+          isVisible: true,
+          tabLabel: "Amenities",
+          content: (
+            <AmenitiesTab
+              propertyForm={propertyForm}
+              handleOnChange={handleOnChange}
+            />
+          ),
+        },
+        {
+          isVisible: true,
+          key: "documents",
+          tabLabel: "Photos & Documents",
+          content: (
+            <DocumentsTab
+              permission={permission}
+              propertyForm={propertyForm}
+              documentTypeOptions={
+                documentTypeOptions as {
+                  value:
+                    | "deed"
+                    | "tax"
+                    | "insurance"
+                    | "inspection"
+                    | "other"
+                    | "lease";
+                  label: string;
+                }[]
+              }
+            />
+          ),
+        },
+        {
+          key: "units",
+          tabLabel: "Units",
+          isVisible: propertyData?.unitInfo?.canAddUnit,
+          content: <UnitsTab property={propertyForm.values} />,
+        },
+      ].filter((tab) => isTabVisible(tab.key)),
+    [
+      saveAddress,
+      propertyForm,
+      handleOnChange,
+      propertyManagers,
+      propertyTypeOptions,
+      propertyStatusOptions,
+      formConfig,
+      permission,
+      documentTypeOptions,
+      propertyData?.unitInfo?.canAddUnit,
+      isTabVisible,
+      canEdit,
+      propertyForm.values.propertyType,
+      propertyForm.values.maxAllowedUnits,
+    ]
+  );
 
   if (isDataLoading) {
     return <Loading size="regular" description="Loading property data..." />;

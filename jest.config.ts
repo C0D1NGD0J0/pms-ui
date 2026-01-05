@@ -11,10 +11,8 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(msw)/)',
-  ],
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  transformIgnorePatterns: ["node_modules/(?!(msw)/)"],
   moduleNameMapper: {
     "^@services/(.*)$": "<rootDir>/src/services/$1",
     "^@services$": "<rootDir>/src/services",

@@ -76,8 +76,14 @@ export const FinancialTab: React.FC<FinancialTabProps> = ({
       label: "Total Expected",
       value: formatCurrency(financialSummary.totalExpected, currencyCode),
     },
-    { label: "Total Paid", value: formatCurrency(financialSummary.totalPaid, currencyCode) },
-    { label: "Total Owed", value: formatCurrency(financialSummary.totalOwed, currencyCode) },
+    {
+      label: "Total Paid",
+      value: formatCurrency(financialSummary.totalPaid, currencyCode),
+    },
+    {
+      label: "Total Owed",
+      value: formatCurrency(financialSummary.totalOwed, currencyCode),
+    },
   ];
 
   function getDaySuffix(day: number): string {

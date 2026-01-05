@@ -1,6 +1,9 @@
 import { propertyUnitService } from "@services/index";
 import { PROPERTY_QUERY_KEYS } from "@utils/constants";
-import { NestedQueryParams, PaginationQuery } from "@interfaces/common.interface";
+import {
+  NestedQueryParams,
+  PaginationQuery,
+} from "@interfaces/common.interface";
 import {
   UseInfiniteQueryOptions,
   useInfiniteQuery,

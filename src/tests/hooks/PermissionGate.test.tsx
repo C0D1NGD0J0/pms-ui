@@ -1,7 +1,11 @@
 import { ReactNode } from "react";
 import { render, screen } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { PermissionAction, PermissionField, PermissionGate } from "@components/PermissionGate";
+import {
+  PermissionAction,
+  PermissionField,
+  PermissionGate,
+} from "@components/PermissionGate";
 
 // Mock the usePermissions hook
 jest.mock("@hooks/useUnifiedPermissions", () => ({
@@ -9,7 +13,9 @@ jest.mock("@hooks/useUnifiedPermissions", () => ({
 }));
 
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
-const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<typeof useUnifiedPermissions>;
+const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<
+  typeof useUnifiedPermissions
+>;
 
 // Test wrapper with QueryClient
 const createWrapper = () => {
@@ -22,7 +28,7 @@ const createWrapper = () => {
   const TestWrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
-  TestWrapper.displayName = 'TestWrapper';
+  TestWrapper.displayName = "TestWrapper";
   return TestWrapper;
 };
 
@@ -74,7 +80,7 @@ describe("Permission Components", () => {
       } as any);
 
       render(
-        <PermissionGate 
+        <PermissionGate
           permission="property:delete"
           fallback={<div>Access Denied</div>}
         >
@@ -96,7 +102,7 @@ describe("Permission Components", () => {
       } as any);
 
       render(
-        <PermissionGate 
+        <PermissionGate
           permissions={["property:read", "property:update"]}
           requireAll={true}
         >
@@ -123,10 +129,7 @@ describe("Permission Components", () => {
       const context = { resourceId: "prop123", ownerId: "user123" };
 
       render(
-        <PermissionGate 
-          permission="property:update"
-          context={context}
-        >
+        <PermissionGate permission="property:update" context={context}>
           <div>Protected Content</div>
         </PermissionGate>,
         { wrapper: createWrapper() }
@@ -182,7 +185,9 @@ describe("Permission Components", () => {
 
       render(
         <PermissionField fieldName="price" resource="property" mode="disable">
-          {({ disabled }: { disabled: boolean }) => <TestComponent disabled={disabled} />}
+          {({ disabled }: { disabled: boolean }) => (
+            <TestComponent disabled={disabled} />
+          )}
         </PermissionField>,
         { wrapper: createWrapper() }
       );
@@ -198,9 +203,9 @@ describe("Permission Components", () => {
       } as any);
 
       render(
-        <PermissionField 
-          fieldName="price" 
-          resource="property" 
+        <PermissionField
+          fieldName="price"
+          resource="property"
           mode="hide"
           fallback={<div>Field Hidden</div>}
         >
@@ -252,8 +257,8 @@ describe("Permission Components", () => {
       } as any);
 
       render(
-        <PermissionAction 
-          action="update" 
+        <PermissionAction
+          action="update"
           resource="property"
           resourceId="prop123"
           ownerId="user123"
@@ -264,14 +269,11 @@ describe("Permission Components", () => {
         { wrapper: createWrapper() }
       );
 
-      expect(mockCan).toHaveBeenCalledWith(
-        "property.update",
-        {
-          resourceOwner: "user123",
-          resourceId: "prop123",
-          assignedTo: ["user123", "user456"]
-        }
-      );
+      expect(mockCan).toHaveBeenCalledWith("property.update", {
+        resourceOwner: "user123",
+        resourceId: "prop123",
+        assignedTo: ["user123", "user456"],
+      });
       expect(screen.getByTestId("action-button")).toBeInTheDocument();
     });
 
@@ -281,8 +283,8 @@ describe("Permission Components", () => {
       } as any);
 
       render(
-        <PermissionAction 
-          action="delete" 
+        <PermissionAction
+          action="delete"
           resource="property"
           fallback={<div>Action Not Allowed</div>}
         >

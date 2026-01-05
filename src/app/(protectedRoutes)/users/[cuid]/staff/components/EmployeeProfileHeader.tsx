@@ -78,7 +78,9 @@ export const EmployeeProfileHeader: React.FC<EmployeeProfileHeaderProps> = ({
 
       <div className="employee-stats">
         <div className="stat-item">
-          <span className="stat-number">{employeeInfo.stats.propertiesManaged}</span>
+          <span className="stat-number">
+            {employeeInfo.stats.propertiesManaged}
+          </span>
           <span className="stat-label">Properties</span>
         </div>
         <div className="stat-item">
@@ -86,7 +88,9 @@ export const EmployeeProfileHeader: React.FC<EmployeeProfileHeaderProps> = ({
           <span className="stat-label">Units Managed</span>
         </div>
         <div className="stat-item">
-          <span className="stat-number">{employeeInfo.stats.tasksCompleted}</span>
+          <span className="stat-number">
+            {employeeInfo.stats.tasksCompleted}
+          </span>
           <span className="stat-label">Tasks Completed</span>
         </div>
         <div className="stat-item">

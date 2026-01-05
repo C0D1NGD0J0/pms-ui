@@ -33,7 +33,7 @@ describe("useTablePagination", () => {
 
   it("should handle page changes", () => {
     const { result } = renderHook(() => useTablePagination());
-    
+
     act(() => {
       result.current.handlePageChange(3);
     });
@@ -43,7 +43,7 @@ describe("useTablePagination", () => {
 
   it("should handle limit changes and calculate skip", () => {
     const { result } = renderHook(() => useTablePagination({ initialPage: 3 }));
-    
+
     act(() => {
       result.current.handleLimitChange(25);
     });
@@ -133,11 +133,21 @@ describe("useTablePagination", () => {
       handleFilterChange: result.current.handleFilterChange,
     };
 
-    expect(firstHandlers.handlePageChange).toBe(secondHandlers.handlePageChange);
-    expect(firstHandlers.handleLimitChange).toBe(secondHandlers.handleLimitChange);
-    expect(firstHandlers.handleSortByChange).toBe(secondHandlers.handleSortByChange);
-    expect(firstHandlers.handleSortDirectionChange).toBe(secondHandlers.handleSortDirectionChange);
-    expect(firstHandlers.handleFilterChange).toBe(secondHandlers.handleFilterChange);
+    expect(firstHandlers.handlePageChange).toBe(
+      secondHandlers.handlePageChange
+    );
+    expect(firstHandlers.handleLimitChange).toBe(
+      secondHandlers.handleLimitChange
+    );
+    expect(firstHandlers.handleSortByChange).toBe(
+      secondHandlers.handleSortByChange
+    );
+    expect(firstHandlers.handleSortDirectionChange).toBe(
+      secondHandlers.handleSortDirectionChange
+    );
+    expect(firstHandlers.handleFilterChange).toBe(
+      secondHandlers.handleFilterChange
+    );
   });
 
   it("should handle multiple consecutive changes", () => {
@@ -160,7 +170,7 @@ describe("useTablePagination", () => {
 
   it("should calculate skip correctly for different page and limit combinations", () => {
     const { result } = renderHook(() => useTablePagination());
-    
+
     const testCases = [
       { page: 1, limit: 10, expectedSkip: 0 },
       { page: 2, limit: 10, expectedSkip: 10 },
@@ -180,7 +190,7 @@ describe("useTablePagination", () => {
 
   it("should handle edge cases for page values", () => {
     const { result } = renderHook(() => useTablePagination());
-    
+
     act(() => {
       result.current.handlePageChange(0);
     });

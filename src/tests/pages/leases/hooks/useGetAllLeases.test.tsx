@@ -2,7 +2,10 @@ import React from "react";
 import { leaseService } from "@services/lease";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useGetLeaseStats, useGetAllLeases } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetAllLeases";
+import {
+  useGetLeaseStats,
+  useGetAllLeases,
+} from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetAllLeases";
 
 jest.mock("@services/lease");
 const mockLeaseService = leaseService as jest.Mocked<typeof leaseService>;
@@ -125,9 +128,7 @@ describe("useGetLeaseStats", () => {
     });
 
     await waitFor(() => {
-      expect(mockLeaseService.getLeaseStats).toHaveBeenCalledWith(
-        "client-789"
-      );
+      expect(mockLeaseService.getLeaseStats).toHaveBeenCalledWith("client-789");
     });
   });
 });

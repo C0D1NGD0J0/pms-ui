@@ -83,13 +83,16 @@ describe.skip("useLeaseForm - hook doesn't exist", () => {
       expect(mockLeaseService.createLease).toHaveBeenCalled();
     });
 
-    await waitFor(() => {
-      expect(mockOpenNotification).toHaveBeenCalledWith(
-        "success",
-        "Lease Created",
-        "Lease has been created successfully!"
-      );
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(mockOpenNotification).toHaveBeenCalledWith(
+          "success",
+          "Lease Created",
+          "Lease has been created successfully!"
+        );
+      },
+      { timeout: 3000 }
+    );
   });
 
   it("should handle validation errors", async () => {
@@ -138,13 +141,16 @@ describe.skip("useLeaseForm - hook doesn't exist", () => {
       expect(mockLeaseService.createLease).toHaveBeenCalled();
     });
 
-    await waitFor(() => {
-      expect(mockOpenNotification).toHaveBeenCalledWith(
-        "error",
-        "Creation Failed",
-        "Property not available"
-      );
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(mockOpenNotification).toHaveBeenCalledWith(
+          "error",
+          "Creation Failed",
+          "Property not available"
+        );
+      },
+      { timeout: 3000 }
+    );
   });
 
   it("should filter out empty co-tenants", async () => {
@@ -247,13 +253,16 @@ describe.skip("useLeaseForm - hook doesn't exist", () => {
       expect(mockLeaseService.createLease).toHaveBeenCalled();
     });
 
-    await waitFor(() => {
-      expect(mockOpenNotification).toHaveBeenCalledWith(
-        "error",
-        "Creation Failed",
-        "Lease limit reached"
-      );
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(mockOpenNotification).toHaveBeenCalledWith(
+          "error",
+          "Creation Failed",
+          "Lease limit reached"
+        );
+      },
+      { timeout: 3000 }
+    );
 
     expect(mockRouterPush).not.toHaveBeenCalled();
   });

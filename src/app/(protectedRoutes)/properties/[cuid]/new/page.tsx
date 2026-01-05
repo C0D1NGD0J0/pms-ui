@@ -61,80 +61,83 @@ export default function CreateProperty() {
     }
   }, [activeTab, setActiveTab]);
 
-  const tabs = React.useMemo(() => [
-    {
-      key: "basic",
-      tabLabel: "Basic information",
-      content: (
-        <BasicInfoTab
-          saveAddress={saveAddress}
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
-          propertyManagers={propertyManagers}
-          propertyTypeOptions={propertyTypeOptions}
-          propertyStatusOptions={propertyStatusOptions}
-        />
-      ),
-    },
-    {
-      key: "property",
-      tabLabel: "Property Details",
-      content: (
-        <PropertyInfoTab
-          permission={permission}
-          propertyForm={propertyForm}
-          formConfig={formConfig}
-          handleOnChange={handleOnChange}
-          propertyTypeOptions={propertyTypeOptions}
-          propertyStatusOptions={propertyStatusOptions}
-        />
-      ),
-    },
-    {
-      key: "amenities",
-      tabLabel: "Amenities",
-      content: (
-        <AmenitiesTab
-          propertyForm={propertyForm}
-          handleOnChange={handleOnChange}
-        />
-      ),
-    },
-    {
-      key: "documents",
-      tabLabel: "Photos & Documents",
-      content: (
-        <DocumentsTab
-          permission={permission}
-          propertyForm={propertyForm}
-          documentTypeOptions={
-            documentTypeOptions as {
-              value:
-                | "deed"
-                | "tax"
-                | "insurance"
-                | "inspection"
-                | "other"
-                | "lease";
-              label: string;
-            }[]
-          }
-        />
-      ),
-    },
-  ], [
-    saveAddress,
-    propertyForm,
-    handleOnChange,
-    propertyManagers,
-    propertyTypeOptions,
-    propertyStatusOptions,
-    formConfig,
-    permission,
-    documentTypeOptions,
-    propertyForm.values.propertyType,
-    propertyForm.values.maxAllowedUnits,
-  ]);
+  const tabs = React.useMemo(
+    () => [
+      {
+        key: "basic",
+        tabLabel: "Basic information",
+        content: (
+          <BasicInfoTab
+            saveAddress={saveAddress}
+            propertyForm={propertyForm}
+            handleOnChange={handleOnChange}
+            propertyManagers={propertyManagers}
+            propertyTypeOptions={propertyTypeOptions}
+            propertyStatusOptions={propertyStatusOptions}
+          />
+        ),
+      },
+      {
+        key: "property",
+        tabLabel: "Property Details",
+        content: (
+          <PropertyInfoTab
+            permission={permission}
+            propertyForm={propertyForm}
+            formConfig={formConfig}
+            handleOnChange={handleOnChange}
+            propertyTypeOptions={propertyTypeOptions}
+            propertyStatusOptions={propertyStatusOptions}
+          />
+        ),
+      },
+      {
+        key: "amenities",
+        tabLabel: "Amenities",
+        content: (
+          <AmenitiesTab
+            propertyForm={propertyForm}
+            handleOnChange={handleOnChange}
+          />
+        ),
+      },
+      {
+        key: "documents",
+        tabLabel: "Photos & Documents",
+        content: (
+          <DocumentsTab
+            permission={permission}
+            propertyForm={propertyForm}
+            documentTypeOptions={
+              documentTypeOptions as {
+                value:
+                  | "deed"
+                  | "tax"
+                  | "insurance"
+                  | "inspection"
+                  | "other"
+                  | "lease";
+                label: string;
+              }[]
+            }
+          />
+        ),
+      },
+    ],
+    [
+      saveAddress,
+      propertyForm,
+      handleOnChange,
+      propertyManagers,
+      propertyTypeOptions,
+      propertyStatusOptions,
+      formConfig,
+      permission,
+      documentTypeOptions,
+      propertyForm.values.propertyType,
+      propertyForm.values.maxAllowedUnits,
+    ]
+  );
 
   if (formConfigLoading) {
     return <Loading size="regular" description="Setting up propertyForm..." />;

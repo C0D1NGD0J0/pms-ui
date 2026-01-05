@@ -181,7 +181,9 @@ describe("Panel Components", () => {
       );
 
       expect(screen.getByText("Custom Component")).toBeInTheDocument();
-      expect(screen.queryByText("Should be overridden")).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Should be overridden")
+      ).not.toBeInTheDocument();
     });
 
     it("should render search input when searchOpts is visible", () => {
@@ -250,7 +252,9 @@ describe("Panel Components", () => {
         />
       );
 
-      expect(screen.queryByPlaceholderText("Search...")).not.toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText("Search...")
+      ).not.toBeInTheDocument();
     });
 
     it("should render filter select when filterOpts is visible", () => {
@@ -349,7 +353,9 @@ describe("Panel Components", () => {
       );
 
       // Sort button should not be visible until filter is changed (internal state _sortBy is empty)
-      expect(document.querySelector(".sort-direction-btn")).not.toBeInTheDocument();
+      expect(
+        document.querySelector(".sort-direction-btn")
+      ).not.toBeInTheDocument();
     });
 
     it("should call onSortDirectionChange when provided", () => {
@@ -512,7 +518,9 @@ describe("Panel Components", () => {
       );
 
       expect(screen.getByText("Users")).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("Search users...")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Search users...")
+      ).toBeInTheDocument();
       expect(document.querySelector("#filter-select")).toBeInTheDocument();
       expect(screen.getByText("User list content")).toBeInTheDocument();
     });

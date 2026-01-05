@@ -229,8 +229,7 @@ describe("PageAccessHOC", () => {
         } as any);
 
         const ProtectedComponent = withPageAccess(TestComponent, {
-          requiredPermission: (p) =>
-            p.isManagerOrAbove && p.canViewUsers(),
+          requiredPermission: (p) => p.isManagerOrAbove && p.canViewUsers(),
         });
 
         render(<ProtectedComponent />);
@@ -337,9 +336,7 @@ describe("PageAccessHOC", () => {
       } as IUnifiedPermissions);
 
       render(
-        <TestComponentWithHook
-          requiredPermission={(p) => p.isAdmin === true}
-        />
+        <TestComponentWithHook requiredPermission={(p) => p.isAdmin === true} />
       );
 
       await waitFor(() => {
@@ -356,9 +353,7 @@ describe("PageAccessHOC", () => {
       } as IUnifiedPermissions);
 
       render(
-        <TestComponentWithHook
-          requiredPermission={(p) => p.isAdmin === true}
-        />
+        <TestComponentWithHook requiredPermission={(p) => p.isAdmin === true} />
       );
 
       await waitFor(() => {

@@ -31,10 +31,14 @@ const mockRenewalLease: LeaseDetailData = {
       country: "USA",
       postCode: "94102",
       streetNumber: "123",
-      fullAddress: "123 Main St, San Francisco, CA 94102"
-    }
+      fullAddress: "123 Main St, San Francisco, CA 94102",
+    },
   },
-  duration: { startDate: "2024-01-01", endDate: "2024-12-31", moveInDate: "2024-01-01" },
+  duration: {
+    startDate: "2024-01-01",
+    endDate: "2024-12-31",
+    moveInDate: "2024-01-01",
+  },
   fees: {
     monthlyRent: 2000,
     currency: "USD",

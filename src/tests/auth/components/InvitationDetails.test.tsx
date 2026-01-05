@@ -6,10 +6,7 @@ import { InvitationDetails } from "@app/(auth)/invite/[cuid]/components/Invitati
 // Mock Button component
 jest.mock("@components/FormElements", () => ({
   Button: ({ label, onClick, className }: any) => (
-    <button
-      onClick={onClick}
-      className={className}
-    >
+    <button onClick={onClick} className={className}>
       <span>{label}</span>
     </button>
   ),
@@ -162,7 +159,9 @@ describe("InvitationDetails Component", () => {
   it("should render buttons with correct class names", () => {
     render(<InvitationDetails {...defaultProps} />);
 
-    const acceptButton = screen.getByText("Accept Invitation").closest("button");
+    const acceptButton = screen
+      .getByText("Accept Invitation")
+      .closest("button");
     const declineButton = screen.getByText("Decline").closest("button");
 
     expect(acceptButton).toHaveClass("btn-primary");

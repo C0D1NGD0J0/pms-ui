@@ -216,7 +216,11 @@ describe.skip("useLeasePreview - previewLeaseTemplate method doesn't exist", () 
       values: {
         templateType: "residential-single-family",
         property: { id: "prop-123", address: "123 Main St" },
-        tenantInfo: { firstName: "John", lastName: "Doe", email: "john@test.com" },
+        tenantInfo: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@test.com",
+        },
         duration: { startDate: "2025-01-01", endDate: "2026-01-01" },
         fees: { monthlyRent: 1500, securityDeposit: 3000, rentDueDay: 1 },
         type: "fixed-term",
@@ -259,7 +263,11 @@ describe.skip("useLeasePreview - previewLeaseTemplate method doesn't exist", () 
       values: {
         templateType: "residential-single-family",
         property: { id: "prop-123", address: "123 Main St" },
-        tenantInfo: { firstName: "John", lastName: "Doe", email: "john@test.com" },
+        tenantInfo: {
+          firstName: "John",
+          lastName: "Doe",
+          email: "john@test.com",
+        },
         duration: { startDate: "2025-01-01", endDate: "2026-01-01" },
         fees: { monthlyRent: 1500, securityDeposit: 3000, rentDueDay: 1 },
         type: "fixed-term",

@@ -62,7 +62,11 @@ describe("currencyMapper", () => {
 
     it("should return fallback object for invalid currency code", () => {
       const result = getCurrencyInfo("INVALID");
-      expect(result).toEqual({ name: "currency", symbol: "INVALID", icon: "bx-money" });
+      expect(result).toEqual({
+        name: "currency",
+        symbol: "INVALID",
+        icon: "bx-money",
+      });
     });
 
     it("should be case-sensitive and return fallback for lowercase", () => {

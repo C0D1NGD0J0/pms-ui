@@ -1,4 +1,4 @@
-import { deleteCookie, setCookie,getCookie } from "cookies-next";
+import { deleteCookie, setCookie, getCookie } from "cookies-next";
 
 class CookieManager {
   static setCookie(key: string | undefined, value: string | undefined) {

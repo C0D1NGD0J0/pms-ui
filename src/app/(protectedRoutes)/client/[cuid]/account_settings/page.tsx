@@ -79,8 +79,8 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
                     isManuallySaving
                       ? "Saving..."
                       : saveStatus.hasUnsavedChanges
-                      ? "Save Changes"
-                      : "Save"
+                        ? "Save Changes"
+                        : "Save"
                   }
                   onClick={handleSave}
                   className="btn-primary"

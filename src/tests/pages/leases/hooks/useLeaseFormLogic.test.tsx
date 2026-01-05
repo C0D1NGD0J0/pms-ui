@@ -229,7 +229,6 @@ describe.skip("useLeaseFormLogic - requires async params handling", () => {
     expect(mockLeaseService.createLease).not.toHaveBeenCalled();
   });
 
-
   it("should handle cancel action", () => {
     const { result } = renderHook(
       () => useLeaseFormLogic({ params: mockParams }),

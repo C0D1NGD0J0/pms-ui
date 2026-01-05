@@ -26,23 +26,35 @@ describe("ForgotPasswordView Component", () => {
 
   it("should render forgot password form with correct elements", () => {
     render(<ForgotPasswordViewWrapper />);
-    
+
     expect(screen.getByText("Forgot password?")).toBeInTheDocument();
-    expect(screen.getByText("It happens to the best of us. Just enter your email address.")).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("Enter your email address...")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Send reset link" })).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "It happens to the best of us. Just enter your email address."
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter your email address...")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Send reset link" })
+    ).toBeInTheDocument();
   });
 
   it("should show processing state when submitting", () => {
     render(<ForgotPasswordViewWrapper isPending={true} />);
-    
+
     expect(screen.getByText("Processing...")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /processing/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /processing/i })
+    ).toBeInTheDocument();
   });
 
   it("should render footer link to login", () => {
     render(<ForgotPasswordViewWrapper />);
-    
-    expect(screen.getByText("Already have an account? Log in")).toBeInTheDocument();
+
+    expect(
+      screen.getByText("Already have an account? Log in")
+    ).toBeInTheDocument();
   });
 });

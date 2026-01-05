@@ -466,8 +466,8 @@ export function useBaseUnitForm({
           type === "checkbox"
             ? checked
             : type === "number"
-            ? Number(value)
-            : value;
+              ? Number(value)
+              : value;
 
         if (name.includes(".")) {
           const [parent, child] = name.split(".");

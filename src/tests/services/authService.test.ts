@@ -39,7 +39,10 @@ describe("AuthService", () => {
 
       const response = await authService.login(loginData);
 
-      expect(mockedAxios.post).toHaveBeenCalledWith("/api/v1/auth/login", loginData);
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/auth/login",
+        loginData
+      );
       expect(response.status).toBe(200);
       expect(response.data.success).toBe(true);
       expect(response.data.accounts).toHaveLength(1);
@@ -118,7 +121,9 @@ describe("AuthService", () => {
 
       const response = await authService.currentuser("client-123");
 
-      expect(mockedAxios.get).toHaveBeenCalledWith("/api/v1/auth/client-123/me");
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "/api/v1/auth/client-123/me"
+      );
       expect(response?.status).toBe(200);
       expect(response?.data.data.user).toMatchObject({
         uid: "user-123",
@@ -153,7 +158,9 @@ describe("AuthService", () => {
 
       const response = await authService.currentuser("client-456");
 
-      expect(mockedAxios.get).toHaveBeenCalledWith("/api/v1/auth/client-456/me");
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "/api/v1/auth/client-456/me"
+      );
       expect(response?.data.data.user.role).toBe("manager");
       expect(response?.data.data.client.companyName).toBe("Company B");
     });
@@ -180,7 +187,9 @@ describe("AuthService", () => {
 
       const response = await authService.logout("client-123");
 
-      expect(mockedAxios.delete).toHaveBeenCalledWith("/api/v1/auth/client-123/logout");
+      expect(mockedAxios.delete).toHaveBeenCalledWith(
+        "/api/v1/auth/client-123/logout"
+      );
       expect(response?.status).toBe(200);
       expect(response?.data.message).toBe("Logged out successfully");
     });
@@ -207,7 +216,9 @@ describe("AuthService", () => {
 
       const response = await authService.refreshToken();
 
-      expect(mockedAxios.post).toHaveBeenCalledWith("/api/v1/auth/refresh_token");
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/auth/refresh_token"
+      );
       expect(response.status).toBe(200);
       expect(response.data.success).toBe(true);
     });

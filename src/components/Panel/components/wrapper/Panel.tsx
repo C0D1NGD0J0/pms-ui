@@ -19,11 +19,12 @@ interface PanelProps {
   } | null;
 }
 
-export const Panel: React.FC<PanelProps> = ({ 
-  children, 
+export const Panel: React.FC<PanelProps> = ({
+  children,
   className = "",
-  variant = "default"
+  variant = "default",
 }) => {
-  const panelClass = `panel ${variant === "alt-2" ? "panel-alt-2" : ""} ${className}`.trim();
+  const panelClass =
+    `panel ${variant === "alt-2" ? "panel-alt-2" : ""} ${className}`.trim();
   return <div className={panelClass}>{children}</div>;
 };

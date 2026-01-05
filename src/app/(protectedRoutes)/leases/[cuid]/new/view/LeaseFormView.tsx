@@ -133,8 +133,9 @@ export function LeaseFormView({
                     You haven&apos;t added any co-tenants to this lease.
                   </p>
                   <p className="mb-0">
-                    If you proceed without adding co-tenants, they will not appear
-                    on the lease document and will not have signing rights.
+                    If you proceed without adding co-tenants, they will not
+                    appear on the lease document and will not have signing
+                    rights.
                   </p>
                 </div>
               </div>

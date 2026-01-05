@@ -49,7 +49,9 @@ describe("Toggle Component", () => {
   });
 
   it("renders with custom id and className", () => {
-    render(<Toggle {...defaultProps} id="custom-toggle" className="custom-class" />);
+    render(
+      <Toggle {...defaultProps} id="custom-toggle" className="custom-class" />
+    );
 
     const toggle = screen.getByRole("switch");
     expect(toggle).toHaveAttribute("id", "custom-toggle");

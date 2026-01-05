@@ -76,13 +76,15 @@ describe("PropertyService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      const response = await propertyService.getClientProperties(
-        "client-123",
-        { page: 1, limit: 10 }
-      );
+      const response = await propertyService.getClientProperties("client-123", {
+        page: 1,
+        limit: 10,
+      });
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/properties/client-123/client_properties"),
+        expect.stringContaining(
+          "/api/v1/properties/client-123/client_properties"
+        ),
         expect.any(Object)
       );
       expect(response.success).toBe(true);
@@ -104,7 +106,9 @@ describe("PropertyService", () => {
 
       // Verify the service method was called with correct endpoint
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/properties/client-123/client_properties"),
+        expect.stringContaining(
+          "/api/v1/properties/client-123/client_properties"
+        ),
         expect.any(Object)
       );
     });
@@ -272,13 +276,15 @@ describe("PropertyService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      const response = await propertyService.getPendingApprovals(
-        "client-123",
-        { page: 1, limit: 10 }
-      );
+      const response = await propertyService.getPendingApprovals("client-123", {
+        page: 1,
+        limit: 10,
+      });
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/properties/client-123/properties/pending"),
+        expect.stringContaining(
+          "/api/v1/properties/client-123/properties/pending"
+        ),
         expect.any(Object)
       );
       expect(response.success).toBe(true);
@@ -467,9 +473,8 @@ describe("PropertyService", () => {
 
       mockedAxios.get.mockResolvedValue(mockResponse);
 
-      const response = await propertyService.getPropertyFormMetaData(
-        "residential"
-      );
+      const response =
+        await propertyService.getPropertyFormMetaData("residential");
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         "/api/v1/properties/property_form_metadata?formType=residential",
@@ -532,7 +537,9 @@ describe("PropertyService", () => {
       // Verify the service method was called with correct endpoint
       // buildNestedQuery handles building the query params
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/properties/client-123/client_properties"),
+        expect.stringContaining(
+          "/api/v1/properties/client-123/client_properties"
+        ),
         expect.any(Object)
       );
     });
@@ -558,7 +565,9 @@ describe("PropertyService", () => {
       // Verify the service method was called with correct endpoint
       // buildNestedQuery handles omitting undefined/null/empty values
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        expect.stringContaining("/api/v1/properties/client-123/client_properties"),
+        expect.stringContaining(
+          "/api/v1/properties/client-123/client_properties"
+        ),
         expect.any(Object)
       );
     });

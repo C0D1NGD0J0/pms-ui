@@ -50,9 +50,7 @@ describe("MainContent Component", () => {
 
   it("preserves nested component structure", () => {
     const TestComponent = () => (
-      <div data-testid="nested-component">
-        Nested Component
-      </div>
+      <div data-testid="nested-component">Nested Component</div>
     );
 
     render(

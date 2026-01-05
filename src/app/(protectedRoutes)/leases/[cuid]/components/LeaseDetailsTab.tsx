@@ -37,7 +37,9 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({
       label: "Signed Date",
       value:
         leaseData.signatures.length && leaseData.signatures[0].signedAt
-          ? formatDate(leaseData.signatures[0].signedAt, { displayFormat: "shortMonth" })
+          ? formatDate(leaseData.signatures[0].signedAt, {
+              displayFormat: "shortMonth",
+            })
           : "Not Signed",
     },
     {
@@ -49,9 +51,9 @@ export const LeaseDetailsTab: React.FC<LeaseDetailsTabProps> = ({
     {
       label: "Pets Allowed",
       value: leaseData.petPolicy.allowed
-        ? (leaseData.petPolicy.maxPets != null
-            ? `Allowed - ${leaseData.petPolicy.maxPets} Pets`
-            : "Allowed")
+        ? leaseData.petPolicy.maxPets != null
+          ? `Allowed - ${leaseData.petPolicy.maxPets} Pets`
+          : "Allowed"
         : "Not Allowed",
     },
     { label: "Parking Spaces", value: leaseData.parkingSpaces || 0 },

@@ -42,8 +42,8 @@ export function useFormChangeHandler(form: LeaseFormType) {
           type === "checkbox"
             ? checked
             : type === "number"
-            ? Number(value)
-            : value;
+              ? Number(value)
+              : value;
         actualField = field || name;
       }
 

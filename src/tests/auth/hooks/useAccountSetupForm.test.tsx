@@ -62,7 +62,7 @@ describe("useAccountSetupForm Hook", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     (useErrorHandlerModule.useErrorHandler as jest.Mock).mockReturnValue({
       handleError: mockHandleError,
     });

@@ -86,7 +86,9 @@ export const PropertyTenantTab: React.FC<PropertyTenantTabProps> = ({
             <div className="info-row">
               <div className="info-label">Email:</div>
               <div className="info-value">
-                <Link href={`mailto:${tenantInfo.email}`}>{tenantInfo.email}</Link>
+                <Link href={`mailto:${tenantInfo.email}`}>
+                  {tenantInfo.email}
+                </Link>
               </div>
             </div>
             <div className="info-row">

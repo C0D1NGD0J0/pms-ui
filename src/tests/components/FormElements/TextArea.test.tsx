@@ -24,7 +24,9 @@ describe("Textarea Component", () => {
   });
 
   it("handles controlled value", () => {
-    const { rerender } = render(<TextArea {...defaultProps} value="initial text" />);
+    const { rerender } = render(
+      <TextArea {...defaultProps} value="initial text" />
+    );
 
     expect(screen.getByDisplayValue("initial text")).toBeInTheDocument();
 
@@ -36,7 +38,9 @@ describe("Textarea Component", () => {
     const mockOnChange = jest.fn();
     render(<TextArea {...defaultProps} onChange={mockOnChange} />);
 
-    fireEvent.change(screen.getByRole("textbox"), { target: { value: "new content" } });
+    fireEvent.change(screen.getByRole("textbox"), {
+      target: { value: "new content" },
+    });
     expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 
@@ -54,7 +58,9 @@ describe("Textarea Component", () => {
 
   it("renders with placeholder", () => {
     render(<TextArea {...defaultProps} placeholder="Enter your message" />);
-    expect(screen.getByPlaceholderText("Enter your message")).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Enter your message")
+    ).toBeInTheDocument();
   });
 
   it("renders with custom className", () => {
@@ -89,7 +95,13 @@ describe("Textarea Component", () => {
   });
 
   it("renders with aria attributes", () => {
-    render(<TextArea {...defaultProps} ariaLabel="Message content" ariaDescribedBy="help-text" />);
+    render(
+      <TextArea
+        {...defaultProps}
+        ariaLabel="Message content"
+        ariaDescribedBy="help-text"
+      />
+    );
 
     const textarea = screen.getByRole("textbox");
     expect(textarea).toHaveAttribute("aria-label", "Message content");
@@ -111,7 +123,7 @@ describe("Textarea Component", () => {
 
     const wrapper = container.querySelector(".form-input-wrapper");
     const lockIcon = container.querySelector(".form-textarea-lock");
-    
+
     expect(wrapper).toBeInTheDocument();
     expect(lockIcon).toBeInTheDocument();
   });

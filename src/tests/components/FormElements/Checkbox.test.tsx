@@ -47,7 +47,11 @@ describe("Checkbox Component", () => {
   });
 
   it("renders with React node label", () => {
-    const customLabel = <span>Custom <strong>Label</strong></span>;
+    const customLabel = (
+      <span>
+        Custom <strong>Label</strong>
+      </span>
+    );
     render(<Checkbox {...defaultProps} label={customLabel} />);
 
     expect(screen.getByText("Custom")).toBeInTheDocument();
@@ -63,7 +67,9 @@ describe("Checkbox Component", () => {
       />
     );
 
-    expect(screen.getByText("Please read the terms and conditions")).toBeInTheDocument();
+    expect(
+      screen.getByText("Please read the terms and conditions")
+    ).toBeInTheDocument();
   });
 
   it("renders with custom className", () => {
@@ -90,15 +96,22 @@ describe("Checkbox Component", () => {
   });
 
   it("renders with aria-label", () => {
-    render(<Checkbox {...defaultProps} ariaLabel="Custom accessibility label" />);
+    render(
+      <Checkbox {...defaultProps} ariaLabel="Custom accessibility label" />
+    );
 
     const checkbox = screen.getByRole("checkbox");
-    expect(checkbox).toHaveAttribute("aria-label", "Custom accessibility label");
+    expect(checkbox).toHaveAttribute(
+      "aria-label",
+      "Custom accessibility label"
+    );
   });
 
   it("clicking label toggles checkbox", () => {
     const mockOnChange = jest.fn();
-    render(<Checkbox {...defaultProps} onChange={mockOnChange} label="Click me" />);
+    render(
+      <Checkbox {...defaultProps} onChange={mockOnChange} label="Click me" />
+    );
 
     fireEvent.click(screen.getByText("Click me"));
     expect(mockOnChange).toHaveBeenCalledTimes(1);
@@ -108,7 +121,9 @@ describe("Checkbox Component", () => {
     const { container } = render(<Checkbox {...defaultProps} label="Test" />);
 
     expect(container.querySelector(".checkbox-wrapper")).toBeInTheDocument();
-    expect(container.querySelector(".checkbox-input-wrapper")).toBeInTheDocument();
+    expect(
+      container.querySelector(".checkbox-input-wrapper")
+    ).toBeInTheDocument();
     expect(container.querySelector(".checkbox-lock-icon")).toBeInTheDocument();
   });
 });

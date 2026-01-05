@@ -193,9 +193,12 @@ export const invitationSchema = z
         .or(z.literal("")),
     }),
     inviteeEmail: z.string().email("Please enter a valid email address"),
-    role: z.enum(["manager", "vendor", "tenant", "staff", "admin", "landlord"], {
-      required_error: "Please select a role",
-    }),
+    role: z.enum(
+      ["manager", "vendor", "tenant", "staff", "admin", "landlord"],
+      {
+        required_error: "Please select a role",
+      }
+    ),
     status: z
       .enum(["pending", "accepted", "expired", "revoked", "sent", "draft"], {
         errorMap: () => ({ message: "Invalid status value" }),

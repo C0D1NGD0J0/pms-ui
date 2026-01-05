@@ -90,7 +90,13 @@ describe("FormInput Component", () => {
   });
 
   it("renders with aria attributes", () => {
-    render(<FormInput name="test" ariaLabel="Custom label" ariaDescribedBy="help-text" />);
+    render(
+      <FormInput
+        name="test"
+        ariaLabel="Custom label"
+        ariaDescribedBy="help-text"
+      />
+    );
 
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("aria-label", "Custom label");
@@ -112,7 +118,7 @@ describe("FormInput Component", () => {
 
     const wrapper = container.querySelector(".form-input-wrapper");
     const lockIcon = container.querySelector(".form-input-lock");
-    
+
     expect(wrapper).toBeInTheDocument();
     expect(lockIcon).toBeInTheDocument();
   });

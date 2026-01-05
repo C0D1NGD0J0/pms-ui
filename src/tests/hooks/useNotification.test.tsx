@@ -22,10 +22,16 @@ const mockMessageApi = {
 
 jest.mock("antd", () => ({
   notification: {
-    useNotification: () => [mockNotificationApi, <div key="notification-holder" data-testid="notification-holder" />],
+    useNotification: () => [
+      mockNotificationApi,
+      <div key="notification-holder" data-testid="notification-holder" />,
+    ],
   },
   message: {
-    useMessage: () => [mockMessageApi, <div key="message-holder" data-testid="message-holder" />],
+    useMessage: () => [
+      mockMessageApi,
+      <div key="message-holder" data-testid="message-holder" />,
+    ],
   },
   Button: ({ children, onClick }: any) => (
     <button onClick={onClick}>{children}</button>

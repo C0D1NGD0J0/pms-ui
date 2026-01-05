@@ -37,7 +37,7 @@ export function useAuthEventStore() {
             queryClient.setQueryData(CURRENT_USER_QUERY_KEY, resp.data);
           }
         } catch (error) {
-          console.error('Failed to fetch current user:', error);
+          console.error("Failed to fetch current user:", error);
         } finally {
           setFetchingUser(false);
           setAuthenticating(false);
@@ -48,10 +48,12 @@ export function useAuthEventStore() {
 
   useEvent(EventTypes.CURRENT_USER_UPDATED, (userData: ICurrentUser | null) => {
     setUser(userData);
-    const clientData = userData?.client ? {
-      cuid: userData.client.cuid,
-      displayName: userData.client.clientDisplayName,
-    } : null;
+    const clientData = userData?.client
+      ? {
+          cuid: userData.client.cuid,
+          displayName: userData.client.clientDisplayName,
+        }
+      : null;
     setClient(clientData);
     setFetchingUser(false);
     setAuthenticating(false);

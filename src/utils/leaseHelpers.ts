@@ -90,13 +90,13 @@ export function transformLeaseForEdit(
           lastName: (tenant as any).lastName || "",
         }
       : tenantId
-      ? {
-          id: tenantId,
-          email: undefined,
-          firstName: undefined,
-          lastName: undefined,
-        }
-      : defaultLeaseFormValues.tenantInfo,
+        ? {
+            id: tenantId,
+            email: undefined,
+            firstName: undefined,
+            lastName: undefined,
+          }
+        : defaultLeaseFormValues.tenantInfo,
     duration: {
       startDate: rawLeaseData.duration.startDate || "",
       endDate: rawLeaseData.duration.endDate || "",

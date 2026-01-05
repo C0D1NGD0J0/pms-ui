@@ -51,10 +51,10 @@ export const LeaseOverviewCards: React.FC<LeaseOverviewCardsProps> = ({
           rentDueDay === 1
             ? "st"
             : rentDueDay === 2
-            ? "nd"
-            : rentDueDay === 3
-            ? "rd"
-            : "th"
+              ? "nd"
+              : rentDueDay === 3
+                ? "rd"
+                : "th"
         } of month`}
       />
       <InsightCard

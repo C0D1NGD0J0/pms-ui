@@ -10,7 +10,9 @@ export const ButtonSpinner: React.FC<ButtonSpinnerProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`btn-spinner ${size === "sm" ? "btn-spinner-sm" : "btn-spinner-md"} ${className}`}>
+    <div
+      className={`btn-spinner ${size === "sm" ? "btn-spinner-sm" : "btn-spinner-md"} ${className}`}
+    >
       <div className="spinner-ring"></div>
       <div className="spinner-ring"></div>
       <div className="spinner-ring"></div>

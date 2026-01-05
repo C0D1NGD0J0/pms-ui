@@ -142,19 +142,19 @@ export function Table<T extends object>({
     pagination === false
       ? false
       : typeof pagination === "boolean"
-      ? {
-          position: ["bottomCenter"],
-          className: "pagination",
-        }
-      : {
-          total: pagination.total,
-          pageSize: pagination.pageSize,
-          current: pagination.current,
-          onChange: pagination.onChange,
-          position: ["bottomCenter"],
-          className: "pagination",
-          ...pagination,
-        };
+        ? {
+            position: ["bottomCenter"],
+            className: "pagination",
+          }
+        : {
+            total: pagination.total,
+            pageSize: pagination.pageSize,
+            current: pagination.current,
+            onChange: pagination.onChange,
+            position: ["bottomCenter"],
+            className: "pagination",
+            ...pagination,
+          };
 
   const CustomTable = React.forwardRef<HTMLTableElement, any>(
     function CustomTable(props, ref) {
@@ -209,12 +209,11 @@ export function Table<T extends object>({
     }
   );
 
-  const BodyRow = React.forwardRef<HTMLTableRowElement, any>(function BodyRow(
-    props,
-    ref
-  ) {
-    return <tr {...props} ref={ref} className="custom-tr" />;
-  });
+  const BodyRow = React.forwardRef<HTMLTableRowElement, any>(
+    function BodyRow(props, ref) {
+      return <tr {...props} ref={ref} className="custom-tr" />;
+    }
+  );
 
   const BodyCell = React.forwardRef<HTMLTableCellElement, any>(
     function BodyCell(props, ref) {

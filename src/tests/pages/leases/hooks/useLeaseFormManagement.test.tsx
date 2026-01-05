@@ -12,65 +12,77 @@ jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useLeasePreview", () => ({
   })),
 }));
 
-jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useGetLeaseByLuid", () => ({
-  useGetLeaseByLuid: jest.fn(() => ({
-    data: null,
-    isLoading: false,
-    isError: false,
-  })),
-}));
+jest.mock(
+  "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetLeaseByLuid",
+  () => ({
+    useGetLeaseByLuid: jest.fn(() => ({
+      data: null,
+      isLoading: false,
+      isError: false,
+    })),
+  })
+);
 
-jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants", () => ({
-  useAvailableTenants: jest.fn(() => ({
-    data: [],
-    isLoading: false,
-  })),
-}));
+jest.mock(
+  "@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants",
+  () => ({
+    useAvailableTenants: jest.fn(() => ({
+      data: [],
+      isLoading: false,
+    })),
+  })
+);
 
-jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication", () => ({
-  useLeaseDuplication: jest.fn(() => ({
-    isDuplicating: false,
-    duplicateSource: null,
-    duplicateData: null,
-    error: null,
-  })),
-}));
+jest.mock(
+  "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication",
+  () => ({
+    useLeaseDuplication: jest.fn(() => ({
+      isDuplicating: false,
+      duplicateSource: null,
+      duplicateData: null,
+      error: null,
+    })),
+  })
+);
 
-jest.mock("@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties", () => ({
-  useLeaseableProperties: jest.fn(() => ({
-    data: {
-      properties: [
-        {
-          id: "prop-1",
-          name: "Property 1",
-          address: "123 Main St",
-          propertyType: "apartment",
-          units: [
-            { id: "unit-1", unitNumber: "101" },
-            { id: "unit-2", unitNumber: "102" },
-          ],
-          financialInfo: {
-            monthlyRent: 200000,
-            securityDeposit: 200000,
-            currency: "USD",
+jest.mock(
+  "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties",
+  () => ({
+    useLeaseableProperties: jest.fn(() => ({
+      data: {
+        properties: [
+          {
+            id: "prop-1",
+            name: "Property 1",
+            address: "123 Main St",
+            propertyType: "apartment",
+            units: [
+              { id: "unit-1", unitNumber: "101" },
+              { id: "unit-2", unitNumber: "102" },
+            ],
+            financialInfo: {
+              monthlyRent: 200000,
+              securityDeposit: 200000,
+              currency: "USD",
+            },
           },
+          {
+            id: "prop-2",
+            name: "Property 2",
+            address: "456 Oak Ave",
+            propertyType: "commercial",
+            units: [],
+          },
+        ],
+        metadata: {
+          filteredProperties: [],
+          filteredCount: 0,
         },
-        {
-          id: "prop-2",
-          name: "Property 2",
-          address: "456 Oak Ave",
-          propertyType: "commercial",
-          units: [],
-        },
-      ],
-      metadata: {
-        filteredProperties: [],
-        filteredCount: 0,
       },
-    },
-    isLoading: false,
-  })),
-}));
+      isLoading: false,
+    })),
+  })
+);
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
