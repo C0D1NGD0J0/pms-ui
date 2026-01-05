@@ -1,6 +1,5 @@
 import axios from "@configs/axios";
 import { userService } from "@services/users";
-import { IFilteredUsersParams } from "@services/users";
 
 jest.mock("@configs/axios");
 jest.mock("@utils/formDataTransformer", () => ({

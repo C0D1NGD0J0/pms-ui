@@ -4,7 +4,6 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useAvailableTenants } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants";
 import { useLeaseDuplication } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseDuplication";
 import { useLeaseableProperties } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseableProperties";
-import { useLeaseFormManagement } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useLeaseFormManagement";
 
 jest.mock(
   "@app/(protectedRoutes)/leases/[cuid]/hooks/useAvailableTenants"

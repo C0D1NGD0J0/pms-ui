@@ -9,7 +9,7 @@ interface RenewalMetadata {
   renewalWindowDays: number;
   isEligible: boolean;
   canRenew: boolean;
-  ineligibilityReason?: string;
+  ineligibilityReason: string | null;
   renewalDates: {
     startDate: string;
     endDate: string;
