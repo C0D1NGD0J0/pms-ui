@@ -2,6 +2,7 @@ export { ManualActivationModal } from "./ManualActivationModal";
 export { SendForSignatureModal } from "./SendForSignatureModal";
 export { TerminateLeaseModal } from "./TerminateLeaseModal";
 export { ScheduleRenewalModal } from "./ScheduleRenewalModal";
+export { RenewalConfirmationModal } from "./RenewalConfirmationModal";
 export { RenewalSummaryCard } from "./RenewalSummaryCard";
 export { LeaseOverviewCards } from "./LeaseOverviewCards";
 export { PropertyTenantTab } from "./PropertyTenantTab";

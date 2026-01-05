@@ -165,15 +165,17 @@ export function useLeasesListLogic() {
       {
         title: "Actions",
         dataIndex: "luid",
-        render: (luid: string) => (
+        render: (luid: string, record: LeaseListItem) => (
           <div className="action-icons">
-            <Link
-              href={`/leases/${cuid}/${luid}`}
-              className="action-icon view-icon"
-              title="View Lease"
-            >
-              <i className="bx bx-show"></i>
-            </Link>
+            {record.status !== "draft_renewal" && (
+              <Link
+                href={`/leases/${cuid}/${luid}`}
+                className="action-icon view-icon"
+                title="View Lease"
+              >
+                <i className="bx bx-show"></i>
+              </Link>
+            )}
             {permissions.isManagerOrAbove && (
               <>
                 <Link
@@ -183,13 +185,15 @@ export function useLeasesListLogic() {
                 >
                   <i className="bx bx-edit"></i>
                 </Link>
-                <Link
-                  href={`/leases/${cuid}/new?duplicate=${luid}`}
-                  className="action-icon duplicate-icon"
-                  title="Duplicate Lease"
-                >
-                  <i className="bx bx-copy"></i>
-                </Link>
+                {record.status === "active" && (
+                  <Link
+                    href={`/leases/${cuid}/new?duplicate=${luid}`}
+                    className="action-icon duplicate-icon"
+                    title="Duplicate Lease"
+                  >
+                    <i className="bx bx-copy"></i>
+                  </Link>
+                )}
               </>
             )}
           </div>

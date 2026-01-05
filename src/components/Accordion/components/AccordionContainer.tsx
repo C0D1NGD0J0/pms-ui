@@ -101,6 +101,7 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
                   return (
                     <button
                       key={item.id}
+                      type="button"
                       className={`accordion-nav-item ${
                         isActive ? "active" : ""
                       } ${isCompleted ? "completed" : ""} ${
@@ -140,6 +141,7 @@ export const AccordionContainer: React.FC<AccordionContainerProps> = ({
             {showPreviewDrawer && (
               <div className="accordion-preview-controls">
                 <button
+                  type="button"
                   className="accordion-preview-btn"
                   onClick={handleDrawerToggle}
                   aria-label="Toggle preview drawer"

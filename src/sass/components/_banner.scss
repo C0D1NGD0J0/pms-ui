@@ -78,6 +78,68 @@
         font-size: 13px;
         color: #78716c;
       }
+
+      strong {
+        font-weight: 800;
+      }
+
+      // Summary info rows with icons
+      .summary-row {
+        display: flex;
+        gap: 2.8rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: $space-sm;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+
+      .summary-item {
+        gap: 0.5rem;
+        display: flex;
+        align-items: center;
+
+        i {
+          display: flex;
+          width: 2.4rem;
+          flex-shrink: 0;
+          height: 2.4rem;
+          font-size: 1.2rem;
+          border-radius: 50%;
+          align-items: center;
+          justify-content: center;
+          color: hslaGen($white-color);
+          background: hslaGen($black-color);
+        }
+
+        strong {
+          font-weight: $fw-bold;
+        }
+
+        &--highlight {
+          i {
+            background: #0066cc;
+            color: hslaGen($white-color);
+          }
+        }
+
+        &--increase {
+          i {
+            background: #d9534f;
+            color: hslaGen($white-color);
+          }
+        }
+
+        &--decrease {
+          i {
+            background: #5cb85c;
+            color: hslaGen($white-color);
+          }
+        }
+      }
     }
 
     &__actions {

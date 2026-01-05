@@ -4,6 +4,7 @@ import { leaseService } from "@services/lease";
 import { TabItem } from "@components/Tab/interface";
 import { DocumentsTab } from "@components/UserDetail";
 import { useGetLeaseByLuid } from "@leases/hooks/index";
+import { useCurrentUser } from "@src/hooks/useCurrentUser";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@src/hooks/useNotification";
 import { ActivityTab } from "@leases/components/ActivityTab";
@@ -26,6 +27,7 @@ interface UseLeaseDetailLogicProps {
 export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const router = useRouter();
   const permissions = useUnifiedPermissions();
+  const { user: currentUser } = useCurrentUser();
   const { luid, cuid } = use(params);
   const queryClient = useQueryClient();
   const { openNotification } = useNotification();
@@ -35,7 +37,6 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     error,
   } = useGetLeaseByLuid(cuid, luid);
   const lease = responseData?.lease;
-  console.log("Lease Detail Logic Lease:", responseData);
   const { previewHtml, isLoadingPreview, fetchPreview } = useGetLeasePreview(
     cuid,
     luid
@@ -49,6 +50,8 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     useState(false);
   const [showTerminateModal, setShowTerminateModal] = useState(false);
   const [showCancelSignatureModal, setShowCancelSignatureModal] =
+    useState(false);
+  const [showRenewalConfirmationModal, setShowRenewalConfirmationModal] =
     useState(false);
   const searchParams = useSearchParams();
 
@@ -245,6 +248,12 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const isReadOnlyStatus =
     isTerminatedStatus || isExpiredStatus || isCancelledStatus;
 
+  // Check if current user can renew the lease (admin or lease creator)
+  const canRenewLease = Boolean(
+    permissions.isAdmin ||
+      (lease?.createdBy?._id && currentUser?.sub === lease.createdBy._id)
+  );
+
   const tabItems: TabItem[] = lease
     ? [
         {
@@ -334,6 +343,9 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     setShowTerminateModal,
     showCancelSignatureModal,
     setShowCancelSignatureModal,
+    showRenewalConfirmationModal,
+    setShowRenewalConfirmationModal,
+    canRenewLease,
     tabItems,
     handleBack,
     handleViewChanges,

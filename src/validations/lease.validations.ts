@@ -145,37 +145,89 @@ const petPolicySchema = z.object({
     .optional(),
 });
 
-const renewalOptionsSchema = z.object({
-  autoRenew: z.boolean().default(false),
-  noticePeriodDays: z
-    .union([
-      z
-        .string()
-        .refine((val) => val === "" || !isNaN(Number(val)), {
-          message: "Must be a valid number",
-        })
-        .transform((val) => (val === "" ? 0 : Number(val))),
-      z.number(),
-    ])
-    .refine((val) => val === 0 || val >= 1, {
-      message: "Notice period must be at least 1 day",
-    })
-    .optional(),
-  renewalTermMonths: z
-    .union([
-      z
-        .string()
-        .refine((val) => val === "" || !isNaN(Number(val)), {
-          message: "Must be a valid number",
-        })
-        .transform((val) => (val === "" ? 0 : Number(val))),
-      z.number(),
-    ])
-    .refine((val) => val === 0 || val >= 1, {
-      message: "Renewal term must be at least 1 month",
-    })
-    .optional(),
-});
+const renewalOptionsSchema = z
+  .object({
+    autoRenew: z.boolean().default(false),
+    noticePeriodDays: z
+      .union([
+        z
+          .string()
+          .refine((val) => val === "" || !isNaN(Number(val)), {
+            message: "Must be a valid number",
+          })
+          .transform((val) => (val === "" ? 0 : Number(val))),
+        z.number(),
+      ])
+      .refine((val) => val === 0 || (val >= 1 && val <= 365), {
+        message: "Notice period must be between 1-365 days",
+      })
+      .optional(),
+    renewalTermMonths: z
+      .union([
+        z
+          .string()
+          .refine((val) => val === "" || !isNaN(Number(val)), {
+            message: "Must be a valid number",
+          })
+          .transform((val) => (val === "" ? 0 : Number(val))),
+        z.number(),
+      ])
+      .refine((val) => val === 0 || (val >= 1 && val <= 60), {
+        message: "Renewal term must be between 1-60 months",
+      })
+      .optional(),
+    daysBeforeExpiryToGenerateRenewal: z
+      .union([
+        z
+          .string()
+          .refine((val) => val === "" || !isNaN(Number(val)), {
+            message: "Must be a valid number",
+          })
+          .transform((val) => (val === "" ? 0 : Number(val))),
+        z.number(),
+      ])
+      .refine((val) => val === 0 || (val >= 1 && val <= 365), {
+        message: "Must be between 1-365 days",
+      })
+      .optional(),
+    daysBeforeExpiryToAutoSendSignature: z
+      .union([
+        z
+          .string()
+          .refine((val) => val === "" || !isNaN(Number(val)), {
+            message: "Must be a valid number",
+          })
+          .transform((val) => (val === "" ? 0 : Number(val))),
+        z.number(),
+      ])
+      .refine((val) => val === 0 || (val >= 1 && val <= 365), {
+        message: "Must be between 1-365 days",
+      })
+      .optional(),
+    requireApproval: z.boolean().optional().default(false),
+  })
+  .refine(
+    (data) => {
+      // Only validate if both fields have values
+      if (
+        data.daysBeforeExpiryToAutoSendSignature &&
+        data.daysBeforeExpiryToGenerateRenewal &&
+        data.daysBeforeExpiryToAutoSendSignature > 0 &&
+        data.daysBeforeExpiryToGenerateRenewal > 0
+      ) {
+        return (
+          data.daysBeforeExpiryToAutoSendSignature <=
+          data.daysBeforeExpiryToGenerateRenewal
+        );
+      }
+      return true;
+    },
+    {
+      message:
+        "Auto-send signature days must be less than or equal to renewal generation days",
+      path: ["daysBeforeExpiryToAutoSendSignature"],
+    }
+  );
 
 const tenantInfoSchema = z.object({
   id: z.string().optional(),
@@ -324,7 +376,7 @@ export const leaseSchema = z
   );
 
 // Renewal-specific schemas (relaxed validation for pre-filled fields)
-const leaseRenewalTenantSchema = z.object({
+export const leaseRenewalTenantSchema = z.object({
   id: z.string().min(1, "Tenant is required"), // Only validate tenant ID exists
   email: z.string().optional(),
   firstName: z.string().optional(),
@@ -429,12 +481,15 @@ export const leaseTabFields = {
     "fees.lateFeeType",
   ],
   signature: ["signingMethod"],
-  additional: [
-    "utilitiesIncluded",
-    "petPolicy",
-    "renewalOptions",
-    "internalNotes",
+  renewalOptions: [
+    "renewalOptions.autoRenew",
+    "renewalOptions.noticePeriodDays",
+    "renewalOptions.renewalTermMonths",
+    "renewalOptions.daysBeforeExpiryToGenerateRenewal",
+    "renewalOptions.daysBeforeExpiryToAutoSendSignature",
+    "renewalOptions.requireApproval",
   ],
+  additional: ["utilitiesIncluded", "petPolicy", "internalNotes"],
   cotenants: ["coTenants"],
   documents: ["leaseDocument"],
 };

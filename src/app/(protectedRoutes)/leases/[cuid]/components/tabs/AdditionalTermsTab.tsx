@@ -25,7 +25,6 @@ export const AdditionalTermsTab = ({
   handleUtilityToggle,
 }: Props) => {
   const petPolicyAllowed = leaseForm.values.petPolicy?.allowed || false;
-  const autoRenew = leaseForm.values.renewalOptions?.autoRenew || false;
 
   const utilities = [
     { value: UtilityEnum.WATER, label: "Water" },
@@ -175,88 +174,6 @@ export const AdditionalTermsTab = ({
               </FormField>
             </div>
           </>
-        )}
-      </div>
-
-      {/* Renewal Options Section */}
-      <div className="mb-4">
-        <h4 className="mb-2">Renewal Options</h4>
-        <div className="toggle-container">
-          <div className="toggle-label">
-            <h4>Auto-Renew</h4>
-            <p>Automatically renew this lease when it expires</p>
-          </div>
-          <Toggle
-            id="autoRenew"
-            name="renewalOptions.autoRenew"
-            initialState={autoRenew}
-            onChange={(checked) =>
-              handleOnChange(checked, "renewalOptions.autoRenew")
-            }
-          />
-        </div>
-
-        {autoRenew && (
-          <div className="form-fields">
-            <FormField
-              error={{
-                msg:
-                  (leaseForm.errors[
-                    "renewalOptions.noticePeriodDays"
-                  ] as string) || "",
-                touched: leaseForm.isTouched("renewalOptions.noticePeriodDays"),
-              }}
-            >
-              <FormLabel
-                htmlFor="noticePeriodDays"
-                label="Notice Period (Days)"
-              />
-              <FormInput
-                id="noticePeriodDays"
-                name="renewalOptions.noticePeriodDays"
-                type="number"
-                onChange={handleOnChange}
-                placeholder="Days before end date"
-                value={
-                  leaseForm.values.renewalOptions?.noticePeriodDays?.toString() ||
-                  ""
-                }
-                hasError={!!leaseForm.errors["renewalOptions.noticePeriodDays"]}
-                min="1"
-              />
-            </FormField>
-            <FormField
-              error={{
-                msg:
-                  (leaseForm.errors[
-                    "renewalOptions.renewalTermMonths"
-                  ] as string) || "",
-                touched: leaseForm.isTouched(
-                  "renewalOptions.renewalTermMonths"
-                ),
-              }}
-            >
-              <FormLabel
-                htmlFor="renewalTermMonths"
-                label="Renewal Term (Months)"
-              />
-              <FormInput
-                id="renewalTermMonths"
-                name="renewalOptions.renewalTermMonths"
-                type="number"
-                onChange={handleOnChange}
-                placeholder="Length of renewal term"
-                value={
-                  leaseForm.values.renewalOptions?.renewalTermMonths?.toString() ||
-                  ""
-                }
-                hasError={
-                  !!leaseForm.errors["renewalOptions.renewalTermMonths"]
-                }
-                min="1"
-              />
-            </FormField>
-          </div>
         )}
       </div>
 

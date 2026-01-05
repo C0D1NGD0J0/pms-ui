@@ -5,6 +5,7 @@ import { useForm } from "@mantine/form";
 import { AccordionItem } from "@components/Accordion";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { transformLeaseForEdit } from "@utils/leaseHelpers";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import { leaseTabFields, leaseSchema } from "@validations/lease.validations";
 import { useCallback, ChangeEvent, useEffect, useState, useMemo } from "react";
 import {
@@ -23,6 +24,7 @@ import {
   PropertySelectionTab,
   FinancialDetailsTab,
   AdditionalTermsTab,
+  RenewalOptionsTab,
   LeaseTermsTab,
   TenantInfoTab,
   SignatureTab,
@@ -45,6 +47,7 @@ export function useLeaseFormManagement({
   luid,
   initialValues = defaultLeaseFormValues,
 }: LeaseFormManagementProps) {
+  const permissions = useUnifiedPermissions();
   const [selectedProperty, setSelectedProperty] =
     useState<LeaseableProperty | null>(null);
 
@@ -403,6 +406,14 @@ export function useLeaseFormManagement({
         case "signature":
           return !!values.signingMethod;
 
+        case "renewalOptions":
+          // Tab is optional, but if autoRenew is enabled, check required fields
+          if (!values.renewalOptions?.autoRenew) return true;
+          return !!(
+            values.renewalOptions.noticePeriodDays &&
+            values.renewalOptions.renewalTermMonths
+          );
+
         case "additional":
         case "cotenants":
         case "documents":
@@ -560,10 +571,28 @@ export function useLeaseFormManagement({
           <SignatureTab leaseForm={leaseForm} handleOnChange={handleOnChange} />
         ),
       },
+      ...(permissions.isAdmin
+        ? [
+            {
+              id: "renewalOptions",
+              label: "Renewal Options",
+              subtitle: "Configure renewal automation (Admin)",
+              icon: <i className="bx bx-refresh"></i>,
+              hasError: hasTabErrors("renewalOptions"),
+              isCompleted: isTabCompleted("renewalOptions"),
+              content: (
+                <RenewalOptionsTab
+                  leaseForm={leaseForm}
+                  handleOnChange={handleOnChange}
+                />
+              ),
+            },
+          ]
+        : []),
       {
         id: "additional",
         label: "Additional Terms",
-        subtitle: "Utilities, pet policy, renewals",
+        subtitle: "Utilities, pet policy, notes",
         icon: <i className="bx bx-cog"></i>,
         hasError: hasTabErrors("additional"),
         isCompleted: isTabCompleted("additional"),
@@ -623,6 +652,7 @@ export function useLeaseFormManagement({
       handleUtilityToggle,
       hasTabErrors,
       isTabCompleted,
+      permissions.isAdmin,
     ]
   );
 

@@ -33,7 +33,7 @@ export const ScheduleRenewalModal = React.memo<ScheduleRenewalModalProps>(
     signatureDate.setDate(renewalStartDate.getDate() - daysBeforeExpiry);
 
     return (
-      <Modal isOpen={isOpen} onClose={onClose} className="modal-lg">
+      <Modal isOpen={isOpen} onClose={onClose} size="medium" destroyOnHidden>
         <Modal.Header title="Schedule Lease Renewal" />
         <Modal.Content>
           <div className="banner banner-info">
@@ -57,34 +57,17 @@ export const ScheduleRenewalModal = React.memo<ScheduleRenewalModalProps>(
             </div>
           </div>
 
-          <div
-            style={{
-              marginTop: "2rem",
-              padding: "2rem",
-              background: "#fafafa",
-              borderRadius: "8px",
-              border: "1px solid #e5e7eb",
-            }}
-          >
-            <h4
-              style={{
-                fontSize: "1.4rem",
-                fontWeight: 600,
-                marginBottom: "1.5rem",
-                color: "#1f2937",
-              }}
-            >
-              Renewal Details
-            </h4>
+          <div style={{ marginTop: "2rem" }}>
+            <h4 className="section-title">Renewal Details</h4>
 
             <div className="info-grid">
               <div className="info-row">
-                <div className="info-label">Lease Number</div>
+                <div className="info-label">Lease Number:</div>
                 <div className="info-value">{renewalLease.leaseNumber}</div>
               </div>
 
               <div className="info-row">
-                <div className="info-label">Current Lease Term</div>
+                <div className="info-label">Current Lease Term:</div>
                 <div className="info-value">
                   {formatDate(renewalLease.duration.startDate as string, {
                     displayFormat: "shortMonth",
@@ -98,7 +81,7 @@ export const ScheduleRenewalModal = React.memo<ScheduleRenewalModalProps>(
 
               {newStartDate && newEndDate && (
                 <div className="info-row">
-                  <div className="info-label">New Renewal Term</div>
+                  <div className="info-label">New Renewal Term:</div>
                   <div className="info-value">
                     {formatDate(newStartDate, {
                       displayFormat: "shortMonth",
@@ -112,7 +95,7 @@ export const ScheduleRenewalModal = React.memo<ScheduleRenewalModalProps>(
               )}
 
               <div className="info-row">
-                <div className="info-label">Signature Request Date</div>
+                <div className="info-label">Signature Request Date:</div>
                 <div className="info-value">
                   {formatDate(signatureDate.toISOString(), {
                     displayFormat: "shortMonth",

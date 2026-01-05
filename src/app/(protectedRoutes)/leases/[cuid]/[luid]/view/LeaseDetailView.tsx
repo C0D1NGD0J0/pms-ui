@@ -17,6 +17,7 @@ import { TerminateLeaseModal } from "@leases/components/TerminateLeaseModal";
 import { SendForSignatureModal } from "@leases/components/SendForSignatureModal";
 import { ManualActivationModal } from "@leases/components/ManualActivationModal";
 import { PendingChangesReviewModal } from "@src/components/PendingChangesReviewModal";
+import { RenewalConfirmationModal } from "@leases/components/RenewalConfirmationModal";
 import {
   LeaseDetailResponse,
   LeaseDetailData,
@@ -48,6 +49,9 @@ interface LeaseDetailViewProps {
   setShowTerminateModal: (show: boolean) => void;
   showCancelSignatureModal: boolean;
   setShowCancelSignatureModal: (show: boolean) => void;
+  showRenewalConfirmationModal: boolean;
+  setShowRenewalConfirmationModal: (show: boolean) => void;
+  canRenewLease: boolean;
   tabItems: TabItem[];
   handleBack: () => void;
   handleViewChanges: () => void;
@@ -97,6 +101,9 @@ export function LeaseDetailView({
   setShowTerminateModal,
   showCancelSignatureModal,
   setShowCancelSignatureModal,
+  showRenewalConfirmationModal,
+  setShowRenewalConfirmationModal,
+  canRenewLease,
   tabItems,
   handleBack,
   handleViewChanges,
@@ -166,13 +173,14 @@ export function LeaseDetailView({
 
       {isActiveStatus && permissions.isManagerOrAbove && (
         <>
-          <Link
-            href={`/leases/${cuid}/${luid}/renew`}
-            className="btn btn-primary"
-          >
-            <i className="bx bx-refresh"></i>
-            Renew Lease
-          </Link>
+          {canRenewLease && (
+            <Button
+              className="btn btn-primary"
+              label="Renew Lease"
+              icon={<i className="bx bx-refresh"></i>}
+              onClick={() => setShowRenewalConfirmationModal(true)}
+            />
+          )}
           <Button
             className="btn btn-danger"
             label="Terminate Lease"
@@ -245,7 +253,7 @@ export function LeaseDetailView({
             luid={lease.leaseNumber}
             status={lease.status}
             propertyName={responseData.property.name}
-            propertyAddress={lease.property.address}
+            propertyAddress={lease.property.address.fullAddress}
             actions={leaseActions}
           />
         )
@@ -397,6 +405,15 @@ export function LeaseDetailView({
           isLoading={false}
         />
       )}
+
+      <RenewalConfirmationModal
+        isOpen={showRenewalConfirmationModal}
+        onClose={() => setShowRenewalConfirmationModal(false)}
+        renewalMetadata={responseData?.renewalMetadata}
+        cuid={cuid}
+        luid={luid}
+        canRenewLease={canRenewLease}
+      />
     </div>
   );
 }
