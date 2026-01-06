@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useForm } from "@mantine/form";
+import { Icon } from "@components/Icon";
 import { AccordionItem } from "@components/Accordion";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { transformLeaseForEdit } from "@utils/leaseHelpers";
@@ -496,7 +497,7 @@ export function useLeaseFormManagement({
         id: "property",
         label: "Property & Unit",
         subtitle: "Select property and unit",
-        icon: <i className="bx bx-building"></i>,
+        icon: <Icon name="bx-building" />,
         hasError: hasTabErrors("property"),
         isCompleted: isTabCompleted("property"),
         content: (
@@ -517,7 +518,7 @@ export function useLeaseFormManagement({
         id: "tenant",
         label: "Tenant Information",
         subtitle: "Select or invite tenant",
-        icon: <i className="bx bx-user"></i>,
+        icon: <Icon name="bx-user" />,
         hasError: hasTabErrors("tenant"),
         isCompleted: isTabCompleted("tenant"),
         content: (
@@ -536,7 +537,7 @@ export function useLeaseFormManagement({
         id: "lease-terms",
         label: "Lease Terms",
         subtitle: "Define lease duration and terms",
-        icon: <i className="bx bx-file-blank"></i>,
+        icon: <Icon name="bx-file-blank" />,
         hasError: hasTabErrors("leaseTerms"),
         isCompleted: isTabCompleted("leaseTerms"),
         content: (
@@ -550,7 +551,7 @@ export function useLeaseFormManagement({
         id: "financial",
         label: "Financial Details",
         subtitle: "Set rent, deposits, and fees",
-        icon: <i className="bx bx-dollar-circle"></i>,
+        icon: <Icon name="bx-dollar-circle" />,
         hasError: hasTabErrors("financial"),
         isCompleted: isTabCompleted("financial"),
         content: (
@@ -564,7 +565,7 @@ export function useLeaseFormManagement({
         id: "signature",
         label: "Signature Settings",
         subtitle: "Configure signing method",
-        icon: <i className="bx bx-pen"></i>,
+        icon: <Icon name="bx-pen" />,
         hasError: hasTabErrors("signature"),
         isCompleted: isTabCompleted("signature"),
         content: (
@@ -577,7 +578,7 @@ export function useLeaseFormManagement({
               id: "renewalOptions",
               label: "Renewal Options",
               subtitle: "Configure renewal automation (Admin)",
-              icon: <i className="bx bx-refresh"></i>,
+              icon: <Icon name="bx-refresh" />,
               hasError: hasTabErrors("renewalOptions"),
               isCompleted: isTabCompleted("renewalOptions"),
               content: (
@@ -593,7 +594,7 @@ export function useLeaseFormManagement({
         id: "additional",
         label: "Additional Terms",
         subtitle: "Utilities, pet policy, notes",
-        icon: <i className="bx bx-cog"></i>,
+        icon: <Icon name="bx-cog" />,
         hasError: hasTabErrors("additional"),
         isCompleted: isTabCompleted("additional"),
         content: (
@@ -608,7 +609,7 @@ export function useLeaseFormManagement({
         id: "cotenants",
         label: "Co-Tenants",
         subtitle: "Add additional tenants (optional)",
-        icon: <i className="bx bx-group"></i>,
+        icon: <Icon name="bx-group" />,
         hasError: hasTabErrors("cotenants"),
         isCompleted: isTabCompleted("cotenants"),
         content: (
@@ -624,7 +625,7 @@ export function useLeaseFormManagement({
         id: "documents",
         label: "Documents",
         subtitle: "Upload lease documents",
-        icon: <i className="bx bx-file"></i>,
+        icon: <Icon name="bx-file" />,
         hasError: hasTabErrors("documents"),
         isCompleted: isTabCompleted("documents"),
         content: (

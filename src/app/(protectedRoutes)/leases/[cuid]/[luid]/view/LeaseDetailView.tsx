@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@components/Icon";
 import { TabContainer } from "@components/Tab";
 import { Loading } from "@src/components/Loading";
 import { TabItem } from "@components/Tab/interface";
@@ -141,7 +142,7 @@ export function LeaseDetailView({
       <Button
         className="btn btn-outline"
         label="Preview Lease"
-        icon={<i className="bx bx-file warning"></i>}
+        icon={<Icon name="bx-file" className="warning" />}
         onClick={handlePreviewLease}
       />
 
@@ -149,7 +150,7 @@ export function LeaseDetailView({
         <Button
           className="btn btn-danger"
           label="Send for Signature"
-          icon={<i className="bx bx-send ghost"></i>}
+          icon={<Icon name="bx-send" className="ghost" />}
           onClick={() => setShowSignatureModal(true)}
         />
       )}
@@ -159,13 +160,13 @@ export function LeaseDetailView({
           <Button
             className="btn btn-primary"
             label="Manually Activate"
-            icon={<i className="bx bx-check-circle ghost"></i>}
+            icon={<Icon name="bx-check-circle" className="ghost" />}
             onClick={() => setShowManualActivationModal(true)}
           />
           <Button
             className="btn btn-default"
             label="Cancel Signature Request"
-            icon={<i className="bx bx-x-circle"></i>}
+            icon={<Icon name="bx-x-circle" />}
             onClick={() => setShowCancelSignatureModal(true)}
           />
         </>
@@ -177,14 +178,14 @@ export function LeaseDetailView({
             <Button
               className="btn btn-primary"
               label="Renew Lease"
-              icon={<i className="bx bx-refresh"></i>}
+              icon={<Icon name="bx-refresh" />}
               onClick={() => setShowRenewalConfirmationModal(true)}
             />
           )}
           <Button
             className="btn btn-danger"
             label="Terminate Lease"
-            icon={<i className="bx bx-error-circle ghost"></i>}
+            icon={<Icon name="bx-error-circle" className="ghost" />}
             onClick={() => setShowTerminateModal(true)}
           />
         </>
@@ -195,7 +196,7 @@ export function LeaseDetailView({
           href={`/leases/${cuid}/new?duplicate=${luid}`}
           className="btn btn-outline"
         >
-          <i className="bx bx-copy"></i>
+          <Icon name="bx-copy" />
           Duplicate Lease
         </Link>
       )}
@@ -219,14 +220,14 @@ export function LeaseDetailView({
                 }
                 className="btn btn-outline"
               >
-                <i className="bx bx-edit"></i>
+                <Icon name="bx-edit" />
                 Edit
               </Link>
             )}
             <Button
               className="btn btn-default"
               label="Back"
-              icon={<i className="bx bx-arrow-back"></i>}
+              icon={<Icon name="bx-arrow-back" />}
               onClick={handleBack}
             />
           </div>
@@ -342,7 +343,7 @@ export function LeaseDetailView({
             />
             <Modal.Content>
               <div className="modal-notice">
-                <i className="bx bx-info-circle"></i>
+                <Icon name="bx-info-circle" />
                 <p>
                   Are you sure you want to cancel the signature request? This
                   will change the lease status back to &apos;draft&apos;.
@@ -355,7 +356,7 @@ export function LeaseDetailView({
                 label="No, Keep Request"
                 className="btn-default"
                 onClick={() => setShowCancelSignatureModal(false)}
-                icon={<i className="bx bx-x"></i>}
+                icon={<Icon name="bx-x" />}
                 disabled={isCancelSignatureLoading}
               />
               <Button

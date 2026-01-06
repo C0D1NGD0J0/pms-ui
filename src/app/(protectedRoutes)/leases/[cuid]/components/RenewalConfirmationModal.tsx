@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { Icon } from "@components/Icon";
 import { Button, Modal } from "@components/FormElements";
 
 interface RenewalMetadata {
@@ -50,7 +51,7 @@ export function RenewalConfirmationModal({
             <div className="banner banner-danger mb-3">
               <div className="banner-content">
                 <div className="banner-content__icon">
-                  <i className="bx bx-lock-alt"></i>
+                  <Icon name="bx-lock-alt" />
                 </div>
                 <div className="banner-content__info">
                   <h4 className="mb-1">Access Restricted</h4>
@@ -67,7 +68,7 @@ export function RenewalConfirmationModal({
             <div className="banner banner-success mb-3">
               <div className="banner-content">
                 <div className="banner-content__icon">
-                  <i className="bx bx-check-circle"></i>
+                  <Icon name="bx-check-circle" />
                 </div>
                 <div className="banner-content__info">
                   <h4 className="mb-1">Lease is Eligible for Renewal</h4>
@@ -110,7 +111,7 @@ export function RenewalConfirmationModal({
             <div className="banner banner-warning mb-3">
               <div className="banner-content">
                 <div className="banner-content__icon">
-                  <i className="bx bx-info-circle"></i>
+                  <Icon name="bx-info-circle" />
                 </div>
                 <div className="banner-content__info">
                   <h4 className="mb-1">Lease Cannot Be Renewed Yet</h4>
@@ -149,14 +150,14 @@ export function RenewalConfirmationModal({
           label="Close"
           className="btn-default"
           onClick={onClose}
-          icon={<i className="bx bx-x"></i>}
+          icon={<Icon name="bx-x" />}
         />
         {canRenewLease && canRenew && (
           <Link
             href={`/leases/${cuid}/${luid}/renew`}
             className="btn btn-primary"
           >
-            <i className="bx bx-arrow-right"></i>
+            <Icon name="bx-arrow-right" />
             Proceed to Renewal
           </Link>
         )}

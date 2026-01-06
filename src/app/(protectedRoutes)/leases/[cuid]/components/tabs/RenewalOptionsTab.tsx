@@ -1,4 +1,5 @@
 import React from "react";
+import { Icon } from "@components/Icon";
 import { UseFormReturnType } from "@mantine/form";
 import { LeaseFormValues } from "@interfaces/lease.interface";
 import {
@@ -25,7 +26,7 @@ export const RenewalOptionsTab = ({ leaseForm, handleOnChange }: Props) => {
       <div className="banner banner-info mb-4">
         <div className="banner-content">
           <div className="banner-content__icon">
-            <i className="bx bx-info-circle"></i>
+            <Icon name="bx-info-circle" />
           </div>
           <div className="banner-content__info">
             <h4 className="mb-1">Admin Configuration</h4>
@@ -259,7 +260,7 @@ export const RenewalOptionsTab = ({ leaseForm, handleOnChange }: Props) => {
           <div className="banner banner-warning">
             <div className="banner-content">
               <div className="banner-content__icon">
-                <i className="bx bx-time"></i>
+                <Icon name="bx-time" />
               </div>
               <div className="banner-content__info">
                 <h4 className="mb-1">Automation Timeline</h4>
