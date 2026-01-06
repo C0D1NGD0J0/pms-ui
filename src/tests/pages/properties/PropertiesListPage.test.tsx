@@ -13,7 +13,18 @@ jest.mock("@store/auth.store", () => ({
   })),
 }));
 jest.mock("@hooks/useUnifiedPermissions");
-jest.mock("@app/(protectedRoutes)/properties/[cuid]/hooks");
+jest.mock("@app/(protectedRoutes)/properties/[cuid]/hooks", () => ({
+  useGetAllProperties: jest.fn(),
+  useCsvUpload: jest.fn(() => ({
+    csvFile: null,
+    isValidating: false,
+    isProcessing: false,
+    handleFileChange: jest.fn(),
+    validateCSV: jest.fn(),
+    processCSV: jest.fn(),
+    resetState: jest.fn(),
+  })),
+}));
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<

@@ -49,9 +49,9 @@ describe("useGetAllProperties", () => {
       pagination: { total: 2, page: 1, limit: 5 },
     };
 
-    mockPropertyService.getClientProperties.mockResolvedValue({
-      data: mockProperties,
-    } as any);
+    mockPropertyService.getClientProperties.mockResolvedValue(
+      mockProperties as any
+    );
 
     const { result } = renderHook(() => useGetAllProperties("client-123"), {
       wrapper: createWrapper(),
@@ -66,7 +66,8 @@ describe("useGetAllProperties", () => {
 
   it("should return empty array when no properties", async () => {
     mockPropertyService.getClientProperties.mockResolvedValue({
-      data: { items: [], pagination: { total: 0, page: 1, limit: 5 } },
+      items: [],
+      pagination: { total: 0, page: 1, limit: 5 },
     } as any);
 
     const { result } = renderHook(() => useGetAllProperties("client-123"), {
@@ -82,7 +83,8 @@ describe("useGetAllProperties", () => {
 
   it("should call property service with correct client ID", async () => {
     mockPropertyService.getClientProperties.mockResolvedValue({
-      data: { items: [], pagination: { total: 0, page: 1, limit: 5 } },
+      items: [],
+      pagination: { total: 0, page: 1, limit: 5 },
     } as any);
 
     renderHook(() => useGetAllProperties("client-456"), {
@@ -97,9 +99,10 @@ describe("useGetAllProperties", () => {
     });
   });
 
-  it("should use initial limit of 5", async () => {
+  it("should use initial limit of 6", async () => {
     mockPropertyService.getClientProperties.mockResolvedValue({
-      data: { items: [], pagination: { total: 0, page: 1, limit: 5 } },
+      items: [],
+      pagination: { total: 0, page: 1, limit: 6 },
     } as any);
 
     renderHook(() => useGetAllProperties("client-123"), {
@@ -109,7 +112,9 @@ describe("useGetAllProperties", () => {
     await waitFor(() => {
       expect(mockPropertyService.getClientProperties).toHaveBeenCalledWith(
         "client-123",
-        expect.objectContaining({ limit: 5 })
+        expect.objectContaining({
+          pagination: expect.objectContaining({ limit: 6 }),
+        })
       );
     });
   });
@@ -134,7 +139,8 @@ describe("useGetAllProperties", () => {
 
   it("should return pagination state", async () => {
     mockPropertyService.getClientProperties.mockResolvedValue({
-      data: { items: [], pagination: { total: 10, page: 1, limit: 5 } },
+      items: [],
+      pagination: { total: 10, page: 1, limit: 5 },
     } as any);
 
     const { result } = renderHook(() => useGetAllProperties("client-123"), {

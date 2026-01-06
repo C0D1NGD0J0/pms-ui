@@ -1,6 +1,7 @@
-import { ReactElement, ReactNode } from "react";
 import { AuthProvider } from "@components/AuthProvider";
+import { ReactElement, ReactNode, Suspense } from "react";
 import { EventProvider } from "@components/EventProvider";
+import { NotificationProvider } from "@hooks/useNotification";
 import { RenderOptions, render } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
@@ -35,6 +36,8 @@ interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
   queryClient?: QueryClient;
   withAuth?: boolean;
   withEvents?: boolean;
+  withSuspense?: boolean;
+  withNotifications?: boolean;
 }
 
 function customRender(
@@ -49,11 +52,25 @@ function customRender(
     }),
     withAuth = true,
     withEvents = true,
+    withSuspense = false,
+    withNotifications = true,
     ...renderOptions
   }: CustomRenderOptions = {}
 ) {
   function AllTheProviders({ children }: { children: ReactNode }) {
     let wrappedChildren = children;
+
+    if (withSuspense) {
+      wrappedChildren = (
+        <Suspense fallback={<div>Loading...</div>}>{wrappedChildren}</Suspense>
+      );
+    }
+
+    if (withNotifications) {
+      wrappedChildren = (
+        <NotificationProvider>{wrappedChildren}</NotificationProvider>
+      );
+    }
 
     if (withEvents) {
       wrappedChildren = <EventProvider>{wrappedChildren}</EventProvider>;

@@ -69,34 +69,42 @@ describe("StaffPage", () => {
     jest.clearAllMocks();
   });
 
-  it("should render staff management page", () => {
-    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
+  it("should render staff management page", async () => {
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
+      withSuspense: true,
+    });
 
-    expect(screen.getByText("Employee Management")).toBeInTheDocument();
+    expect(await screen.findByText("Employee Management")).toBeInTheDocument();
   });
 
-  it("should display add new employee button", () => {
-    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
+  it("should display add new employee button", async () => {
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
+      withSuspense: true,
+    });
 
-    expect(screen.getByText("Add new employee")).toBeInTheDocument();
+    expect(await screen.findByText("Add new employee")).toBeInTheDocument();
   });
 
-  it("should display employee list", () => {
-    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
+  it("should display employee list", async () => {
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
+      withSuspense: true,
+    });
 
-    expect(screen.getByText("John Doe")).toBeInTheDocument();
-    expect(screen.getByText("Jane Smith")).toBeInTheDocument();
+    expect(await screen.findByText("John Doe")).toBeInTheDocument();
+    expect(await screen.findByText("Jane Smith")).toBeInTheDocument();
   });
 
-  it("should display department distribution chart section", () => {
-    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
+  it("should display department distribution chart section", async () => {
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
+      withSuspense: true,
+    });
 
     expect(
-      screen.getByText("Employee Department Distribution")
+      await screen.findByText("Employee Department Distribution")
     ).toBeInTheDocument();
   });
 
-  it("should handle empty employee list", () => {
+  it("should handle empty employee list", async () => {
     mockUseGetEmployees.mockReturnValue({
       employees: [],
       sortOptions: [],
@@ -108,14 +116,19 @@ describe("StaffPage", () => {
       isLoading: false,
     } as any);
 
-    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
+      withSuspense: true,
+    });
 
-    expect(screen.getByText("Employee Management")).toBeInTheDocument();
+    expect(await screen.findByText("Employee Management")).toBeInTheDocument();
   });
 
-  it("should call useGetEmployees with correct client ID", () => {
-    render(<StaffPage params={Promise.resolve({ cuid: "client-456" })} />);
+  it("should call useGetEmployees with correct client ID", async () => {
+    render(<StaffPage params={Promise.resolve({ cuid: "client-456" })} />, {
+      withSuspense: true,
+    });
 
+    await screen.findByText("Employee Management");
     expect(mockUseGetEmployees).toHaveBeenCalledWith("client-456");
   });
 });
