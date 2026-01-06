@@ -38,14 +38,22 @@ describe("DatePicker Component", () => {
 
   it("renders with placeholders", () => {
     const { rerender } = render(<DatePicker {...defaultProps} />);
-    expect(screen.getByRole("textbox")).toHaveAttribute("placeholder", "Select date");
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "placeholder",
+      "Select date"
+    );
 
     rerender(<DatePicker {...defaultProps} placeholder="Choose a date" />);
-    expect(screen.getByRole("textbox")).toHaveAttribute("placeholder", "Choose a date");
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "placeholder",
+      "Choose a date"
+    );
   });
 
   it("handles values", () => {
-    const { rerender } = render(<DatePicker {...defaultProps} value="2024-01-15" />);
+    const { rerender } = render(
+      <DatePicker {...defaultProps} value="2024-01-15" />
+    );
     expect(screen.getByDisplayValue("2024-01-15")).toBeInTheDocument();
 
     rerender(<DatePicker {...defaultProps} value="" />);
@@ -53,7 +61,9 @@ describe("DatePicker Component", () => {
   });
 
   it("applies custom className", () => {
-    const { container } = render(<DatePicker {...defaultProps} className="custom-date" />);
+    const { container } = render(
+      <DatePicker {...defaultProps} className="custom-date" />
+    );
     expect(container.querySelector(".ant-picker")).toHaveClass("custom-date");
   });
 
@@ -61,21 +71,30 @@ describe("DatePicker Component", () => {
     const { container } = render(<DatePicker {...defaultProps} disabled />);
 
     expect(screen.getByRole("textbox")).toBeDisabled();
-    expect(container.querySelector(".ant-picker")).toHaveClass("ant-picker-disabled");
+    expect(container.querySelector(".ant-picker")).toHaveClass(
+      "ant-picker-disabled"
+    );
   });
 
   it("renders error state", () => {
     const { container } = render(<DatePicker {...defaultProps} hasError />);
-    expect(container.querySelector(".ant-picker")).toHaveClass("touched-invalid");
+    expect(container.querySelector(".ant-picker")).toHaveClass(
+      "touched-invalid"
+    );
   });
 
   it("renders required state", () => {
     render(<DatePicker {...defaultProps} required />);
-    expect(screen.getByRole("textbox")).toHaveAttribute("aria-required", "true");
+    expect(screen.getByRole("textbox")).toHaveAttribute(
+      "aria-required",
+      "true"
+    );
   });
 
   it("uses custom format", () => {
-    render(<DatePicker {...defaultProps} value="2024-01-15" format="DD/MM/YYYY" />);
+    render(
+      <DatePicker {...defaultProps} value="2024-01-15" format="DD/MM/YYYY" />
+    );
     expect(screen.getByRole("textbox")).toBeInTheDocument();
   });
 
@@ -94,6 +113,8 @@ describe("DatePicker Component", () => {
     expect(antPicker).toHaveClass("form-input");
 
     rerender(<DatePicker {...defaultProps} hasError />);
-    expect(container.querySelector(".ant-picker")).toHaveClass("touched-invalid");
+    expect(container.querySelector(".ant-picker")).toHaveClass(
+      "touched-invalid"
+    );
   });
 });

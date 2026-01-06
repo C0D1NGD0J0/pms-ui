@@ -11,10 +11,8 @@ const config: Config = {
   coverageProvider: "v8",
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(msw)/)',
-  ],
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  transformIgnorePatterns: ["node_modules/(?!(msw)/)"],
   moduleNameMapper: {
     "^@services/(.*)$": "<rootDir>/src/services/$1",
     "^@services$": "<rootDir>/src/services",
@@ -23,6 +21,10 @@ const config: Config = {
     "^@interfaces$": "<rootDir>/src/interfaces",
     "^@components/(.*)$": "<rootDir>/src/components/$1",
     "^@tests/(.*)$": "<rootDir>/src/tests/$1",
+    "^@test-data/(.*)$": "<rootDir>/src/test-data/$1",
+    "^@properties/(.*)$":
+      "<rootDir>/src/app/(protectedRoutes)/properties/[cuid]/$1",
+    "^@leases/(.*)$": "<rootDir>/src/app/(protectedRoutes)/leases/[cuid]/$1",
     "^@app/(.*)$": "<rootDir>/src/app/$1",
     "^@configs/(.*)$": "<rootDir>/src/configs/$1",
     "^@styles/(.*)$": "<rootDir>/src/styles/$1",

@@ -578,6 +578,11 @@ export const LEASE_QUERY_KEYS = {
     cuid,
     luid,
   ],
+  getRenewalFormData: (cuid: string, luid: string) => [
+    "/getRenewalFormData",
+    cuid,
+    luid,
+  ],
   getExpiringLeases: (cuid: string, days: number) => [
     "/getExpiringLeases",
     cuid,

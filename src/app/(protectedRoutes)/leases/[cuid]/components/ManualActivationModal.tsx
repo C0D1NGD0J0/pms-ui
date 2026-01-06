@@ -47,9 +47,9 @@ export const ManualActivationModal: React.FC<ManualActivationModalProps> = ({
           </div>
           <p className="info-text">
             <strong>Important:</strong> Manual activation should only be used
-            when the lease has been signed through alternative means (e.g.,
-            wet signature, in-person signing). The tenant will gain immediate
-            access to their portal.
+            when the lease has been signed through alternative means (e.g., wet
+            signature, in-person signing). The tenant will gain immediate access
+            to their portal.
           </p>
         </div>
 

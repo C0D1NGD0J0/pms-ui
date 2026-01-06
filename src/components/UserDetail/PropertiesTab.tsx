@@ -1,5 +1,5 @@
-import React from 'react';
-import { TableColumn, Table } from '@components/Table';
+import React from "react";
+import { TableColumn, Table } from "@components/Table";
 
 interface Property {
   id: string;
@@ -11,48 +11,50 @@ interface Property {
 }
 
 interface PropertiesTabProps {
-  userType: 'employee' | 'vendor';
+  userType: "employee" | "vendor";
   properties: Property[];
 }
 
 export const PropertiesTab: React.FC<PropertiesTabProps> = ({
   userType,
-  properties
+  properties,
 }) => {
   const columns: TableColumn<Property>[] = [
     {
-      title: 'Property Name',
-      dataIndex: 'name',
-      render: (value: string) => <strong>{value}</strong>
+      title: "Property Name",
+      dataIndex: "name",
+      render: (value: string) => <strong>{value}</strong>,
     },
     {
-      title: 'Location',
-      dataIndex: 'location'
+      title: "Location",
+      dataIndex: "location",
     },
     {
-      title: 'Units',
-      dataIndex: 'units'
+      title: "Units",
+      dataIndex: "units",
     },
     {
-      title: 'Occupancy',
-      dataIndex: 'occupancy',
+      title: "Occupancy",
+      dataIndex: "occupancy",
       render: (value: string) => {
-        const occupancyRate = parseInt(value.replace('%', ''));
-        const color = occupancyRate >= 90 ? 'hsl(130, 100%, 37%)' : 'hsl(39, 73%, 49%)';
+        const occupancyRate = parseInt(value.replace("%", ""));
+        const color =
+          occupancyRate >= 90 ? "hsl(130, 100%, 37%)" : "hsl(39, 73%, 49%)";
         return <span style={{ color }}>{value}</span>;
-      }
+      },
     },
     {
-      title: 'Since',
-      dataIndex: 'since'
-    }
+      title: "Since",
+      dataIndex: "since",
+    },
   ];
 
-  const title = userType === 'employee' ? 'Managed Properties' : 'Serviced Properties';
+  const title =
+    userType === "employee" ? "Managed Properties" : "Serviced Properties";
 
   return (
     <div className="properties-tab">
-      <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
+      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
         {title}
       </h3>
       <Table<Property>

@@ -22,9 +22,7 @@ function TestWrapper({ children }: { children: ReactNode }) {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </QueryClientProvider>
   );
 }
@@ -36,9 +34,15 @@ describe("useResetPasswordLogic Hook", () => {
 
   // Skip: React's use() API doesn't work properly in test environment
   it.skip("should initialize with correct default values", async () => {
-    const { result } = renderHook(() => useResetPasswordLogic({ params: Promise.resolve({ token: "test-token" }) }), {
-      wrapper: TestWrapper,
-    });
+    const { result } = renderHook(
+      () =>
+        useResetPasswordLogic({
+          params: Promise.resolve({ token: "test-token" }),
+        }),
+      {
+        wrapper: TestWrapper,
+      }
+    );
 
     // Wait for the hook to initialize by checking a property
     await waitFor(() => {
@@ -56,9 +60,15 @@ describe("useResetPasswordLogic Hook", () => {
     const mockResponse = { msg: "Password reset successful" };
     mockAuthService.resetPassword.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useResetPasswordLogic({ params: Promise.resolve({ token: "test-token" }) }), {
-      wrapper: TestWrapper,
-    });
+    const { result } = renderHook(
+      () =>
+        useResetPasswordLogic({
+          params: Promise.resolve({ token: "test-token" }),
+        }),
+      {
+        wrapper: TestWrapper,
+      }
+    );
 
     await waitFor(() => {
       expect(result.current?.token).toBe("test-token");
@@ -73,7 +83,10 @@ describe("useResetPasswordLogic Hook", () => {
     });
 
     await waitFor(() => {
-      expect(mockAuthService.resetPassword).toHaveBeenCalledWith("test-token", "newpassword");
+      expect(mockAuthService.resetPassword).toHaveBeenCalledWith(
+        "test-token",
+        "newpassword"
+      );
     });
   });
 
@@ -82,9 +95,15 @@ describe("useResetPasswordLogic Hook", () => {
     const mockResponse = { msg: "Password reset successful" };
     mockAuthService.resetPassword.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useResetPasswordLogic({ params: Promise.resolve({ token: "test-token" }) }), {
-      wrapper: TestWrapper,
-    });
+    const { result } = renderHook(
+      () =>
+        useResetPasswordLogic({
+          params: Promise.resolve({ token: "test-token" }),
+        }),
+      {
+        wrapper: TestWrapper,
+      }
+    );
 
     await waitFor(() => {
       expect(result.current?.token).toBe("test-token");

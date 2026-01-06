@@ -138,56 +138,66 @@
       margin-top: 0;
     }
   }
+}
 
-  .info-grid {
-    display: grid;
-    gap: 2rem;
+// Shared info grid styles for lease pages and modals
+.section-title {
+  font-size: $fs-lg;
+  font-weight: $fw-bold;
+  color: hslaGen($primary-color);
+  margin: 0 0 $space-xl;
+}
+
+.info-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.info-row {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid hslaGen($grey-color, 0.15);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
   }
 
-  .info-row {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid hslaGen($grey-color, 0.15);
+  @include breakpoint(57.6rem, max) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
 
-    &:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
+.info-label {
+  font-weight: 600;
+  color: hslaGen($grey-color);
+  font-size: 1.3rem;
+}
 
-    @include breakpoint(57.6rem, max) {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-    }
+.info-value {
+  color: hslaGen($dark-grey-color);
+  font-size: 1.3rem;
+
+  &.highlight-value {
+    font-size: 2rem;
+    color: hslaGen($success-color);
+    font-weight: $fw-bold;
   }
 
-  .info-label {
-    font-weight: 600;
-    color: hslaGen($grey-color);
-    font-size: 1.3rem;
-  }
+  a {
+    color: hslaGen($primary-color);
+    text-decoration: none;
 
-  .info-value {
-    color: hslaGen($dark-grey-color);
-    font-size: 1.3rem;
-
-    &.highlight-value {
-      font-size: 2rem;
-      color: hslaGen($success-color);
-      font-weight: $fw-bold;
-    }
-
-    a {
-      color: hslaGen($primary-color);
-      text-decoration: none;
-
-      &:hover {
-        text-decoration: underline;
-      }
+    &:hover {
+      text-decoration: underline;
     }
   }
+}
 
+.lease-show {
   .tenant-card {
     @include flex(row, flex-start, center, 1.6rem);
     padding: $space-xl;

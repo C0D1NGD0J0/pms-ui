@@ -225,6 +225,43 @@ class LeaseService {
       throw error;
     }
   }
+
+  async renewLease(cuid: string, luid: string, renewalData: any) {
+    try {
+      const { data: requestData, headers } = prepareRequestData(renewalData);
+
+      const config = {
+        ...this.axiosConfig,
+        headers: {
+          ...headers,
+        },
+      };
+
+      const result = await axios.post(
+        `${this.baseUrl}/${cuid}/${luid}/lease_renewal`,
+        requestData,
+        config
+      );
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getRenewalFormData(cuid: string, luid: string) {
+    try {
+      if (!luid) {
+        throw new Error("Lease Unique ID (luid) is required");
+      }
+      const result = await axios.get<IServerResponse<any>>(
+        `${this.baseUrl}/${cuid}/${luid}/lease_renewal`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
 
 export const leaseService = new LeaseService();

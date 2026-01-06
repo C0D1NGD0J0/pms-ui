@@ -227,7 +227,7 @@ export default function PropertyShow({ params }: PropertyShowProps) {
   };
 
   const isMultiUnit = data?.property?.propertyType
-    ? propertyTypeRules[data.property.propertyType]?.isMultiUnit ?? false
+    ? (propertyTypeRules[data.property.propertyType]?.isMultiUnit ?? false)
     : false;
 
   const {

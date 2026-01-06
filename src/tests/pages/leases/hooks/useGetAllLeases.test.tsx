@@ -2,7 +2,10 @@ import React from "react";
 import { leaseService } from "@services/lease";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useGetLeaseStats, useGetAllLeases } from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetAllLeases";
+import {
+  useGetLeaseStats,
+  useGetAllLeases,
+} from "@app/(protectedRoutes)/leases/[cuid]/hooks/useGetAllLeases";
 
 jest.mock("@services/lease");
 const mockLeaseService = leaseService as jest.Mocked<typeof leaseService>;
@@ -30,7 +33,7 @@ describe("useGetAllLeases", () => {
       wrapper: createWrapper(),
     });
 
-    expect(result.current.filterOptions).toHaveLength(7);
+    expect(result.current.filterOptions).toHaveLength(6);
     expect(result.current.filterOptions[0]).toEqual({
       label: "All Leases",
       value: "",
@@ -75,7 +78,7 @@ describe("useGetAllLeases", () => {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.handleSortChange).toBe("function");
+    expect(typeof result.current.handleSortDirectionChange).toBe("function");
     expect(typeof result.current.handlePageChange).toBe("function");
     expect(typeof result.current.handleSortByChange).toBe("function");
   });
@@ -103,7 +106,7 @@ describe("useGetLeaseStats", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.data).toEqual(mockStats);
+      expect(result.current.data).toEqual({ data: mockStats });
     });
   });
 
@@ -125,9 +128,7 @@ describe("useGetLeaseStats", () => {
     });
 
     await waitFor(() => {
-      expect(mockLeaseService.getLeaseStats).toHaveBeenCalledWith(
-        "client-789"
-      );
+      expect(mockLeaseService.getLeaseStats).toHaveBeenCalledWith("client-789");
     });
   });
 });

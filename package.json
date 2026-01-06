@@ -13,9 +13,11 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,json,js,jsx,html,yml,md}\" \"!**/dist/**\"",
     "typewatch": "tsc --noEmit --watch",
     "lint:check": "eslint --config .eslintrc.json --cache --ext .ts,.tsx,.js,.jsx src/",
-    "lint:fix": "eslint \"./src/**/*.{js,jsx,ts,tsx}\" --fix"
+    "lint:fix": "eslint \"./src/**/*.{js,jsx,ts,tsx}\" --fix",
+    "prepare": "husky"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
     "@ant-design/nextjs-registry": "^1.0.2",
     "@mantine/form": "^7.17.2",
     "@tanstack/react-query": "^5.69.0",
@@ -52,9 +54,11 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
     "eslint-plugin-perfectionist": "^4.10.1",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "msw": "^2.8.2",
+    "prettier": "^3.7.4",
     "sass": "^1.86.0",
     "ts-node": "^10.9.2",
     "typescript": "^5"

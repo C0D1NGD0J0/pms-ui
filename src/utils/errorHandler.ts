@@ -213,10 +213,13 @@ export class APIErrorHandler {
   static getFieldErrors(errors: ValidationError[]): Record<string, string> {
     if (!errors || errors.length === 0) return {};
 
-    return errors.reduce((acc, error) => {
-      acc[error.path] = error.message;
-      return acc;
-    }, {} as Record<string, string>);
+    return errors.reduce(
+      (acc, error) => {
+        acc[error.path] = error.message;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }
 
   /**

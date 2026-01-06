@@ -149,8 +149,8 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
             {userType === "tenant"
               ? "Lease agreements and tenant documents will appear here once they are uploaded."
               : userType === "vendor"
-              ? "Business licenses, insurance certificates, and other vendor documents will appear here once they are uploaded."
-              : "Certifications, training documents, and other files will appear here once they are uploaded."}
+                ? "Business licenses, insurance certificates, and other vendor documents will appear here once they are uploaded."
+                : "Certifications, training documents, and other files will appear here once they are uploaded."}
           </p>
         </div>
       )}

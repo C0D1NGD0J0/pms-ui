@@ -1,24 +1,28 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@components/Icon";
 import { TabContainer } from "@components/Tab";
 import { Loading } from "@src/components/Loading";
 import { TabItem } from "@components/Tab/interface";
 import { PageHeader } from "@components/PageElements";
 import { Button, Modal } from "@components/FormElements";
+import { LeaseHeader } from "@leases/components/LeaseHeader";
+import { LeaseSidebar } from "@leases/components/LeaseSidebar";
 import { PanelsWrapper, PanelContent, Panel } from "@components/Panel";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
+import { LeasePreviewModal } from "@leases/components/LeasePreviewModal";
+import { LeaseOverviewCards } from "@leases/components/LeaseOverviewCards";
 import { PendingChangesBanner } from "@src/components/PendingChangesBanner";
-import { LeaseDetailResponse, LeaseDetailData } from "@interfaces/lease.interface";
+import { TerminateLeaseModal } from "@leases/components/TerminateLeaseModal";
+import { SendForSignatureModal } from "@leases/components/SendForSignatureModal";
+import { ManualActivationModal } from "@leases/components/ManualActivationModal";
 import { PendingChangesReviewModal } from "@src/components/PendingChangesReviewModal";
-
-import { LeaseHeader } from "../components/LeaseHeader";
-import { LeaseSidebar } from "../components/LeaseSidebar";
-import { LeasePreviewModal } from "../components/LeasePreviewModal";
-import { LeaseOverviewCards } from "../components/LeaseOverviewCards";
-import { TerminateLeaseModal } from "../components/TerminateLeaseModal";
-import { SendForSignatureModal } from "../components/SendForSignatureModal";
-import { ManualActivationModal } from "../components/ManualActivationModal";
+import { RenewalConfirmationModal } from "@leases/components/RenewalConfirmationModal";
+import {
+  LeaseDetailResponse,
+  LeaseDetailData,
+} from "@interfaces/lease.interface";
 
 interface LeaseDetailViewProps {
   cuid: string;
@@ -46,6 +50,9 @@ interface LeaseDetailViewProps {
   setShowTerminateModal: (show: boolean) => void;
   showCancelSignatureModal: boolean;
   setShowCancelSignatureModal: (show: boolean) => void;
+  showRenewalConfirmationModal: boolean;
+  setShowRenewalConfirmationModal: (show: boolean) => void;
+  canRenewLease: boolean;
   tabItems: TabItem[];
   handleBack: () => void;
   handleViewChanges: () => void;
@@ -95,6 +102,9 @@ export function LeaseDetailView({
   setShowTerminateModal,
   showCancelSignatureModal,
   setShowCancelSignatureModal,
+  showRenewalConfirmationModal,
+  setShowRenewalConfirmationModal,
+  canRenewLease,
   tabItems,
   handleBack,
   handleViewChanges,
@@ -132,7 +142,7 @@ export function LeaseDetailView({
       <Button
         className="btn btn-outline"
         label="Preview Lease"
-        icon={<i className="bx bx-file warning"></i>}
+        icon={<Icon name="bx-file" className="warning" />}
         onClick={handlePreviewLease}
       />
 
@@ -140,7 +150,7 @@ export function LeaseDetailView({
         <Button
           className="btn btn-danger"
           label="Send for Signature"
-          icon={<i className="bx bx-send ghost"></i>}
+          icon={<Icon name="bx-send" className="ghost" />}
           onClick={() => setShowSignatureModal(true)}
         />
       )}
@@ -150,25 +160,35 @@ export function LeaseDetailView({
           <Button
             className="btn btn-primary"
             label="Manually Activate"
-            icon={<i className="bx bx-check-circle ghost"></i>}
+            icon={<Icon name="bx-check-circle" className="ghost" />}
             onClick={() => setShowManualActivationModal(true)}
           />
           <Button
             className="btn btn-default"
             label="Cancel Signature Request"
-            icon={<i className="bx bx-x-circle"></i>}
+            icon={<Icon name="bx-x-circle" />}
             onClick={() => setShowCancelSignatureModal(true)}
           />
         </>
       )}
 
       {isActiveStatus && permissions.isManagerOrAbove && (
-        <Button
-          className="btn btn-danger"
-          label="Terminate Lease"
-          icon={<i className="bx bx-error-circle ghost"></i>}
-          onClick={() => setShowTerminateModal(true)}
-        />
+        <>
+          {canRenewLease && (
+            <Button
+              className="btn btn-primary"
+              label="Renew Lease"
+              icon={<Icon name="bx-refresh" />}
+              onClick={() => setShowRenewalConfirmationModal(true)}
+            />
+          )}
+          <Button
+            className="btn btn-danger"
+            label="Terminate Lease"
+            icon={<Icon name="bx-error-circle" className="ghost" />}
+            onClick={() => setShowTerminateModal(true)}
+          />
+        </>
       )}
 
       {!isReadOnlyStatus && permissions.isManagerOrAbove && (
@@ -176,7 +196,7 @@ export function LeaseDetailView({
           href={`/leases/${cuid}/new?duplicate=${luid}`}
           className="btn btn-outline"
         >
-          <i className="bx bx-copy"></i>
+          <Icon name="bx-copy" />
           Duplicate Lease
         </Link>
       )}
@@ -191,19 +211,23 @@ export function LeaseDetailView({
         withBreadcrumb={true}
         headerBtn={
           <div className="header-actions">
-            {permissions.isManagerOrAbove && (
+            {permissions.isManagerOrAbove && lease && (
               <Link
-                href={`/leases/${cuid}/${luid}/edit`}
+                href={
+                  lease.status === "draft_renewal"
+                    ? `/leases/${cuid}/${luid}/renew`
+                    : `/leases/${cuid}/${luid}/edit`
+                }
                 className="btn btn-outline"
               >
-                <i className="bx bx-edit"></i>
+                <Icon name="bx-edit" />
                 Edit
               </Link>
             )}
             <Button
               className="btn btn-default"
               label="Back"
-              icon={<i className="bx bx-arrow-back"></i>}
+              icon={<Icon name="bx-arrow-back" />}
               onClick={handleBack}
             />
           </div>
@@ -224,12 +248,13 @@ export function LeaseDetailView({
           onViewChanges={handleViewChanges}
         />
       ) : (
-        lease && responseData && (
+        lease &&
+        responseData && (
           <LeaseHeader
             luid={lease.leaseNumber}
             status={lease.status}
             propertyName={responseData.property.name}
-            propertyAddress={lease.property.address}
+            propertyAddress={lease.property.address.fullAddress}
             actions={leaseActions}
           />
         )
@@ -318,7 +343,7 @@ export function LeaseDetailView({
             />
             <Modal.Content>
               <div className="modal-notice">
-                <i className="bx bx-info-circle"></i>
+                <Icon name="bx-info-circle" />
                 <p>
                   Are you sure you want to cancel the signature request? This
                   will change the lease status back to &apos;draft&apos;.
@@ -331,7 +356,7 @@ export function LeaseDetailView({
                 label="No, Keep Request"
                 className="btn-default"
                 onClick={() => setShowCancelSignatureModal(false)}
-                icon={<i className="bx bx-x"></i>}
+                icon={<Icon name="bx-x" />}
                 disabled={isCancelSignatureLoading}
               />
               <Button
@@ -381,6 +406,15 @@ export function LeaseDetailView({
           isLoading={false}
         />
       )}
+
+      <RenewalConfirmationModal
+        isOpen={showRenewalConfirmationModal}
+        onClose={() => setShowRenewalConfirmationModal(false)}
+        renewalMetadata={responseData?.renewalMetadata}
+        cuid={cuid}
+        luid={luid}
+        canRenewLease={canRenewLease}
+      />
     </div>
   );
 }

@@ -19,9 +19,7 @@ function TestWrapper({ children }: { children: ReactNode }) {
   });
   return (
     <QueryClientProvider client={queryClient}>
-      <NotificationProvider>
-        {children}
-      </NotificationProvider>
+      <NotificationProvider>{children}</NotificationProvider>
     </QueryClientProvider>
   );
 }
@@ -53,7 +51,9 @@ describe("useForgotPasswordLogic Hook", () => {
     });
 
     await waitFor(() => {
-      expect(mockAuthService.forgotPassword).toHaveBeenCalledWith("test@example.com");
+      expect(mockAuthService.forgotPassword).toHaveBeenCalledWith(
+        "test@example.com"
+      );
     });
   });
 

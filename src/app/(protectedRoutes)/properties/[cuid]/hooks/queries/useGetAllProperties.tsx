@@ -30,7 +30,7 @@ export const useGetAllProperties = (cuid: string) => {
     queryKeys: CLIENT_QUERY_KEYS.getClientProperties(cuid),
     fetchFn: fetchProperties,
     paginationConfig: {
-      initialLimit: 5,
+      initialLimit: 6,
     },
   });
 

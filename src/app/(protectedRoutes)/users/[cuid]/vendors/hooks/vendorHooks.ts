@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { useNotification } from "@hooks/useNotification";
 import { vendorService, userService } from "@src/services";
-import {
-  IFilteredVendorsParams,
-  VendorStats,
-} from "@src/interfaces";
+import { IFilteredVendorsParams, VendorStats } from "@src/interfaces";
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import { COMMON_STATUS_OPTIONS, COMMON_SORT_OPTIONS } from "@utils/constants";
 import {

@@ -14,6 +14,7 @@ interface Props {
   isTouched: (field: string) => boolean;
   unitStatusOptions: { value: string; label: string }[];
   unitTypeOptions: { value: string; label: string }[];
+  propertyManagers: { value: string; label: string }[];
   isFieldVisible: (
     fieldName: string,
     category?: "specifications" | "amenities" | "utilities" | "fees"
@@ -30,6 +31,7 @@ export function UnitBasicInfo({
   onFieldChange,
   unitTypeOptions,
   unitStatusOptions,
+  propertyManagers,
   isFieldVisible,
 }: Props) {
   if (!unit) {
@@ -84,10 +86,7 @@ export function UnitBasicInfo({
           <FormInput
             type="number"
             id="unit-size"
-            onChange={(e) => {
-              e.target.value = parseInt(e.target.value) as unknown as string;
-              onFieldChange(e);
-            }}
+            onChange={onFieldChange}
             placeholder="Enter unit area"
             name="specifications.totalArea"
             value={unit.specifications.totalArea}
@@ -107,10 +106,7 @@ export function UnitBasicInfo({
             name="floor"
             type="number"
             value={unit.floor}
-            onChange={(e) => {
-              e.target.value = Number(e.target.value) as unknown as string;
-              onFieldChange(e);
-            }}
+            onChange={onFieldChange}
             hasError={!!errors["floor"]}
             placeholder="Enter floor or level"
           />
@@ -129,10 +125,7 @@ export function UnitBasicInfo({
               min="0"
               type="number"
               id="unit-rooms"
-              onChange={(e) => {
-                e.target.value = Number(e.target.value) as unknown as string;
-                onFieldChange(e);
-              }}
+              onChange={onFieldChange}
               name="specifications.rooms"
               placeholder="Number of rooms"
               value={unit.specifications.rooms}
@@ -154,10 +147,7 @@ export function UnitBasicInfo({
               step="0.5"
               type="number"
               id="unit-bathrooms"
-              onChange={(e) => {
-                e.target.value = Number(e.target.value) as unknown as string;
-                onFieldChange(e);
-              }}
+              onChange={onFieldChange}
               name="specifications.bathrooms"
               placeholder="Number of bathrooms"
               value={unit.specifications.bathrooms}
@@ -180,10 +170,7 @@ export function UnitBasicInfo({
               min="1"
               type="number"
               id="unit-occupants"
-              onChange={(e) => {
-                e.target.value = Number(e.target.value) as unknown as string;
-                onFieldChange(e);
-              }}
+              onChange={onFieldChange}
               name="specifications.maxOccupants"
               value={unit.specifications.maxOccupants}
               placeholder="Maximum number of occupants"
@@ -205,6 +192,25 @@ export function UnitBasicInfo({
             onChange={onFieldChange}
             options={unitStatusOptions}
             placeholder="Select unit status"
+          />
+        </FormField>
+      </div>
+
+      <div className="form-fields">
+        <FormField
+          error={{
+            msg: (errors["managedBy"] as string) || "",
+            touched: isTouched("managedBy"),
+          }}
+        >
+          <FormLabel htmlFor="managedBy" label="Unit Manager" />
+          <Select
+            id="managedBy"
+            name="managedBy"
+            value={unit.managedBy || ""}
+            onChange={onFieldChange}
+            options={propertyManagers}
+            placeholder="Assign unit manager"
           />
         </FormField>
       </div>

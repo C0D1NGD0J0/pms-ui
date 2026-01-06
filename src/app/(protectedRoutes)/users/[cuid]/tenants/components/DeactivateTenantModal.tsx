@@ -23,8 +23,7 @@ export const DeactivateTenantModal: React.FC<DeactivateTenantModalProps> = ({
       <Modal.Content>
         <div className="modal-body">
           <p style={{ marginBottom: "1rem" }}>
-            Are you sure you want to deactivate{" "}
-            <strong>{tenantName}</strong>?
+            Are you sure you want to deactivate <strong>{tenantName}</strong>?
           </p>
           <p
             style={{

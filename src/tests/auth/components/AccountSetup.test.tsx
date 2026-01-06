@@ -23,7 +23,13 @@ jest.mock("@components/FormElements", () => ({
       </select>
     </div>
   ),
-  FormField: ({ children, error }: { children: React.ReactNode; error?: any }) => (
+  FormField: ({
+    children,
+    error,
+  }: {
+    children: React.ReactNode;
+    error?: any;
+  }) => (
     <div data-testid="form-field">
       {children}
       {error?.msg && <div className="error-message">{error.msg}</div>}
@@ -65,13 +71,21 @@ jest.mock("@components/FormElements", () => ({
       <label htmlFor={id}>{label}</label>
     </div>
   ),
-  Button: ({ label, onClick, disabled, className, type, loading, loadingText }: any) => (
+  Button: ({
+    label,
+    onClick,
+    disabled,
+    className,
+    type,
+    loading,
+    loadingText,
+  }: any) => (
     <button
       onClick={onClick}
       disabled={disabled || loading}
       type={type}
       className={className}
-      data-testid={`button-${className?.includes('primary') ? 'primary' : className?.includes('outline') ? 'outline' : 'default'}`}
+      data-testid={`button-${className?.includes("primary") ? "primary" : className?.includes("outline") ? "outline" : "default"}`}
     >
       <span>{loading && loadingText ? loadingText : label}</span>
     </button>
@@ -139,9 +153,7 @@ describe("AccountSetup Component", () => {
     expect(screen.getByTestId("input-phoneNumber")).toBeInTheDocument();
     expect(screen.getByTestId("input-location")).toBeInTheDocument();
     expect(screen.getByTestId("dropdown-timeZone")).toBeInTheDocument();
-    expect(
-      screen.getByTestId("dropdown-lang")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("dropdown-lang")).toBeInTheDocument();
     expect(screen.getByTestId("checkbox-termsAccepted")).toBeInTheDocument();
   });
 
@@ -241,7 +253,9 @@ describe("AccountSetup Component", () => {
 
     render(<AccountSetup {...props} />);
 
-    const submitButton = screen.getByText("Creating Account...").closest("button");
+    const submitButton = screen
+      .getByText("Creating Account...")
+      .closest("button");
     expect(submitButton).toBeDisabled();
   });
 

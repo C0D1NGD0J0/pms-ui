@@ -197,8 +197,8 @@ const TenantDetailPage = ({ params }: TenantDetailPageProps) => {
                               lease.status === "active"
                                 ? ("valid" as const)
                                 : lease.status === "completed"
-                                ? ("expired" as const)
-                                : ("expired" as const),
+                                  ? ("expired" as const)
+                                  : ("expired" as const),
                             expiryDate: lease.leaseEnd,
                           })
                         )

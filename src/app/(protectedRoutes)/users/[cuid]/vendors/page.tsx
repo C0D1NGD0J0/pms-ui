@@ -52,7 +52,7 @@ function VendorsPage({ params }: VendorsPageProps) {
 
   const { stats } = useGetVendorStats(cuid);
   console.log("Vendor stats:", stats);
-  
+
   const businessTypeData = useMemo(() => {
     return stats?.businessTypeDistribution || [];
   }, [stats]);
@@ -148,7 +148,7 @@ function VendorsPage({ params }: VendorsPageProps) {
             value={businessTypeData.length}
             icon={<i className="bx bx-category"></i>}
             trend={{
-              value: `${businessTypeData.length > 0 ? businessTypeData[0]?.name : 'None'}`,
+              value: `${businessTypeData.length > 0 ? businessTypeData[0]?.name : "None"}`,
               direction: "none",
               period: "most common",
             }}
@@ -159,7 +159,7 @@ function VendorsPage({ params }: VendorsPageProps) {
             value={servicesData.length}
             icon={<i className="bx bx-wrench"></i>}
             trend={{
-              value: `${servicesData.length > 0 ? servicesData[0]?.name : 'None'}`,
+              value: `${servicesData.length > 0 ? servicesData[0]?.name : "None"}`,
               direction: "none",
               period: "most popular",
             }}

@@ -35,11 +35,12 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
       pid: string;
     }) => {
       if (!client?.cuid) throw new Error("Client not authenticated");
-      return await propertyUnitService.createUnits(
+      const result = await propertyUnitService.createUnits(
         client.cuid,
         property.pid,
         data
       );
+      return result;
     },
     onSuccess: (_response, variables) => {
       if (!client?.cuid) return;
@@ -71,7 +72,6 @@ export function useUnitForm({ property }: { property: PropertyFormValues }) {
         `Successfully created ${variables.units.length} units.`
       );
 
-      // Clear the form after successful creation
       unitForm.setFieldValue("units", []);
     },
     onError: (error: any) => {

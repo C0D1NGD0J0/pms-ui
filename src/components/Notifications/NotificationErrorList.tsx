@@ -34,9 +34,7 @@ const NotificationErrorList: React.FC<NotificationErrorListProps> = ({
                     ))}
                   </ul>
                 ) : (
-                  <span>
-                    {error.error || error.message || "Unknown error"}
-                  </span>
+                  <span>{error.error || error.message || "Unknown error"}</span>
                 )}
               </li>
             );

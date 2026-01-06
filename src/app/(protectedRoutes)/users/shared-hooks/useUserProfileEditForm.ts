@@ -125,7 +125,7 @@ export function useUserProfileEditForm({
               : "",
           isLinkedAccount:
             userType === "vendor"
-              ? userData.vendorInfo?.isLinkedAccount ?? false
+              ? (userData.vendorInfo?.isLinkedAccount ?? false)
               : false,
         },
       };

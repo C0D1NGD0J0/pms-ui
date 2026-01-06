@@ -272,8 +272,8 @@ export const PendingChangesReviewModal: React.FC<
         entityType === "property"
           ? "Property"
           : entityType === "lease"
-          ? "Lease"
-          : "Unit"
+            ? "Lease"
+            : "Unit"
       } Name`,
       description: "Description",
       propertyType: "Property Type",

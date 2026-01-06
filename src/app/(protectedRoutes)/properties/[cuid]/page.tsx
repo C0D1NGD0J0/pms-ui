@@ -51,6 +51,10 @@ export default function Properties() {
     refetch(); // Refresh the properties list
   };
 
+  if (!client?.cuid) {
+    return <div className="page properties">No client selected.</div>;
+  }
+
   const propertyColumns = [
     {
       title: "Name",
@@ -117,15 +121,15 @@ export default function Properties() {
         return (
           <div className="action-icons">
             <Link
-              href={`/properties/${pid}`}
+              href={`/properties/${client.cuid}/${pid}`}
               className="action-icon view-icon"
               title="View Property"
             >
               <i className="bx bx-show"></i>
             </Link>
-            {show && (
+            {show && client?.cuid && (
               <Link
-                href={`/properties/${pid}/edit`}
+                href={`/properties/${client.cuid}/${pid}/edit`}
                 className="action-icon edit-icon"
                 title="Edit Property"
               >

@@ -83,7 +83,10 @@ const InviteUsers: React.FC = () => {
     }
 
     // Handle CSV import completion - refresh invitation list
-    if (metadata.jobType === "csv_invitation" && metadata.stage === "completed") {
+    if (
+      metadata.jobType === "csv_invitation" &&
+      metadata.stage === "completed"
+    ) {
       setCsvPreviewData([]); // Clear preview if showing
       queryClient.invalidateQueries({
         queryKey: [`/invitations/${client?.cuid}`, client?.cuid],

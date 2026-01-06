@@ -2,10 +2,7 @@ import React from "react";
 import "@testing-library/jest-dom";
 import { useSearchParams } from "next/navigation";
 import { useScrollToTop } from "@hooks/useScrollToTop";
-import {
-  TabContainer,
-  TabList,
-} from "@components/Tab";
+import { TabContainer, TabList } from "@components/Tab";
 import { fireEvent, render, screen } from "@testing-library/react";
 
 jest.mock("next/navigation", () => ({
@@ -210,9 +207,7 @@ describe("Tab Components", () => {
 
       const tab2 = screen.getByRole("tab", { name: /tab 2/i });
       expect(tab2).toHaveClass("has-error");
-      expect(
-        screen.getByLabelText("This tab has errors")
-      ).toBeInTheDocument();
+      expect(screen.getByLabelText("This tab has errors")).toBeInTheDocument();
     });
 
     it("should render tab icons when provided", () => {
@@ -290,9 +285,7 @@ describe("Tab Components", () => {
         { id: "tab1", label: "Tab 1", content: <div>Content 1</div> },
       ];
 
-      render(
-        <TabContainer tabItems={tabItems} ariaLabel="Custom Tab Label" />
-      );
+      render(<TabContainer tabItems={tabItems} ariaLabel="Custom Tab Label" />);
 
       const tablist = screen.getByRole("tablist");
       expect(tablist).toHaveAttribute("aria-label", "Custom Tab Label");

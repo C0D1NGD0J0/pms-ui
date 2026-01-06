@@ -1,16 +1,16 @@
-import React from 'react';
+import React from "react";
 
 export interface PriorityBadgeProps {
-  priority: 'high' | 'medium' | 'low';
-  size?: 'small' | 'default' | 'large';
+  priority: "high" | "medium" | "low";
+  size?: "small" | "default" | "large";
   className?: string;
   children?: React.ReactNode;
 }
 
 export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   priority,
-  size = 'default',
-  className = '',
+  size = "default",
+  className = "",
   children,
 }) => {
   const getColoClass = () => {
@@ -20,7 +20,7 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   const combinedClassName = `${getColoClass()} ${className}`.trim();
 
   return (
-    <span 
+    <span
       className={combinedClassName}
       role="status"
       aria-label={`Priority: ${priority}`}
@@ -31,16 +31,16 @@ export const PriorityBadge: React.FC<PriorityBadgeProps> = ({
 };
 
 // Predefined priority badges
-export const HighPriorityBadge: React.FC<Omit<PriorityBadgeProps, 'priority'>> = (props) => (
-  <PriorityBadge {...props} priority="high" />
-);
+export const HighPriorityBadge: React.FC<
+  Omit<PriorityBadgeProps, "priority">
+> = (props) => <PriorityBadge {...props} priority="high" />;
 
-export const MediumPriorityBadge: React.FC<Omit<PriorityBadgeProps, 'priority'>> = (props) => (
-  <PriorityBadge {...props} priority="medium" />
-);
+export const MediumPriorityBadge: React.FC<
+  Omit<PriorityBadgeProps, "priority">
+> = (props) => <PriorityBadge {...props} priority="medium" />;
 
-export const LowPriorityBadge: React.FC<Omit<PriorityBadgeProps, 'priority'>> = (props) => (
-  <PriorityBadge {...props} priority="low" />
-);
+export const LowPriorityBadge: React.FC<
+  Omit<PriorityBadgeProps, "priority">
+> = (props) => <PriorityBadge {...props} priority="low" />;
 
-PriorityBadge.displayName = 'PriorityBadge';
+PriorityBadge.displayName = "PriorityBadge";

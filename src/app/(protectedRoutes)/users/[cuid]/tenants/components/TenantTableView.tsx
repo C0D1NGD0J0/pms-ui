@@ -4,10 +4,7 @@ import { Button } from "@components/FormElements";
 import { TableColumn, Table } from "@components/Table";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import {
-  IPaginationQuery,
-  FilterOption,
-} from "@interfaces/utils.interface";
+import { IPaginationQuery, FilterOption } from "@interfaces/utils.interface";
 import {
   getLeaseStatusBadgeClass,
   getRentStatusBadgeClass,

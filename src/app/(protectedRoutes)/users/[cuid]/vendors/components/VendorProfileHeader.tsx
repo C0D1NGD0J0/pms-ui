@@ -19,24 +19,35 @@ export const VendorProfileHeader: React.FC<VendorProfileHeaderProps> = ({
   const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
-    
+
     return (
       <div className="vendor-rating">
         <div className="stars">
           {Array.from({ length: fullStars }, (_, i) => (
-            <i key={i} className="bx bxs-star" style={{ color: "hsl(39, 73%, 49%)" }}></i>
+            <i
+              key={i}
+              className="bx bxs-star"
+              style={{ color: "hsl(39, 73%, 49%)" }}
+            ></i>
           ))}
-          {hasHalfStar && <i className="bx bxs-star-half" style={{ color: "hsl(39, 73%, 49%)" }}></i>}
+          {hasHalfStar && (
+            <i
+              className="bx bxs-star-half"
+              style={{ color: "hsl(39, 73%, 49%)" }}
+            ></i>
+          )}
           {Array.from(
             { length: 5 - fullStars - (hasHalfStar ? 1 : 0) },
             (_, i) => (
-              <i key={`empty-${i}`} className="bx bx-star" style={{ color: "hsl(213, 14%, 56%)" }}></i>
+              <i
+                key={`empty-${i}`}
+                className="bx bx-star"
+                style={{ color: "hsl(213, 14%, 56%)" }}
+              ></i>
             )
           )}
         </div>
-        <span className="rating-text">
-          {rating}/5
-        </span>
+        <span className="rating-text">{rating}/5</span>
       </div>
     );
   };
@@ -47,9 +58,9 @@ export const VendorProfileHeader: React.FC<VendorProfileHeaderProps> = ({
         <div className="employee-profile">
           <div className="employee-avatar">
             {vendorInfo?.companyName
-              ?.split(' ')
-              ?.map(word => word[0])
-              ?.join('')
+              ?.split(" ")
+              ?.map((word) => word[0])
+              ?.join("")
               ?.toUpperCase()
               ?.slice(0, 2)}
             <StatusBadge

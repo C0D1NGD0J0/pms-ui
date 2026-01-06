@@ -42,7 +42,6 @@ export const useClientForm = ({ clientData, cuid }: UseClientFormProps) => {
     if (clientData.displayName) {
       form.setFieldValue("displayName", clientData.displayName);
     }
-     
   }, [clientData.displayName]);
   const hasUnsavedChanges = form.isDirty();
 

@@ -3,18 +3,19 @@
 import { leaseService } from "@services/lease";
 import { TabItem } from "@components/Tab/interface";
 import { DocumentsTab } from "@components/UserDetail";
+import { useGetLeaseByLuid } from "@leases/hooks/index";
+import { useCurrentUser } from "@src/hooks/useCurrentUser";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@src/hooks/useNotification";
+import { ActivityTab } from "@leases/components/ActivityTab";
+import { LeaseStatusEnum } from "@interfaces/lease.interface";
+import { FinancialTab } from "@leases/components/FinancialTab";
+import { useGetLeasePreview } from "@leases/hooks/useLeasePreview";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useState, use } from "react";
+import { LeaseDetailsTab } from "@leases/components/LeaseDetailsTab";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-
-import { useGetLeaseByLuid } from "../../hooks/index";
-import { ActivityTab } from "../components/ActivityTab";
-import { FinancialTab } from "../components/FinancialTab";
-import { LeaseDetailsTab } from "../components/LeaseDetailsTab";
-import { useGetLeasePreview } from "../../hooks/useLeasePreview";
-import { PropertyTenantTab } from "../components/PropertyTenantTab";
+import { PropertyTenantTab } from "@leases/components/PropertyTenantTab";
 
 interface UseLeaseDetailLogicProps {
   params: Promise<{
@@ -26,6 +27,7 @@ interface UseLeaseDetailLogicProps {
 export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const router = useRouter();
   const permissions = useUnifiedPermissions();
+  const { user: currentUser } = useCurrentUser();
   const { luid, cuid } = use(params);
   const queryClient = useQueryClient();
   const { openNotification } = useNotification();
@@ -35,7 +37,6 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     error,
   } = useGetLeaseByLuid(cuid, luid);
   const lease = responseData?.lease;
-
   const { previewHtml, isLoadingPreview, fetchPreview } = useGetLeasePreview(
     cuid,
     luid
@@ -50,7 +51,17 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const [showTerminateModal, setShowTerminateModal] = useState(false);
   const [showCancelSignatureModal, setShowCancelSignatureModal] =
     useState(false);
+  const [showRenewalConfirmationModal, setShowRenewalConfirmationModal] =
+    useState(false);
   const searchParams = useSearchParams();
+
+  // Redirect draft_renewal leases to renewal page
+  // Using router.replace to avoid adding to history (better UX for back button)
+  useEffect(() => {
+    if (lease && lease.status === LeaseStatusEnum.DRAFT_RENEWAL) {
+      router.replace(`/leases/${cuid}/${luid}/renew`);
+    }
+  }, [lease, cuid, luid, router]);
 
   useEffect(() => {
     const showChanges = searchParams.get("showChanges");
@@ -237,6 +248,12 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
   const isReadOnlyStatus =
     isTerminatedStatus || isExpiredStatus || isCancelledStatus;
 
+  // Check if current user can renew the lease (admin or lease creator)
+  const canRenewLease = Boolean(
+    permissions.isAdmin ||
+    (lease?.createdBy?._id && currentUser?.sub === lease.createdBy._id)
+  );
+
   const tabItems: TabItem[] = lease
     ? [
         {
@@ -326,6 +343,9 @@ export function useLeaseDetailLogic({ params }: UseLeaseDetailLogicProps) {
     setShowTerminateModal,
     showCancelSignatureModal,
     setShowCancelSignatureModal,
+    showRenewalConfirmationModal,
+    setShowRenewalConfirmationModal,
+    canRenewLease,
     tabItems,
     handleBack,
     handleViewChanges,

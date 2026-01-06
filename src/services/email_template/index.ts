@@ -70,8 +70,10 @@ class EmailTemplateService {
       const responseData = result.data;
 
       // Check if renderedHtml exists in the response (could be nested in data or at root level)
-      const renderedHtml = responseData.data?.renderedHtml || responseData.renderedHtml;
-      const renderedText = responseData.data?.renderedText || responseData.renderedText;
+      const renderedHtml =
+        responseData.data?.renderedHtml || responseData.renderedHtml;
+      const renderedText =
+        responseData.data?.renderedText || responseData.renderedText;
 
       if (!renderedHtml) {
         throw new Error(

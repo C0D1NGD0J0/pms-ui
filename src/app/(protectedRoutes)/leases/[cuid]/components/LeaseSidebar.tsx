@@ -9,7 +9,7 @@ interface LeaseSidebarProps {
 
 export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
   timeline,
-  renewalNoticeDays = 60
+  renewalNoticeDays = 60,
 }) => {
   // Calculate renewal notice date
   const endDate = new Date(timeline.endDate);
@@ -26,10 +26,10 @@ export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
 
   const timelineItems: TimelineItem[] = [
     {
-      date: endDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+      date: endDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       }),
       title: timeline.isExpiringSoon ? "Lease Ending Soon" : "Lease End Date",
       desc: timeline.isActive
@@ -38,10 +38,10 @@ export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
       completed: timeline.isActive && today >= endDate,
     },
     {
-      date: renewalNoticeDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+      date: renewalNoticeDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       }),
       title: "Renewal Decision",
       desc: timeline.isActive
@@ -50,10 +50,10 @@ export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
       completed: timeline.isActive && today >= renewalNoticeDate,
     },
     {
-      date: moveInDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+      date: moveInDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       }),
       title: "Move-in Date",
       desc: tenantHasMovedIn
@@ -64,10 +64,10 @@ export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
       completed: tenantHasMovedIn,
     },
     {
-      date: startDate.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+      date: startDate.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       }),
       title: "Lease Start Date",
       desc: timeline.isActive
@@ -78,10 +78,10 @@ export const LeaseSidebar: React.FC<LeaseSidebarProps> = ({
       completed: leaseHasStarted,
     },
     {
-      date: new Date(timeline.created).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
+      date: new Date(timeline.created).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
       }),
       title: "Lease Created",
       desc: "Agreement drafted",

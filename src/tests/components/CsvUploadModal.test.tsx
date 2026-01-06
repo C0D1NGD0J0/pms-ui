@@ -75,9 +75,7 @@ describe("CsvUploadModal", () => {
       />
     );
 
-    expect(
-      screen.queryByText("Import Users from CSV")
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText("Import Users from CSV")).not.toBeInTheDocument();
   });
 
   it("should render file upload input", () => {
@@ -107,7 +105,10 @@ describe("CsvUploadModal", () => {
 
     const downloadLink = screen.getByText("Download User Template");
     expect(downloadLink).toBeInTheDocument();
-    expect(downloadLink).toHaveAttribute("href", "/templates/users-template.csv");
+    expect(downloadLink).toHaveAttribute(
+      "href",
+      "/templates/users-template.csv"
+    );
     expect(downloadLink).toHaveAttribute("download");
   });
 
@@ -140,11 +141,17 @@ describe("CsvUploadModal", () => {
       />
     );
 
-    const file = new File(["firstName,lastName,email\nJohn,Doe,john@example.com"], "users.csv", {
-      type: "text/csv",
-    });
+    const file = new File(
+      ["firstName,lastName,email\nJohn,Doe,john@example.com"],
+      "users.csv",
+      {
+        type: "text/csv",
+      }
+    );
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -180,11 +187,17 @@ describe("CsvUploadModal", () => {
       />
     );
 
-    const file = new File(["firstName,lastName,email\nJohn,Doe,john@example.com"], "users.csv", {
-      type: "text/csv",
-    });
+    const file = new File(
+      ["firstName,lastName,email\nJohn,Doe,john@example.com"],
+      "users.csv",
+      {
+        type: "text/csv",
+      }
+    );
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -224,7 +237,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["invalid data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -258,7 +273,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -282,11 +299,17 @@ describe("CsvUploadModal", () => {
       />
     );
 
-    const file = new File(["firstName,lastName,email\nJohn,Doe,john@example.com"], "users.csv", {
-      type: "text/csv",
-    });
+    const file = new File(
+      ["firstName,lastName,email\nJohn,Doe,john@example.com"],
+      "users.csv",
+      {
+        type: "text/csv",
+      }
+    );
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -335,11 +358,17 @@ describe("CsvUploadModal", () => {
       />
     );
 
-    const file = new File(["firstName,lastName,email\nJohn,Doe,john@example.com"], "users.csv", {
-      type: "text/csv",
-    });
+    const file = new File(
+      ["firstName,lastName,email\nJohn,Doe,john@example.com"],
+      "users.csv",
+      {
+        type: "text/csv",
+      }
+    );
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -385,7 +414,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -420,7 +451,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -486,7 +519,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -525,7 +560,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -558,7 +595,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -568,8 +607,12 @@ describe("CsvUploadModal", () => {
       fireEvent.click(validateButton);
     });
 
-    const validateButton = screen.getByRole("button", { name: /validating.../i });
-    const importButton = screen.getByRole("button", { name: /import directly/i });
+    const validateButton = screen.getByRole("button", {
+      name: /validating.../i,
+    });
+    const importButton = screen.getByRole("button", {
+      name: /import directly/i,
+    });
 
     expect(validateButton).toBeDisabled();
     expect(importButton).toBeDisabled();
@@ -596,7 +639,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {
@@ -606,7 +651,9 @@ describe("CsvUploadModal", () => {
       fireEvent.click(importButton);
     });
 
-    const validateButton = screen.getByRole("button", { name: /validate first/i });
+    const validateButton = screen.getByRole("button", {
+      name: /validate first/i,
+    });
     const importButton = screen.getByRole("button", { name: /importing.../i });
 
     expect(validateButton).toBeDisabled();
@@ -624,7 +671,9 @@ describe("CsvUploadModal", () => {
 
     const file = new File(["data"], "users.csv", { type: "text/csv" });
 
-    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    const fileInput = document.querySelector(
+      'input[type="file"]'
+    ) as HTMLInputElement;
     fireEvent.change(fileInput, { target: { files: [file] } });
 
     await waitFor(() => {

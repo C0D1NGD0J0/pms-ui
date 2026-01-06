@@ -4,8 +4,19 @@ import React, { useState } from "react";
 import { FormSection } from "@components/FormLayout";
 import { Checkbox, Select } from "@components/FormElements";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
-import { FormField, FormInput, FormLabel, Button, Form } from "@components/FormElements";
-import { ModalContent, ModalFooter, ModalHeader, Modal } from "@components/FormElements/Modal";
+import {
+  FormField,
+  FormInput,
+  FormLabel,
+  Button,
+  Form,
+} from "@components/FormElements";
+import {
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  Modal,
+} from "@components/FormElements/Modal";
 
 interface AddEmployeeModalProps {
   isOpen: boolean;
@@ -43,7 +54,7 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
     setFormData((prev) => {
       const keys = field.split(".");
       const newData = { ...prev };
-      
+
       let current: any = newData;
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]]) {
@@ -52,7 +63,7 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
         current = current[keys[i]];
       }
       current[keys[keys.length - 1]] = value;
-      
+
       return newData;
     });
   };
@@ -91,7 +102,7 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
     <Modal isOpen={isOpen} onClose={handleCancel} size="large">
       <Form onSubmit={handleSubmit}>
         <ModalHeader title="Add New Employee" onClose={handleCancel} />
-        
+
         <ModalContent className="employee-modal-content">
           {/* Personal Information Section */}
           <FormSection
@@ -107,7 +118,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="firstName"
                   placeholder="Enter first name"
                   value={formData.personalInfo?.firstName || ""}
-                  onChange={(e) => handleFieldChange("personalInfo.firstName", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("personalInfo.firstName", e.target.value)
+                  }
                   required
                 />
               </FormField>
@@ -119,7 +132,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="lastName"
                   placeholder="Enter last name"
                   value={formData.personalInfo?.lastName || ""}
-                  onChange={(e) => handleFieldChange("personalInfo.lastName", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("personalInfo.lastName", e.target.value)
+                  }
                   required
                 />
               </FormField>
@@ -134,7 +149,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="email"
                   placeholder="Enter email address"
                   value={formData.inviteeEmail || ""}
-                  onChange={(e) => handleFieldChange("inviteeEmail", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("inviteeEmail", e.target.value)
+                  }
                   required
                 />
               </FormField>
@@ -146,7 +163,12 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="phoneNumber"
                   placeholder="Enter phone number"
                   value={formData.personalInfo?.phoneNumber || ""}
-                  onChange={(e) => handleFieldChange("personalInfo.phoneNumber", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange(
+                      "personalInfo.phoneNumber",
+                      e.target.value
+                    )
+                  }
                 />
               </FormField>
             </div>
@@ -166,7 +188,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="employeeId"
                   placeholder="Enter employee ID"
                   value={formData.employeeInfo?.employeeId || ""}
-                  onChange={(e) => handleFieldChange("employeeInfo.employeeId", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("employeeInfo.employeeId", e.target.value)
+                  }
                 />
               </FormField>
               <FormField>
@@ -177,7 +201,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="jobTitle"
                   placeholder="Enter job title"
                   value={formData.employeeInfo?.jobTitle || ""}
-                  onChange={(e) => handleFieldChange("employeeInfo.jobTitle", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("employeeInfo.jobTitle", e.target.value)
+                  }
                   required
                 />
               </FormField>
@@ -190,7 +216,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   id="department"
                   name="department"
                   value={formData.employeeInfo?.department || ""}
-                  onChange={(value: string | React.ChangeEvent<HTMLSelectElement>) =>
+                  onChange={(
+                    value: string | React.ChangeEvent<HTMLSelectElement>
+                  ) =>
                     handleFieldChange(
                       "employeeInfo.department",
                       typeof value === "string" ? value : value.target.value
@@ -216,7 +244,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="reportsTo"
                   placeholder="Enter supervisor name"
                   value={formData.employeeInfo?.reportsTo || ""}
-                  onChange={(e) => handleFieldChange("employeeInfo.reportsTo", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("employeeInfo.reportsTo", e.target.value)
+                  }
                 />
               </FormField>
             </div>
@@ -230,7 +260,9 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                   name="employeeStartDate"
                   value={
                     formData.employeeInfo?.startDate
-                      ? new Date(formData.employeeInfo.startDate).toISOString().split("T")[0]
+                      ? new Date(formData.employeeInfo.startDate)
+                          .toISOString()
+                          .split("T")[0]
                       : ""
                   }
                   onChange={(e) =>
@@ -260,14 +292,20 @@ export const AddEmployeeModal: React.FC<AddEmployeeModalProps> = ({
                         id={`perm-${permission.id}`}
                         name="employeeInfo.permissions"
                         checked={
-                          formData.employeeInfo?.permissions?.includes(permission.id) || false
+                          formData.employeeInfo?.permissions?.includes(
+                            permission.id
+                          ) || false
                         }
                         onChange={(e) => {
-                          const permissions = formData.employeeInfo?.permissions || [];
+                          const permissions =
+                            formData.employeeInfo?.permissions || [];
                           const newPermissions = e.target.checked
                             ? [...permissions, permission.id]
                             : permissions.filter((p) => p !== permission.id);
-                          handleFieldChange("employeeInfo.permissions", newPermissions);
+                          handleFieldChange(
+                            "employeeInfo.permissions",
+                            newPermissions
+                          );
                         }}
                         label={permission.label}
                       />

@@ -71,7 +71,9 @@ export const MaintenanceTab: React.FC<MaintenanceTabProps> = ({ tenant }) => {
           className: "default",
           label: priority,
         };
-        return <span className={`badge ${config.className}`}>{config.label}</span>;
+        return (
+          <span className={`badge ${config.className}`}>{config.label}</span>
+        );
       },
     },
     {
@@ -90,7 +92,9 @@ export const MaintenanceTab: React.FC<MaintenanceTabProps> = ({ tenant }) => {
           className: "default",
           label: status,
         };
-        return <span className={`badge ${config.className}`}>{config.label}</span>;
+        return (
+          <span className={`badge ${config.className}`}>{config.label}</span>
+        );
       },
     },
     {
@@ -139,9 +143,7 @@ export const MaintenanceTab: React.FC<MaintenanceTabProps> = ({ tenant }) => {
         <div className="detail-empty-state">
           <i className="bx bx-wrench"></i>
           <p>No maintenance requests</p>
-          <p>
-            Maintenance requests will appear here once they are created.
-          </p>
+          <p>Maintenance requests will appear here once they are created.</p>
         </div>
       )}
     </div>

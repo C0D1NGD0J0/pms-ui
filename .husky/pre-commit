@@ -1,0 +1,17 @@
+echo "Running pre-commit checks..."
+
+# Run linting
+echo "📝 Running ESLint..."
+npm run lint || {
+  echo "❌ Linting failed. Please fix the errors before committing."
+  exit 1
+}
+
+# Run format check
+echo "🎨 Checking code formatting..."
+npm run format:check || {
+  echo "❌ Code formatting check failed. Run 'npm run format' to fix formatting issues."
+  exit 1
+}
+
+echo "✅ Pre-commit checks passed!"

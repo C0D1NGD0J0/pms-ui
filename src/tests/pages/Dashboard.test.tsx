@@ -92,19 +92,19 @@ describe("Dashboard Page", () => {
 
   describe("Rendering", () => {
     it("should render dashboard page", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
     });
 
     it("should display welcome message with user name", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText(/Welcome John Doe/i)).toBeInTheDocument();
     });
 
     it("should display current date in welcome message", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       // Check for month names that should be in the formatted date
       const dateElement = screen.getByText(/Welcome John Doe/i);
@@ -112,7 +112,7 @@ describe("Dashboard Page", () => {
     });
 
     it("should render 'Add new property' button", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       const addButton = screen.getByRole("link", {
         name: /add new property/i,
@@ -124,21 +124,21 @@ describe("Dashboard Page", () => {
 
   describe("Insight Cards", () => {
     it("should render insight cards", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Total Properties")).toBeInTheDocument();
       expect(screen.getByText("Total Tenants")).toBeInTheDocument();
     });
 
     it("should display insight card values", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("24")).toBeInTheDocument();
       expect(screen.getByText("156")).toBeInTheDocument();
     });
 
     it("should display insight card descriptions", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Active properties")).toBeInTheDocument();
       expect(screen.getByText("Active tenants")).toBeInTheDocument();
@@ -147,25 +147,25 @@ describe("Dashboard Page", () => {
 
   describe("Data Tables", () => {
     it("should render Service Requests table", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Service Requests")).toBeInTheDocument();
     });
 
     it("should render Upcoming Payments table", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Upcoming Payments")).toBeInTheDocument();
     });
 
     it("should render Lease Status table", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Lease Status")).toBeInTheDocument();
     });
 
     it("should render Occupancy by Property table", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Occupancy by Property")).toBeInTheDocument();
     });
@@ -173,7 +173,7 @@ describe("Dashboard Page", () => {
 
   describe("Charts and Analytics", () => {
     it("should render Maintenance Request Analysis section", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(
         screen.getByText("Maintenance Request Analysis")
@@ -181,13 +181,13 @@ describe("Dashboard Page", () => {
     });
 
     it("should render By Priority chart", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("By Priority")).toBeInTheDocument();
     });
 
     it("should render Service type chart", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Service type")).toBeInTheDocument();
     });
@@ -206,7 +206,7 @@ describe("Dashboard Page", () => {
         error: null,
       } as any);
 
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText(/Welcome Jane Smith/i)).toBeInTheDocument();
     });
@@ -222,7 +222,7 @@ describe("Dashboard Page", () => {
         error: null,
       } as any);
 
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       // Should still render dashboard even without displayName
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
@@ -235,7 +235,7 @@ describe("Dashboard Page", () => {
         error: null,
       } as any);
 
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       // Should still render dashboard structure
       expect(screen.getByText("Dashboard")).toBeInTheDocument();
@@ -244,21 +244,30 @@ describe("Dashboard Page", () => {
 
   describe("Layout and Structure", () => {
     it("should have page container with correct class", () => {
-      const { container } = render(<Dashboard />);
+      const { container } = render(<Dashboard />, {
+        withNotifications: false,
+        withEvents: false,
+      });
 
       const pageElement = container.querySelector(".page.admin-dashboard");
       expect(pageElement).toBeInTheDocument();
     });
 
     it("should render insights section", () => {
-      const { container } = render(<Dashboard />);
+      const { container } = render(<Dashboard />, {
+        withNotifications: false,
+        withEvents: false,
+      });
 
       const insightsSection = container.querySelector(".insights");
       expect(insightsSection).toBeInTheDocument();
     });
 
     it("should render flex-row containers", () => {
-      const { container } = render(<Dashboard />);
+      const { container } = render(<Dashboard />, {
+        withNotifications: false,
+        withEvents: false,
+      });
 
       const flexRows = container.querySelectorAll(".flex-row");
       expect(flexRows.length).toBeGreaterThan(0);
@@ -267,14 +276,14 @@ describe("Dashboard Page", () => {
 
   describe("Data Display", () => {
     it("should display service request data", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Plumbing repair")).toBeInTheDocument();
       expect(screen.getByText("HVAC maintenance")).toBeInTheDocument();
     });
 
     it("should display lease status data", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       // Check for tenant names in lease statuses
       const johnDoeElements = screen.getAllByText("John Doe");
@@ -285,14 +294,14 @@ describe("Dashboard Page", () => {
     });
 
     it("should display occupancy data", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("Building A")).toBeInTheDocument();
       expect(screen.getByText("Building B")).toBeInTheDocument();
     });
 
     it("should display payment data", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       expect(screen.getByText("$1,500")).toBeInTheDocument();
       expect(screen.getByText("$2,000")).toBeInTheDocument();
@@ -301,7 +310,7 @@ describe("Dashboard Page", () => {
 
   describe("Date Formatting", () => {
     it("should format date in long format", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       const dateRegex = /\w+day, \w+ \d+, \d{4}/;
       const welcomeText = screen.getByText(/Welcome/i);
@@ -310,7 +319,7 @@ describe("Dashboard Page", () => {
     });
 
     it("should display current year in date", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       const currentYear = new Date().getFullYear();
       const welcomeText = screen.getByText(/Welcome/i);
@@ -321,7 +330,7 @@ describe("Dashboard Page", () => {
 
   describe("Navigation", () => {
     it("should have correct href for add property button", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       const addButton = screen.getByRole("link", {
         name: /add new property/i,
@@ -331,7 +340,7 @@ describe("Dashboard Page", () => {
     });
 
     it("should have property button with correct icon", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       const addButton = screen.getByRole("link", {
         name: /add new property/i,
@@ -342,7 +351,7 @@ describe("Dashboard Page", () => {
     });
 
     it("should have button with success styling", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       const addButton = screen.getByRole("link", {
         name: /add new property/i,
@@ -354,7 +363,7 @@ describe("Dashboard Page", () => {
 
   describe("Accessibility", () => {
     it("should have proper heading structure", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       // PageHeader should render main heading
       const heading = screen.getByText("Dashboard");
@@ -362,7 +371,7 @@ describe("Dashboard Page", () => {
     });
 
     it("should render tables with proper accessibility", () => {
-      render(<Dashboard />);
+      render(<Dashboard />, { withNotifications: false, withEvents: false });
 
       // Tables should be accessible
       expect(screen.getByText("Service Requests")).toBeInTheDocument();

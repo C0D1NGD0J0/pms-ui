@@ -98,8 +98,8 @@ const useSSENotificationStore = create<NotificationState>()(
                 jobUpdate.jobType === "csv_validation"
                   ? "CSV validation"
                   : jobUpdate.jobType === "csv_invitation"
-                  ? "CSV import"
-                  : jobUpdate.jobType.replace(/_/g, " ");
+                    ? "CSV import"
+                    : jobUpdate.jobType.replace(/_/g, " ");
 
               if (jobUpdate.stage === "started") {
                 return `${jobTypeLabel} started`;

@@ -148,7 +148,11 @@ export const TerminateLeaseModal: React.FC<TerminateLeaseModalProps> = ({
               touched: touched.reason || false,
             }}
           >
-            <FormLabel htmlFor="reason" label="Reason for Termination" required />
+            <FormLabel
+              htmlFor="reason"
+              label="Reason for Termination"
+              required
+            />
             <TextArea
               id="reason"
               name="reason"

@@ -233,7 +233,7 @@ export interface ClientAccessOptions {
  * })
  */
 export const withClientAccess = <
-  P extends { params: Promise<{ cuid: string }> }
+  P extends { params: Promise<{ cuid: string }> },
 >(
   Component: ComponentType<P>,
   options?: ClientAccessOptions

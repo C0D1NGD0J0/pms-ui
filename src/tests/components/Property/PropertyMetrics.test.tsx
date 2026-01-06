@@ -1,5 +1,8 @@
 import { render, screen } from "@tests/utils/test-utils";
-import { PropertyMetrics, MetricData } from "@components/Property/PropertyMetrics";
+import {
+  PropertyMetrics,
+  MetricData,
+} from "@components/Property/PropertyMetrics";
 
 const mockMetrics: MetricData[] = [
   {
@@ -55,7 +58,7 @@ describe("PropertyMetrics Component", () => {
   });
 
   it("handles metrics without trends", () => {
-    const metricsWithoutTrend = mockMetrics.filter(m => !m.change);
+    const metricsWithoutTrend = mockMetrics.filter((m) => !m.change);
     render(<PropertyMetrics metrics={metricsWithoutTrend} />);
 
     expect(screen.getByText("94%")).toBeInTheDocument();

@@ -33,7 +33,7 @@ const mockUnits: IUnit[] = [
     leases: [],
   },
   {
-    id: "2", 
+    id: "2",
     puid: "unit-2",
     unitNumber: "B",
     unitType: "studio",
@@ -63,7 +63,7 @@ const mockUnits: IUnit[] = [
   },
   {
     id: "3",
-    puid: "unit-3", 
+    puid: "unit-3",
     unitNumber: "C",
     unitType: "studio",
     floor: 2,
@@ -173,7 +173,9 @@ describe("UnitsList Component", () => {
   it("hides search input when searchable is false", () => {
     render(<UnitsList {...defaultProps} searchable={false} />);
 
-    expect(screen.queryByPlaceholderText("Search units...")).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText("Search units...")
+    ).not.toBeInTheDocument();
   });
 
   it("filters units based on search term", () => {
@@ -220,7 +222,9 @@ describe("UnitsList Component", () => {
     const error = new Error("Failed to load units");
     render(<UnitsList {...defaultProps} errors={error} />);
 
-    expect(screen.getByText("Error loading units: Failed to load units")).toBeInTheDocument();
+    expect(
+      screen.getByText("Error loading units: Failed to load units")
+    ).toBeInTheDocument();
     expect(screen.queryByText("Property Units")).not.toBeInTheDocument();
   });
 

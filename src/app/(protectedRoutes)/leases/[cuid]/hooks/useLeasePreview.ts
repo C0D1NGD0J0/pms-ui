@@ -30,7 +30,11 @@ export function useLeasePreview() {
     _leaseForm: UseFormReturnType<LeaseFormValues>
   ) => {
     // TODO: Implement when preview endpoint is available
-    openNotification("error", "Not Implemented", "Preview feature not yet available");
+    openNotification(
+      "error",
+      "Not Implemented",
+      "Preview feature not yet available"
+    );
   };
 
   const fetchPreviewByLuid = async (
@@ -38,7 +42,11 @@ export function useLeasePreview() {
     _luid: string
   ) => {
     // TODO: Implement when preview endpoint is available
-    openNotification("error", "Not Implemented", "Preview feature not yet available");
+    openNotification(
+      "error",
+      "Not Implemented",
+      "Preview feature not yet available"
+    );
   };
 
   const clearPreview = () => {

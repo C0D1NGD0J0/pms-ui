@@ -167,8 +167,8 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({
             : "Recently uploaded"
         }`
       : document.expiryDate
-      ? `Expires: ${new Date(document.expiryDate).toLocaleDateString()}`
-      : "No additional info";
+        ? `Expires: ${new Date(document.expiryDate).toLocaleDateString()}`
+        : "No additional info";
 
     return {
       title: document.name,

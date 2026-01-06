@@ -183,7 +183,6 @@ describe("LeaseService", () => {
     );
   });
 
-
   it("should fetch leaseable properties without units", async () => {
     const mockResponse = {
       status: 200,

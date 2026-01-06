@@ -112,7 +112,6 @@ describe("InvitationService", () => {
     });
   });
 
-
   describe("validateInvitationToken", () => {
     it("should validate invitation token", async () => {
       const mockResponse = {

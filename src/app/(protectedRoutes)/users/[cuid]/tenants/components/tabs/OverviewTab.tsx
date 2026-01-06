@@ -65,7 +65,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
           <i className="bx bx-home"></i>
           <div className="info-content">
             <div className="info-label">Unit Number</div>
-            <div className="info-value">{tenant.unit?.unitNumber || 'N/A'}</div>
+            <div className="info-value">{tenant.unit?.unitNumber || "N/A"}</div>
           </div>
         </div>
 
@@ -73,7 +73,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
           <i className="bx bx-buildings"></i>
           <div className="info-content">
             <div className="info-label">Property</div>
-            <div className="info-value">{tenant.unit?.propertyName || 'N/A'}</div>
+            <div className="info-value">
+              {tenant.unit?.propertyName || "N/A"}
+            </div>
           </div>
         </div>
 
@@ -125,7 +127,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
           <i className="bx bx-calendar"></i>
           <div className="info-content">
             <div className="info-label">Lease Start Date</div>
-            <div className="info-value">{formatDate(tenant.leaseInfo.startDate)}</div>
+            <div className="info-value">
+              {formatDate(tenant.leaseInfo.startDate)}
+            </div>
           </div>
         </div>
 
@@ -133,7 +137,9 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ tenant }) => {
           <i className="bx bx-calendar-check"></i>
           <div className="info-content">
             <div className="info-label">Lease End Date</div>
-            <div className="info-value">{formatDate(tenant.leaseInfo.endDate)}</div>
+            <div className="info-value">
+              {formatDate(tenant.leaseInfo.endDate)}
+            </div>
           </div>
         </div>
       </div>

@@ -1,6 +1,5 @@
 import axios from "@configs/axios";
 import { userService } from "@services/users";
-import { IFilteredUsersParams } from "@services/users";
 
 jest.mock("@configs/axios");
 jest.mock("@utils/formDataTransformer", () => ({
@@ -86,17 +85,20 @@ describe("UserService", () => {
 
       const result = await userService.getFilteredUsers(mockCuid);
 
+      // When called with no params, the service still adds filter[role]= to URL
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `/api/v1/users/${mockCuid}/filtered-users`,
+        `/api/v1/users/${mockCuid}/filtered-users?filter%5Brole%5D=`,
         {}
       );
       expect(result).toEqual(mockResponse.data);
     });
 
     it("should fetch filtered users with single role", async () => {
-      const params: IFilteredUsersParams = {
-        role: "admin",
-        status: "active",
+      const params = {
+        filter: {
+          role: ["admin"],
+          status: "active",
+        },
       };
 
       const mockResponse = {
@@ -111,15 +113,17 @@ describe("UserService", () => {
       await userService.getFilteredUsers(mockCuid, params);
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `/api/v1/users/${mockCuid}/filtered-users?role=admin&status=active`,
+        `/api/v1/users/${mockCuid}/filtered-users?filter%5Brole%5D=admin&filter%5Bstatus%5D=active`,
         {}
       );
     });
 
     it("should fetch filtered users with multiple roles", async () => {
-      const params: IFilteredUsersParams = {
-        role: ["admin", "manager", "staff"],
-        search: "john",
+      const params = {
+        filter: {
+          role: ["admin", "manager", "staff"],
+          search: "john",
+        },
       };
 
       const mockResponse = {
@@ -133,22 +137,27 @@ describe("UserService", () => {
 
       await userService.getFilteredUsers(mockCuid, params);
 
+      // Role array is joined with comma in the service
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `/api/v1/users/${mockCuid}/filtered-users?role=admin%2Cmanager%2Cstaff&search=john`,
+        `/api/v1/users/${mockCuid}/filtered-users?filter%5Brole%5D=admin%2Cmanager%2Cstaff&filter%5Bsearch%5D=john`,
         {}
       );
     });
 
     it("should fetch filtered users with all query params", async () => {
-      const params: IFilteredUsersParams = {
-        role: "staff",
-        department: "maintenance",
-        status: "active",
-        search: "test",
-        page: 2,
-        limit: 20,
-        sortBy: "firstName",
-        sort: "asc",
+      const params = {
+        filter: {
+          role: ["staff"],
+          department: "maintenance",
+          status: "active",
+          search: "test",
+        },
+        pagination: {
+          page: 2,
+          limit: 20,
+          sortBy: "firstName",
+          order: "asc",
+        },
       };
 
       const mockResponse = {
@@ -162,9 +171,17 @@ describe("UserService", () => {
 
       await userService.getFilteredUsers(mockCuid, params);
 
-      const expectedUrl =
-        `/api/v1/users/${mockCuid}/filtered-users?role=staff&department=maintenance&status=active&search=test&page=2&limit=20&sortBy=firstName&sort=asc`;
-      expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, {});
+      // Check the call was made with all the expected params (order may vary)
+      const callUrl = mockedAxios.get.mock.calls[0][0];
+      expect(callUrl).toContain(`/api/v1/users/${mockCuid}/filtered-users?`);
+      expect(callUrl).toContain("filter%5Brole%5D=staff");
+      expect(callUrl).toContain("filter%5Bdepartment%5D=maintenance");
+      expect(callUrl).toContain("filter%5Bstatus%5D=active");
+      expect(callUrl).toContain("filter%5Bsearch%5D=test");
+      expect(callUrl).toContain("pagination%5Bpage%5D=2");
+      expect(callUrl).toContain("pagination%5Blimit%5D=20");
+      expect(callUrl).toContain("pagination%5BsortBy%5D=firstName");
+      expect(callUrl).toContain("pagination%5Border%5D=asc");
     });
 
     it("should throw error when fetching filtered users fails", async () => {
@@ -172,7 +189,7 @@ describe("UserService", () => {
       mockedAxios.get.mockRejectedValue(mockError);
 
       await expect(
-        userService.getFilteredUsers(mockCuid, { role: "admin" })
+        userService.getFilteredUsers(mockCuid, { filter: { role: ["admin"] } })
       ).rejects.toThrow("API error");
       expect(console.error).toHaveBeenCalledWith(
         "Error fetching filtered users:",
@@ -206,8 +223,10 @@ describe("UserService", () => {
     });
 
     it("should fetch user stats with role array", async () => {
-      const params: IFilteredUsersParams = {
-        role: ["admin", "manager"],
+      const params = {
+        filter: {
+          role: ["admin", "manager"],
+        },
       };
 
       const mockResponse = {
@@ -221,8 +240,9 @@ describe("UserService", () => {
 
       await userService.getUserStats(mockCuid, params);
 
+      // Role array is joined with comma
       expect(mockedAxios.get).toHaveBeenCalledWith(
-        `/api/v1/users/${mockCuid}/users/stats?role=admin%2Cmanager`,
+        `/api/v1/users/${mockCuid}/users/stats?filter%5Brole%5D=admin%2Cmanager`,
         {}
       );
     });
@@ -241,9 +261,7 @@ describe("UserService", () => {
       const mockResponse = {
         data: {
           success: true,
-          data: [
-            { uid: "user-1", firstName: "John", role: "manager" },
-          ],
+          data: [{ uid: "user-1", firstName: "John", role: "manager" }],
         },
       };
 
@@ -251,8 +269,7 @@ describe("UserService", () => {
 
       await userService.getClientPropertyManagers(mockCuid, params);
 
-      const expectedUrl =
-        `/api/v1/users/${mockCuid}/property_managers?role=manager&department=operations&search=john&page=1&limit=10`;
+      const expectedUrl = `/api/v1/users/${mockCuid}/property_managers?role=manager&department=operations&search=john&page=1&limit=10`;
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, {});
     });
   });
@@ -355,8 +372,7 @@ describe("UserService", () => {
 
       const result = await userService.getTenants(mockCuid, params);
 
-      const expectedUrl =
-        `/api/v1/users/${mockCuid}/filtered-tenants?status=active&search=test&page=1&limit=20&sortBy=firstName&sort=desc`;
+      const expectedUrl = `/api/v1/users/${mockCuid}/filtered-tenants?status=active&search=test&page=1&limit=20&sortBy=firstName&sort=desc`;
       expect(mockedAxios.get).toHaveBeenCalledWith(expectedUrl, {});
       expect(result).toEqual(mockResponse.data);
     });

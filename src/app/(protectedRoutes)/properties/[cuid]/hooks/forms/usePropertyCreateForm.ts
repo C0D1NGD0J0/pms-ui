@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { propertyService } from "@services/property";
 import { PropertyFormValues } from "@interfaces/property.interface";
 
-export function usePropertyForm() {
+export function usePropertyCreateForm() {
   const { client } = useAuth();
   const createPropertyMutation = useMutation({
     mutationFn: (data: PropertyFormValues) =>

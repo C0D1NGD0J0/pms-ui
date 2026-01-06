@@ -11,8 +11,9 @@ import {
 
 jest.mock("@hooks/useUnifiedPermissions");
 
-const mockUseUnifiedPermissions =
-  useUnifiedPermissions as jest.MockedFunction<typeof useUnifiedPermissions>;
+const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<
+  typeof useUnifiedPermissions
+>;
 
 describe("PermissionGate", () => {
   const defaultPermissions: Partial<IUnifiedPermissions> = {
@@ -271,11 +272,7 @@ describe("PermissionGate", () => {
 
       const button = screen.getByRole("button");
       expect(button).toBeDisabled();
-      expect(isFieldDisabledMock).toHaveBeenCalledWith(
-        "ticket",
-        "status",
-        {}
-      );
+      expect(isFieldDisabledMock).toHaveBeenCalledWith("ticket", "status", {});
     });
 
     it("should render children with disabled=false in disable mode when field is not disabled", () => {
@@ -440,10 +437,7 @@ describe("PermissionGate", () => {
         </PermissionAction>
       );
 
-      expect(canMock).toHaveBeenCalledWith(
-        "ticket.edit",
-        expect.any(Object)
-      );
+      expect(canMock).toHaveBeenCalledWith("ticket.edit", expect.any(Object));
     });
 
     it("should use action directly when resource is not provided", () => {
@@ -494,11 +488,7 @@ describe("PermissionGate", () => {
       } as IUnifiedPermissions);
 
       render(
-        <PermissionAction
-          action="delete"
-          resource="comment"
-          ownerId="user-456"
-        >
+        <PermissionAction action="delete" resource="comment" ownerId="user-456">
           <button>Delete Comment</button>
         </PermissionAction>
       );

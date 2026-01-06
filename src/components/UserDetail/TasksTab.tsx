@@ -1,24 +1,21 @@
-import React from 'react';
-import { TableColumn, Table } from '@components/Table';
+import React from "react";
+import { TableColumn, Table } from "@components/Table";
 
 interface Task {
   id: string;
   title: string;
   property: string;
-  priority: 'high' | 'medium' | 'low';
+  priority: "high" | "medium" | "low";
   dueDate: string;
-  status: 'completed' | 'in-progress' | 'pending';
+  status: "completed" | "in-progress" | "pending";
 }
 
 interface TasksTabProps {
-  userType: 'employee' | 'vendor';
+  userType: "employee" | "vendor";
   tasks: Task[];
 }
 
-export const TasksTab: React.FC<TasksTabProps> = ({
-  userType,
-  tasks
-}) => {
+export const TasksTab: React.FC<TasksTabProps> = ({ userType, tasks }) => {
   const renderPriorityBadge = (priority: string) => {
     const badgeClass = `priority-badge ${priority}`;
     return <span className={badgeClass}>{priority}</span>;
@@ -31,37 +28,38 @@ export const TasksTab: React.FC<TasksTabProps> = ({
 
   const columns: TableColumn<Task>[] = [
     {
-      title: userType === 'employee' ? 'Task' : 'Work Order',
-      dataIndex: 'title',
-      render: (value: string) => <strong>{value}</strong>
+      title: userType === "employee" ? "Task" : "Work Order",
+      dataIndex: "title",
+      render: (value: string) => <strong>{value}</strong>,
     },
     {
-      title: 'Property',
-      dataIndex: 'property'
+      title: "Property",
+      dataIndex: "property",
     },
     {
-      title: 'Priority',
-      dataIndex: 'priority',
-      render: renderPriorityBadge
+      title: "Priority",
+      dataIndex: "priority",
+      render: renderPriorityBadge,
     },
     {
-      title: 'Due Date',
-      dataIndex: 'dueDate'
+      title: "Due Date",
+      dataIndex: "dueDate",
     },
     {
-      title: 'Status',
-      dataIndex: 'status',
-      render: renderStatusBadge
-    }
+      title: "Status",
+      dataIndex: "status",
+      render: renderStatusBadge,
+    },
   ];
 
-  const title = userType === 'employee' 
-    ? 'Active Tasks & Tickets' 
-    : 'Active Work Orders & Requests';
+  const title =
+    userType === "employee"
+      ? "Active Tasks & Tickets"
+      : "Active Work Orders & Requests";
 
   return (
     <div className="tasks-tab">
-      <h3 style={{ marginBottom: '1.5rem', color: 'hsl(194, 66%, 24%)' }}>
+      <h3 style={{ marginBottom: "1.5rem", color: "hsl(194, 66%, 24%)" }}>
         {title}
       </h3>
       <Table<Task>

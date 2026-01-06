@@ -10,7 +10,7 @@ import {
   PropertyFormValues,
 } from "@interfaces/property.interface";
 
-import { useGetClientPropertyManagers } from "./useGetClientPropertyManagers";
+import { useGetClientPropertyManagers } from "../queries/useGetClientPropertyManagers";
 
 export type PropertyFormBaseProps = {
   initialValues?: PropertyFormValues;

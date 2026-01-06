@@ -13,7 +13,7 @@ import {
   IPropertyDocument,
 } from "@interfaces/property.interface";
 
-import { usePropertyData } from "./usePropertyData";
+import { usePropertyData } from "../queries/usePropertyData";
 
 export function usePropertyEditForm({
   propertyForm,
@@ -80,7 +80,6 @@ export function usePropertyEditForm({
           ignoreKeys: ["cuid"],
         });
 
-      console.log(values, "Changed Values:", originalValues);
       if (changedValues) {
         await updatePropertyMutation.mutateAsync(changedValues);
       }
@@ -92,7 +91,7 @@ export function usePropertyEditForm({
       queryClient.invalidateQueries({
         queryKey: PROPERTY_QUERY_KEYS.getPropertyByPid(client?.cuid || "", pid),
       });
-      router.push("/properties");
+      router.push(`/properties/${client?.cuid}`);
     } catch (error) {
       console.error("Error updating property:", error);
     }

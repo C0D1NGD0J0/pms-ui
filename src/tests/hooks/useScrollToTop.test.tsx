@@ -26,7 +26,7 @@ describe("useScrollToTop", () => {
 
   it("should scroll window to top with default options when ref is null", () => {
     const { result } = renderHook(() => useScrollToTop());
-    
+
     act(() => {
       result.current.scrollToTop(null);
     });
@@ -39,7 +39,7 @@ describe("useScrollToTop", () => {
 
   it("should scroll window to top with custom options when ref is null", () => {
     const { result } = renderHook(() => useScrollToTop());
-    
+
     act(() => {
       result.current.scrollToTop(null, { behavior: "auto", offset: 100 });
     });
@@ -55,9 +55,9 @@ describe("useScrollToTop", () => {
       scrollTo: mockElementScrollTo,
     } as any;
     const mockRef: RefObject<HTMLDivElement> = { current: mockElement };
-    
+
     const { result } = renderHook(() => useScrollToTop());
-    
+
     act(() => {
       result.current.scrollToTop(mockRef);
     });
@@ -74,9 +74,9 @@ describe("useScrollToTop", () => {
       scrollTo: mockElementScrollTo,
     } as any;
     const mockRef: RefObject<HTMLDivElement> = { current: mockElement };
-    
+
     const { result } = renderHook(() => useScrollToTop());
-    
+
     act(() => {
       result.current.scrollToTop(mockRef, { behavior: "auto", offset: 50 });
     });
@@ -89,9 +89,9 @@ describe("useScrollToTop", () => {
 
   it("should fallback to window scroll when ref.current is null", () => {
     const mockRef: RefObject<HTMLDivElement> = { current: null };
-    
+
     const { result } = renderHook(() => useScrollToTop());
-    
+
     act(() => {
       result.current.scrollToTop(mockRef);
     });
@@ -104,10 +104,10 @@ describe("useScrollToTop", () => {
 
   it("should handle different scroll behaviors", () => {
     const { result } = renderHook(() => useScrollToTop());
-    
+
     const behaviors: ScrollBehavior[] = ["auto", "smooth", "instant"];
-    
-    behaviors.forEach(behavior => {
+
+    behaviors.forEach((behavior) => {
       act(() => {
         result.current.scrollToTop(null, { behavior });
       });
@@ -121,10 +121,10 @@ describe("useScrollToTop", () => {
 
   it("should handle different offset values", () => {
     const { result } = renderHook(() => useScrollToTop());
-    
+
     const offsets = [0, 10, 100, -50];
-    
-    offsets.forEach(offset => {
+
+    offsets.forEach((offset) => {
       act(() => {
         result.current.scrollToTop(null, { offset });
       });
@@ -139,22 +139,22 @@ describe("useScrollToTop", () => {
   it("should maintain stable reference for scrollToTop function", () => {
     const { result, rerender } = renderHook(() => useScrollToTop());
     const firstReference = result.current.scrollToTop;
-    
+
     rerender();
     const secondReference = result.current.scrollToTop;
-    
+
     expect(firstReference).toBe(secondReference);
   });
 
   it("should work with different element types", () => {
     const mockDiv = { scrollTo: jest.fn() } as any;
     const mockSection = { scrollTo: jest.fn() } as any;
-    
+
     const divRef: RefObject<HTMLDivElement> = { current: mockDiv };
     const sectionRef: RefObject<HTMLElement> = { current: mockSection };
-    
+
     const { result } = renderHook(() => useScrollToTop());
-    
+
     act(() => {
       result.current.scrollToTop(divRef);
       result.current.scrollToTop(sectionRef);

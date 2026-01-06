@@ -64,11 +64,7 @@ const emergencyContactSchema = z.object({
     .optional()
     .or(z.literal("")),
   relationship: z.string().optional().or(z.literal("")),
-  email: z
-    .string()
-    .email("Invalid email format")
-    .optional()
-    .or(z.literal("")),
+  email: z.string().email("Invalid email format").optional().or(z.literal("")),
 });
 
 const backgroundCheckSchema = z.object({
