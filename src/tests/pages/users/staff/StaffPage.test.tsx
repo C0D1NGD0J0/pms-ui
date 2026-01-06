@@ -70,26 +70,26 @@ describe("StaffPage", () => {
   });
 
   it("should render staff management page", () => {
-    render(<StaffPage params={{ cuid: "client-123" }} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
 
     expect(screen.getByText("Employee Management")).toBeInTheDocument();
   });
 
   it("should display add new employee button", () => {
-    render(<StaffPage params={{ cuid: "client-123" }} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
 
     expect(screen.getByText("Add new employee")).toBeInTheDocument();
   });
 
   it("should display employee list", () => {
-    render(<StaffPage params={{ cuid: "client-123" }} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
 
     expect(screen.getByText("John Doe")).toBeInTheDocument();
     expect(screen.getByText("Jane Smith")).toBeInTheDocument();
   });
 
   it("should display department distribution chart section", () => {
-    render(<StaffPage params={{ cuid: "client-123" }} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
 
     expect(
       screen.getByText("Employee Department Distribution")
@@ -108,13 +108,13 @@ describe("StaffPage", () => {
       isLoading: false,
     } as any);
 
-    render(<StaffPage params={{ cuid: "client-123" }} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />);
 
     expect(screen.getByText("Employee Management")).toBeInTheDocument();
   });
 
   it("should call useGetEmployees with correct client ID", () => {
-    render(<StaffPage params={{ cuid: "client-456" }} />);
+    render(<StaffPage params={Promise.resolve({ cuid: "client-456" })} />);
 
     expect(mockUseGetEmployees).toHaveBeenCalledWith("client-456");
   });

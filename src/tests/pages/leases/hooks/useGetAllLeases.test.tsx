@@ -33,7 +33,7 @@ describe("useGetAllLeases", () => {
       wrapper: createWrapper(),
     });
 
-    expect(result.current.filterOptions).toHaveLength(7);
+    expect(result.current.filterOptions).toHaveLength(6);
     expect(result.current.filterOptions[0]).toEqual({
       label: "All Leases",
       value: "",
@@ -78,7 +78,7 @@ describe("useGetAllLeases", () => {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.handleSortChange).toBe("function");
+    expect(typeof result.current.handleSortDirectionChange).toBe("function");
     expect(typeof result.current.handlePageChange).toBe("function");
     expect(typeof result.current.handleSortByChange).toBe("function");
   });

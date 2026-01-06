@@ -2,7 +2,7 @@ import React from "react";
 import { propertyService } from "@services/property";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { useGetAllProperties } from "@app/(protectedRoutes)/properties/[cuid]/hooks/useGetAllProperties";
+import { useGetAllProperties } from "@app/(protectedRoutes)/properties/[cuid]/hooks/queries/useGetAllProperties";
 
 jest.mock("@services/property");
 const mockPropertyService = propertyService as jest.Mocked<
@@ -119,7 +119,7 @@ describe("useGetAllProperties", () => {
       wrapper: createWrapper(),
     });
 
-    expect(typeof result.current.handleSortChange).toBe("function");
+    expect(typeof result.current.handleSortDirectionChange).toBe("function");
     expect(typeof result.current.handlePageChange).toBe("function");
     expect(typeof result.current.handleSortByChange).toBe("function");
   });
