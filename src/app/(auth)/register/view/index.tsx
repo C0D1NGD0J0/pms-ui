@@ -1,11 +1,12 @@
+import Link from "next/link";
 import { ChangeEvent } from "react";
 import { ISignupForm } from "@interfaces/index";
+import { Form } from "@components/FormElements";
 import { UseFormReturnType } from "@mantine/form";
-import { Button, Form } from "@components/FormElements";
 import {
-  AuthContentHeader,
-  AuthContentFooter,
-  AuthContentBody,
+  ModernAuthLayout,
+  AuthBrandPanel,
+  AuthFormPanel,
 } from "@components/AuthLayout";
 
 import UserInfo from "./UserInfo";
@@ -37,57 +38,103 @@ export function RegisterView({
     const isBusnessAccount = form.values.accountType.isCorporate;
     if (currentStep === 0 && isBusnessAccount) {
       return (
-        <Button label="Next" className="btn btn-primary" onClick={nextStep} />
+        <button type="button" className="auth-button" onClick={nextStep}>
+          Next
+        </button>
       );
     } else if (currentStep === 1 && isBusnessAccount) {
       return (
-        <>
-          <Button label="Back" className="btn btn-outline" onClick={prevStep} />
-          <Button
-            label={`${isPending ? "Processing..." : "Register"}`}
-            className="btn btn-primary"
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <button
+            type="button"
+            className="auth-button"
+            onClick={prevStep}
+            style={{
+              background: "transparent",
+              border: "2px solid var(--primary-color)",
+              color: "var(--primary-color)",
+            }}
+          >
+            Back
+          </button>
+          <button
             type="submit"
-            disabled={disable}
-          />
-        </>
+            className="auth-button"
+            disabled={disable || isPending}
+          >
+            {isPending ? "Creating account..." : "Create Account"}
+          </button>
+        </div>
       );
     } else {
       return (
-        <Button
-          label={`${isPending ? "Processing..." : "Register"}`}
-          className="btn btn-primary"
+        <button
           type="submit"
-          disabled={disable}
-        />
+          className="auth-button"
+          disabled={disable || isPending}
+        >
+          {isPending ? "Creating account..." : "Create Account"}
+        </button>
       );
     }
   };
 
   return (
     <>
-      <AuthContentHeader
-        title="Register"
-        subtitle="Already have an account?"
-        headerLink="/login"
-        headerLinkText="Login"
-      />
-      <AuthContentBody>
-        <Form
-          onSubmit={form.onSubmit(handleSubmit)}
-          id="auth-form"
-          className="auth-form"
-          disabled={isPending}
-          autoComplete="off"
+      <ModernAuthLayout
+        brandContent={
+          <AuthBrandPanel>
+            <i className="bx bx-buildings auth-brand-panel__icon"></i>
+            <h1 className="auth-brand-panel__title">Join PropertyFlow</h1>
+            <p className="auth-brand-panel__subtitle">
+              Start Managing Your Properties Today
+            </p>
+            <div className="auth-brand-panel__stats">
+              <div className="auth-brand-panel__stat">
+                <span className="auth-brand-panel__stat-value">10K+</span>
+                <span className="auth-brand-panel__stat-label">
+                  Active Users
+                </span>
+              </div>
+              <div className="auth-brand-panel__stat">
+                <span className="auth-brand-panel__stat-value">50K+</span>
+                <span className="auth-brand-panel__stat-label">Properties</span>
+              </div>
+              <div className="auth-brand-panel__stat">
+                <span className="auth-brand-panel__stat-value">$2B+</span>
+                <span className="auth-brand-panel__stat-label">
+                  Rent Managed
+                </span>
+              </div>
+            </div>
+          </AuthBrandPanel>
+        }
+      >
+        <AuthFormPanel
+          title={
+            currentStep === 0 ? "Create Your Account" : "Company Information"
+          }
+          footer={
+            <>
+              Already have an account? <Link href="/login">Sign in</Link>
+            </>
+          }
         >
-          {currentStep === 0 ? (
-            <UserInfo formContext={form} onChange={handleOnChange} />
-          ) : (
-            <CompanyInfo formContext={form} onChange={handleOnChange} />
-          )}
-          <div className="action-fields">{renderButtons(!form.isValid())}</div>
-        </Form>
-      </AuthContentBody>
-      <AuthContentFooter />
+          <Form
+            onSubmit={form.onSubmit(handleSubmit)}
+            id="auth-form"
+            disabled={isPending}
+            autoComplete="off"
+          >
+            {currentStep === 0 ? (
+              <UserInfo formContext={form} onChange={handleOnChange} />
+            ) : (
+              <CompanyInfo formContext={form} onChange={handleOnChange} />
+            )}
+            {renderButtons(!form.isValid())}
+          </Form>
+        </AuthFormPanel>
+      </ModernAuthLayout>
     </>
   );
 }

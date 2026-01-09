@@ -3,7 +3,11 @@ import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { ISignupForm } from "@interfaces/auth.interface";
 import { SIGNUP_ACCOUNT_TYPE_OPTIONS, ACCOUNT_TYPES } from "@utils/constants";
-import { FloatingLabelInput, CustomDropdown } from "@components/FormElements";
+import {
+  PasswordStrengthIndicator,
+  CustomDropdown,
+  AuthIconInput,
+} from "@components/FormElements";
 
 export default function UserInfo({
   formContext,
@@ -20,117 +24,102 @@ export default function UserInfo({
 }) {
   return (
     <>
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="firstName"
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "1.5rem",
+        }}
+      >
+        <AuthIconInput
+          label="First Name"
+          type="text"
+          icon="bx-user"
+          placeholder="Enter first name"
           name="firstName"
-          label="First name"
-          onChange={onChange}
           value={formContext.values.firstName}
-          errorMsg={formContext.errors.firstName}
+          onChange={onChange}
+          error={formContext.errors.firstName as string}
         />
-        <FloatingLabelInput
-          required
-          id="lastName"
+        <AuthIconInput
+          label="Last Name"
+          type="text"
+          icon="bx-user"
+          placeholder="Enter last name"
           name="lastName"
-          label="Last name"
-          onChange={onChange}
           value={formContext.values.lastName}
-          errorMsg={formContext.errors.lastName}
+          onChange={onChange}
+          error={formContext.errors.lastName as string}
         />
       </div>
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="email"
-          type="email"
-          name="email"
-          label="Email"
-          onChange={onChange}
-          value={formContext.values.email}
-          errorMsg={formContext.errors.email}
-        />
-      </div>
+      <AuthIconInput
+        label="Email Address"
+        type="email"
+        icon="bx-envelope"
+        placeholder="Enter your email"
+        name="email"
+        value={formContext.values.email}
+        onChange={onChange}
+        error={formContext.errors.email as string}
+        autoComplete="email"
+      />
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="displayName"
-          name="displayName"
-          onChange={onChange}
-          label="Display name"
-          value={formContext.values.displayName}
-          errorMsg={formContext.errors.displayName}
-        />
-        <FloatingLabelInput
-          required
-          id="location"
-          name="location"
-          onChange={onChange}
-          label="Location"
-          value={formContext.values.location}
-          errorMsg={formContext.errors.location}
-        />
-      </div>
+      <AuthIconInput
+        label="Phone Number"
+        type="tel"
+        icon="bx-phone"
+        placeholder="Enter phone number"
+        name="phoneNumber"
+        value={formContext.values.phoneNumber}
+        onChange={onChange}
+        error={formContext.errors.phoneNumber as string}
+        autoComplete="tel"
+      />
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="phoneNumber"
-          name="phoneNumber"
-          onChange={onChange}
-          label="Phone number"
-          value={formContext.values.phoneNumber}
-          errorMsg={formContext.errors.phoneNumber}
-        />
-      </div>
+      <CustomDropdown
+        id="accountType"
+        placeholder="Select account type"
+        errorMsg={formContext.errors.accountType}
+        value={formContext.values.accountType.planName}
+        onChange={(v) => {
+          const acctType =
+            v === ACCOUNT_TYPES.CORPORATE
+              ? ACCOUNT_TYPES.CORPORATE
+              : ACCOUNT_TYPES.PERSONAL;
+          formContext.setFieldValue("accountType", {
+            planId: acctType,
+            planName: acctType,
+            isCorporate: acctType === ACCOUNT_TYPES.CORPORATE,
+          });
+        }}
+        options={SIGNUP_ACCOUNT_TYPE_OPTIONS}
+      />
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="password"
-          name="password"
-          type="password"
-          label="Password"
-          onChange={onChange}
-          value={formContext.values.password}
-          errorMsg={formContext.errors.password}
-        />
+      <AuthIconInput
+        label="Password"
+        type="password"
+        icon="bx-lock-alt"
+        placeholder="Create a password"
+        name="password"
+        value={formContext.values.password}
+        onChange={onChange}
+        error={formContext.errors.password as string}
+        autoComplete="new-password"
+      />
+      <PasswordStrengthIndicator password={formContext.values.password} />
 
-        <FloatingLabelInput
-          required
-          id="cpassword"
-          type="password"
-          name="cpassword"
-          onChange={onChange}
-          label="Confirm password"
-          value={formContext.values.cpassword}
-          errorMsg={formContext.errors.cpassword}
-        />
-      </div>
-
-      <div className="form-fields">
-        <CustomDropdown
-          id="accountType"
-          placeholder="Acount type"
-          errorMsg={formContext.errors.accountType}
-          value={formContext.values.accountType.planName}
-          onChange={(v) => {
-            const acctType =
-              v === ACCOUNT_TYPES.CORPORATE
-                ? ACCOUNT_TYPES.CORPORATE
-                : ACCOUNT_TYPES.PERSONAL;
-            formContext.setFieldValue("accountType", {
-              planId: acctType,
-              planName: acctType,
-              isCorporate: acctType === ACCOUNT_TYPES.CORPORATE,
-            });
-          }}
-          options={SIGNUP_ACCOUNT_TYPE_OPTIONS}
-        />
-      </div>
+      <AuthIconInput
+        label="Confirm Password"
+        type="password"
+        icon="bx-lock-alt"
+        placeholder="Confirm your password"
+        name="cpassword"
+        value={formContext.values.cpassword}
+        onChange={onChange}
+        error={formContext.errors.cpassword as string}
+        autoComplete="new-password"
+      />
     </>
   );
 }
