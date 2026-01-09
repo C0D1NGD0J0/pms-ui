@@ -13,6 +13,8 @@ export default function Register() {
     prevStep,
     handleOnChange,
     handleSubmit,
+    selectedPlan,
+    handleSelectPlan,
   } = useRegisterLogic();
 
   return (
@@ -24,6 +26,8 @@ export default function Register() {
       prevStep={prevStep}
       handleOnChange={handleOnChange}
       handleSubmit={handleSubmit}
+      selectedPlan={selectedPlan}
+      handleSelectPlan={handleSelectPlan}
     />
   );
 }

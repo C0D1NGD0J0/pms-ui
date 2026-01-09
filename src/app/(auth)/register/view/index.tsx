@@ -11,6 +11,7 @@ import {
 
 import UserInfo from "./UserInfo";
 import CompanyInfo from "./CompanyInfo";
+import PlanSelection from "./PlanSelection";
 
 interface RegisterViewProps {
   form: UseFormReturnType<ISignupForm, (values: ISignupForm) => ISignupForm>;
@@ -23,6 +24,8 @@ interface RegisterViewProps {
     field?: keyof ISignupForm
   ) => void;
   handleSubmit: (values: ISignupForm) => void;
+  selectedPlan: string | null;
+  handleSelectPlan: (plan: "personal" | "business" | "professional") => void;
 }
 
 export function RegisterView({
@@ -33,16 +36,28 @@ export function RegisterView({
   prevStep,
   handleOnChange,
   handleSubmit,
+  selectedPlan,
+  handleSelectPlan,
 }: RegisterViewProps) {
+  // Step 0: Plan Selection - show full page pricing
+  if (currentStep === 0) {
+    return (
+      <div className="register-plan-wrapper">
+        <PlanSelection onSelectPlan={handleSelectPlan} />
+      </div>
+    );
+  }
+
+  // Steps 1-2: User Info & Company Info - show modern auth layout
   const renderButtons = (disable = false) => {
     const isBusnessAccount = form.values.accountType.isCorporate;
-    if (currentStep === 0 && isBusnessAccount) {
+    if (currentStep === 1 && isBusnessAccount) {
       return (
         <button type="button" className="auth-button" onClick={nextStep}>
           Next
         </button>
       );
-    } else if (currentStep === 1 && isBusnessAccount) {
+    } else if (currentStep === 2 && isBusnessAccount) {
       return (
         <div style={{ display: "flex", gap: "1rem" }}>
           <button
@@ -98,12 +113,14 @@ export function RegisterView({
               </div>
               <div className="auth-brand-panel__stat">
                 <span className="auth-brand-panel__stat-value">50K+</span>
-                <span className="auth-brand-panel__stat-label">Properties</span>
+                <span className="auth-brand-panel__stat-label">
+                  Properties Managed
+                </span>
               </div>
               <div className="auth-brand-panel__stat">
                 <span className="auth-brand-panel__stat-value">$2B+</span>
                 <span className="auth-brand-panel__stat-label">
-                  Rent Managed
+                  Rent Collected
                 </span>
               </div>
             </div>
@@ -112,7 +129,12 @@ export function RegisterView({
       >
         <AuthFormPanel
           title={
-            currentStep === 0 ? "Create Your Account" : "Company Information"
+            currentStep === 1 ? "Create Your Account" : "Company Information"
+          }
+          subtitle={
+            selectedPlan
+              ? `Selected Plan: ${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}`
+              : undefined
           }
           footer={
             <>
@@ -126,7 +148,7 @@ export function RegisterView({
             disabled={isPending}
             autoComplete="off"
           >
-            {currentStep === 0 ? (
+            {currentStep === 1 ? (
               <UserInfo formContext={form} onChange={handleOnChange} />
             ) : (
               <CompanyInfo formContext={form} onChange={handleOnChange} />

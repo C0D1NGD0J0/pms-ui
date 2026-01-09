@@ -127,10 +127,10 @@ export function AccountActivationView({
       {isSuccess ? (
         <Result
           status="success"
-          title="Congratulations, account has now been activated. Please login to proceed."
+          title="Congratulations, account has now been activated. Complete your registration to continue."
           extra={[
-            <Link key="login" href="/login" className="btn btn-primary">
-              Login
+            <Link key="register" href="/register" className="btn btn-primary">
+              Complete Registration
             </Link>,
           ]}
         />

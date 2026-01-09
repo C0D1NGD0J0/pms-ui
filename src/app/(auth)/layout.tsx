@@ -144,8 +144,13 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
     );
   }
 
-  // Use modern layout for login and register pages
-  if (pathname === "/login" || pathname === "/register") {
+  // Use modern layout for auth pages
+  if (
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot_password" ||
+    pathname.startsWith("/reset_password")
+  ) {
     return <>{children}</>;
   }
 

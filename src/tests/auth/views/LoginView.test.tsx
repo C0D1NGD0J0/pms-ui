@@ -39,9 +39,7 @@ describe("LoginView Component", () => {
     expect(screen.getByPlaceholderText("Email address")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
     expect(screen.getByText("Remember me")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Sign In" })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign In" })).toBeInTheDocument();
   });
 
   it("should render brand panel content", () => {

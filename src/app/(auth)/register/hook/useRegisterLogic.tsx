@@ -58,35 +58,35 @@ export function useRegisterLogic() {
     mutationFn: authService.signup,
   });
   const { openNotification } = useNotification();
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0); // Step 0 = Plan Selection
+  const [selectedPlan, setSelectedPlan] = useState<
+    "personal" | "business" | "professional" | null
+  >(null);
+
+  // Map plan names to display format
+  const planNameMap: Record<string, string> = {
+    personal: "Personal",
+    business: "Business",
+    professional: "Professional",
+  };
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
-    // initialValues: {
-    //   firstName: "Wayne",
-    //   lastName: "Rooney",
-    //   email: "wayne@example.com",
-    //   password: "Password1",
-    //   cpassword: "Password1",
-    //   location: "England",
-    //   accountType: {
-    //     planId: "personal",
-    //     planName: "Personal",
-    //     isCorporate: false,
-    //   },
-    //   phoneNumber: "02071234567",
-    //   displayName: "Wayne Rooney",
-    //   companyProfile: {
-    //     tradingName: "",
-    //     legalEntityName: "",
-    //     website: "",
-    //     companyEmail: "",
-    //     companyPhone: "",
-    //   },
-    // },
     validateInputOnChange: true,
     initialValues: user1,
     validate: zodResolver(SignupSchema) as any,
   });
+
+  const handleSelectPlan = (plan: "personal" | "business" | "professional") => {
+    setSelectedPlan(plan);
+    // Update form with selected plan
+    form.setFieldValue("accountType", {
+      planId: plan,
+      planName: planNameMap[plan],
+      isCorporate: plan === "business" || plan === "professional",
+    });
+    // Move to next step
+    setCurrentStep(1);
+  };
 
   const nextStep = () => {
     form.validate();
@@ -144,5 +144,7 @@ export function useRegisterLogic() {
     prevStep,
     handleOnChange,
     handleSubmit,
+    selectedPlan,
+    handleSelectPlan,
   };
 }

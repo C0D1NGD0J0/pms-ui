@@ -166,7 +166,9 @@
     border-radius: 0.4rem;
     color: hslaGen($primary-color);
     border: 1px solid hslaGen($grey-color, 0.3);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    transition:
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
   }
 
   &_file {

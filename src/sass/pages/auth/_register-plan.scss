@@ -1,0 +1,35 @@
+@use "../../abstract/index" as *;
+
+// Register Plan Wrapper - Full page layout for pricing cards
+.register-plan-wrapper {
+  min-height: 100vh;
+  @include auth-brand-gradient;
+  padding: 3rem 2rem;
+}
+
+.plan-selection {
+  max-width: 140rem;
+  margin: 0 auto;
+
+  &__hero {
+    text-align: center;
+    color: hslaGen($white-color);
+    margin-bottom: 4rem;
+  }
+
+  &__title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    font-family: "Lato", sans-serif;
+    margin-bottom: 1.2rem;
+  }
+
+  &__subtitle {
+    font-size: 1.5rem;
+    font-weight: 300;
+    opacity: 0.9;
+    max-width: 60rem;
+    margin: 0 auto 2.5rem;
+    line-height: 1.6;
+  }
+}

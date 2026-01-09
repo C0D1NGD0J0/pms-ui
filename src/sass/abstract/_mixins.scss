@@ -134,13 +134,14 @@
 
 @mixin custom-dropdown($bg-color: $background-color, $isTable: false) {
   width: 100%;
-  margin-bottom: 0.5rem;
+  padding: 0.5rem;
   position: relative;
-  border-radius: 0.2rem;
-  color: hslaGen($grey-color);
-  font-weight: $base-font-weight;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+  color: hslaGen($black-color);
+  font-weight: $fw-bold;
+  border: 0.1rem solid hslaGen($grey-color, 0.4);
   background-color: hslaGen($background-color, 0.1);
-  border-bottom: 0.1rem solid hslaGen($grey-color, 0.4);
 
   .selected-option {
     display: flex;

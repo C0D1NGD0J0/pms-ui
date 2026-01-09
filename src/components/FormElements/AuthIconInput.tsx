@@ -38,9 +38,7 @@ export const AuthIconInput: React.FC<AuthIconInputProps> = ({
   };
 
   const inputType =
-    type === "password" && showPassword && !onRightIconClick
-      ? "text"
-      : type;
+    type === "password" && showPassword && !onRightIconClick ? "text" : type;
 
   const displayRightIcon =
     rightIcon ||

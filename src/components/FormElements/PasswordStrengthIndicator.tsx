@@ -80,7 +80,9 @@ export const PasswordStrengthIndicator: React.FC<
           />
         ))}
       </div>
-      <span className={`password-strength__label password-strength__label--${strength.level}`}>
+      <span
+        className={`password-strength__label password-strength__label--${strength.level}`}
+      >
         {strength.label}
       </span>
     </div>
@@ -138,7 +140,9 @@ export const PasswordRequirements: React.FC<PasswordRequirementsProps> = ({
                   : "password-requirements__item--invalid"
               }`}
             >
-              <i className={`bx ${isValid ? "bx-check-circle" : "bx-circle"}`}></i>
+              <i
+                className={`bx ${isValid ? "bx-check-circle" : "bx-circle"}`}
+              ></i>
               {req.label}
             </li>
           );

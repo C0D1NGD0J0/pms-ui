@@ -45,10 +45,10 @@
   }
 
   &__content {
-    position: relative;
     z-index: 1;
-    max-width: 50rem;
+    width: 70%;
     text-align: center;
+    position: relative;
   }
 
   &__icon {
