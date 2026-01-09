@@ -3,30 +3,23 @@
 // Modern Auth Layout Styles
 .auth-wrapper {
   display: flex;
+  flex-direction: row;
   min-height: 100vh;
   width: 100%;
-
-  @include breakpoint(99.2rem) {
-    flex-direction: row;
-  }
 }
 
 // Brand Panel (Left Side)
 .auth-brand-panel {
   position: relative;
-  display: none;
+  display: flex;
   flex: 1;
   @include auth-brand-gradient;
   color: hslaGen($white-color);
   padding: 4rem 3rem;
   overflow: hidden;
-
-  @include breakpoint(99.2rem) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-  }
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   // Decorative overlays
   &::before {
@@ -190,6 +183,14 @@
   position: relative;
   margin-bottom: 2rem;
 
+  &__label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: hslaGen($black-color);
+  }
+
   &__wrapper {
     position: relative;
     display: flex;
@@ -198,8 +199,8 @@
 
   &__icon {
     position: absolute;
-    left: 1.5rem;
-    font-size: 2rem;
+    left: 1.2rem;
+    font-size: 1.8rem;
     color: hslaGen($grey-color);
     pointer-events: none;
     @include transition(color);
@@ -207,10 +208,10 @@
 
   &__field {
     width: 100%;
-    padding: 1.4rem 1.5rem 1.4rem 4.5rem;
-    font-size: 1.6rem;
-    border: 0.2rem solid hslaGen($grey-color, 0.3);
-    @include border-radius(0.8rem);
+    padding: 1.1rem 1.2rem 1.1rem 4rem;
+    font-size: 1.4rem;
+    border: 0.15rem solid hslaGen($grey-color, 0.3);
+    @include border-radius(0.6rem);
     background: hslaGen($off-white-color);
     @include transition(all);
 
@@ -229,14 +230,14 @@
     }
 
     &--with-right-icon {
-      padding-right: 4.5rem;
+      padding-right: 4rem;
     }
   }
 
   &__right-icon {
     position: absolute;
-    right: 1.5rem;
-    font-size: 2rem;
+    right: 1.2rem;
+    font-size: 1.8rem;
     color: hslaGen($grey-color);
     cursor: pointer;
     @include transition(color);

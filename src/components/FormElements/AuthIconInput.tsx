@@ -11,6 +11,7 @@ interface AuthIconInputProps {
   error?: string;
   name?: string;
   autoComplete?: string;
+  label?: string;
 }
 
 export const AuthIconInput: React.FC<AuthIconInputProps> = ({
@@ -24,6 +25,7 @@ export const AuthIconInput: React.FC<AuthIconInputProps> = ({
   error,
   name,
   autoComplete,
+  label,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,6 +48,7 @@ export const AuthIconInput: React.FC<AuthIconInputProps> = ({
 
   return (
     <div className="auth-icon-input">
+      {label && <label className="auth-icon-input__label">{label}</label>}
       <div className="auth-icon-input__wrapper">
         <i className={`bx ${icon} auth-icon-input__icon`}></i>
         <input
