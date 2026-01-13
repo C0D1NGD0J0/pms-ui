@@ -1,8 +1,8 @@
 import { useForm } from "@mantine/form";
-import { screen } from "@testing-library/react";
 import { render } from "@tests/utils/test-utils";
-import { RegisterView } from "@app/(auth)/register/view";
 import { ISignupForm } from "@interfaces/auth.interface";
+import { RegisterView } from "@app/(auth)/register/view";
+import { fireEvent, screen } from "@testing-library/react";
 
 const mockProps = {
   isPending: false,
@@ -54,8 +54,30 @@ describe("RegisterView Component", () => {
 
     expect(screen.getByText("Choose Your Perfect Plan")).toBeInTheDocument();
     expect(screen.getByText("Personal")).toBeInTheDocument();
-    expect(screen.getByText("Business")).toBeInTheDocument();
+    expect(screen.getByText("Starter")).toBeInTheDocument();
     expect(screen.getByText("Professional")).toBeInTheDocument();
+  });
+
+  it("should call handleSelectPlan when a plan is clicked", () => {
+    const handleSelectPlanMock = jest.fn();
+    const { container } = render(
+      <RegisterViewWrapper
+        currentStep={0}
+        handleSelectPlan={handleSelectPlanMock}
+      />
+    );
+
+    const starterCard = container.querySelector('[data-plan="starter"]');
+    const starterButton = starterCard?.querySelector("button");
+
+    if (starterButton) {
+      fireEvent.click(starterButton);
+    }
+
+    expect(handleSelectPlanMock).toHaveBeenCalledTimes(1);
+    expect(handleSelectPlanMock.mock.calls[0][0]).toBe("starter");
+    expect(handleSelectPlanMock.mock.calls[0][1]).toBe(null); // pricingId
+    expect(handleSelectPlanMock.mock.calls[0][2]).toBe(null); // lookUpKey
   });
 
   it("should render user info step (Step 1)", () => {
@@ -71,9 +93,9 @@ describe("RegisterView Component", () => {
   });
 
   it("should show selected plan in subtitle when plan is selected", () => {
-    render(<RegisterViewWrapper currentStep={1} selectedPlan="business" />);
+    render(<RegisterViewWrapper currentStep={1} selectedPlan="starter" />);
 
-    expect(screen.getByText("Selected Plan: Business")).toBeInTheDocument();
+    expect(screen.getByText("Selected Plan: Starter")).toBeInTheDocument();
   });
 
   it("should show processing state when submitting", () => {
@@ -93,8 +115,8 @@ describe("RegisterView Component", () => {
           cpassword: "",
           location: "",
           accountType: {
-            planId: "business",
-            planName: "Business",
+            planId: "starter",
+            planName: "Starter",
             isCorporate: true,
           },
           phoneNumber: "",
@@ -114,7 +136,7 @@ describe("RegisterView Component", () => {
           form={form}
           {...mockProps}
           currentStep={2}
-          selectedPlan="business"
+          selectedPlan="starter"
         />
       );
     }
@@ -140,8 +162,8 @@ describe("RegisterView Component", () => {
           cpassword: "",
           location: "",
           accountType: {
-            planId: "business",
-            planName: "Business",
+            planId: "starter",
+            planName: "Starter",
             isCorporate: true,
           },
           phoneNumber: "",
@@ -161,7 +183,7 @@ describe("RegisterView Component", () => {
           form={form}
           {...mockProps}
           currentStep={1}
-          selectedPlan="business"
+          selectedPlan="starter"
         />
       );
     }
@@ -182,8 +204,8 @@ describe("RegisterView Component", () => {
           cpassword: "",
           location: "",
           accountType: {
-            planId: "business",
-            planName: "Business",
+            planId: "starter",
+            planName: "Starter",
             isCorporate: true,
           },
           phoneNumber: "",
@@ -203,7 +225,7 @@ describe("RegisterView Component", () => {
           form={form}
           {...mockProps}
           currentStep={2}
-          selectedPlan="business"
+          selectedPlan="starter"
         />
       );
     }

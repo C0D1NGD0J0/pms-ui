@@ -1,12 +1,21 @@
 import { render } from "@tests/utils/test-utils";
 import { fireEvent, screen } from "@testing-library/react";
-import PlanSelection from "@app/(auth)/register/view/PlanSelection";
+import PlanSelection from "@app/(auth)/register/view/SubscriptionPlans";
 
 describe("PlanSelection Component", () => {
   const mockOnSelectPlan = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  it("should render login link", () => {
+    render(<PlanSelection onSelectPlan={mockOnSelectPlan} />);
+
+    expect(screen.getByText("Already have an account?")).toBeInTheDocument();
+    const loginLink = screen.getByRole("link", { name: "Sign in" });
+    expect(loginLink).toBeInTheDocument();
+    expect(loginLink).toHaveAttribute("href", "/login");
   });
 
   it("should render all plan cards", () => {

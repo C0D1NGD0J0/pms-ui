@@ -1,0 +1,42 @@
+@use "../abstract/index" as *;
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 3rem 2rem;
+  text-align: center;
+
+  &__content {
+    max-width: 40rem;
+  }
+
+  &__icon {
+    margin-bottom: 2rem;
+
+    i {
+      font-size: 8rem;
+      color: hslaGen($grey-color, 0.4);
+      transition: color 0.3s ease;
+    }
+  }
+
+  &__title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: hslaGen($black-color, 0.9);
+  }
+
+  &__description {
+    font-size: 1.4rem;
+    color: hslaGen($grey-color, 0.8);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  &__action {
+    margin-top: 2rem;
+  }
+}

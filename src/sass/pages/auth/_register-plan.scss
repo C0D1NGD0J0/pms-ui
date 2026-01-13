@@ -11,6 +11,17 @@
   max-width: 140rem;
   margin: 0 auto;
 
+  &__login {
+    text-align: right;
+    margin-bottom: 2rem;
+    color: hslaGen($white-color, 0.9);
+    font-size: 1.4rem;
+
+    span {
+      margin-right: 0.8rem;
+    }
+  }
+
   &__hero {
     text-align: center;
     color: hslaGen($white-color);
