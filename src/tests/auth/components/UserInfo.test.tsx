@@ -16,7 +16,8 @@ function UserInfoWrapper() {
       accountType: {
         planId: "",
         planName: "",
-        isCorporate: false,
+        isEnterpriseAccount: false,
+        billingInterval: "monthly" as const,
       },
       phoneNumber: "",
       displayName: "",

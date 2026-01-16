@@ -27,7 +27,7 @@ function RegisterViewWrapper(props: Partial<typeof mockProps> = {}) {
       accountType: {
         planId: "",
         planName: "",
-        isCorporate: false,
+        isEnterpriseAccount: false,
       },
       phoneNumber: "",
       displayName: "",
@@ -117,7 +117,7 @@ describe("RegisterView Component", () => {
           accountType: {
             planId: "starter",
             planName: "Starter",
-            isCorporate: true,
+            isEnterpriseAccount: true,
           },
           phoneNumber: "",
           displayName: "",
@@ -164,7 +164,7 @@ describe("RegisterView Component", () => {
           accountType: {
             planId: "starter",
             planName: "Starter",
-            isCorporate: true,
+            isEnterpriseAccount: true,
           },
           phoneNumber: "",
           displayName: "",
@@ -206,7 +206,7 @@ describe("RegisterView Component", () => {
           accountType: {
             planId: "starter",
             planName: "Starter",
-            isCorporate: true,
+            isEnterpriseAccount: true,
           },
           phoneNumber: "",
           displayName: "",

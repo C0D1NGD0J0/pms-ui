@@ -5,13 +5,15 @@ interface AuthIconInputProps {
   icon: string;
   placeholder: string;
   value: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   rightIcon?: string;
   onRightIconClick?: () => void;
   error?: string;
   name?: string;
   autoComplete?: string;
   label?: string;
+  disabled?: boolean;
+  readOnly?: boolean;
 }
 
 export const AuthIconInput: React.FC<AuthIconInputProps> = ({
@@ -26,6 +28,8 @@ export const AuthIconInput: React.FC<AuthIconInputProps> = ({
   name,
   autoComplete,
   label,
+  disabled = false,
+  readOnly = false,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -44,6 +48,14 @@ export const AuthIconInput: React.FC<AuthIconInputProps> = ({
     rightIcon ||
     (type === "password" ? (showPassword ? "bx-show" : "bx-hide") : undefined);
 
+  const inputClasses = [
+    "auth-icon-input__field",
+    displayRightIcon ? "auth-icon-input__field--with-right-icon" : "",
+    disabled ? "input-disabled" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <div className="auth-icon-input">
       {label && <label className="auth-icon-input__label">{label}</label>}
@@ -51,14 +63,14 @@ export const AuthIconInput: React.FC<AuthIconInputProps> = ({
         <i className={`bx ${icon} auth-icon-input__icon`}></i>
         <input
           type={inputType}
-          className={`auth-icon-input__field ${
-            displayRightIcon ? "auth-icon-input__field--with-right-icon" : ""
-          }`}
+          className={inputClasses}
           placeholder={placeholder}
           value={value}
-          onChange={onChange}
+          onChange={readOnly ? () => "" : onChange}
           name={name}
           autoComplete={autoComplete}
+          disabled={disabled}
+          readOnly={readOnly}
         />
         {displayRightIcon && (
           <i

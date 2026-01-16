@@ -16,7 +16,8 @@ function CompanyInfoWrapper() {
       accountType: {
         planId: "corporate",
         planName: "corporate",
-        isCorporate: true,
+        isEnterpriseAccount: true,
+        billingInterval: "monthly" as const,
       },
       phoneNumber: "",
       displayName: "",

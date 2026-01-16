@@ -20,3 +20,4 @@ export * from "@components/FormElements/Tooltip";
 export * from "@components/FormElements/AuthIconInput";
 export * from "@components/FormElements/PasswordStrengthIndicator";
 export * from "@components/FormElements/SocialLoginButtons";
+export * from "@components/FormElements/FieldActionButton";

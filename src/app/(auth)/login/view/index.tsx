@@ -11,6 +11,7 @@ import {
   SocialLoginButtons,
   AuthIconInput,
   Checkbox,
+  Button,
   Form,
 } from "@components/FormElements/";
 
@@ -127,14 +128,7 @@ export function LoginView({
               autoComplete="current-password"
             />
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "2rem",
-              }}
-            >
+            <div className="flex-row flex-between">
               <Checkbox
                 id="rememberMe"
                 name="rememberMe"
@@ -144,25 +138,20 @@ export function LoginView({
                   form.setFieldValue("rememberMe", e.target.checked)
                 }
               />
-              <Link
-                href="/forgot_password"
-                style={{
-                  fontSize: "1.4rem",
-                  color: "var(--primary-color)",
-                  textDecoration: "none",
-                }}
-              >
+              <Link href="/forgot_password" className="btn-text">
                 Forgot password?
               </Link>
             </div>
-
-            <button
-              type="submit"
-              disabled={!form.isValid() || isSubmitting}
-              className="auth-button"
-            >
-              {isSubmitting ? "Signing in..." : "Sign In"}
-            </button>
+            <div className="btn-group">
+              <Button
+                type="submit"
+                disabled={!form.isValid()}
+                loading={isSubmitting}
+                label="Sign In"
+                loadingText="Signing in..."
+                className="btn-primary btn-full"
+              />
+            </div>
           </Form>
 
           <SocialLoginButtons />

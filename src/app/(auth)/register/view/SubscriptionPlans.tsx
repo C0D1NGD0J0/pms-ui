@@ -9,7 +9,8 @@ interface PlanSelectionProps {
   onSelectPlan: (
     plan: "personal" | "starter" | "professional",
     pricingId: string | null,
-    lookUpKey: string | null
+    lookUpKey: string | null,
+    billingInterval: "monthly" | "annual"
   ) => void;
   plansData?: IServerSubscriptionPlan[];
   isLoadingPlans?: boolean;
@@ -234,10 +235,12 @@ export default function SubscriptionPlans({
             const selectedPricing = isAnnual
               ? plan.pricing.annual
               : plan.pricing.monthly;
+            const billingInterval = isAnnual ? "annual" : "monthly";
             onSelectPlan(
               plan.planName as "personal" | "starter" | "professional",
               selectedPricing.priceId,
-              selectedPricing.lookUpKey
+              selectedPricing.lookUpKey,
+              billingInterval
             );
           }}
           className={`pricing-card__cta ${plan.isFeatured ? "primary" : "secondary"}`}

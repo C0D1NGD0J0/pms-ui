@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { ChangeEvent } from "react";
 import { ISignupForm } from "@interfaces/index";
-import { Form } from "@components/FormElements";
 import { UseFormReturnType } from "@mantine/form";
+import { Button, Form } from "@components/FormElements";
 import {
   ModernAuthLayout,
   AuthBrandPanel,
@@ -11,7 +11,7 @@ import {
 
 import UserInfo from "./UserInfo";
 import CompanyInfo from "./CompanyInfo";
-import PlanSelection from "./PlanSelection";
+import SubscriptionPlans from "./SubscriptionPlans";
 
 interface RegisterViewProps {
   form: UseFormReturnType<ISignupForm, (values: ISignupForm) => ISignupForm>;
@@ -19,13 +19,22 @@ interface RegisterViewProps {
   currentStep: number;
   nextStep: () => void;
   prevStep: () => void;
+  goToPlanSelection: () => void;
   handleOnChange: (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     field?: keyof ISignupForm
   ) => void;
   handleSubmit: (values: ISignupForm) => void;
   selectedPlan: string | null;
-  handleSelectPlan: (plan: "personal" | "business" | "professional") => void;
+  handleSelectPlan: (
+    plan: "personal" | "starter" | "professional",
+    pricingId: string | null,
+    lookUpKey: string | null,
+    billingInterval: "monthly" | "annual"
+  ) => void;
+  plansData: any;
+  isLoadingPlans: boolean;
+  isPlansError: boolean;
 }
 
 export function RegisterView({
@@ -34,62 +43,73 @@ export function RegisterView({
   currentStep,
   nextStep,
   prevStep,
+  goToPlanSelection,
   handleOnChange,
   handleSubmit,
   selectedPlan,
   handleSelectPlan,
+  plansData,
+  isLoadingPlans,
+  isPlansError,
 }: RegisterViewProps) {
-  // Step 0: Plan Selection - show full page pricing
   if (currentStep === 0) {
     return (
       <div className="register-plan-wrapper">
-        <PlanSelection onSelectPlan={handleSelectPlan} />
+        <SubscriptionPlans
+          onSelectPlan={handleSelectPlan}
+          plansData={plansData}
+          isLoadingPlans={isLoadingPlans}
+          isPlansError={isPlansError}
+        />
       </div>
     );
   }
 
-  // Steps 1-2: User Info & Company Info - show modern auth layout
   const renderButtons = (disable = false) => {
-    const isBusnessAccount = form.values.accountType.isCorporate;
-    if (currentStep === 1 && isBusnessAccount) {
+    const isBusinessAccount = form.values.accountType.isEnterpriseAccount;
+    if (currentStep === 1 && isBusinessAccount) {
       return (
-        <button type="button" className="auth-button" onClick={nextStep}>
-          Next
-        </button>
+        <div className="btn-group">
+          <Button
+            label="Next"
+            onClick={nextStep}
+            iconPosition="right"
+            className="btn-primary btn-block"
+            icon={<i className="bx bx-right-arrow-circle"></i>}
+          />
+        </div>
       );
-    } else if (currentStep === 2 && isBusnessAccount) {
+    } else if (currentStep === 2 && isBusinessAccount) {
       return (
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <button
-            type="button"
-            className="auth-button"
+        <div className="btn-group">
+          <Button
+            label="Back"
             onClick={prevStep}
-            style={{
-              background: "transparent",
-              border: "2px solid var(--primary-color)",
-              color: "var(--primary-color)",
-            }}
-          >
-            Back
-          </button>
-          <button
+            className="btn-outline btn-full"
+            icon={<i className="bx bx-arrow-back"></i>}
+          />
+          <Button
             type="submit"
-            className="auth-button"
+            iconPosition="right"
             disabled={disable || isPending}
-          >
-            {isPending ? "Creating account..." : "Create Account"}
-          </button>
+            className="btn-primary btn-full"
+            icon={<i className="bx bxs-user-account"></i>}
+            label={isPending ? "Creating account..." : "Create Account"}
+          />
         </div>
       );
     } else {
       return (
-        <button
-          type="submit"
-          className="auth-button"
-          disabled={disable || isPending}
-        >
-          {isPending ? "Creating account..." : "Create Account"}
-        </button>
+        <div className="btn-group">
+          <Button
+            type="submit"
+            iconPosition="right"
+            disabled={disable || isPending}
+            className="btn-primary btn-block"
+            icon={<i className="bx bxs-user-account "></i>}
+            label={isPending ? "Creating account..." : "Create Account"}
+          />
+        </div>
       );
     }
   };
@@ -149,7 +169,11 @@ export function RegisterView({
             autoComplete="off"
           >
             {currentStep === 1 ? (
-              <UserInfo formContext={form} onChange={handleOnChange} />
+              <UserInfo
+                formContext={form}
+                onChange={handleOnChange}
+                onChangePlan={goToPlanSelection}
+              />
             ) : (
               <CompanyInfo formContext={form} onChange={handleOnChange} />
             )}

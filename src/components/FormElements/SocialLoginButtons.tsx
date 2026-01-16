@@ -1,4 +1,5 @@
 import React from "react";
+import { Button } from "@components/FormElements/";
 
 interface SocialLoginButtonsProps {
   onGoogleClick?: () => void;
@@ -34,25 +35,23 @@ export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       <div className="social-login__divider">
         <span>Or continue with</span>
       </div>
-      <div className="social-login__buttons">
-        <button
-          type="button"
-          className="social-login__button social-login__button--google"
+      <div className="btn-group">
+        <Button
+          label="Google"
+          disabled={true}
           onClick={handleGoogleClick}
-          disabled={disabled}
-        >
-          <i className="bx bxl-google"></i>
-          Google
-        </button>
-        <button
-          type="button"
-          className="social-login__button social-login__button--microsoft"
+          loadingText="Signing in..."
+          className="btn-outline btn-full"
+          icon={<i className="bx danger bxl-google"></i>}
+        />
+        <Button
+          label="Microsoft"
+          disabled={true}
           onClick={handleMicrosoftClick}
-          disabled={disabled}
-        >
-          <i className="bx bxl-microsoft"></i>
-          Microsoft
-        </button>
+          loadingText="Signing in..."
+          className="btn-outline btn-full"
+          icon={<i className="bx primary bxl-microsoft"></i>}
+        />
       </div>
     </div>
   );

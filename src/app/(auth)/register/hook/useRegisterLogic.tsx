@@ -1,4 +1,5 @@
 import { useForm } from "@mantine/form";
+import { useRouter } from "next/navigation";
 import { authService } from "@services/auth";
 import { ChangeEvent, useState } from "react";
 import { ISignupForm } from "@interfaces/index";
@@ -7,68 +8,73 @@ import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
 import { SignupSchema } from "@validations/auth.validations";
 
+import { useGetSubscriptionPlans } from "./queries/useGetSubscriptionPlans";
+
 const user1 = {
-  firstName: "Wayne",
-  lastName: "Rooney",
-  email: "wayne@example.com",
+  firstName: "Sarah",
+  lastName: "Johnson",
+  email: "sarah.johnson@acmerealty.com",
   password: "Password1",
   cpassword: "Password1",
-  location: "England",
+  location: "New York, NY",
   accountType: {
-    planId: "personal",
-    planName: "Personal",
-    isCorporate: false,
+    planId: "",
+    planName: "personal",
+    isEnterpriseAccount: true,
+    lookUpKey: undefined,
+    billingInterval: "monthly" as const,
   },
-  phoneNumber: "02071234567",
-  displayName: "Wayne Rooney",
+  phoneNumber: "2125551234",
+  displayName: "Sarah Johnson",
   companyProfile: {
-    tradingName: "",
-    legalEntityName: "",
-    website: "",
-    companyEmail: "",
-    companyPhone: "",
+    tradingName: "Acme Realty Group",
+    legalEntityName: "Acme Realty Group LLC",
+    website: "www.acmerealty.com",
+    companyEmail: "contact@acmerealty.com",
+    companyPhone: "2125551200",
   },
 };
 
-// const user2 = {
-//   firstName: "Donald",
-//   lastName: "Trump",
-//   email: "donald@example.com",
-//   password: "Password1",
-//   cpassword: "Password1",
-//   location: "USA",
-//   accountType: {
-//     planId: "business",
-//     planName: "Business",
-//     isCorporate: false,
-//   },
-//   phoneNumber: "02071234567",
-//   displayName: "Donald Trump",
-//   companyProfile: {
-//     tradingName: "Trump Organization",
-//     legalEntityName: "Trump Organization LLC",
-//     website: "www.trumporganization.com",
-//     companyEmail: "info@trumporganization.com",
-//     companyPhone: "12025550173",
-//   },
-// };
+const user2 = {
+  firstName: "Michael",
+  lastName: "Chen",
+  email: "michael.chen@urbanproperties.com",
+  password: "Password1",
+  cpassword: "Password1",
+  location: "San Francisco, CA",
+  accountType: {
+    planId: "",
+    planName: "professional",
+    isEnterpriseAccount: true,
+    lookUpKey: undefined,
+    billingInterval: "annual" as const,
+  },
+  phoneNumber: "4155559876",
+  displayName: "Michael Chen",
+  companyProfile: {
+    tradingName: "Urban Properties Inc",
+    legalEntityName: "Urban Properties Incorporated",
+    website: "www.urbanproperties.com",
+    companyEmail: "info@urbanproperties.com",
+    companyPhone: "4155559800",
+  },
+};
 
 export function useRegisterLogic() {
   const { mutateAsync, isPending } = useMutation({
     mutationFn: authService.signup,
   });
   const { openNotification } = useNotification();
+  const {
+    data: plansData,
+    isLoading: isLoadingPlans,
+    isError: isPlansError,
+  } = useGetSubscriptionPlans();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0); // Step 0 = Plan Selection
   const [selectedPlan, setSelectedPlan] = useState<
-    "personal" | "business" | "professional" | null
+    "personal" | "starter" | "professional" | null
   >(null);
-
-  // Map plan names to display format
-  const planNameMap: Record<string, string> = {
-    personal: "Personal",
-    business: "Business",
-    professional: "Professional",
-  };
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
     validateInputOnChange: true,
@@ -76,15 +82,20 @@ export function useRegisterLogic() {
     validate: zodResolver(SignupSchema) as any,
   });
 
-  const handleSelectPlan = (plan: "personal" | "business" | "professional") => {
+  const handleSelectPlan = (
+    plan: "personal" | "starter" | "professional",
+    pricingId: string | null,
+    lookUpKey: string | null,
+    billingInterval: "monthly" | "annual"
+  ) => {
     setSelectedPlan(plan);
-    // Update form with selected plan
     form.setFieldValue("accountType", {
-      planId: plan,
-      planName: planNameMap[plan],
-      isCorporate: plan === "business" || plan === "professional",
+      planId: pricingId || "",
+      planName: plan,
+      lookUpKey: lookUpKey || undefined,
+      isEnterpriseAccount: plan === "personal" || plan === "professional",
+      billingInterval,
     });
-    // Move to next step
     setCurrentStep(1);
   };
 
@@ -97,12 +108,15 @@ export function useRegisterLogic() {
     setCurrentStep(currentStep - 1);
   };
 
+  const goToPlanSelection = () => {
+    setCurrentStep(0);
+  };
+
   const handleOnChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     field?: keyof ISignupForm
   ) => {
     if (typeof e === "string" && field) {
-      console.log("Setting field:", field, "to value:", e);
       form.setFieldValue(field, e);
       return;
     } else if (typeof e !== "string") {
@@ -115,7 +129,7 @@ export function useRegisterLogic() {
       const formData = {
         ...values,
       };
-      if (!values.accountType.isCorporate) {
+      if (!values.accountType.isEnterpriseAccount) {
         formData.companyProfile = undefined;
       }
       const response = await mutateAsync(formData);
@@ -125,7 +139,7 @@ export function useRegisterLogic() {
         response.msg || "Registration successful"
       );
       form.reset();
-      setCurrentStep(0);
+      router.replace("/login");
     } catch (error: any) {
       let result = "\n";
       error.errors.forEach((err: any, idx: number) => {
@@ -142,9 +156,13 @@ export function useRegisterLogic() {
     currentStep,
     nextStep,
     prevStep,
+    goToPlanSelection,
     handleOnChange,
     handleSubmit,
     selectedPlan,
     handleSelectPlan,
+    plansData,
+    isLoadingPlans,
+    isPlansError,
   };
 }

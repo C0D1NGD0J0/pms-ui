@@ -13,3 +13,4 @@ export * from "./useMenuItems";
 export * from "./useDefaultFormData";
 export * from "./useErrorHandler";
 export * from "./useFormattedInput";
+export * from "./useGeolocation";

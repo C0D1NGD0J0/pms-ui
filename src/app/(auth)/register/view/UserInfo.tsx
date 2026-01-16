@@ -1,17 +1,18 @@
 "use client";
 import React from "react";
+import { useGeolocation } from "@hooks/index";
 import { UseFormReturnType } from "@mantine/form";
 import { ISignupForm } from "@interfaces/auth.interface";
-import { SIGNUP_ACCOUNT_TYPE_OPTIONS, ACCOUNT_TYPES } from "@utils/constants";
 import {
   PasswordStrengthIndicator,
-  CustomDropdown,
+  FieldActionButton,
   AuthIconInput,
 } from "@components/FormElements";
 
 export default function UserInfo({
   formContext,
   onChange,
+  onChangePlan,
 }: {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -21,16 +22,26 @@ export default function UserInfo({
     ISignupForm,
     (values: ISignupForm) => ISignupForm
   >;
+  onChangePlan?: () => void;
 }) {
+  const { detectLocation, isDetecting } = useGeolocation();
+
+  const handleDetectLocation = async () => {
+    try {
+      const location = await detectLocation();
+      onChange(location, "location");
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Could not detect location. Please enter manually."
+      );
+    }
+  };
+
   return (
     <>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "1.5rem",
-        }}
-      >
+      <div className="auth-form-grid">
         <AuthIconInput
           label="First Name"
           type="text"
@@ -77,24 +88,52 @@ export default function UserInfo({
         autoComplete="tel"
       />
 
-      <CustomDropdown
-        id="accountType"
-        placeholder="Select account type"
-        errorMsg={formContext.errors.accountType}
-        value={formContext.values.accountType.planName}
-        onChange={(v) => {
-          const acctType =
-            v === ACCOUNT_TYPES.CORPORATE
-              ? ACCOUNT_TYPES.CORPORATE
-              : ACCOUNT_TYPES.PERSONAL;
-          formContext.setFieldValue("accountType", {
-            planId: acctType,
-            planName: acctType,
-            isCorporate: acctType === ACCOUNT_TYPES.CORPORATE,
-          });
-        }}
-        options={SIGNUP_ACCOUNT_TYPE_OPTIONS}
-      />
+      <div className="auth-field-with-action">
+        <AuthIconInput
+          label="Location"
+          type="text"
+          icon="bx-map"
+          placeholder="City, State"
+          name="location"
+          value={formContext.values.location}
+          onChange={onChange}
+          error={formContext.errors.location as string}
+        />
+        <FieldActionButton
+          onClick={handleDetectLocation}
+          disabled={isDetecting}
+          icon={isDetecting ? "bx-loader bx-spin" : "bx-current-location"}
+          label={isDetecting ? "Detecting..." : "Detect"}
+        />
+      </div>
+
+      <div className="auth-field-with-action">
+        <AuthIconInput
+          label="Account Type"
+          type="text"
+          icon="bx-briefcase"
+          placeholder="Select a plan"
+          name="accountType"
+          value={
+            formContext.values.accountType.planName
+              ? formContext.values.accountType.planName
+                  .charAt(0)
+                  .toUpperCase() +
+                formContext.values.accountType.planName.slice(1)
+              : ""
+          }
+          onChange={() => {}}
+          disabled={true}
+          error={
+            formContext.errors.accountType
+              ? String(formContext.errors.accountType)
+              : undefined
+          }
+        />
+        {onChangePlan && (
+          <FieldActionButton onClick={onChangePlan} label="Change Plan" />
+        )}
+      </div>
 
       <AuthIconInput
         label="Password"

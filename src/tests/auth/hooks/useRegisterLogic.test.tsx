@@ -76,7 +76,9 @@ describe("useRegisterLogic Hook", () => {
     expect(result.current.currentStep).toBe(1);
     expect(result.current.form.values.accountType.planId).toBe("business");
     expect(result.current.form.values.accountType.planName).toBe("Business");
-    expect(result.current.form.values.accountType.isCorporate).toBe(true);
+    expect(result.current.form.values.accountType.isEnterpriseAccount).toBe(
+      true
+    );
   });
 
   it("should handle personal plan selection correctly", () => {
@@ -91,7 +93,9 @@ describe("useRegisterLogic Hook", () => {
     expect(result.current.selectedPlan).toBe("personal");
     expect(result.current.form.values.accountType.planId).toBe("personal");
     expect(result.current.form.values.accountType.planName).toBe("Personal");
-    expect(result.current.form.values.accountType.isCorporate).toBe(false);
+    expect(result.current.form.values.accountType.isEnterpriseAccount).toBe(
+      false
+    );
   });
 
   it("should handle professional plan selection correctly", () => {
@@ -108,7 +112,9 @@ describe("useRegisterLogic Hook", () => {
     expect(result.current.form.values.accountType.planName).toBe(
       "Professional"
     );
-    expect(result.current.form.values.accountType.isCorporate).toBe(true);
+    expect(result.current.form.values.accountType.isEnterpriseAccount).toBe(
+      true
+    );
   });
 
   it("should handle successful registration", async () => {
@@ -129,7 +135,7 @@ describe("useRegisterLogic Hook", () => {
       accountType: {
         planId: "personal",
         planName: "personal",
-        isCorporate: false,
+        isEnterpriseAccount: false,
       },
       phoneNumber: "+1234567890",
       displayName: "John Doe",
