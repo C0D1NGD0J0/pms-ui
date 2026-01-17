@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { useGeolocation } from "@hooks/index";
+import { useGeolocation } from "@hooks/useGeolocation";
+import { useNotification } from "@hooks/useNotification";
 import { UseFormReturnType } from "@mantine/form";
 import { ISignupForm } from "@interfaces/auth.interface";
 import {
@@ -25,13 +26,14 @@ export default function UserInfo({
   onChangePlan?: () => void;
 }) {
   const { detectLocation, isDetecting } = useGeolocation();
+  const { message } = useNotification();
 
   const handleDetectLocation = async () => {
     try {
       const location = await detectLocation();
       onChange(location, "location");
     } catch (error) {
-      alert(
+      message.error(
         error instanceof Error
           ? error.message
           : "Could not detect location. Please enter manually."

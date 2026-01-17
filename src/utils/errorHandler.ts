@@ -240,7 +240,150 @@ export class APIErrorHandler {
   }
 }
 
-// Legacy class for backward compatibility
+// ============================================================================
+// ERROR LOGGING (Remote Tracking: Sentry, LogRocket, etc.)
+// ============================================================================
+
+export type ErrorLogLevel = "error" | "warning" | "info";
+
+export interface ErrorLogContext {
+  user?: { useruid?: string };
+  request?: { url?: string; method?: string; headers?: Record<string, string> };
+  additional?: Record<string, any>;
+}
+
+/**
+ * Error Logger - Tracks errors to external services (Sentry, LogRocket, etc.)
+ * Enable by setting: NEXT_PUBLIC_ENABLE_ERROR_LOGGING=true
+ */
+class ErrorLogger {
+  private isDevelopment = process.env.NODE_ENV === "development";
+  private isEnabled = process.env.NEXT_PUBLIC_ENABLE_ERROR_LOGGING === "true";
+
+  log(
+    error: APIErrorResponse,
+    level: ErrorLogLevel = "error",
+    context?: ErrorLogContext
+  ): void {
+    if (this.isDevelopment) {
+      const logMethod =
+        level === "error"
+          ? console.error
+          : level === "warning"
+            ? console.warn
+            : console.info;
+      logMethod("[Error]", {
+        message: error.message,
+        type: error.type,
+        statusCode: error.statusCode,
+        errors: error.errors,
+        timestamp: new Date().toISOString(),
+        context,
+      });
+    }
+
+    if (!this.isEnabled) return;
+  }
+
+  logNetworkError(error: APIErrorResponse, context?: ErrorLogContext): void {
+    this.log(error, "error", {
+      ...context,
+      additional: { ...context?.additional, isNetworkError: true },
+    });
+  }
+
+  logValidationError(error: APIErrorResponse, context?: ErrorLogContext): void {
+    this.log(error, "warning", {
+      ...context,
+      additional: {
+        ...context?.additional,
+        isValidationError: true,
+        validationErrors: error.errors,
+      },
+    });
+  }
+
+  logAuthError(error: APIErrorResponse, context?: ErrorLogContext): void {
+    this.log(error, "error", {
+      ...context,
+      additional: { ...context?.additional, isAuthError: true },
+    });
+  }
+}
+
+export const errorLogger = new ErrorLogger();
+
+// ============================================================================
+// GLOBAL QUERY ERROR HANDLER (TanStack Query)
+// ============================================================================
+
+/**
+ * Notification bridge - allows utilities to call openNotification
+ * Set this from your useNotification hook in a layout/provider component
+ */
+let notificationBridge: ((
+  type: "success" | "error" | "info" | "warning",
+  message: string,
+  description?: string
+) => void) | null = null;
+
+export function setNotificationBridge(
+  bridge: (
+    type: "success" | "error" | "info" | "warning",
+    message: string,
+    description?: string
+  ) => void
+): void {
+  notificationBridge = bridge;
+}
+
+/**
+ * Global error handler for all TanStack Query mutations/queries
+ * Automatically logs errors and shows notifications to users
+ */
+export function globalQueryErrorHandler(error: unknown): void {
+  const parsedError = APIErrorHandler.parseError(error);
+
+  // Log based on error type
+  if (APIErrorHandler.shouldLog(parsedError))
+    errorLogger.log(parsedError, "error");
+  if (parsedError.type === "validation")
+    errorLogger.logValidationError(parsedError);
+  if (parsedError.type === "network") errorLogger.logNetworkError(parsedError);
+  if (
+    parsedError.type === "authentication" ||
+    parsedError.type === "authorization"
+  )
+    errorLogger.logAuthError(parsedError);
+
+  // Show user notification
+  if (notificationBridge) {
+    const notificationType =
+      parsedError.type === "validation" ? "warning" : "error";
+    const title =
+      parsedError.type === "validation"
+        ? "Validation Error"
+        : parsedError.type === "network"
+          ? "Network Error"
+          : parsedError.type === "authentication"
+            ? "Authentication Error"
+            : parsedError.type === "authorization"
+              ? "Authorization Error"
+              : "Error";
+
+    const description =
+      parsedError.type === "validation" && parsedError.errors?.length
+        ? APIErrorHandler.formatValidationErrors(parsedError.errors)
+        : parsedError.message;
+
+    notificationBridge(notificationType, title, description);
+  }
+}
+
+// ============================================================================
+// LEGACY (Backward Compatibility)
+// ============================================================================
+
 export default class APIError extends Error {
   constructor() {
     super("Api Error: ");

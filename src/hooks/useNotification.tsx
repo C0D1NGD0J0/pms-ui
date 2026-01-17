@@ -1,6 +1,7 @@
 "use client";
 import { notification, message, Button } from "antd";
 import { EventTypes, events } from "@services/events";
+import { setNotificationBridge } from "@utils/errorHandler";
 import React, { createContext, useContext, useEffect } from "react";
 
 type NotificationInstance = "info" | "warning" | "error" | "success" | "open";
@@ -202,7 +203,19 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
     });
   };
 
-  // Global rate limit event listener
+  // notification bridge for error handler
+  useEffect(() => {
+    const notificationAdapter = (
+      type: "success" | "error" | "info" | "warning",
+      message: string,
+      description?: string
+    ) => {
+      openNotification(type, message, description || "", undefined);
+    };
+
+    return setNotificationBridge(notificationAdapter);
+  }, []);
+
   useEffect(() => {
     const unsubscribe = events.subscribe<{
       url: string;

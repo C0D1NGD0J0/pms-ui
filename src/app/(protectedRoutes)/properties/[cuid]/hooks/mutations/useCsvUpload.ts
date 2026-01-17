@@ -3,8 +3,9 @@ import { propertyService } from "@services/index";
 import { useMutation } from "@tanstack/react-query";
 import { csvUploadSchema } from "@validations/index";
 import { useCurrentUser } from "@hooks/useCurrentUser";
-import { zodResolver } from "mantine-form-zod-resolver";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 import { useNotification } from "@hooks/useNotification";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { CsvUploadValues } from "@interfaces/property.interface";
 
 export interface ValidationResult {
@@ -31,14 +32,19 @@ export interface ProcessingResult {
 export function useCsvUpload() {
   const { user } = useCurrentUser();
   const { openNotification } = useNotification();
+  const { handleMutationError } = useErrorHandler();
 
   const csvValidationMutation = useMutation({
     mutationFn: (data: CsvUploadValues) =>
       propertyService.validatePropertiesCSV(data.cuid, data.csvFile!),
+    // Global handler logs, we show custom notification
+    onError: (error) => handleMutationError(error, "CSV validation failed"),
   });
   const importCsvMutation = useMutation({
     mutationFn: (data: CsvUploadValues) =>
       propertyService.addMultipleProperties(data.cuid, data.csvFile!),
+    // Global handler logs, we show custom notification
+    onError: (error) => handleMutationError(error, "Failed to import CSV"),
   });
 
   const form = useForm<CsvUploadValues>({

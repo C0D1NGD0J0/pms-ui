@@ -14,3 +14,4 @@ export * from "./useDefaultFormData";
 export * from "./useErrorHandler";
 export * from "./useFormattedInput";
 export * from "./useGeolocation";
+export * from "./useErrorLoggerContext";

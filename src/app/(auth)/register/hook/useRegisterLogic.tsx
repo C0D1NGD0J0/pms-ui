@@ -5,8 +5,9 @@ import { ChangeEvent, useState } from "react";
 import { ISignupForm } from "@interfaces/index";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { useNotification } from "@hooks/useNotification";
 import { SignupSchema } from "@validations/auth.validations";
+import { useNotification } from "@hooks/useNotification";
+import { useErrorHandler } from "@hooks/useErrorHandler";
 
 import { useGetSubscriptionPlans } from "./queries/useGetSubscriptionPlans";
 
@@ -61,8 +62,11 @@ const user2 = {
 };
 
 export function useRegisterLogic() {
+  const { handleMutationError } = useErrorHandler();
   const { mutateAsync, isPending } = useMutation({
     mutationFn: authService.signup,
+    // Global error handler logs automatically, we just need to show notification
+    onError: (error) => handleMutationError(error, "Registration failed"),
   });
   const { openNotification } = useNotification();
   const {
@@ -71,7 +75,7 @@ export function useRegisterLogic() {
     isError: isPlansError,
   } = useGetSubscriptionPlans();
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0); // Step 0 = Plan Selection
+  const [currentStep, setCurrentStep] = useState(0);
   const [selectedPlan, setSelectedPlan] = useState<
     "personal" | "starter" | "professional" | null
   >(null);
@@ -141,12 +145,8 @@ export function useRegisterLogic() {
       form.reset();
       router.replace("/login");
     } catch (error: any) {
-      let result = "\n";
-      error.errors.forEach((err: any, idx: number) => {
-        result += `${idx + 1}:  ${err.message}. 
-        `;
-      });
-      openNotification("error", "Registration failed.", result);
+      // Error handling is now centralized via useMutationWithErrorHandler
+      // The global error handler will display the appropriate message
     }
   };
 
