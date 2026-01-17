@@ -181,12 +181,10 @@ export default function SubscriptionPlans({
     // Calculate price based on billing period
     let priceValue: string;
 
-    if (isAnnual && plan.pricing.annual.savingsPercent > 0) {
-      // Calculate discounted monthly price using server's savings percentage
-      const monthlyPrice = plan.pricing.monthly.priceInCents;
-      const discountMultiplier = 1 - plan.pricing.annual.savingsPercent / 100;
-      const discountedPrice = Math.round(monthlyPrice * discountMultiplier);
-      priceValue = (discountedPrice / 100).toFixed(0);
+    if (isAnnual) {
+      // Use server-provided annual display price to avoid recalculation/rounding issues
+      const price = plan.pricing.annual.displayPrice;
+      priceValue = price.replace(/[^0-9]/g, "");
     } else {
       // Use regular monthly price
       const price = plan.pricing.monthly.displayPrice;
