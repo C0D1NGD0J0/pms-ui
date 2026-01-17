@@ -36,21 +36,28 @@ describe("LoginView Component", () => {
   it("should render login form with correct fields", () => {
     render(<LoginViewWrapper />);
 
-    expect(screen.getByPlaceholderText("Enter email...")).toBeInTheDocument();
-    expect(
-      screen.getByPlaceholderText("Enter password...")
-    ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Email address")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
     expect(screen.getByText("Remember me")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Login" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Sign In" })).toBeInTheDocument();
+  });
+
+  it("should render brand panel content", () => {
+    render(<LoginViewWrapper />);
+
+    expect(screen.getByText("Property Management")).toBeInTheDocument();
+    expect(
+      screen.getByText("Manage Your Properties With Confidence")
+    ).toBeInTheDocument();
+    expect(screen.getByText("Secure online payments")).toBeInTheDocument();
   });
 
   it("should show processing state when submitting", () => {
     render(<LoginViewWrapper isSubmitting={true} />);
 
-    expect(screen.getByText("Processing...")).toBeInTheDocument();
-    // Check if the button shows processing state
+    expect(screen.getByText("Signing in...")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /processing/i })
+      screen.getByRole("button", { name: /signing in/i })
     ).toBeInTheDocument();
   });
 

@@ -143,6 +143,17 @@ const AuthPageLayout = ({ children }: { children: React.ReactNode }) => {
       </AuthLayoutWrapper>
     );
   }
+
+  // Use modern layout for auth pages
+  if (
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot_password" ||
+    pathname.startsWith("/reset_password")
+  ) {
+    return <>{children}</>;
+  }
+
   return (
     <AuthLayoutWrapper>
       {boxOrder.map((boxKey, index) => (

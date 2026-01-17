@@ -1,0 +1,175 @@
+import axios from "@configs/axios";
+import { subscriptionService } from "@services/subscription";
+import { ISubscriptionPlan } from "@interfaces/subscription.interface";
+
+jest.mock("@configs/axios");
+const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+describe("SubscriptionService", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe("getSubscriptionPlans", () => {
+    it("should fetch subscription plans successfully", async () => {
+      const mockPlansData: ISubscriptionPlan[] = [
+        {
+          planName: "personal",
+          name: "Personal",
+          description: "Perfect for individual landlords",
+          displayOrder: 1,
+          isFeatured: false,
+          ctaText: "Get Started Free",
+          featureList: ["Up to 1 property", "Basic tenant screening"],
+          trialDays: 0,
+          priceInCents: 0,
+          transactionFeePercent: 0,
+          isCustomPricing: false,
+          seatPricing: {
+            includedSeats: 1,
+            additionalSeatPriceCents: 0,
+            maxAdditionalSeats: 0,
+          },
+          limits: {
+            maxProperties: 1,
+            maxUnits: 1,
+            maxVendors: 5,
+          },
+          features: {
+            tenantScreening: true,
+            maintenanceTracking: false,
+          },
+          pricing: {
+            monthly: {
+              priceId: null,
+              priceInCents: 0,
+              displayPrice: "$0",
+              lookUpKey: null,
+            },
+            annual: {
+              priceId: null,
+              priceInCents: 0,
+              displayPrice: "$0",
+              savingsPercent: 0,
+              savingsDisplay: "Save 0%",
+              lookUpKey: null,
+            },
+          },
+        },
+        {
+          planName: "starter",
+          name: "Starter",
+          description: "For growing property managers",
+          displayOrder: 2,
+          isFeatured: true,
+          featuredBadge: "Most Popular",
+          ctaText: "Start Free Trial",
+          featureList: [
+            "Up to 25 properties",
+            "Advanced tenant screening",
+            "Maintenance tracking",
+          ],
+          trialDays: 14,
+          priceInCents: 4900,
+          transactionFeePercent: 0,
+          isCustomPricing: false,
+          seatPricing: {
+            includedSeats: 3,
+            additionalSeatPriceCents: 1000,
+            maxAdditionalSeats: 10,
+          },
+          limits: {
+            maxProperties: 25,
+            maxUnits: 100,
+            maxVendors: 50,
+          },
+          features: {
+            tenantScreening: true,
+            maintenanceTracking: true,
+          },
+          pricing: {
+            monthly: {
+              priceId: "price_starter_monthly",
+              priceInCents: 4900,
+              displayPrice: "$49",
+              lookUpKey: "starter_monthly",
+            },
+            annual: {
+              priceId: "price_starter_annual",
+              priceInCents: 46800,
+              displayPrice: "$468",
+              savingsPercent: 20,
+              savingsDisplay: "Save 20%",
+              lookUpKey: "starter_annual",
+            },
+          },
+        },
+      ];
+
+      const mockResponse = {
+        data: {
+          success: true,
+          data: mockPlansData,
+          pagination: {
+            total: 2,
+            page: 1,
+            limit: 10,
+          },
+        },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      const result = await subscriptionService.getSubscriptionPlans();
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "/api/v1/subscriptions/plans",
+        {}
+      );
+      expect(result.data).toEqual(mockPlansData);
+      expect(result.pagination?.total).toBe(2);
+    });
+
+    it("should call API without query string when no params provided", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          data: [],
+          pagination: {
+            total: 0,
+            page: 1,
+            limit: 10,
+          },
+        },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+
+      await subscriptionService.getSubscriptionPlans();
+
+      expect(mockedAxios.get).toHaveBeenCalledWith(
+        "/api/v1/subscriptions/plans",
+        {}
+      );
+    });
+
+    it("should handle errors when fetching subscription plans fails", async () => {
+      const mockError = new Error("Network error");
+      mockedAxios.get.mockRejectedValue(mockError);
+
+      await expect(
+        subscriptionService.getSubscriptionPlans()
+      ).rejects.toThrow("Network error");
+
+      expect(console.error).toHaveBeenCalledWith(
+        "Error fetching subscription plans:",
+        mockError
+      );
+    });
+  });
+});

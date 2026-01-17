@@ -1,0 +1,388 @@
+@use "../../abstract/index" as *;
+
+// Pricing Card Styles - Used in PlanSelection component
+// Billing Toggle
+.billing-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  margin-bottom: 3.5rem;
+
+  &__label {
+    font-size: 1.4rem;
+    color: hslaGen($white-color);
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+
+    &.active {
+      opacity: 1;
+      font-weight: 600;
+    }
+  }
+
+  &__switch {
+    width: 5rem;
+    height: 2.6rem;
+    background: hslaGen($white-color, 0.3);
+    border-radius: 1.3rem;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s ease;
+
+    &::after {
+      content: "";
+      position: absolute;
+      width: 2rem;
+      height: 2rem;
+      background: hslaGen($white-color);
+      border-radius: 50%;
+      top: 0.3rem;
+      left: 0.3rem;
+      transition: transform 0.3s ease;
+    }
+
+    &.annual {
+      background: hslaGen($secondary-color);
+
+      &::after {
+        transform: translateX(2.4rem);
+      }
+    }
+  }
+
+  &__badge {
+    background: hslaGen($secondary-color);
+    color: hslaGen($white-color);
+    padding: 0.4rem 0.8rem;
+    border-radius: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+// Pricing Cards Container
+.pricing-cards {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 0 4rem 6rem;
+  flex-wrap: wrap;
+}
+
+// Pricing Card
+.pricing-card {
+  background: hslaGen($white-color);
+  border-radius: 1.2rem;
+  padding: 3rem 2.5rem;
+  width: 32rem;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 0.8rem 3rem hslaGen($dark-grey-color, 0.1);
+
+  &:hover {
+    transform: translateY(-1rem);
+    box-shadow: 0 2rem 6rem hslaGen($dark-grey-color, 0.2);
+  }
+
+  // Featured card
+  &.featured {
+    @include auth-brand-gradient;
+    color: hslaGen($white-color);
+    transform: scale(1.05);
+    z-index: 1;
+
+    &:hover {
+      transform: scale(1.05) translateY(-1rem);
+    }
+
+    .pricing-card__icon {
+      background: hslaGen($white-color, 0.1);
+
+      i {
+        color: hslaGen($secondary-color);
+      }
+    }
+
+    .pricing-card__name,
+    .pricing-card__amount {
+      color: hslaGen($white-color);
+    }
+
+    .pricing-card__description,
+    .pricing-card__period {
+      color: hslaGen($white-color, 0.8);
+    }
+
+    .pricing-card__features li {
+      color: hslaGen($white-color);
+      border-bottom-color: hslaGen($white-color, 0.1);
+
+      i {
+        color: hslaGen($secondary-color);
+      }
+    }
+
+    .pricing-card__cta.primary {
+      background: hslaGen($secondary-color);
+      border-color: hslaGen($secondary-color);
+
+      &:hover {
+        background: hsl(39, 73%, 59%);
+        border-color: hsl(39, 73%, 59%);
+      }
+    }
+  }
+
+  &__badge {
+    position: absolute;
+    top: -1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: hslaGen($secondary-color);
+    color: hslaGen($white-color);
+    padding: 0.6rem 1.5rem;
+    border-radius: 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+  }
+
+  &__savings-badge {
+    position: absolute;
+    top: -1.2rem;
+    right: 1rem;
+    background: hslaGen($success-color);
+    color: hslaGen($white-color);
+    padding: 0.5rem 1.2rem;
+    border-radius: 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    z-index: 2;
+  }
+
+  &__icon {
+    width: 6.5rem;
+    height: 6.5rem;
+    margin: 0 auto 1.5rem;
+    background: hslaGen($off-white-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    i {
+      font-size: 3.2rem;
+      color: hslaGen($primary-color);
+    }
+  }
+
+  &__name {
+    font-size: 2rem;
+    font-weight: 700;
+    font-family: "Lato", sans-serif;
+    margin-bottom: 0.5rem;
+    color: hslaGen($dark-grey-color);
+  }
+
+  &__description {
+    font-size: 1.3rem;
+    color: hslaGen($grey-color);
+    margin-bottom: 1.8rem;
+  }
+
+  &__price {
+    margin-bottom: 2.5rem;
+  }
+
+  &__amount {
+    font-size: 4rem;
+    font-weight: 700;
+    font-family: "Lato", sans-serif;
+    color: hslaGen($primary-color);
+
+    .currency {
+      font-size: 2rem;
+      vertical-align: super;
+    }
+  }
+
+  &__period {
+    font-size: 1.3rem;
+    color: hslaGen($grey-color);
+  }
+
+  &__billing-note {
+    font-size: 1.1rem;
+    font-weight: 400;
+    opacity: 0.8;
+    display: block;
+    margin-top: 0.3rem;
+  }
+
+  &__features {
+    list-style: none;
+    margin-bottom: 2.5rem;
+    text-align: left;
+    padding: 0;
+
+    li {
+      padding: 0.8rem 0;
+      font-size: 1.3rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      color: hslaGen($dark-grey-color);
+      border-bottom: 0.1rem solid hslaGen($off-white-color);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      i {
+        font-size: 1.8rem;
+        color: hslaGen($success-color);
+        flex-shrink: 0;
+      }
+
+      &.disabled {
+        opacity: 0.5;
+
+        i {
+          color: hslaGen($grey-color);
+        }
+      }
+    }
+  }
+
+  &__cta {
+    display: block;
+    width: 100%;
+    padding: 1.2rem 1.5rem;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 0.6rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    cursor: pointer;
+    border: none;
+
+    &.primary {
+      background: hslaGen($primary-color);
+      color: hslaGen($white-color);
+      border: 0.2rem solid hslaGen($primary-color);
+
+      &:hover:not(:disabled) {
+        background: hslaGen($blue-ink-color);
+        border-color: hslaGen($blue-ink-color);
+      }
+    }
+
+    &.secondary {
+      background: transparent;
+      color: hslaGen($primary-color);
+      border: 0.2rem solid hslaGen($primary-color);
+
+      &:hover:not(:disabled) {
+        background: hslaGen($primary-color);
+        color: hslaGen($white-color);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Enterprise CTA
+.enterprise-cta {
+  text-align: center;
+  padding: 3.5rem 2rem;
+  background: hslaGen($dark-grey-color, 0.2);
+
+  &__content {
+    max-width: 80rem;
+    margin: 0 auto;
+  }
+
+  &__title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: hslaGen($white-color);
+    margin-bottom: 0.8rem;
+    font-family: "Lato", sans-serif;
+  }
+
+  &__description {
+    font-size: 1.4rem;
+    color: hslaGen($white-color, 0.8);
+    margin-bottom: 1.8rem;
+  }
+
+  &__features {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2.5rem;
+  }
+
+  &__feature {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.3rem;
+    color: hslaGen($white-color);
+
+    i {
+      font-size: 1.8rem;
+      color: hslaGen($secondary-color);
+    }
+  }
+}
+
+// Responsive
+@include breakpoint(120rem, max) {
+  .pricing-cards {
+    padding: 0 2rem 4rem;
+  }
+
+  .pricing-card {
+    width: 30rem;
+
+    &.featured {
+      transform: scale(1);
+
+      &:hover {
+        transform: translateY(-0.8rem);
+      }
+    }
+  }
+}
+
+@include breakpoint(76.8rem, max) {
+  .pricing-cards {
+    flex-direction: column;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .pricing-card {
+    width: 100%;
+    max-width: 36rem;
+  }
+
+  .enterprise-cta__features {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+}

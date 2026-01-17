@@ -204,6 +204,10 @@ $utils: (
   animation: fade 3s linear infinite;
 }
 
+.text-light {
+  color: hslaGen($white-color) !important;
+}
+
 // Helper text styles
 .text-small {
   font-size: 0.875rem;

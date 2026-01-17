@@ -7,6 +7,7 @@ interface LoadingProps {
   onClose?: () => void;
   isCloseable?: boolean;
   showLogo?: boolean;
+  textColor?: "light" | "dark";
   customBtn?: React.ReactNode;
 }
 
@@ -15,6 +16,7 @@ export const Loading: React.FC<LoadingProps> = ({
   description = "Loading",
   onClose,
   isCloseable = false,
+  textColor = "dark",
   showLogo = false,
   customBtn,
 }) => {
@@ -45,7 +47,9 @@ export const Loading: React.FC<LoadingProps> = ({
             <div className={"spinner_ring"}></div>
           </div>
 
-          <div className={"message text-fade"}>
+          <div
+            className={`message text-fade ${textColor === "light" ? "text-light" : ""}`}
+          >
             <h3>{description || "Loading..."}</h3>
           </div>
 

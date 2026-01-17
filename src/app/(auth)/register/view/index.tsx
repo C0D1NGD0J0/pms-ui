@@ -1,15 +1,17 @@
+import Link from "next/link";
 import { ChangeEvent } from "react";
 import { ISignupForm } from "@interfaces/index";
 import { UseFormReturnType } from "@mantine/form";
 import { Button, Form } from "@components/FormElements";
 import {
-  AuthContentHeader,
-  AuthContentFooter,
-  AuthContentBody,
+  ModernAuthLayout,
+  AuthBrandPanel,
+  AuthFormPanel,
 } from "@components/AuthLayout";
 
 import UserInfo from "./UserInfo";
 import CompanyInfo from "./CompanyInfo";
+import SubscriptionPlans from "./SubscriptionPlans";
 
 interface RegisterViewProps {
   form: UseFormReturnType<ISignupForm, (values: ISignupForm) => ISignupForm>;
@@ -17,11 +19,22 @@ interface RegisterViewProps {
   currentStep: number;
   nextStep: () => void;
   prevStep: () => void;
+  goToPlanSelection: () => void;
   handleOnChange: (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     field?: keyof ISignupForm
   ) => void;
   handleSubmit: (values: ISignupForm) => void;
+  selectedPlan: string | null;
+  handleSelectPlan: (
+    plan: "personal" | "starter" | "professional",
+    pricingId: string | null,
+    lookUpKey: string | null,
+    billingInterval: "monthly" | "annual"
+  ) => void;
+  plansData: any;
+  isLoadingPlans: boolean;
+  isPlansError: boolean;
 }
 
 export function RegisterView({
@@ -30,64 +43,144 @@ export function RegisterView({
   currentStep,
   nextStep,
   prevStep,
+  goToPlanSelection,
   handleOnChange,
   handleSubmit,
+  selectedPlan,
+  handleSelectPlan,
+  plansData,
+  isLoadingPlans,
+  isPlansError,
 }: RegisterViewProps) {
+  if (currentStep === 0) {
+    return (
+      <div className="register-plan-wrapper">
+        <SubscriptionPlans
+          onSelectPlan={handleSelectPlan}
+          plansData={plansData}
+          isLoadingPlans={isLoadingPlans}
+          isPlansError={isPlansError}
+        />
+      </div>
+    );
+  }
+
   const renderButtons = (disable = false) => {
-    const isBusnessAccount = form.values.accountType.isCorporate;
-    if (currentStep === 0 && isBusnessAccount) {
+    const isBusinessAccount = form.values.accountType.isEnterpriseAccount;
+    if (currentStep === 1 && isBusinessAccount) {
       return (
-        <Button label="Next" className="btn btn-primary" onClick={nextStep} />
-      );
-    } else if (currentStep === 1 && isBusnessAccount) {
-      return (
-        <>
-          <Button label="Back" className="btn btn-outline" onClick={prevStep} />
+        <div className="btn-group">
           <Button
-            label={`${isPending ? "Processing..." : "Register"}`}
-            className="btn btn-primary"
-            type="submit"
-            disabled={disable}
+            label="Next"
+            onClick={nextStep}
+            iconPosition="right"
+            className="btn-primary btn-block"
+            icon={<i className="bx bx-right-arrow-circle"></i>}
           />
-        </>
+        </div>
+      );
+    } else if (currentStep === 2 && isBusinessAccount) {
+      return (
+        <div className="btn-group">
+          <Button
+            label="Back"
+            onClick={prevStep}
+            className="btn-outline btn-full"
+            icon={<i className="bx bx-arrow-back"></i>}
+          />
+          <Button
+            type="submit"
+            iconPosition="right"
+            disabled={disable || isPending}
+            className="btn-primary btn-full"
+            icon={<i className="bx bxs-user-account"></i>}
+            label={isPending ? "Creating account..." : "Create Account"}
+          />
+        </div>
       );
     } else {
       return (
-        <Button
-          label={`${isPending ? "Processing..." : "Register"}`}
-          className="btn btn-primary"
-          type="submit"
-          disabled={disable}
-        />
+        <div className="btn-group">
+          <Button
+            type="submit"
+            iconPosition="right"
+            disabled={disable || isPending}
+            className="btn-primary btn-block"
+            icon={<i className="bx bxs-user-account "></i>}
+            label={isPending ? "Creating account..." : "Create Account"}
+          />
+        </div>
       );
     }
   };
 
   return (
     <>
-      <AuthContentHeader
-        title="Register"
-        subtitle="Already have an account?"
-        headerLink="/login"
-        headerLinkText="Login"
-      />
-      <AuthContentBody>
-        <Form
-          onSubmit={form.onSubmit(handleSubmit)}
-          id="auth-form"
-          className="auth-form"
-          disabled={isPending}
-          autoComplete="off"
+      <ModernAuthLayout
+        brandContent={
+          <AuthBrandPanel>
+            <i className="bx bx-buildings auth-brand-panel__icon"></i>
+            <h1 className="auth-brand-panel__title">Join PropertyFlow</h1>
+            <p className="auth-brand-panel__subtitle">
+              Start Managing Your Properties Today
+            </p>
+            <div className="auth-brand-panel__stats">
+              <div className="auth-brand-panel__stat">
+                <span className="auth-brand-panel__stat-value">10K+</span>
+                <span className="auth-brand-panel__stat-label">
+                  Active Users
+                </span>
+              </div>
+              <div className="auth-brand-panel__stat">
+                <span className="auth-brand-panel__stat-value">50K+</span>
+                <span className="auth-brand-panel__stat-label">
+                  Properties Managed
+                </span>
+              </div>
+              <div className="auth-brand-panel__stat">
+                <span className="auth-brand-panel__stat-value">$2B+</span>
+                <span className="auth-brand-panel__stat-label">
+                  Rent Collected
+                </span>
+              </div>
+            </div>
+          </AuthBrandPanel>
+        }
+      >
+        <AuthFormPanel
+          title={
+            currentStep === 1 ? "Create Your Account" : "Company Information"
+          }
+          subtitle={
+            selectedPlan
+              ? `Selected Plan: ${selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)}`
+              : undefined
+          }
+          footer={
+            <>
+              Already have an account? <Link href="/login">Sign in</Link>
+            </>
+          }
         >
-          {currentStep === 0 ? (
-            <UserInfo formContext={form} onChange={handleOnChange} />
-          ) : (
-            <CompanyInfo formContext={form} onChange={handleOnChange} />
-          )}
-          <div className="action-fields">{renderButtons(!form.isValid())}</div>
-        </Form>
-      </AuthContentBody>
-      <AuthContentFooter />
+          <Form
+            onSubmit={form.onSubmit(handleSubmit)}
+            id="auth-form"
+            disabled={isPending}
+            autoComplete="off"
+          >
+            {currentStep === 1 ? (
+              <UserInfo
+                formContext={form}
+                onChange={handleOnChange}
+                onChangePlan={goToPlanSelection}
+              />
+            ) : (
+              <CompanyInfo formContext={form} onChange={handleOnChange} />
+            )}
+            {renderButtons(!form.isValid())}
+          </Form>
+        </AuthFormPanel>
+      </ModernAuthLayout>
     </>
   );
 }

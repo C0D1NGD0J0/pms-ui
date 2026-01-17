@@ -96,7 +96,7 @@ export function useAccountActivationLogic({
         response.msg || "Your account has been successfully activated."
       );
       setIsSuccess(true);
-      router.push("/login");
+      router.push("/register");
     } catch (error: unknown) {
       openNotification("error", "Activation Failed", errorFormatter(error));
       setShowResendActivation(true); // this will show the resend activation link

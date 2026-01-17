@@ -7,6 +7,7 @@ import {
   ErrorDisplayOptions,
   APIErrorResponse,
   APIErrorHandler,
+  errorLogger,
 } from "@utils/errorHandler";
 
 export function useErrorHandler() {
@@ -24,11 +25,22 @@ export function useErrorHandler() {
       const errorResponse: APIErrorResponse = APIErrorHandler.parseError(error);
 
       if (APIErrorHandler.shouldLog(errorResponse)) {
-        console.error("API Error:", {
-          error: errorResponse,
-          originalError: error,
-          timestamp: new Date().toISOString(),
-        });
+        errorLogger.log(errorResponse, "error");
+      }
+
+      if (errorResponse.type === "validation") {
+        errorLogger.logValidationError(errorResponse);
+      }
+
+      if (errorResponse.type === "network") {
+        errorLogger.logNetworkError(errorResponse);
+      }
+
+      if (
+        errorResponse.type === "authentication" ||
+        errorResponse.type === "authorization"
+      ) {
+        errorLogger.logAuthError(errorResponse);
       }
 
       if (APIErrorHandler.shouldReload(errorResponse)) {
@@ -107,10 +119,33 @@ export function useErrorHandler() {
     [handleError]
   );
 
+  const handleMutationError = useCallback(
+    (error: any, customMessage?: string) => {
+      return handleError(error, {
+        showNotification: true,
+        showFieldErrors: false,
+        fallbackMessage: customMessage,
+      });
+    },
+    [handleError]
+  );
+
+  const handleQueryError = useCallback(
+    (error: any) => {
+      return handleError(error, {
+        showNotification: true,
+        showFieldErrors: false,
+      });
+    },
+    [handleError]
+  );
+
   return {
     handleError,
     handleValidationError,
     handleSilentError,
+    handleMutationError,
+    handleQueryError,
     parseError: APIErrorHandler.parseError,
   };
 }

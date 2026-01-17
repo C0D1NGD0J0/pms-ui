@@ -25,7 +25,6 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
     isLoading: isAuthLoading,
   } = useCurrentUser();
 
-  // Handle invite completion logic
   useEffect(() => {
     const fromInvite = searchParams.get("fromInvite");
     const accountCuid = searchParams.get("accountCuid");
@@ -53,7 +52,6 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
     }
   }, [searchParams, setClient, publish, router, setProcessingInvite]);
 
-  // Hide loading when auth setup is complete
   useEffect(() => {
     if (isLoading && user && !isAuthLoading) {
       setProcessingInvite(false);
