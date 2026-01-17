@@ -5,9 +5,9 @@ import { ChangeEvent, useState } from "react";
 import { ISignupForm } from "@interfaces/index";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
-import { SignupSchema } from "@validations/auth.validations";
-import { useNotification } from "@hooks/useNotification";
 import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useNotification } from "@hooks/useNotification";
+import { SignupSchema } from "@validations/auth.validations";
 
 import { useGetSubscriptionPlans } from "./queries/useGetSubscriptionPlans";
 
@@ -33,31 +33,6 @@ const user1 = {
     website: "www.acmerealty.com",
     companyEmail: "contact@acmerealty.com",
     companyPhone: "2125551200",
-  },
-};
-
-const user2 = {
-  firstName: "Michael",
-  lastName: "Chen",
-  email: "michael.chen@urbanproperties.com",
-  password: "Password1",
-  cpassword: "Password1",
-  location: "San Francisco, CA",
-  accountType: {
-    planId: "",
-    planName: "professional",
-    isEnterpriseAccount: true,
-    lookUpKey: undefined,
-    billingInterval: "annual" as const,
-  },
-  phoneNumber: "4155559876",
-  displayName: "Michael Chen",
-  companyProfile: {
-    tradingName: "Urban Properties Inc",
-    legalEntityName: "Urban Properties Incorporated",
-    website: "www.urbanproperties.com",
-    companyEmail: "info@urbanproperties.com",
-    companyPhone: "4155559800",
   },
 };
 
@@ -144,9 +119,8 @@ export function useRegisterLogic() {
       );
       form.reset();
       router.replace("/login");
-    } catch (error: any) {
-      // Error handling is now centralized via useMutationWithErrorHandler
-      // The global error handler will display the appropriate message
+    } catch {
+      // Error handling is now centralized via global error handler
     }
   };
 

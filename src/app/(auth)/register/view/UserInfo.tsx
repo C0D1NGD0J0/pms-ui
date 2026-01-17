@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
+import { UseFormReturnType } from "@mantine/form";
 import { useGeolocation } from "@hooks/useGeolocation";
 import { useNotification } from "@hooks/useNotification";
-import { UseFormReturnType } from "@mantine/form";
 import { ISignupForm } from "@interfaces/auth.interface";
 import {
   PasswordStrengthIndicator,

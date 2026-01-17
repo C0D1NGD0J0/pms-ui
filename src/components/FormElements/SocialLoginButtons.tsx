@@ -10,7 +10,6 @@ interface SocialLoginButtonsProps {
 export const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   onGoogleClick,
   onMicrosoftClick,
-  disabled = false,
 }) => {
   const handleGoogleClick = () => {
     if (onGoogleClick) {

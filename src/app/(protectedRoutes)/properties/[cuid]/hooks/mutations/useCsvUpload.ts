@@ -3,9 +3,9 @@ import { propertyService } from "@services/index";
 import { useMutation } from "@tanstack/react-query";
 import { csvUploadSchema } from "@validations/index";
 import { useCurrentUser } from "@hooks/useCurrentUser";
+import { zodResolver } from "mantine-form-zod-resolver";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { useNotification } from "@hooks/useNotification";
-import { zodResolver } from "mantine-form-zod-resolver";
 import { CsvUploadValues } from "@interfaces/property.interface";
 
 export interface ValidationResult {

@@ -16,24 +16,6 @@ interface UseGeolocationReturn {
   error: string | null;
 }
 
-/**
- * Custom hook for detecting user's geolocation and formatting it as a readable address
- * Uses browser's Geolocation API and BigDataCloud reverse geocoding service
- *
- * @returns {UseGeolocationReturn} Object containing detectLocation function, loading state, and error state
- *
- * @example
- * const { detectLocation, isDetecting, error } = useGeolocation();
- *
- * const handleClick = async () => {
- *   try {
- *     const location = await detectLocation();
- *     console.log(location); // "New York, NY United States"
- *   } catch (err) {
- *     console.error(err);
- *   }
- * };
- */
 export function useGeolocation(): UseGeolocationReturn {
   const [isDetecting, setIsDetecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,7 +58,7 @@ export function useGeolocation(): UseGeolocationReturn {
 
             setIsDetecting(false);
             resolve(location);
-          } catch (err) {
+          } catch {
             const errorMsg = "Could not detect location. Please try again.";
             setError(errorMsg);
             setIsDetecting(false);
