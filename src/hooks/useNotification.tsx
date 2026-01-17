@@ -213,7 +213,11 @@ const NotificationProvider = ({ children }: { children: React.ReactNode }) => {
       openNotification(type, message, description || "", undefined);
     };
 
-    return setNotificationBridge(notificationAdapter);
+    setNotificationBridge(notificationAdapter);
+
+    return () => {
+      setNotificationBridge(null);
+    };
   }, []);
 
   useEffect(() => {
