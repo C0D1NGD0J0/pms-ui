@@ -273,7 +273,7 @@
 @include breakpoint(76.8rem, max) {
   .custom-select-wrapper {
     .select-trigger {
-      font-size: 1.6rem; // Prevent zoom on iOS
+      font-size: 1.6rem; // Prevent automatic zoom on iOS Safari (inputs < 16px font-size trigger zoom)
       padding: 1rem 1.2rem;
       padding-right: 3.5rem;
     }
