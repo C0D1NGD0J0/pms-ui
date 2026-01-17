@@ -328,11 +328,11 @@ let notificationBridge: ((
 ) => void) | null = null;
 
 export function setNotificationBridge(
-  bridge: (
+  bridge: ((
     type: "success" | "error" | "info" | "warning",
     message: string,
     description?: string
-  ) => void
+  ) => void) | null
 ): void {
   notificationBridge = bridge;
 }
