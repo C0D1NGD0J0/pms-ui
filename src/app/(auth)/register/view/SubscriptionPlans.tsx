@@ -125,7 +125,7 @@ export default function SubscriptionPlans({
               },
               annual: {
                 priceId: null,
-                priceInCents: 46800, // $49 * 12 * 0.8 = $470.40/year
+                priceInCents: 47040, // $49 * 12 * 0.8 = $470.40/year
                 displayPrice: "$39", // Monthly equivalent when billed annually
                 savingsPercent: 20,
                 savingsDisplay: "Save 20%",
