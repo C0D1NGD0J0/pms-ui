@@ -21,7 +21,7 @@ const user1 = {
   accountType: {
     planId: "",
     planName: "personal",
-    isEnterpriseAccount: true,
+    isEnterpriseAccount: false,
     lookUpKey: undefined,
     billingInterval: "monthly" as const,
   },
