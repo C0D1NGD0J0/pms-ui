@@ -4,7 +4,8 @@
  */
 
 export enum UserRole {
-  ADMIN = 5, // Full system access
+  SUPER_ADMIN = 6, // Account owner with billing access
+  ADMIN = 5, // Full system access (no billing)
   MANAGER = 4, // Department management
   STAFF = 3, // Regular operations
   TENANT = 2, // Tenant-specific features
@@ -279,6 +280,7 @@ export const getAccessibleNavigation = (userRole: UserRole): string[] => {
  */
 export const getRoleName = (role: UserRole): string => {
   const roleNames = {
+    [UserRole.SUPER_ADMIN]: "Super Admin",
     [UserRole.ADMIN]: "Admin",
     [UserRole.MANAGER]: "Manager",
     [UserRole.STAFF]: "Staff",
@@ -295,8 +297,13 @@ export const canManageRole = (
   managerRole: UserRole,
   targetRole: UserRole
 ): boolean => {
-  // Admins can manage everyone
-  if (managerRole === UserRole.ADMIN) return true;
+  // Super admins can manage everyone
+  if (managerRole === UserRole.SUPER_ADMIN) return true;
+
+  // Admins can manage everyone except super admins
+  if (managerRole === UserRole.ADMIN) {
+    return targetRole !== UserRole.SUPER_ADMIN;
+  }
 
   // Managers can manage staff, tenants, and vendors
   if (managerRole === UserRole.MANAGER) {

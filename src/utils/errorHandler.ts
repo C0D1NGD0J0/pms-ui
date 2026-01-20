@@ -321,18 +321,22 @@ export const errorLogger = new ErrorLogger();
  * Notification bridge - allows utilities to call openNotification
  * Set this from your useNotification hook in a layout/provider component
  */
-let notificationBridge: ((
-  type: "success" | "error" | "info" | "warning",
-  message: string,
-  description?: string
-) => void) | null = null;
+let notificationBridge:
+  | ((
+      type: "success" | "error" | "info" | "warning",
+      message: string,
+      description?: string
+    ) => void)
+  | null = null;
 
 export function setNotificationBridge(
-  bridge: ((
-    type: "success" | "error" | "info" | "warning",
-    message: string,
-    description?: string
-  ) => void) | null
+  bridge:
+    | ((
+        type: "success" | "error" | "info" | "warning",
+        message: string,
+        description?: string
+      ) => void)
+    | null
 ): void {
   notificationBridge = bridge;
 }

@@ -55,11 +55,27 @@ export interface IClientSettings {
   lang: string;
 }
 
+export interface IClientSubscription {
+  planName: string;
+  status: string;
+  currentProperties: number;
+  currentUnits: number;
+  currentSeats: number;
+  billingCycle?: "monthly" | "annual";
+  nextBillingDate?: string;
+  amount?: number;
+  paymentMethod?: {
+    type: string;
+    last4: string;
+    expiry: string;
+  };
+}
+
 export interface IClient {
   cuid: string;
   accountType: IClientAccountType;
   identification: Icuidentification;
-  subscription?: string;
+  subscription?: IClientSubscription;
   isVerified: boolean;
   accountAdmin:
     | string
