@@ -1,3 +1,4 @@
+import storage from "@utils/storage";
 import React, { ReactNode, useEffect, useState } from "react";
 
 interface FormSectionProps {
@@ -21,13 +22,13 @@ export const FormSection: React.FC<FormSectionProps> = ({
 
   const [isCollapsed, setIsCollapsed] = useState(() => {
     if (!collapsable) return false;
-    const saved = localStorage.getItem(storageKey);
-    return saved ? JSON.parse(saved) : defaultCollapsed;
+    const saved = storage.get<boolean>(storageKey, "local");
+    return saved !== null ? saved : defaultCollapsed;
   });
 
   useEffect(() => {
     if (collapsable) {
-      localStorage.setItem(storageKey, JSON.stringify(isCollapsed));
+      storage.set(storageKey, isCollapsed, "local");
     }
   }, [isCollapsed, storageKey, collapsable]);
 

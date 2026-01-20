@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useTheme } from "@theme/index";
+import storage from "@utils/storage";
 import { useEvent } from "@hooks/event";
+import { useTheme } from "@theme/index";
 import { usePathname } from "next/navigation";
 import { EventTypes } from "@services/events";
 import React, { useEffect, useState } from "react";
@@ -32,27 +33,22 @@ export const Sidebar = () => {
     }
   };
 
-  // Initialize sidebar state from localStorage and update main element class
   useEffect(() => {
-    const savedState = localStorage.getItem("sidebarCollapsed");
-    const isCollapsed = savedState === "true";
+    const isCollapsed = storage.get<boolean>("sidebarCollapsed", "local");
 
-    if (savedState !== null) {
+    if (isCollapsed !== null) {
       setIsSidebarCollapsed(isCollapsed);
-      // Apply initial class
       setTimeout(() => updateMainElementClass(isCollapsed), 0);
     }
   }, []);
 
-  // Toggle sidebar state
   const toggleSidebar = () => {
     const newState = !isSidebarCollapsed;
     setIsSidebarCollapsed(newState);
-    localStorage.setItem("sidebarCollapsed", String(newState));
+    storage.set("sidebarCollapsed", newState, "local");
     updateMainElementClass(newState);
   };
 
-  // Get menu sections from the hook
   const mainMenuSection = menuSections.find(
     (section) => section.type === "main"
   );
@@ -81,12 +77,10 @@ export const Sidebar = () => {
   const toggleUsersDropdown = (e: React.MouseEvent) => {
     e.preventDefault();
 
-    // If sidebar is collapsed, first expand it, then open dropdown
     if (isSidebarCollapsed) {
       setIsSidebarCollapsed(false);
-      localStorage.setItem("sidebarCollapsed", "false");
+      storage.set("sidebarCollapsed", false, "local");
       updateMainElementClass(false);
-      // set a small timeout to allow the sidebar to expand before opening dropdown
       setTimeout(() => {
         setIsUsersDropdownOpen(true);
       }, 150);
@@ -106,13 +100,11 @@ export const Sidebar = () => {
     }
   }, [isSidebarCollapsed, isUsersDropdownOpen]);
 
-  // Close dropdown when pathname changes (navigation occurs)
   useEffect(() => {
     setIsUsersDropdownOpen(false);
     setIsMobileMenuOpen(false);
   }, [pathname]);
 
-  // Listen for mobile menu toggle event using event system
   useEvent(EventTypes.MOBILE_MENU_TOGGLE, () => {
     setIsMobileMenuOpen((prev) => !prev);
   });
@@ -204,7 +196,6 @@ export const Sidebar = () => {
             </li>
           )}
 
-          {/* Bottom Menu Items */}
           {bottomMenuItems.map((item) => {
             const resolvedPath = getResolvedPath(item.path);
             return (
@@ -228,7 +219,6 @@ export const Sidebar = () => {
             );
           })}
 
-          {/* Theme Toggle as last item */}
           <li className="sidebar__navbar-item theme-item">
             <div className="theme">
               <div className="theme__icons">

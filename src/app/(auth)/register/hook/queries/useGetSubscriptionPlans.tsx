@@ -12,7 +12,7 @@ export const useGetSubscriptionPlans = () => {
 
   return {
     data: query.data,
-    totalCount: query.data?.pagination?.total || 0,
+    totalCount: query.data?.length || 0,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,

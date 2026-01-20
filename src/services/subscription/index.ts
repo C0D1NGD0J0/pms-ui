@@ -1,10 +1,6 @@
 import axios from "@configs/axios";
 import { buildNestedQuery } from "@utils/helpers";
-import {
-  IServerResponseWithPagination,
-  ISubscriptionPlan,
-  NestedQueryParams,
-} from "@src/interfaces";
+import { ISubscriptionPlan, NestedQueryParams } from "@src/interfaces";
 
 class SubscriptionService {
   private axiosConfig = {};
@@ -20,9 +16,10 @@ class SubscriptionService {
         url += `?${queryString}`;
       }
 
-      const result = await axios.get<
-        IServerResponseWithPagination<ISubscriptionPlan[]>
-      >(url, this.axiosConfig);
+      const result = await axios.get<{ data: ISubscriptionPlan[] }>(
+        url,
+        this.axiosConfig
+      );
       return result.data;
     } catch (error) {
       console.error("Error fetching subscription plans:", error);

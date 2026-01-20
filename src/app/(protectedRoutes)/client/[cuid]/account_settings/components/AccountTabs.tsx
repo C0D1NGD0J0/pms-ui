@@ -3,6 +3,7 @@ import { IClient } from "@src/interfaces";
 import { Form } from "@components/FormElements";
 import React, { useState, useMemo } from "react";
 import { UseFormReturnType } from "@mantine/form";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { TabContainer, TabListItem, TabList } from "@components/Tab/components";
 import { UpdateClientDetailsFormData } from "@src/validations/client.validations";
 import {
@@ -31,6 +32,7 @@ export function AccountTabs({
   clientInfo,
 }: AccountTabsProps) {
   const [activeTab, setActiveTab] = useState("profile");
+  const { isSuperAdmin } = useUnifiedPermissions();
 
   const tabs = useMemo(
     () => [
@@ -57,7 +59,7 @@ export function AccountTabs({
       {
         key: "subscription",
         tabLabel: "Subscription",
-        isVisible: true,
+        isVisible: isSuperAdmin,
       },
       {
         key: "admin-users",
@@ -65,7 +67,7 @@ export function AccountTabs({
         isVisible: true,
       },
     ],
-    [clientInfo.accountType.isEnterpriseAccount]
+    [clientInfo.accountType.isEnterpriseAccount, isSuperAdmin]
   );
 
   const handleTabChange = async (newTab: string) => {
