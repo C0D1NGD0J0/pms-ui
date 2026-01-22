@@ -11,28 +11,27 @@ import { SignupSchema } from "@validations/auth.validations";
 
 import { useGetSubscriptionPlans } from "./queries/useGetSubscriptionPlans";
 
-const user1 = {
-  firstName: "Sarah",
-  lastName: "Johnson",
-  email: "sarah.johnson@acmerealty.com",
-  password: "Password1",
-  cpassword: "Password1",
-  location: "New York, NY",
+const user2 = {
+  firstName: "John",
+  lastName: "Dangote",
+  email: "john.dangote@example.com",
+  password: "Password",
+  cpassword: "Password",
+  location: "Lagos, Nigeria",
   accountType: {
     planId: "",
-    planName: "personal",
     isEnterpriseAccount: false,
     lookUpKey: undefined,
     billingInterval: "monthly" as const,
   },
-  phoneNumber: "2125551234",
-  displayName: "Sarah Johnson",
+  phoneNumber: "2348105301122",
+  displayName: "John Dangote",
   companyProfile: {
-    tradingName: "Acme Realty Group",
-    legalEntityName: "Acme Realty Group LLC",
-    website: "www.acmerealty.com",
-    companyEmail: "contact@acmerealty.com",
-    companyPhone: "2125551200",
+    tradingName: "Dangote Realty Group",
+    legalEntityName: "Dangote Realty Group LLC",
+    website: "www.dangoterealty.com",
+    companyEmail: "contact@dangoterealty.com",
+    companyPhone: "2348105301122",
   },
 };
 
@@ -40,7 +39,6 @@ export function useRegisterLogic() {
   const { handleMutationError } = useErrorHandler();
   const { mutateAsync, isPending } = useMutation({
     mutationFn: authService.signup,
-    // Global error handler logs automatically, we just need to show notification
     onError: (error) => handleMutationError(error, "Registration failed"),
   });
   const { openNotification } = useNotification();
@@ -51,18 +49,26 @@ export function useRegisterLogic() {
   } = useGetSubscriptionPlans();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
+  const [accountType, setAccountType] = useState<
+    "business" | "individual" | null
+  >(null);
   const [selectedPlan, setSelectedPlan] = useState<
-    "personal" | "starter" | "professional" | null
+    "basic" | "starter" | "professional" | null
   >(null);
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
     validateInputOnChange: true,
-    initialValues: user1,
+    initialValues: user2,
     validate: zodResolver(SignupSchema) as any,
   });
 
+  const handleSelectAccountType = (type: "business" | "individual") => {
+    setAccountType(type);
+    setCurrentStep(1);
+  };
+
   const handleSelectPlan = (
-    plan: "personal" | "starter" | "professional",
+    plan: "basic" | "starter" | "professional",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"
@@ -70,12 +76,11 @@ export function useRegisterLogic() {
     setSelectedPlan(plan);
     form.setFieldValue("accountType", {
       planId: pricingId || "",
-      planName: plan,
       lookUpKey: lookUpKey || undefined,
-      isEnterpriseAccount: plan === "personal" || plan === "professional",
+      isEnterpriseAccount: accountType === "business",
       billingInterval,
     });
-    setCurrentStep(1);
+    setCurrentStep(2);
   };
 
   const nextStep = () => {
@@ -88,6 +93,10 @@ export function useRegisterLogic() {
   };
 
   const goToPlanSelection = () => {
+    setCurrentStep(1);
+  };
+
+  const goToAccountTypeSelection = () => {
     setCurrentStep(0);
   };
 
@@ -130,7 +139,10 @@ export function useRegisterLogic() {
     currentStep,
     nextStep,
     prevStep,
+    accountType,
     goToPlanSelection,
+    goToAccountTypeSelection,
+    handleSelectAccountType,
     handleOnChange,
     handleSubmit,
     selectedPlan,

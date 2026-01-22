@@ -7,7 +7,7 @@ import { IServerSubscriptionPlan } from "@interfaces/subscription.interface";
 
 interface PlanSelectionProps {
   onSelectPlan: (
-    plan: "personal" | "starter" | "professional",
+    plan: "basic" | "starter" | "professional",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"
@@ -19,7 +19,7 @@ interface PlanSelectionProps {
 
 // Icon mapping based on plan name
 const PLAN_ICONS: Record<string, string> = {
-  personal: "bx-user",
+  basic: "bx-user",
   starter: "bx-briefcase",
   professional: "bx-buildings",
 };
@@ -53,8 +53,8 @@ export default function SubscriptionPlans({
       ? [...plansData].sort((a, b) => a.displayOrder - b.displayOrder)
       : [
           {
-            planName: "personal",
-            name: "Personal",
+            planName: "basic",
+            name: "Basic",
             description: "Perfect for individual landlords",
             displayOrder: 1,
             isFeatured: false,
@@ -235,7 +235,7 @@ export default function SubscriptionPlans({
               : plan.pricing.monthly;
             const billingInterval = isAnnual ? "annual" : "monthly";
             onSelectPlan(
-              plan.planName as "personal" | "starter" | "professional",
+              plan.planName as "basic" | "starter" | "professional",
               selectedPricing.priceId,
               selectedPricing.lookUpKey,
               billingInterval

@@ -29,7 +29,6 @@ export const SignupSchema = z
     location: z.string().min(3, { message: "Location is required" }),
     accountType: z.object({
       planId: z.string().min(1, { message: "Plan is required" }).optional(),
-      planName: z.string().min(1, { message: "Plan name is required" }),
       isEnterpriseAccount: z.boolean(),
       lookUpKey: z.string().optional(),
       billingInterval: z.enum(["monthly", "annual"]),
