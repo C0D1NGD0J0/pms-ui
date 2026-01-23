@@ -8,7 +8,6 @@ import { useCurrentUser } from "@hooks/useCurrentUser";
 import { AnalyticCard, InsightCard } from "@components/Cards";
 import { HorizontalBarChart, DonutChart } from "@components/Charts";
 import {
-  PanelsWrapper,
   PanelContent,
   PanelHeader,
   Panel,
@@ -30,28 +29,32 @@ import {
 export default function Dashboard() {
   const { user } = useCurrentUser();
 
+  const today = new Date();
+  const greeting = today.getHours() < 12
+    ? "Good morning"
+    : today.getHours() < 18
+    ? "Good afternoon"
+    : "Good evening";
+
   return (
     <div className="page admin-dashboard">
       <PageHeader
-        title="Dashboard"
-        subtitle={`Welcome ${user?.displayName}, it's ${new Intl.DateTimeFormat(
-          "en-US",
-          {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }
-        ).format(new Date())}`}
+        title={`${greeting}, ${user?.displayName?.split(' ')[0] || 'there'}!`}
+        subtitle={new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }).format(today)}
         headerBtn={
-          <Link className="btn btn-success" href={"/properties/new"}>
+          <Link className="btn btn-primary" href={"/properties/new"}>
             <i className="bx bx-plus-circle"></i>
-            Add new property
+            Add Property
           </Link>
         }
       />
 
-      <div className="insights">
+      <div className="dashboard-insights">
         {insightCardsData.map((card) => (
           <InsightCard
             key={card.id}
@@ -64,83 +67,84 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <div className="flex-row">
-        <PanelsWrapper>
-          <Panel>
+      <div className="dashboard-grid">
+        <div className="dashboard-section dashboard-section--dual">
+          <Panel className="dashboard-panel">
             <Table
               withHeader
-              headerTitle="Service Requests"
+              headerTitle="Recent Service Requests"
               columns={serviceRequestColumns}
               dataSource={serviceRequests}
-              pagination={{ pageSize: 4 }}
+              pagination={{ pageSize: 5 }}
               rowKey="id"
             />
           </Panel>
-          <Panel>
+          <Panel className="dashboard-panel">
             <Table
               withHeader
               headerTitle="Upcoming Payments"
               columns={paymentColumns}
               dataSource={payments}
-              pagination={{ pageSize: 4 }}
+              pagination={{ pageSize: 5 }}
               rowKey="id"
             />
           </Panel>
-        </PanelsWrapper>
-      </div>
+        </div>
 
-      <div className="flex-row">
-        <PanelsWrapper>
-          <Panel>
-            <Table
-              headerTitle="Lease Status"
-              columns={leaseStatusColumns}
-              dataSource={leaseStatuses}
-              pagination={{ pageSize: 4 }}
-              rowKey="id"
-              withHeader
-            />
-          </Panel>
-        </PanelsWrapper>
-      </div>
-
-      <div className="flex-row">
-        <PanelsWrapper>
-          <Panel>
+        <div className="dashboard-section dashboard-section--full">
+          <Panel className="dashboard-panel">
             <Table
               withHeader
-              headerTitle="Occupancy by Property"
+              headerTitle="Occupancy Overview"
               columns={occupancyColumns}
               dataSource={occupancyData}
               pagination={{ pageSize: 5 }}
               rowKey="id"
             />
           </Panel>
+        </div>
 
-          <Panel header={{ title: "Maintenance Request Analysis" }}>
-            <PanelHeader header={{ title: "Maintenance Request Analysis" }} />
+        <div className="dashboard-section dashboard-section--dual">
+          <Panel className="dashboard-panel">
+            <PanelHeader header={{ title: "Priority Distribution" }} />
             <PanelContent>
-              <div className="analytics-cards">
-                <AnalyticCard
-                  title="By Priority"
-                  data={priorityData}
-                  nameKey={"name"}
-                  valueKey={"value"}
-                  showLegend
-                >
-                  <DonutChart data={priorityData} className="priority-chart" />
-                </AnalyticCard>
-
-                <AnalyticCard title="Service type" data={serviceTypeData}>
-                  <HorizontalBarChart
-                    data={serviceTypeData}
-                    className="horizontal-bar-chart"
-                  />
-                </AnalyticCard>
-              </div>
+              <AnalyticCard
+                title="By Priority"
+                data={priorityData}
+                nameKey={"name"}
+                valueKey={"value"}
+                showLegend
+              >
+                <DonutChart data={priorityData} className="priority-chart" />
+              </AnalyticCard>
             </PanelContent>
           </Panel>
-        </PanelsWrapper>
+
+          <Panel className="dashboard-panel">
+            <PanelHeader header={{ title: "Service Requests by Type" }} />
+            <PanelContent>
+              <AnalyticCard title="By Service Type" data={serviceTypeData}>
+                <HorizontalBarChart
+                  data={serviceTypeData}
+                  className="horizontal-bar-chart"
+                />
+              </AnalyticCard>
+            </PanelContent>
+          </Panel>
+        </div>
+
+        <div className="dashboard-section dashboard-section--full">
+          <Panel className="dashboard-panel">
+            <Table
+              headerTitle="Active Leases"
+              columns={leaseStatusColumns}
+              dataSource={leaseStatuses}
+              pagination={{ pageSize: 6 }}
+              rowKey="id"
+              withHeader
+            />
+          </Panel>
+        </div>
       </div>
     </div>
   );

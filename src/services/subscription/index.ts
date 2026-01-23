@@ -26,6 +26,59 @@ class SubscriptionService {
       throw error;
     }
   }
+
+  async initSubscriptionPayment(
+    cuid: string,
+    data: {
+      priceId?: string;
+      lookupKey?: string;
+      billingInterval?: "monthly" | "annual";
+      successUrl: string;
+      cancelUrl: string;
+    }
+  ) {
+    try {
+      const result = await axios.post<{
+        success: boolean;
+        message: string;
+        data: {
+          checkoutUrl: string;
+          sessionId: string;
+        };
+      }>(
+        `${this.baseUrl}/${cuid}/init-subscription-payment`,
+        data,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error initializing subscription payment:", error);
+      throw error;
+    }
+  }
+
+  async downgradeToEssential(cuid: string) {
+    try {
+      const result = await axios.post<{
+        success: boolean;
+        message: string;
+        data: {
+          subscription: {
+            planName: string;
+            status: string;
+          };
+        };
+      }>(
+        `${this.baseUrl}/${cuid}/downgrade-to-essential`,
+        {},
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error downgrading subscription:", error);
+      throw error;
+    }
+  }
 }
 
 export const subscriptionService = new SubscriptionService();

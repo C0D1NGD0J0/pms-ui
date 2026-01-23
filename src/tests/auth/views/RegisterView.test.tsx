@@ -9,10 +9,17 @@ const mockProps = {
   currentStep: 0,
   nextStep: jest.fn(),
   prevStep: jest.fn(),
+  accountType: null as "business" | "individual" | null,
+  goToPlanSelection: jest.fn(),
+  goToAccountTypeSelection: jest.fn(),
+  handleSelectAccountType: jest.fn(),
   handleOnChange: jest.fn(),
   handleSubmit: jest.fn(),
   selectedPlan: null as string | null,
   handleSelectPlan: jest.fn(),
+  plansData: [],
+  isLoadingPlans: false,
+  isPlansError: false,
 };
 
 function RegisterViewWrapper(props: Partial<typeof mockProps> = {}) {
@@ -26,8 +33,8 @@ function RegisterViewWrapper(props: Partial<typeof mockProps> = {}) {
       location: "",
       accountType: {
         planId: "",
-        planName: "",
         isEnterpriseAccount: false,
+        billingInterval: "monthly",
       },
       phoneNumber: "",
       displayName: "",
@@ -115,9 +122,9 @@ describe("RegisterView Component", () => {
           cpassword: "",
           location: "",
           accountType: {
-            planId: "starter",
-            planName: "Starter",
+            planId: "growth",
             isEnterpriseAccount: true,
+            billingInterval: "monthly",
           },
           phoneNumber: "",
           displayName: "",
@@ -136,7 +143,7 @@ describe("RegisterView Component", () => {
           form={form}
           {...mockProps}
           currentStep={2}
-          selectedPlan="starter"
+          selectedPlan="growth"
         />
       );
     }
@@ -162,9 +169,9 @@ describe("RegisterView Component", () => {
           cpassword: "",
           location: "",
           accountType: {
-            planId: "starter",
-            planName: "Starter",
+            planId: "growth",
             isEnterpriseAccount: true,
+            billingInterval: "monthly",
           },
           phoneNumber: "",
           displayName: "",
@@ -183,7 +190,7 @@ describe("RegisterView Component", () => {
           form={form}
           {...mockProps}
           currentStep={1}
-          selectedPlan="starter"
+          selectedPlan="growth"
         />
       );
     }
@@ -204,9 +211,9 @@ describe("RegisterView Component", () => {
           cpassword: "",
           location: "",
           accountType: {
-            planId: "starter",
-            planName: "Starter",
+            planId: "growth",
             isEnterpriseAccount: true,
+            billingInterval: "monthly",
           },
           phoneNumber: "",
           displayName: "",
@@ -225,7 +232,7 @@ describe("RegisterView Component", () => {
           form={form}
           {...mockProps}
           currentStep={2}
-          selectedPlan="starter"
+          selectedPlan="growth"
         />
       );
     }

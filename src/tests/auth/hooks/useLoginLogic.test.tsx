@@ -48,7 +48,7 @@ describe("useLoginLogic Hook", () => {
     const mockResponse = {
       msg: "Login successful",
       accounts: [],
-      activeAccount: { cuid: "123", displayName: "Test User" },
+      activeAccount: { cuid: "123", clientDisplayName: "Test User" },
     };
     mockAuthService.login.mockResolvedValue(mockResponse);
 
@@ -79,10 +79,10 @@ describe("useLoginLogic Hook", () => {
     const mockResponse = {
       msg: "Login successful",
       accounts: [
-        { cuid: "123", displayName: "Account 1" },
-        { cuid: "456", displayName: "Account 2" },
+        { cuid: "123", clientDisplayName: "Account 1" },
+        { cuid: "456", clientDisplayName: "Account 2" },
       ],
-      activeAccount: { cuid: "123", displayName: "Account 1" },
+      activeAccount: { cuid: "123", clientDisplayName: "Account 1" },
     };
     mockAuthService.login.mockResolvedValue(mockResponse);
 

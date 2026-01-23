@@ -16,7 +16,7 @@ export type ILoginForm = z.infer<typeof LoginSchema>;
 
 export interface IUserSubscription {
   plan: {
-    name: "personal" | "starter" | "professional";
+    name: "essential" | "growth" | "portfolio";
     status: "active" | "inactive" | "pending" | "expired";
     billingInterval: "monthly" | "annual";
   };

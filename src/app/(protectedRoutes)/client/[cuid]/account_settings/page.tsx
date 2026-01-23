@@ -134,8 +134,7 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
       <AccountOverview
         accountStats={{
           isVerified: clientInfo.isVerified,
-          planName: clientInfo.accountType.planName,
-          planId: clientInfo.accountType.planId,
+          planName: clientInfo.subscription?.planName,
           totalUsers: clientInfo.clientStats.totalUsers,
           totalProperties: clientInfo.clientStats.totalProperties,
         }}

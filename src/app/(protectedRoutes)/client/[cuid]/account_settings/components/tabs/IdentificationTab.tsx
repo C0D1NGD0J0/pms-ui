@@ -26,7 +26,6 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
   const form = clientForm;
   const isEditMode = !!clientForm;
 
-  // Helper to format dates for display
   const formatDateForInput = (date: string | Date | null) => {
     if (!date) return "";
     if (typeof date === "string") {
@@ -35,7 +34,6 @@ export const IdentificationTab: React.FC<IdentificationTabProps> = ({
     return date.toISOString().split("T")[0];
   };
 
-  // Get current values from form or fallback to clientInfo
   const currentIdentification = isEditMode
     ? form?.values.identification || clientInfo.identification
     : clientInfo.identification;

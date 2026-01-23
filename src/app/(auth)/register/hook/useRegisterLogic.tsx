@@ -53,7 +53,7 @@ export function useRegisterLogic() {
     "business" | "individual" | null
   >(null);
   const [selectedPlan, setSelectedPlan] = useState<
-    "basic" | "starter" | "professional" | null
+    "essential" | "growth" | "portfolio" | null
   >(null);
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
@@ -68,7 +68,7 @@ export function useRegisterLogic() {
   };
 
   const handleSelectPlan = (
-    plan: "basic" | "starter" | "professional",
+    plan: "essential" | "growth" | "portfolio",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"

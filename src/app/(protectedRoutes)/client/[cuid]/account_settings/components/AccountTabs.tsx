@@ -32,7 +32,7 @@ export function AccountTabs({
   clientInfo,
 }: AccountTabsProps) {
   const [activeTab, setActiveTab] = useState("profile");
-  const { isSuperAdmin } = useUnifiedPermissions();
+  const { isSuperAdmin, isAdmin } = useUnifiedPermissions();
 
   const tabs = useMemo(
     () => [
@@ -64,10 +64,10 @@ export function AccountTabs({
       {
         key: "admin-users",
         tabLabel: "Admin Users",
-        isVisible: true,
+        isVisible: isAdmin,
       },
     ],
-    [clientInfo.accountType.isEnterpriseAccount, isSuperAdmin]
+    [clientInfo.accountType.isEnterpriseAccount, isSuperAdmin, isAdmin]
   );
 
   const handleTabChange = async (newTab: string) => {
@@ -89,13 +89,17 @@ export function AccountTabs({
       case "preferences":
         return <PreferencesTab {...tabProps} />;
       case "subscription":
-        return <SubscriptionTab inEditmode={false} {...tabProps} />;
+        return (
+          <SubscriptionTab
+            {...tabProps}
+            currentProperties={clientInfo.clientStats.totalProperties}
+            currentSeats={clientInfo.clientStats.totalUsers}
+          />
+        );
       case "identification":
         return <IdentificationTab {...tabProps} />;
       case "admin-users":
-        return (
-          <AdminUsersTab params={Promise.resolve({ cuid: clientInfo.cuid })} />
-        );
+        return <AdminUsersTab cuid={clientInfo.cuid} />;
       default:
         return <ProfileTab {...tabProps} />;
     }

@@ -10,7 +10,6 @@ import {
   FormInput,
   FormLabel,
   Checkbox,
-  Select,
 } from "@components/FormElements";
 
 interface ProfileTabProps {
@@ -26,7 +25,6 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
 }) => {
   const form = clientForm;
   if (!form) {
-    console.error("ProfileTab: clientForm is undefined");
     return null;
   }
 
@@ -72,28 +70,14 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
         <div className="form-fields">
           <FormField>
             <FormLabel htmlFor="accountType" label="Account Type" />
-            <Select
-              id="accountType"
-              disabled
-              name="accountType"
-              value={(clientInfo as IClient).accountType.planName || ""}
-              onChange={() => {}}
-              options={[
-                { value: "personal", label: "Basic" },
-                { value: "premium", label: "Premium" },
-                { value: "enterprise", label: "Enterprise" },
-              ]}
-            />
-          </FormField>
-          <FormField>
-            <FormLabel htmlFor="planId" label="Plan ID" />
             <FormInput
-              id="planId"
-              name="planId"
-              disabled
-              readOnly
-              placeholder="Plan identifier"
-              value={clientInfo.accountType.planId}
+              id="accountType"
+              name="accountType"
+              placeholder="Enter account type"
+              value={clientInfo.accountType.category}
+              onChange={() => ""}
+              disabled={inEditMode}
+              hasError={false}
             />
           </FormField>
         </div>
@@ -106,7 +90,7 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
               id="isEnterpriseAccount"
               label="Enterprise Account"
               name="isEnterpriseAccount"
-              checked={clientInfo.accountType.isEnterpriseAccount}
+              checked={clientInfo.accountType.category === "business"}
             />
           </FormField>
           <FormField>

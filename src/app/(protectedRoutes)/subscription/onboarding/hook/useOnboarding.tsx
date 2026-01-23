@@ -47,7 +47,7 @@ export function useOnboarding() {
     } else if (plansData && plansData.length > 0) {
       // Fallback if no subscription data
       const defaultPlan =
-        plansData.find((p) => p.planName === "starter") || plansData[0];
+        plansData.find((p) => p.planName === "growth") || plansData[0];
       setSelectedPlan(defaultPlan);
     }
   }, [plansData, user]);

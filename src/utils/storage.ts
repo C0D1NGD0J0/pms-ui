@@ -137,15 +137,15 @@ export class RedisStorageAdapter implements IStorageAdapter {
     }
   }
 
-  getItem(key: string): string | null {
+  getItem(): string | null {
     throw new Error("Use async getItem for RedisStorageAdapter");
   }
 
-  setItem(key: string, value: string): void {
+  setItem(): void {
     throw new Error("Use async setItem for RedisStorageAdapter");
   }
 
-  removeItem(key: string): void {
+  removeItem(): void {
     throw new Error("Use async removeItem for RedisStorageAdapter");
   }
 

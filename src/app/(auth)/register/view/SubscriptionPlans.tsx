@@ -7,7 +7,7 @@ import { IServerSubscriptionPlan } from "@interfaces/subscription.interface";
 
 interface PlanSelectionProps {
   onSelectPlan: (
-    plan: "basic" | "starter" | "professional",
+    plan: "essential" | "growth" | "portfolio",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"
@@ -235,7 +235,7 @@ export default function SubscriptionPlans({
               : plan.pricing.monthly;
             const billingInterval = isAnnual ? "annual" : "monthly";
             onSelectPlan(
-              plan.planName as "basic" | "starter" | "professional",
+              plan.planName as "essential" | "growth" | "portfolio",
               selectedPricing.priceId,
               selectedPricing.lookUpKey,
               billingInterval

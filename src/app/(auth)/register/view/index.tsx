@@ -31,7 +31,7 @@ interface RegisterViewProps {
   handleSubmit: (values: ISignupForm) => void;
   selectedPlan: string | null;
   handleSelectPlan: (
-    plan: "basic" | "starter" | "professional",
+    plan: "essential" | "growth" | "portfolio",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"

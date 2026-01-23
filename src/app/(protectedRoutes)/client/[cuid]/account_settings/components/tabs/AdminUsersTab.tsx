@@ -1,22 +1,12 @@
 "use client";
 
-import React, { use } from "react";
+import React from "react";
+import { useGetEmployees } from "@users/staff/hooks";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
-import { useGetEmployees } from "@app/(protectedRoutes)/users/[cuid]/staff/hooks";
-import { EmployeeTableView } from "@app/(protectedRoutes)/users/[cuid]/staff/components/EmployeeTableView";
+import { EmployeeTableView } from "@users/staff/components/EmployeeTableView";
 
-// interface AdminUsersTabProps {
-//   inEditMode: boolean;
-//   clientInfo: IClient;
-// }
-
-export function AdminUsersTab({
-  params,
-}: {
-  params: Promise<{ cuid: string }>;
-}) {
-  const { cuid } = use(params);
+export function AdminUsersTab({ cuid }: { cuid: string }) {
   const permissions = useUnifiedPermissions();
 
   const {
@@ -29,7 +19,7 @@ export function AdminUsersTab({
     handleSortByChange,
     isLoading,
   } = useGetEmployees(cuid || "", {
-    role: "admin", // Only fetch admin users
+    role: "admin",
   });
 
   const handleEditAdmin = (admin: FilteredUserTableData) => {

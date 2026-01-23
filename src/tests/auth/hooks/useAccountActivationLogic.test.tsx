@@ -40,7 +40,7 @@ describe("useAccountActivationLogic Hook", () => {
 
   // Skip: React's use() API doesn't work properly in test environment
   it.skip("should initialize with correct default values", () => {
-    const { result } = renderHook(() => useAccountActivationLogic(), {
+    const { result } = renderHook(() => useAccountActivationLogic({ params: Promise.resolve({ cuid: "test-cuid" }) }), {
       wrapper: TestWrapper,
     });
 
@@ -57,7 +57,7 @@ describe("useAccountActivationLogic Hook", () => {
     const mockResponse = { msg: "Account activated successfully" };
     mockAuthService.accountActivation.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useAccountActivationLogic(), {
+    const { result } = renderHook(() => useAccountActivationLogic({ params: Promise.resolve({ cuid: "test-cuid" }) }), {
       wrapper: TestWrapper,
     });
 
@@ -87,7 +87,7 @@ describe("useAccountActivationLogic Hook", () => {
     const mockResponse = { msg: "Activation link sent" };
     mockAuthService.resendActivationLink.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useAccountActivationLogic(), {
+    const { result } = renderHook(() => useAccountActivationLogic({ params: Promise.resolve({ cuid: "test-cuid" }) }), {
       wrapper: TestWrapper,
     });
 

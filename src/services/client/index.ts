@@ -13,7 +13,8 @@ class ClientService {
         `${this.baseUrl}/${cuid}/client_details`,
         this.axiosConfig
       );
-      return result.data.data;
+
+      return result.data;
     } catch (error) {
       console.error("Error fetching client details:", error);
       throw error;

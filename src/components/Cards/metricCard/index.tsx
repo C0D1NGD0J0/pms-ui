@@ -3,6 +3,7 @@ import React from "react";
 export interface MetricCardProps {
   value: string | number;
   label: string;
+  subText?: string;
   variant?: "basic" | "icon" | "detailed";
   icon?: React.ReactNode;
   trend?: {
@@ -23,6 +24,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   trend,
   description,
   className = "",
+  subText = "",
   onClick,
 }) => {
   const baseClass = "metric-card";
@@ -41,7 +43,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
       <div className="metric-card__content">
         <div className="metric-card__value">{value}</div>
         <div className="metric-card__label">{label}</div>
-
+        {subText && <div className="metric-card__subtext">{subText}</div>}
         {trend && (
           <div className="metric-card__trend">
             <span

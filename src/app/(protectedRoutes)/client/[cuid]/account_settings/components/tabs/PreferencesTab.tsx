@@ -25,7 +25,6 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
 }) => {
   const form = clientForm;
   const isEditMode = !!clientForm;
-
   const handleToggleChange = (setting: string, newState: boolean) => {
     if (form && form.values.settings) {
       const currentSettings = form.values.settings;
