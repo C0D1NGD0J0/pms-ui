@@ -9,8 +9,25 @@ interface InitPaymentParams {
   billingInterval?: "monthly" | "annual";
 }
 
-export function useInitSubscriptionPayment() {
+interface UseInitSubscriptionPaymentOptions {
+  onSuccess?: (checkoutUrl: string) => void;
+  autoRedirect?: boolean;
+}
+
+interface InitPaymentResponse {
+  success: boolean;
+  message: string;
+  data: {
+    checkoutUrl: string;
+    sessionId: string;
+  };
+}
+
+export function useInitSubscriptionPayment(
+  options: UseInitSubscriptionPaymentOptions = {}
+) {
   const { handleMutationError } = useErrorHandler();
+  const { onSuccess: customOnSuccess, autoRedirect = true } = options;
 
   const mutation = useMutation({
     mutationFn: async ({
@@ -18,24 +35,46 @@ export function useInitSubscriptionPayment() {
       priceId,
       lookupKey,
       billingInterval,
-    }: InitPaymentParams) => {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "";
-      const successUrl = `${baseUrl}/client/${cuid}/account_settings?tab=subscription&payment=success`;
-      const cancelUrl = `${baseUrl}/client/${cuid}/account_settings?tab=subscription&payment=canceled`;
+    }: InitPaymentParams): Promise<InitPaymentResponse> => {
+      const baseUrl = process.env.NEXT_PUBLIC_CLIENT_BASE_URL || "";
+      const returnUrl = `${baseUrl}/subscription/onboarding`;
 
       return subscriptionService.initSubscriptionPayment(cuid, {
         priceId,
         lookupKey,
         billingInterval,
-        successUrl,
-        cancelUrl,
+        successUrl: returnUrl,
+        cancelUrl: returnUrl,
       });
     },
-    onSuccess: (data) => {
-      // if (data.success && data.data.checkoutUrl) {
-      //   window.location.href = data.data.checkoutUrl;
-      // }
-      console.log("Payment initialized:", data);
+    onSuccess: (response) => {
+      console.log("onSuccess triggered", {
+        response,
+        hasCheckoutUrl: !!response.data?.checkoutUrl,
+        hasDirectCheckoutUrl: !!(response as any).checkoutUrl,
+        autoRedirect,
+        customOnSuccess: !!customOnSuccess,
+      });
+
+      // Handle both response formats:
+      // 1. { success, message, data: { checkoutUrl, sessionId } }
+      // 2. { checkoutUrl, sessionId } (if axios interceptor unwraps)
+      const checkoutUrl =
+        response.data?.checkoutUrl || (response as any).checkoutUrl;
+
+      if (checkoutUrl) {
+        console.log("About to redirect to:", checkoutUrl);
+
+        if (customOnSuccess) {
+          customOnSuccess(checkoutUrl);
+        } else if (autoRedirect) {
+          // Full page redirect to Stripe (external URL) - window.location is correct here
+          console.log("Executing window.location.href redirect...");
+          window.location.href = checkoutUrl;
+        }
+      } else {
+        console.error("No checkout URL found in response:", response);
+      }
     },
     onError: (error) =>
       handleMutationError(error, "Failed to initialize payment"),
@@ -46,5 +85,6 @@ export function useInitSubscriptionPayment() {
     isLoading: mutation.isPending,
     isError: mutation.isError,
     error: mutation.error,
+    data: mutation.data,
   };
 }

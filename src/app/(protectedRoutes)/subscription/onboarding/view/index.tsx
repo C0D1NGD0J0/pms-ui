@@ -1,13 +1,18 @@
 "use client";
-import React from "react";
 import storage from "@utils/storage";
 import { Icon } from "@components/Icon";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Banner } from "@components/Banner";
 import { Loading } from "@components/Loading";
-import { Button } from "@components/FormElements";
 import { EmptyState } from "@components/EmptyState";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button, Modal } from "@components/FormElements";
 import { ISubscriptionPlan } from "@interfaces/subscription.interface";
+import {
+  useSSENotificationActions,
+  useSSENotifications,
+} from "@store/sseNotification.store";
 
 interface OnboardingViewProps {
   user: any;
@@ -41,6 +46,24 @@ export function OnboardingView({
   onPlanChange,
 }: OnboardingViewProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const { subscriptionInfo } = useSSENotifications();
+  const { closePaymentModal } = useSSENotificationActions();
+
+  const { showPaymentModal, paymentStatus, paymentMessage } = subscriptionInfo;
+
+  // Invalidate React Query cache when payment modal appears
+  useEffect(() => {
+    if (showPaymentModal && paymentStatus === "success") {
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["clientInfo"] });
+    }
+  }, [showPaymentModal, paymentStatus, queryClient]);
+
+  const handleSuccessAction = () => {
+    closePaymentModal();
+    router.push("/dashboard");
+  };
 
   if (isLoadingPlans) {
     return <Loading description="Loading subscription details..." />;
@@ -53,6 +76,77 @@ export function OnboardingView({
         title="Error Loading Subscription"
         description="We couldn't load your subscription details. Please try again later."
       />
+    );
+  }
+
+  // If payment modal is showing, only render the modal (hide the onboarding overlay)
+  if (showPaymentModal) {
+    return (
+      <Modal
+        isOpen={showPaymentModal}
+        onClose={closePaymentModal}
+        title={
+          paymentStatus === "success"
+            ? "Payment Successful!"
+            : paymentStatus === "failed"
+              ? "Payment Failed"
+              : "Payment Canceled"
+        }
+      >
+        <div style={{ textAlign: "center", padding: "2rem" }}>
+          <Icon
+            name={
+              paymentStatus === "success"
+                ? "bx-check-circle"
+                : "bx-x-circle"
+            }
+            size="4rem"
+            color={
+              paymentStatus === "success"
+                ? "var(--success-color)"
+                : "var(--warning-color)"
+            }
+            style={{ marginBottom: "1rem" }}
+          />
+          <h3 style={{ marginBottom: "1rem" }}>
+            {paymentStatus === "success"
+              ? "Welcome to Your Premium Plan!"
+              : paymentStatus === "failed"
+                ? "Payment Failed"
+                : "Payment Was Not Completed"}
+          </h3>
+          <p style={{ color: "var(--text-muted)", marginBottom: "2rem" }}>
+            {paymentMessage ||
+              (paymentStatus === "success"
+                ? "Your payment has been processed successfully. You now have full access to all premium features."
+                : "Your payment was not completed. You can retry anytime to unlock premium features.")}
+          </p>
+          <div className="btn-group">
+            {paymentStatus === "success" ? (
+              <Button
+                label="Go to Dashboard"
+                className="btn-primary"
+                icon={<Icon name="bx-home" />}
+                onClick={handleSuccessAction}
+              />
+            ) : (
+              <>
+                <Button
+                  label="Try Again"
+                  className="btn-primary"
+                  icon={<Icon name="bx-credit-card" />}
+                  onClick={closePaymentModal}
+                />
+                <Button
+                  label="Close"
+                  className="btn-outline"
+                  onClick={closePaymentModal}
+                />
+              </>
+            )}
+          </div>
+        </div>
+      </Modal>
     );
   }
 
@@ -192,16 +286,17 @@ export function OnboardingView({
                   <span>{displayPrice}</span>
                 </div>
               </div>
-
-              <Button
-                onClick={handleCheckout}
-                disabled={isCheckingOut}
-                loading={isCheckingOut}
-                label="Continue to Payment"
-                loadingText="Processing..."
-                className="btn-primary btn-full onboarding-payment-box__cta"
-                icon={<Icon name="bx-credit-card" />}
-              />
+              <div className="btn-group">
+                <Button
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                  loading={isCheckingOut}
+                  label="Continue to Payment"
+                  loadingText="Processing..."
+                  className="btn-primary btn-full onboarding-payment-box__cta"
+                  icon={<Icon name="bx-credit-card" />}
+                />
+              </div>
 
               <div className="onboarding-payment-box__footer">
                 <Icon name="bx-lock-alt" />

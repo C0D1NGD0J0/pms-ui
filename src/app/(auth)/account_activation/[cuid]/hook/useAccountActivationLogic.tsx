@@ -1,5 +1,6 @@
 import { useForm } from "@mantine/form";
 import { authService } from "@services/auth";
+import { useErrorHandler } from "@src/hooks";
 import { errorFormatter } from "@utils/helpers";
 import { useEffect, useState, use } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -18,6 +19,7 @@ export function useAccountActivationLogic({
   const searchParams = useSearchParams();
   const { openNotification } = useNotification();
   const [emailError, setEmailError] = useState("");
+  const { handleMutationError } = useErrorHandler();
   const [isSuccess, setIsSuccess] = useState(false);
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
   const [showResendActivation, setShowResendActivation] = useState(false);
@@ -35,6 +37,9 @@ export function useAccountActivationLogic({
         return authService.accountActivation(cuid, values);
       }
       throw new Error("Unknown mutation type");
+    },
+    onError: (error) => {
+      handleMutationError(error, "Activation Failed");
     },
   });
 
@@ -75,7 +80,7 @@ export function useAccountActivationLogic({
       );
       setIsPopoverOpen(false);
       setShowResendActivation(false);
-      router.push("/account_activation");
+      router.refresh();
     } catch (error: any) {
       openNotification("error", "Request Failed", errorFormatter(error));
     }
@@ -89,7 +94,6 @@ export function useAccountActivationLogic({
         token: values.token,
         email: "",
       });
-      console.log(response, values);
       openNotification(
         "success",
         "Account Activated",
@@ -97,8 +101,8 @@ export function useAccountActivationLogic({
       );
       setIsSuccess(true);
       router.push("/register");
-    } catch (error: unknown) {
-      openNotification("error", "Activation Failed", errorFormatter(error));
+    } catch (error: any) {
+      void error;
       setShowResendActivation(true); // this will show the resend activation link
     }
   };

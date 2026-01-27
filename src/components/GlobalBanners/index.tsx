@@ -5,21 +5,44 @@ import { useDowngradeSubscription } from "@subscription/hooks";
 import { useInitSubscriptionPayment } from "@subscription/hooks";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { DowngradeWarningBanner } from "@components/DowngradeWarningBanner";
+import { useGetSubscriptionPlans } from "@app/(auth)/register/hook/queries/useGetSubscriptionPlans";
 
 export function GlobalBanners() {
   const { user, client } = useAuth();
   const { isSuperAdmin } = useUnifiedPermissions();
   const { downgrade, isDowngrading } = useDowngradeSubscription();
   const { initPayment } = useInitSubscriptionPayment();
+  const { data: plansData } = useGetSubscriptionPlans();
 
   const subscription = user?.subscription;
   const pendingDowngradeAt = subscription?.paymentFlow?.gracePeriodEndsAt;
   const currentPlanName = subscription?.plan?.name || "essential";
 
   const handlePayNow = () => {
-    if (client?.cuid) {
-      initPayment({ cuid: client.cuid });
-    }
+    if (!client?.cuid || !subscription) return;
+
+    // Get the current plan details
+    const currentPlan = plansData?.find(
+      (p) => p.planName === subscription.plan.name
+    );
+    if (!currentPlan) return;
+
+    const billingInterval = subscription.plan.billingInterval || "monthly";
+    const isAnnual = billingInterval === "annual";
+
+    const priceId = isAnnual
+      ? currentPlan.pricing.annual.priceId
+      : currentPlan.pricing.monthly.priceId;
+    const lookupKey = isAnnual
+      ? currentPlan.pricing.annual.lookUpKey
+      : currentPlan.pricing.monthly.lookUpKey;
+
+    initPayment({
+      cuid: client.cuid,
+      priceId,
+      lookupKey,
+      billingInterval,
+    });
   };
 
   const handleConfirmDowngrade = () => {

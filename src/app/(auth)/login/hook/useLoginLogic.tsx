@@ -1,16 +1,15 @@
 "use client";
 import { useState } from "react";
 import { useForm } from "@mantine/form";
-import { usePublish } from "@hooks/index";
 import { useRouter } from "next/navigation";
 import { authService } from "@services/auth";
 import { EventTypes } from "@services/events";
-import { errorFormatter } from "@utils/helpers";
 import { useAuthActions } from "@store/auth.store";
 import { useMutation } from "@tanstack/react-query";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { ILoginForm } from "@interfaces/auth.interface";
 import { useNotification } from "@hooks/useNotification";
+import { useErrorHandler, usePublish } from "@hooks/index";
 import { LoginSchema } from "@validations/auth.validations";
 
 export function useLoginLogic() {
@@ -18,6 +17,7 @@ export function useLoginLogic() {
   const publish = usePublish();
   const { setClient } = useAuthActions();
   const { openNotification } = useNotification();
+  const { handleMutationError } = useErrorHandler();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState("");
   const [userAccounts, setUserAccounts] = useState<
@@ -25,6 +25,9 @@ export function useLoginLogic() {
   >([]);
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (data: ILoginForm) => authService.login(data),
+    onError: (error) => {
+      handleMutationError(error, "Login process failed");
+    },
   });
 
   const form = useForm<ILoginForm>({
@@ -56,8 +59,9 @@ export function useLoginLogic() {
       publish(EventTypes.LOGIN_SUCCESS, response.activeAccount);
       publish(EventTypes.GET_CURRENT_USER, response.activeAccount);
       router.push("/dashboard");
-    } catch (error: unknown) {
-      openNotification("error", "Login process failed", errorFormatter(error));
+    } catch {
+      // Mutation errors are handled by the onError callback in useMutation
+      // This catch block only catches non-mutation errors (e.g., runtime errors in try block)
     }
   };
 

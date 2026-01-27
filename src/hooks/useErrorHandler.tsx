@@ -7,7 +7,6 @@ import {
   ErrorDisplayOptions,
   APIErrorResponse,
   APIErrorHandler,
-  errorLogger,
 } from "@utils/errorHandler";
 
 export function useErrorHandler() {
@@ -24,25 +23,7 @@ export function useErrorHandler() {
 
       const errorResponse: APIErrorResponse = APIErrorHandler.parseError(error);
 
-      if (APIErrorHandler.shouldLog(errorResponse)) {
-        errorLogger.log(errorResponse, "error");
-      }
-
-      if (errorResponse.type === "validation") {
-        errorLogger.logValidationError(errorResponse);
-      }
-
-      if (errorResponse.type === "network") {
-        errorLogger.logNetworkError(errorResponse);
-      }
-
-      if (
-        errorResponse.type === "authentication" ||
-        errorResponse.type === "authorization"
-      ) {
-        errorLogger.logAuthError(errorResponse);
-      }
-
+      // Check if session expired and redirect
       if (APIErrorHandler.shouldReload(errorResponse)) {
         message.error("Session expired. Please log in again.");
         router.push("/login");
@@ -63,10 +44,12 @@ export function useErrorHandler() {
           );
 
           if (errorResponse.errors.length === 1) {
-            message.error(validationMessage);
+            openNotification("error", "Validation Error", validationMessage, {
+              duration: 12,
+            });
           } else {
             openNotification("error", "Validation Error", validationMessage, {
-              duration: 6,
+              duration: 12,
             });
           }
         }
@@ -79,18 +62,24 @@ export function useErrorHandler() {
 
         switch (errorResponse.type) {
           case "network":
-            message.error(displayMessage);
+            openNotification("error", "Network Error", displayMessage, {
+              duration: 12,
+            });
             break;
           case "server":
             openNotification("error", "Server Error", displayMessage, {
-              duration: 8,
+              duration: 12,
             });
             break;
           case "authorization":
-            message.error(displayMessage);
+            openNotification("error", "Authorization Error", displayMessage, {
+              duration: 12,
+            });
             break;
           default:
-            message.error(displayMessage);
+            openNotification("error", "Request Error", displayMessage, {
+              duration: 12,
+            });
         }
       }
 

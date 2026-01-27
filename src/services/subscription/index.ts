@@ -36,7 +36,14 @@ class SubscriptionService {
       successUrl: string;
       cancelUrl: string;
     }
-  ) {
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      checkoutUrl: string;
+      sessionId: string;
+    };
+  }> {
     try {
       const result = await axios.post<{
         success: boolean;

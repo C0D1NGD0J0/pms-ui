@@ -3,9 +3,9 @@ import { Skeleton } from "@components/Skeleton";
 import React, { useEffect, useState } from "react";
 import { SelectClientAccountModal } from "@components/SelectClientAccountModal";
 import {
-  AuthContentHeader,
-  AuthContentFooter,
-  AuthContentBody,
+  ModernAuthLayout,
+  AuthBrandPanel,
+  AuthFormPanel,
 } from "@components/AuthLayout";
 import {
   IInvitationAcceptResponse,
@@ -129,26 +129,48 @@ export function InvitationAcceptanceView({
     setIsDeclineModalOpen(false);
   };
 
-  const getHeaderContent = () => {
+  const getBrandContent = () => {
+    return (
+      <AuthBrandPanel>
+        <i className="bx bx-user-plus auth-brand-panel__icon"></i>
+        <h1 className="auth-brand-panel__title">Join PropertyFlow</h1>
+        <p className="auth-brand-panel__subtitle">
+          Accept your invitation to start managing properties
+        </p>
+        <ul className="auth-brand-panel__features">
+          <li>
+            <i className="bx bx-check-circle"></i>
+            <span>Collaborate with your team</span>
+          </li>
+          <li>
+            <i className="bx bx-check-circle"></i>
+            <span>Access property management tools</span>
+          </li>
+          <li>
+            <i className="bx bx-check-circle"></i>
+            <span>Get started in minutes</span>
+          </li>
+        </ul>
+      </AuthBrandPanel>
+    );
+  };
+
+  const getFormHeader = () => {
     switch (currentStep) {
-      case "loading":
-        return null;
       case "invitation-details":
         return {
           title: "You're Invited!",
-          subtitle: "Join our property management platform",
+          subtitle: "Review your invitation details below",
         };
       case "account-setup":
         return {
-          title: "Confirm Account Details",
-          subtitle: "Set up your account to get started",
+          title: "Set Up Your Account",
+          subtitle: "Complete your profile to get started",
         };
-      case "error":
-        return null;
       default:
         return {
           title: "Invitation",
-          subtitle: "Process your invitation",
+          subtitle: "Loading your invitation...",
         };
     }
   };
@@ -208,18 +230,21 @@ export function InvitationAcceptanceView({
     }
   };
 
-  const headerContent = getHeaderContent();
+  const formHeader = getFormHeader();
 
   return (
     <>
-      {headerContent && (
-        <AuthContentHeader
-          title={headerContent.title}
-          subtitle={headerContent.subtitle}
-        />
-      )}
-      <AuthContentBody>{renderContent()}</AuthContentBody>
-      <AuthContentFooter />
+      <ModernAuthLayout brandContent={getBrandContent()}>
+        <AuthFormPanel>
+          {currentStep !== "loading" && (
+            <div className="auth-form-panel__header">
+              <h2 className="auth-form-panel__title">{formHeader.title}</h2>
+              <p className="auth-form-panel__subtitle">{formHeader.subtitle}</p>
+            </div>
+          )}
+          {renderContent()}
+        </AuthFormPanel>
+      </ModernAuthLayout>
       {isModalOpen && userAccounts.length > 0 && (
         <SelectClientAccountModal
           isOpen={isModalOpen}

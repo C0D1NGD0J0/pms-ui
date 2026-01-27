@@ -8,6 +8,18 @@ import {
 
 type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
+interface SubscriptionInfo {
+  showPaymentModal: boolean;
+  paymentStatus: "success" | "canceled" | "failed" | null;
+  paymentMessage: string;
+  eventType: string | null;
+  subscription?: {
+    plan: string;
+    status: string;
+    endDate?: string;
+  };
+}
+
 interface NotificationState {
   notifications: INotification[];
   announcements: INotification[];
@@ -17,6 +29,7 @@ interface NotificationState {
   announcementsSourceRef: EventSource | null;
   reconnectAttempts: number;
   maxReconnectAttempts: number;
+  subscriptionInfo: SubscriptionInfo;
   actions: {
     initializeConnection: (cuid: string, filters?: NotificationFilters) => void;
     disconnectStreams: () => void;
@@ -33,6 +46,8 @@ interface NotificationState {
       filters?: NotificationFilters
     ) => void;
     clearState: () => void;
+    handleSubscriptionUpdate: (data: any) => void;
+    closePaymentModal: () => void;
   };
 }
 
@@ -47,6 +62,13 @@ const useSSENotificationStore = create<NotificationState>()(
       announcementsSourceRef: null,
       reconnectAttempts: 0,
       maxReconnectAttempts: 5,
+      subscriptionInfo: {
+        showPaymentModal: false,
+        paymentStatus: null,
+        paymentMessage: "",
+        eventType: null,
+        subscription: undefined,
+      },
       actions: {
         initializeConnection: (cuid: string, filters?: NotificationFilters) => {
           const { personalSourceRef, announcementsSourceRef } = get();
@@ -141,6 +163,15 @@ const useSSENotificationStore = create<NotificationState>()(
             set((state) => ({
               notifications: [notification, ...state.notifications],
             }));
+          });
+
+          // NEW: Listen for subscription updates (payment notifications)
+          newPersonalSource.addEventListener("subscription_update", (event) => {
+            const data = JSON.parse(event.data);
+
+            if (data.action === "REFETCH_CURRENT_USER") {
+              get().actions.handleSubscriptionUpdate(data);
+            }
           });
 
           newPersonalSource.onerror = () => {
@@ -284,6 +315,40 @@ const useSSENotificationStore = create<NotificationState>()(
         clearState: () => {
           get().actions.disconnectStreams();
         },
+
+        handleSubscriptionUpdate: (data: any) => {
+          // Determine modal status from eventType
+          const status =
+            data.eventType === "subscription_activated"
+              ? "success"
+              : data.eventType === "payment_failed"
+                ? "failed"
+                : data.eventType === "subscription_canceled"
+                  ? "canceled"
+                  : null;
+
+          set({
+            subscriptionInfo: {
+              showPaymentModal: true,
+              paymentStatus: status,
+              paymentMessage: data.message || "",
+              eventType: data.eventType,
+              subscription: data.subscription,
+            },
+          });
+        },
+
+        closePaymentModal: () => {
+          set({
+            subscriptionInfo: {
+              showPaymentModal: false,
+              paymentStatus: null,
+              paymentMessage: "",
+              eventType: null,
+              subscription: undefined,
+            },
+          });
+        },
       },
     }),
     {
@@ -307,6 +372,7 @@ export const useSSENotifications = () => {
     error,
     reconnectAttempts,
     maxReconnectAttempts,
+    subscriptionInfo,
   } = useSSENotificationStore();
 
   return {
@@ -316,6 +382,7 @@ export const useSSENotifications = () => {
     error,
     reconnectAttempts,
     maxReconnectAttempts,
+    subscriptionInfo,
     isConnected: connectionStatus === "connected",
     isConnecting: connectionStatus === "connecting",
     hasError: connectionStatus === "error",
@@ -330,5 +397,6 @@ export const useSSENotificationActions = () => {
     markAsRead: actions.markAsRead,
     reconnect: actions.reconnect,
     clearState: actions.clearState,
+    closePaymentModal: actions.closePaymentModal,
   };
 };
