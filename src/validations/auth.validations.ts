@@ -31,6 +31,8 @@ export const SignupSchema = z
       planId: z.string().min(1, { message: "Plan is required" }).optional(),
       isEnterpriseAccount: z.boolean(),
       lookUpKey: z.string().optional(),
+      category: z.enum(["individual", "business"]),
+      planName: z.enum(["essential", "growth", "portfolio"]),
       billingInterval: z.enum(["monthly", "annual"]),
     }),
     displayName: z
@@ -126,6 +128,18 @@ export const SignupSchema = z
           message:
             "Please specify a valid phone number (include the international prefix).",
           path: ["companyProfile", "companyPhone"],
+        });
+      }
+
+      // Validate companyAddress
+      if (
+        !data.companyProfile?.companyAddress ||
+        data.companyProfile.companyAddress.length < 5
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Company address is required",
+          path: ["companyProfile", "companyAddress"],
         });
       }
     }

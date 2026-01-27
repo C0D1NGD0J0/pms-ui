@@ -20,8 +20,10 @@ const user2 = {
   location: "Lagos, Nigeria",
   accountType: {
     planId: "",
-    isEnterpriseAccount: false,
     lookUpKey: undefined,
+    planName: "" as "essential" | "growth" | "portfolio",
+    isEnterpriseAccount: false,
+    category: "individual" as const,
     billingInterval: "monthly" as const,
   },
   phoneNumber: "2348105301122",
@@ -29,9 +31,10 @@ const user2 = {
   companyProfile: {
     tradingName: "Dangote Realty Group",
     legalEntityName: "Dangote Realty Group LLC",
-    website: "www.dangoterealty.com",
+    website: "https://www.dangoterealty.com",
     companyEmail: "contact@dangoterealty.com",
     companyPhone: "2348105301122",
+    companyAddress: "123 Business Street, Lagos, Nigeria",
   },
 };
 
@@ -39,7 +42,9 @@ export function useRegisterLogic() {
   const { handleMutationError } = useErrorHandler();
   const { mutateAsync, isPending } = useMutation({
     mutationFn: authService.signup,
-    onError: (error) => handleMutationError(error, "Registration failed"),
+    onError: (error) => {
+      handleMutationError(error, "Registration failed");
+    },
   });
   const { openNotification } = useNotification();
   const {
@@ -76,6 +81,8 @@ export function useRegisterLogic() {
     setSelectedPlan(plan);
     form.setFieldValue("accountType", {
       planId: pricingId || "",
+      planName: plan,
+      category: accountType as "individual" | "business",
       lookUpKey: lookUpKey || undefined,
       isEnterpriseAccount: accountType === "business",
       billingInterval,

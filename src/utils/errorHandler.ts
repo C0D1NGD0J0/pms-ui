@@ -1,5 +1,9 @@
 import { AxiosError } from "axios";
 
+// ============================================================================
+// TYPE DEFINITIONS
+// ============================================================================
+
 export type ErrorResponse = {
   success: boolean;
   data: any;
@@ -10,18 +14,20 @@ export type ValidationError = {
   path: string;
 };
 
+export type ErrorType =
+  | "validation"
+  | "authentication"
+  | "authorization"
+  | "network"
+  | "server"
+  | "unknown";
+
 export type APIErrorResponse = {
   success: boolean;
   message: string;
   errors?: ValidationError[];
   statusCode?: number;
-  type?:
-    | "validation"
-    | "authentication"
-    | "authorization"
-    | "network"
-    | "server"
-    | "unknown";
+  type?: ErrorType;
 };
 
 export type ErrorDisplayOptions = {
@@ -30,180 +36,216 @@ export type ErrorDisplayOptions = {
   fallbackMessage?: string;
 };
 
+export type ErrorLogLevel = "error" | "warning" | "info";
+
+export interface ErrorLogContext {
+  user?: { useruid?: string };
+  request?: { url?: string; method?: string; headers?: Record<string, string> };
+  additional?: Record<string, any>;
+}
+
+// ============================================================================
+// CONSTANTS
+// ============================================================================
+
+const ERROR_KEYWORDS = {
+  authentication: [
+    "password",
+    "credentials",
+    "email/password",
+    "authentication",
+    "login",
+  ],
+  authorization: ["permission", "authorized", "authorization", "forbidden"],
+  validation: ["validation", "invalid"],
+  network: ["network", "connection"],
+  server: ["server", "internal"],
+} as const;
+
+const STATUS_MESSAGES: Record<number, string> = {
+  400: "Bad request. Please check your input and try again.",
+  401: "Authentication required. Please log in and try again.",
+  403: "Access denied. You do not have permission to perform this action.",
+  404: "Resource not found.",
+  409: "Conflict. The resource already exists or is in use.",
+  422: "Validation failed. Please check your input.",
+  429: "Too many requests. Please wait and try again.",
+  500: "Internal server error. Please try again later.",
+  502: "Bad gateway. Please try again later.",
+  503: "Service unavailable. Please try again later.",
+  504: "Gateway timeout. Please try again later.",
+};
+
+const DEFAULT_ERROR_MESSAGE = "An unexpected error occurred. Please try again.";
+
+// ============================================================================
+// ERROR CATEGORIZATION
+// ============================================================================
+
+function matchesKeywords(
+  message: string,
+  keywords: readonly string[]
+): boolean {
+  const lowerMessage = message.toLowerCase();
+  return keywords.some((keyword) => lowerMessage.includes(keyword));
+}
+
+function categorizeByMessage(message: string): ErrorType | null {
+  if (matchesKeywords(message, ERROR_KEYWORDS.authentication))
+    return "authentication";
+  if (matchesKeywords(message, ERROR_KEYWORDS.authorization))
+    return "authorization";
+  if (matchesKeywords(message, ERROR_KEYWORDS.validation)) return "validation";
+  if (matchesKeywords(message, ERROR_KEYWORDS.network)) return "network";
+  if (matchesKeywords(message, ERROR_KEYWORDS.server)) return "server";
+  return null;
+}
+
+function categorizeByStatusCode(statusCode: number, data?: any): ErrorType {
+  // Auth errors
+  if (statusCode === 401) return "authentication";
+  if (statusCode === 403) return "authorization";
+
+  // Check message content first for better categorization
+  if (data?.message) {
+    const messageType = categorizeByMessage(data.message);
+    if (messageType) return messageType;
+  }
+
+  // Validation errors
+  if (statusCode === 400 || statusCode === 422) {
+    return data?.errors?.length > 0 ? "validation" : "unknown";
+  }
+
+  // Server errors
+  if (statusCode >= 500) return "server";
+  if (statusCode >= 400) return "unknown";
+
+  return "unknown";
+}
+
+// ============================================================================
+// ERROR PARSING
+// ============================================================================
+
 export class APIErrorHandler {
   /**
    * Parse and categorize errors from API responses
    */
   static parseError(error: any): APIErrorResponse {
-    // Handle structured API error responses (already parsed)
-    if (
-      error &&
-      typeof error === "object" &&
-      "success" in error &&
-      error.success === false
-    ) {
+    // Structured API error (already parsed)
+    if (error?.success === false && typeof error === "object") {
       return {
         success: false,
-        message: error.message || "An error occurred",
+        message: error.message || DEFAULT_ERROR_MESSAGE,
         errors: error.errors || [],
         statusCode: error.statusCode || error.status,
-        type: this.categorizeErrorFromData(error),
+        type: this.categorizeFromData(error),
       };
     }
 
-    // Handle Axios errors
+    // Axios errors
     if (error instanceof AxiosError) {
-      const { response, request } = error;
-
-      if (response) {
-        // Server responded with error status
-        const data = response.data;
-        const statusCode = response.status;
-
-        // Handle structured API error responses
-        if (data && typeof data === "object") {
-          return {
-            success: false,
-            message: data.message || this.getStatusMessage(statusCode),
-            errors: data.errors || [],
-            statusCode,
-            type: this.categorizeError(statusCode, data),
-          };
-        }
-
-        // Handle plain text or unknown response format
-        return {
-          success: false,
-          message: this.getStatusMessage(statusCode),
-          statusCode,
-          type: this.categorizeError(statusCode),
-        };
-      }
-
-      if (request) {
-        // Network error (no response received)
-        return {
-          success: false,
-          message: "Network error. Please check your connection and try again.",
-          type: "network",
-        };
-      }
+      return this.parseAxiosError(error);
     }
 
-    // Handle generic JavaScript errors
+    // Generic JavaScript errors
     if (error instanceof Error) {
       return {
         success: false,
-        message: error.message || "An unexpected error occurred",
+        message: error.message || DEFAULT_ERROR_MESSAGE,
         type: "unknown",
       };
     }
 
-    // Handle unknown error types
+    // Unknown error types
     return {
       success: false,
-      message: "An unexpected error occurred",
+      message: DEFAULT_ERROR_MESSAGE,
       type: "unknown",
     };
   }
 
-  /**
-   * Get user-friendly message based on HTTP status code
-   */
-  private static getStatusMessage(statusCode: number): string {
-    switch (statusCode) {
-      case 400:
-        return "Bad request. Please check your input and try again.";
-      case 401:
-        return "Authentication required. Please log in and try again.";
-      case 403:
-        return "Access denied. You do not have permission to perform this action.";
-      case 404:
-        return "Resource not found.";
-      case 409:
-        return "Conflict. The resource already exists or is in use.";
-      case 422:
-        return "Validation failed. Please check your input.";
-      case 429:
-        return "Too many requests. Please wait and try again.";
-      case 500:
-        return "Internal server error. Please try again later.";
-      case 502:
-        return "Bad gateway. Please try again later.";
-      case 503:
-        return "Service unavailable. Please try again later.";
-      case 504:
-        return "Gateway timeout. Please try again later.";
-      default:
-        return "An unexpected error occurred. Please try again.";
+  private static parseAxiosError(error: AxiosError): APIErrorResponse {
+    const { response, request } = error;
+
+    // Server responded with error status
+    if (response) {
+      const data = response.data;
+      const statusCode = response.status;
+
+      if (data && typeof data === "object") {
+        return {
+          success: false,
+          message: (data as any).message || this.getStatusMessage(statusCode),
+          errors: (data as any).errors || [],
+          statusCode,
+          type: categorizeByStatusCode(statusCode, data),
+        };
+      }
+
+      return {
+        success: false,
+        message: this.getStatusMessage(statusCode),
+        statusCode,
+        type: categorizeByStatusCode(statusCode),
+      };
     }
+
+    // Network error (no response received)
+    if (request) {
+      return {
+        success: false,
+        message: "Network error. Please check your connection and try again.",
+        type: "network",
+      };
+    }
+
+    return {
+      success: false,
+      message: DEFAULT_ERROR_MESSAGE,
+      type: "unknown",
+    };
   }
 
-  /**
-   * Categorize error type based on status code and response data
-   */
-  private static categorizeError(
-    statusCode: number,
-    data?: any
-  ): APIErrorResponse["type"] {
-    if (statusCode === 401) return "authentication";
-    if (statusCode === 403) return "authorization";
-    if (statusCode === 400 || statusCode === 422) {
-      return data?.errors?.length > 0 ? "validation" : "unknown";
-    }
-    if (statusCode >= 500) return "server";
-    if (statusCode >= 400) return "unknown";
-    return "unknown";
-  }
-
-  /**
-   * Categorize error type based on structured error data (without HTTP status)
-   */
-  private static categorizeErrorFromData(data: any): APIErrorResponse["type"] {
-    // Check if it has validation errors
+  private static categorizeFromData(data: any): ErrorType {
+    // Has validation errors array
     if (data?.errors?.length > 0) {
       return "validation";
     }
 
-    // Check status code if available
+    // Has status code
     if (data.statusCode || data.status) {
       const statusCode = data.statusCode || data.status;
-      return this.categorizeError(statusCode, data);
+      return categorizeByStatusCode(statusCode, data);
     }
 
-    // Check message content for clues
+    // Check message content
     if (data.message) {
-      const message = data.message.toLowerCase();
-      if (message.includes("validation") || message.includes("invalid")) {
-        return "validation";
-      }
-      if (message.includes("authentication") || message.includes("login")) {
-        return "authentication";
-      }
-      if (message.includes("authorization") || message.includes("permission")) {
-        return "authorization";
-      }
-      if (message.includes("network") || message.includes("connection")) {
-        return "network";
-      }
-      if (message.includes("server") || message.includes("internal")) {
-        return "server";
-      }
+      const messageType = categorizeByMessage(data.message);
+      if (messageType) return messageType;
     }
 
     return "unknown";
+  }
+
+  // ============================================================================
+  // ERROR FORMATTING
+  // ============================================================================
+
+  /**
+   * Get user-friendly message based on HTTP status code
+   */
+  static getStatusMessage(statusCode: number): string {
+    return STATUS_MESSAGES[statusCode] || DEFAULT_ERROR_MESSAGE;
   }
 
   /**
    * Format validation errors for display
    */
   static formatValidationErrors(errors: ValidationError[]): string {
-    if (!errors || errors.length === 0) return "";
-
-    if (errors.length === 1) {
-      return errors[0].message;
-    }
-
+    if (!errors?.length) return "";
+    if (errors.length === 1) return errors[0].message;
     return errors.map((error) => `• ${error.message}`).join("\n");
   }
 
@@ -211,8 +253,7 @@ export class APIErrorHandler {
    * Get field-specific errors as an object
    */
   static getFieldErrors(errors: ValidationError[]): Record<string, string> {
-    if (!errors || errors.length === 0) return {};
-
+    if (!errors?.length) return {};
     return errors.reduce(
       (acc, error) => {
         acc[error.path] = error.message;
@@ -221,6 +262,10 @@ export class APIErrorHandler {
       {} as Record<string, string>
     );
   }
+
+  // ============================================================================
+  // ERROR POLICIES
+  // ============================================================================
 
   /**
    * Determine if error should trigger a page reload or redirect
@@ -241,16 +286,8 @@ export class APIErrorHandler {
 }
 
 // ============================================================================
-// ERROR LOGGING (Remote Tracking: Sentry, LogRocket, etc.)
+// ERROR LOGGING
 // ============================================================================
-
-export type ErrorLogLevel = "error" | "warning" | "info";
-
-export interface ErrorLogContext {
-  user?: { useruid?: string };
-  request?: { url?: string; method?: string; headers?: Record<string, string> };
-  additional?: Record<string, any>;
-}
 
 /**
  * Error Logger - Tracks errors to external services (Sentry, LogRocket, etc.)
@@ -272,17 +309,27 @@ class ErrorLogger {
           : level === "warning"
             ? console.warn
             : console.info;
-      logMethod("[Error]", {
-        message: error.message,
-        type: error.type,
-        statusCode: error.statusCode,
-        errors: error.errors,
+
+      const errorDetails: Record<string, any> = {
         timestamp: new Date().toISOString(),
-        context,
-      });
+      };
+      if (error.message) errorDetails.message = error.message;
+      if (error.type) errorDetails.type = error.type;
+      if (error.statusCode) errorDetails.statusCode = error.statusCode;
+      if (error.errors && error.errors.length > 0)
+        errorDetails.errors = error.errors;
+      if (context) errorDetails.context = context;
+
+      if (Object.keys(errorDetails).length > 1) {
+        logMethod("[Error]", errorDetails);
+      } else {
+        logMethod("[Error]", "Unknown error occurred", error);
+      }
     }
 
     if (!this.isEnabled) return;
+
+    // TODO: Send to external logging service (Sentry, LogRocket, etc.)
   }
 
   logNetworkError(error: APIErrorResponse, context?: ErrorLogContext): void {
@@ -314,6 +361,45 @@ class ErrorLogger {
 export const errorLogger = new ErrorLogger();
 
 // ============================================================================
+// EXTERNAL ERROR LOGGING (Sentry, LogRocket, etc.)
+// ============================================================================
+
+/**
+ * Log errors to external services without showing user notifications
+ * Use this in catch blocks for background error tracking
+ */
+export function logExternalError(
+  error: unknown,
+  context?: ErrorLogContext
+): APIErrorResponse {
+  const parsedError = APIErrorHandler.parseError(error);
+
+  // Determine log level based on error type
+  const logLevel: ErrorLogLevel =
+    parsedError.type === "validation" ? "warning" : "error";
+
+  // Log once with appropriate context metadata
+  const enrichedContext: ErrorLogContext = {
+    ...context,
+    additional: {
+      ...context?.additional,
+      errorType: parsedError.type,
+      ...(parsedError.type === "validation" && {
+        validationErrors: parsedError.errors,
+      }),
+      ...(parsedError.type === "network" && { isNetworkError: true }),
+      ...(["authentication", "authorization"].includes(
+        parsedError.type || ""
+      ) && { isAuthError: true }),
+    },
+  };
+
+  errorLogger.log(parsedError, logLevel, enrichedContext);
+
+  return parsedError;
+}
+
+// ============================================================================
 // GLOBAL QUERY ERROR HANDLER (TanStack Query)
 // ============================================================================
 
@@ -341,6 +427,18 @@ export function setNotificationBridge(
   notificationBridge = bridge;
 }
 
+function getNotificationTitle(errorType: ErrorType): string {
+  const titles: Record<ErrorType, string> = {
+    validation: "Validation Error",
+    network: "Network Error",
+    authentication: "Authentication Error",
+    authorization: "Authorization Error",
+    server: "Server Error",
+    unknown: "Error",
+  };
+  return titles[errorType];
+}
+
 /**
  * Global error handler for all TanStack Query mutations/queries
  * Automatically logs errors and shows notifications to users
@@ -349,32 +447,27 @@ export function globalQueryErrorHandler(error: unknown): void {
   const parsedError = APIErrorHandler.parseError(error);
 
   // Log based on error type
-  if (APIErrorHandler.shouldLog(parsedError))
+  if (APIErrorHandler.shouldLog(parsedError)) {
     errorLogger.log(parsedError, "error");
-  if (parsedError.type === "validation")
+  }
+  if (parsedError.type === "validation") {
     errorLogger.logValidationError(parsedError);
-  if (parsedError.type === "network") errorLogger.logNetworkError(parsedError);
+  }
+  if (parsedError.type === "network") {
+    errorLogger.logNetworkError(parsedError);
+  }
   if (
     parsedError.type === "authentication" ||
     parsedError.type === "authorization"
-  )
+  ) {
     errorLogger.logAuthError(parsedError);
+  }
 
   // Show user notification
   if (notificationBridge) {
     const notificationType =
       parsedError.type === "validation" ? "warning" : "error";
-    const title =
-      parsedError.type === "validation"
-        ? "Validation Error"
-        : parsedError.type === "network"
-          ? "Network Error"
-          : parsedError.type === "authentication"
-            ? "Authentication Error"
-            : parsedError.type === "authorization"
-              ? "Authorization Error"
-              : "Error";
-
+    const title = getNotificationTitle(parsedError.type || "unknown");
     const description =
       parsedError.type === "validation" && parsedError.errors?.length
         ? APIErrorHandler.formatValidationErrors(parsedError.errors)
@@ -382,39 +475,4 @@ export function globalQueryErrorHandler(error: unknown): void {
 
     notificationBridge(notificationType, title, description);
   }
-}
-
-// ============================================================================
-// LEGACY (Backward Compatibility)
-// ============================================================================
-
-export default class APIError extends Error {
-  constructor() {
-    super("Api Error: ");
-  }
-
-  init = (error: Error) => {
-    return this.parseErrorObj(error);
-  };
-
-  private parseErrorObj(error: any) {
-    if (error instanceof AxiosError) {
-      const { response } = error;
-      if (response && response.data) {
-        return response.data;
-      }
-    } else if (error instanceof Error) {
-      console.log(error, "----ERR");
-      return this.parseSystemError(error);
-    }
-    console.log("No original request found3", error);
-  }
-
-  private parseSystemError = (e: Error): ErrorResponse => {
-    console.log(`System Error: ${e.name}`);
-    return {
-      success: false,
-      data: e.message,
-    };
-  };
 }
