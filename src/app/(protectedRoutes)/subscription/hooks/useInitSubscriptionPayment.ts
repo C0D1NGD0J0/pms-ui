@@ -37,7 +37,7 @@ export function useInitSubscriptionPayment(
       billingInterval,
     }: InitPaymentParams): Promise<InitPaymentResponse> => {
       const baseUrl = process.env.NEXT_PUBLIC_CLIENT_BASE_URL || "";
-      const returnUrl = `${baseUrl}/subscription/onboarding`;
+      const returnUrl = `${baseUrl}/subscription/onboarding?returning_from_payment=true`;
 
       return subscriptionService.initSubscriptionPayment(cuid, {
         priceId,

@@ -86,6 +86,61 @@ class SubscriptionService {
       throw error;
     }
   }
+
+  async cancelSubscription(cuid: string) {
+    try {
+      const result = await axios.delete<{
+        success: boolean;
+        message: string;
+        data: {
+          _id: string;
+          status: string;
+          canceledAt: string;
+          planName: string;
+        };
+      }>(`${this.baseUrl}/${cuid}/cancel-subscription`, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+      throw error;
+    }
+  }
+
+  async getPlanUsage(cuid: string) {
+    try {
+      const result = await axios.get<{
+        success: boolean;
+        data: {
+          plan: {
+            name: string;
+            status: string;
+            billingInterval: string;
+            startDate: string;
+            endDate: string;
+          };
+          usage: {
+            properties: number;
+            units: number;
+            seats: number;
+          };
+          limits: {
+            properties: number;
+            units: number;
+            seats: number;
+          };
+          isLimitReached: {
+            properties: boolean;
+            units: boolean;
+            seats: boolean;
+          };
+        };
+      }>(`${this.baseUrl}/${cuid}/plan-usage`, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching plan usage:", error);
+      throw error;
+    }
+  }
 }
 
 export const subscriptionService = new SubscriptionService();

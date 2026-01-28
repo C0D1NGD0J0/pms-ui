@@ -2,7 +2,7 @@
 import storage from "@utils/storage";
 import { Icon } from "@components/Icon";
 import React, { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Banner } from "@components/Banner";
 import { Loading } from "@components/Loading";
 import { EmptyState } from "@components/EmptyState";
@@ -46,11 +46,13 @@ export function OnboardingView({
   onPlanChange,
 }: OnboardingViewProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const { subscriptionInfo } = useSSENotifications();
   const { closePaymentModal } = useSSENotificationActions();
 
   const { showPaymentModal, paymentStatus, paymentMessage } = subscriptionInfo;
+  const returningFromPayment = searchParams.get("returning_from_payment") === "true";
 
   // Invalidate React Query cache when payment modal appears
   useEffect(() => {
@@ -60,10 +62,28 @@ export function OnboardingView({
     }
   }, [showPaymentModal, paymentStatus, queryClient]);
 
+  // Auto-redirect to dashboard when returning from payment with success
+  useEffect(() => {
+    if (returningFromPayment && showPaymentModal && paymentStatus === "success") {
+      // Wait a moment to ensure cache is invalidated
+      const timer = setTimeout(() => {
+        router.push("/dashboard");
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [returningFromPayment, showPaymentModal, paymentStatus, router]);
+
   const handleSuccessAction = () => {
     closePaymentModal();
     router.push("/dashboard");
   };
+
+  // Show loading state when returning from payment (waiting for SSE)
+  if (returningFromPayment && !showPaymentModal) {
+    return (
+      <Loading description="Processing your payment... You'll be redirected shortly." />
+    );
+  }
 
   if (isLoadingPlans) {
     return <Loading description="Loading subscription details..." />;

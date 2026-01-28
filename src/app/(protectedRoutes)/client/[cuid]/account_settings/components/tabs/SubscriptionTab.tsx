@@ -6,10 +6,11 @@ import React, { useState, useMemo } from "react";
 import { TableColumn, Table } from "@components/Table";
 import { IClient } from "@interfaces/client.interface";
 import { FormSection } from "@components/FormLayout/formSection";
-import { Checkbox, Button, Select } from "@components/FormElements";
+import { Checkbox, Button, Select, Modal } from "@components/FormElements";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { useInitSubscriptionPayment } from "@subscription/hooks/useInitSubscriptionPayment";
 import { useGetSubscriptionPlans } from "@app/(auth)/register/hook/queries/useGetSubscriptionPlans";
+import { useCancelSubscription } from "@subscription/hooks/useCancelSubscription";
 
 interface SubscriptionTabProps {
   clientInfo: IClient;
@@ -36,6 +37,8 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
     useGetSubscriptionPlans();
   const { initPayment, isLoading: isInitializingPayment } =
     useInitSubscriptionPayment();
+  const { cancelSubscription, isLoading: isCancelingSubscription } =
+    useCancelSubscription();
 
   const subscription = clientInfo.subscription;
   const currentPlanName = subscription?.planName || "professional";
@@ -43,6 +46,7 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
   const [isAnnualBilling, setIsAnnualBilling] = useState(
     subscription?.billingInterval === "annual"
   );
+  const [showCancelModal, setShowCancelModal] = useState(false);
 
   const PLAN_ICONS: Record<string, string> = {
     essential: "bx-user",
@@ -227,9 +231,13 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
     />
   );
 
-  const handleCancleSubscription = () => {
-    // Implement cancellation logic here
-    console.log("Subscription cancellation process initiated.");
+  const handleCancelClick = () => {
+    setShowCancelModal(true);
+  };
+
+  const handleConfirmCancel = () => {
+    cancelSubscription(clientInfo.cuid);
+    setShowCancelModal(false);
   };
 
   const billingHistoryColumns: TableColumn<BillingHistory>[] = [
@@ -494,11 +502,80 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
             label="Cancel Plan"
             className="btn-danger btn-sm"
             icon={<Icon name="bx-trash" />}
-            onClick={handleCancleSubscription}
+            onClick={handleCancelClick}
+            disabled={subscription?.status === "inactive"}
             style={{ flexShrink: 0 }}
           />
         </div>
       </FormSection>
+
+      <Modal
+        isOpen={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        title="Cancel Subscription"
+      >
+        <div style={{ padding: "1rem" }}>
+          <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+            <Icon
+              name="bx-error-circle"
+              size="4rem"
+              color="var(--danger-color)"
+              style={{ marginBottom: "1rem" }}
+            />
+            <h3 style={{ marginBottom: "1rem", color: "var(--danger-color)" }}>
+              Are you sure you want to cancel?
+            </h3>
+            <p style={{ color: "var(--text-muted)", lineHeight: "1.6" }}>
+              Your account will remain active until the end of your current
+              billing cycle on <strong>{subscriptionData.renewalDate}</strong>.
+              After that, you'll lose access to all premium features.
+            </p>
+          </div>
+
+          <div
+            style={{
+              backgroundColor: "var(--color-warning-light)",
+              padding: "1rem",
+              borderRadius: "8px",
+              marginBottom: "2rem",
+            }}
+          >
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "start" }}>
+              <Icon
+                name="bx-info-circle"
+                color="var(--color-warning)"
+                size="1.25rem"
+              />
+              <div style={{ flex: 1 }}>
+                <strong>What happens next:</strong>
+                <ul style={{ margin: "0.5rem 0 0 0", paddingLeft: "1.25rem" }}>
+                  <li>Your subscription will be canceled immediately</li>
+                  <li>You can continue using premium features until {subscriptionData.renewalDate}</li>
+                  <li>No refunds will be issued for the current billing period</li>
+                  <li>You can reactivate your subscription anytime</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div className="btn-group">
+            <Button
+              label="Keep Subscription"
+              className="btn-outline"
+              onClick={() => setShowCancelModal(false)}
+              icon={<Icon name="bx-x" />}
+            />
+            <Button
+              label="Yes, Cancel Subscription"
+              className="btn-danger"
+              onClick={handleConfirmCancel}
+              loading={isCancelingSubscription}
+              loadingText="Canceling..."
+              icon={<Icon name="bx-trash" />}
+            />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

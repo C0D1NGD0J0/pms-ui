@@ -169,6 +169,14 @@ const useSSENotificationStore = create<NotificationState>()(
           newPersonalSource.addEventListener("subscription_update", (event) => {
             const data = JSON.parse(event.data);
 
+            console.log("🔔 [SSE] subscription_update received:", {
+              eventType: data.eventType,
+              message: data.message,
+              subscription: data.subscription,
+              timestamp: data.timestamp,
+              action: data.action,
+            });
+
             if (data.action === "REFETCH_CURRENT_USER") {
               get().actions.handleSubscriptionUpdate(data);
             }
@@ -317,25 +325,59 @@ const useSSENotificationStore = create<NotificationState>()(
         },
 
         handleSubscriptionUpdate: (data: any) => {
-          // Determine modal status from eventType
-          const status =
-            data.eventType === "subscription_activated"
-              ? "success"
-              : data.eventType === "payment_failed"
-                ? "failed"
-                : data.eventType === "subscription_canceled"
-                  ? "canceled"
-                  : null;
+          // Map event type to user-friendly notification
+          const notificationConfig: Record<
+            string,
+            { title: string; priority: "high" | "medium" | "low" }
+          > = {
+            subscription_activated: {
+              title: "🎉 Subscription Activated",
+              priority: "high",
+            },
+            subscription_renewed: {
+              title: "✓ Subscription Renewed",
+              priority: "medium",
+            },
+            payment_failed: {
+              title: "⚠️ Payment Failed",
+              priority: "high",
+            },
+            subscription_canceled: {
+              title: "Subscription Canceled",
+              priority: "medium",
+            },
+            subscription_updated: {
+              title: "Subscription Updated",
+              priority: "medium",
+            },
+          };
 
-          set({
-            subscriptionInfo: {
-              showPaymentModal: true,
-              paymentStatus: status,
-              paymentMessage: data.message || "",
+          const config = notificationConfig[data.eventType] || {
+            title: "Subscription Update",
+            priority: "medium" as const,
+          };
+
+          // Create notification object
+          const notification: INotification = {
+            nuid: `sub-${Date.now()}-${Math.random()}`,
+            title: config.title,
+            message: data.message || "Your subscription has been updated",
+            type: "system",
+            priority: config.priority,
+            isRead: false,
+            createdAt: data.timestamp || new Date().toISOString(),
+            recipientType: "personal",
+            metadata: {
+              isTransient: true, // Don't persist to DB
               eventType: data.eventType,
               subscription: data.subscription,
             },
-          });
+          };
+
+          // Add to notifications (triggers badge + bell shake)
+          set((state) => ({
+            notifications: [notification, ...state.notifications],
+          }));
         },
 
         closePaymentModal: () => {
