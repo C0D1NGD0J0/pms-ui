@@ -67,6 +67,97 @@ export const useUpdateEmployee = (cuid: string, uid: string) => {
   });
 };
 
+export const useRemoveEmployee = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: () => userService.removeUser(cuid, uid),
+    onSuccess: (response) => {
+      message.success("Employee removed successfully!");
+
+      // Invalidate employee lists
+      queryClient.invalidateQueries({
+        queryKey: [USER_QUERY_KEYS.getClientUsers, cuid],
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
+      });
+
+      // Invalidate stats for employee charts
+      queryClient.invalidateQueries({
+        queryKey: ["userStats", cuid],
+      });
+
+      // Check if seat was freed (employee roles: super-admin, admin, manager, staff)
+      const actions = response?.data?.actions || [];
+      const hasSeatAction = actions.some((action: any) =>
+        action.action?.includes('seat') || action.action?.includes('disconnect')
+      );
+
+      if (hasSeatAction) {
+        // Invalidate subscription usage to update seat count
+        queryClient.invalidateQueries({
+          queryKey: ["subscriptionUsage", cuid],
+        });
+        queryClient.invalidateQueries({
+          queryKey: ["currentUser"],
+        });
+        message.info("Seat count updated: 1 seat freed");
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message;
+
+      if (errorMessage?.includes("Cannot archive yourself")) {
+        message.error("You cannot remove yourself");
+      } else {
+        message.error(errorMessage || "Failed to remove employee");
+      }
+    },
+  });
+};
+
+export const useReconnectEmployee = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: () => userService.reconnectUser(cuid, uid),
+    onSuccess: () => {
+      message.success("Employee reconnected successfully!");
+
+      // Invalidate employee lists
+      queryClient.invalidateQueries({
+        queryKey: [USER_QUERY_KEYS.getClientUsers, cuid],
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
+      });
+
+      // Invalidate stats
+      queryClient.invalidateQueries({
+        queryKey: ["userStats", cuid],
+      });
+
+      // Invalidate subscription usage (seat count will increment)
+      queryClient.invalidateQueries({
+        queryKey: ["subscriptionUsage", cuid],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["currentUser"],
+      });
+    },
+    onError: (error: any) => {
+      message.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to reconnect employee"
+      );
+    },
+  });
+};
+
 export const useGetEmployees = (
   cuid: string,
   initialParams?: EmployeeQueryParams

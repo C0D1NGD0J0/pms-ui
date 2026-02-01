@@ -64,9 +64,31 @@ export const useDeactivateTenant = (cuid: string, uid: string) => {
   const { message } = useNotification();
 
   return useMutation({
-    mutationFn: () => userService.deactivateTenant(cuid, uid),
+    mutationFn: () => userService.removeUser(cuid, uid),
     onSuccess: () => {
-      message.success("Tenant deactivated successfully!");
+      message.success("Tenant removed successfully!");
+      queryClient.invalidateQueries({
+        queryKey: [`/users/${cuid}/filtered-tenants`],
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getClientTenant(cuid, uid),
+      });
+    },
+    onError: (error: any) => {
+      // Don't show automatic error toast - let component handle it
+      console.error("Failed to remove tenant:", error);
+    },
+  });
+};
+
+export const useReconnectTenant = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: () => userService.reconnectUser(cuid, uid),
+    onSuccess: () => {
+      message.success("Tenant reconnected successfully!");
       queryClient.invalidateQueries({
         queryKey: [`/users/${cuid}/filtered-tenants`],
       });
@@ -78,7 +100,7 @@ export const useDeactivateTenant = (cuid: string, uid: string) => {
       message.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to deactivate tenant"
+          "Failed to reconnect tenant"
       );
     },
   });
