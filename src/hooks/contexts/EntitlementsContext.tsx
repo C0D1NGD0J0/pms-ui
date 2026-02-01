@@ -1,8 +1,18 @@
 "use client";
 
+import { Icon } from "@components/Icon";
 import { useAuth } from "@store/auth.store";
+import { useRouter } from "next/navigation";
+import { Modal } from "@components/FormElements";
+import { Button } from "@components/FormElements";
 import { useEntitlementsUsage } from "@hooks/useEntitlementsUsage";
-import React, { createContext, useContext, ReactNode, useMemo } from "react";
+import React, {
+  createContext,
+  useContext,
+  ReactNode,
+  useState,
+  useMemo,
+} from "react";
 
 interface UsageInfo {
   current: number;
@@ -14,7 +24,7 @@ interface UsageInfo {
 
 interface EntitlementsContextValue {
   // Data
-  features: Record<string, boolean>;
+  entitlements: Record<string, boolean>;
   limits: { properties: number; units: number; seats: number };
   usage: { properties: number; units: number; seats: number };
   status: string;
@@ -58,6 +68,9 @@ interface EntitlementsProviderProps {
 
 export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
   const { user, client } = useAuth();
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const [modalReason, setModalReason] = useState("");
   const {
     data: usageData,
     isLoading,
@@ -66,22 +79,23 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
 
   const value: EntitlementsContextValue = useMemo(() => {
     // Extract data from currentUser and usage API
-    const features = user?.subscription?.features || {};
+    const entitlements = user?.subscription?.entitlements || {};
+    console.log(user?.subscription, "--------", usageData);
     const limits =
-      usageData?.data?.limits || (usageData as any)?.limits || DEFAULT_LIMITS;
+      usageData?.limits || DEFAULT_LIMITS;
     const usage =
-      usageData?.data?.usage || (usageData as any)?.usage || DEFAULT_USAGE;
-    const status = user?.subscription?.status || "inactive";
+      usageData?.usage || DEFAULT_USAGE;
+    const status = user?.subscription?.plan?.status || "inactive";
 
     // Helper: Check if user has a specific feature
     const hasFeature = (feature: string): boolean => {
-      return features[feature] === true;
+      return (entitlements as Record<string, any>)[feature] === true;
     };
 
     // Helper: Check if user can create a new resource
     const canCreate = (resource: "property" | "unit" | "user"): boolean => {
-      // Block if account is canceled or past due
-      if (status === "canceled" || status === "past_due") {
+      // Block if account is inactive or expired
+      if (status === "inactive" || status === "expired") {
         return false;
       }
 
@@ -147,15 +161,14 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
       };
     };
 
-    // Helper: Show upgrade modal (placeholder for now)
+    // Helper: Show upgrade modal
     const showUpgradeModal = (reason: string) => {
-      // TODO: Implement upgrade modal
-      console.log("[Entitlements] Upgrade needed:", reason);
-      alert(reason + "\n\nPlease upgrade your plan to continue.");
+      setModalReason(reason);
+      setShowModal(true);
     };
 
     return {
-      features,
+      entitlements,
       limits,
       usage,
       status,
@@ -168,9 +181,72 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
     };
   }, [user, usageData, isLoading, error]);
 
+  const handleViewPlans = () => {
+    setShowModal(false);
+    router.push("/subscription");
+  };
+
+  const handleContactSales = () => {
+    setShowModal(false);
+    router.push("/contact-sales");
+  };
+
   return (
     <EntitlementsContext.Provider value={value}>
       {children}
+
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title="Upgrade Required"
+      >
+        <div style={{ padding: "1.5rem", textAlign: "center" }}>
+          <Icon
+            name="bx-lock-alt"
+            size="4rem"
+            color="var(--secondary-color)"
+            style={{ marginBottom: "1rem" }}
+          />
+
+          <h3 style={{ marginBottom: "1rem" }}>{modalReason}</h3>
+
+          <p style={{ marginBottom: "2rem", lineHeight: "1.6" }}>
+            Upgrade your plan to unlock this feature and get access to more
+            resources, advanced features, and priority support.
+          </p>
+
+          <div
+            style={{
+              display: "flex",
+              gap: "1rem",
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <Button
+              label="View Plans & Upgrade"
+              onClick={handleViewPlans}
+              className="btn-primary"
+              icon={<Icon name="bx-rocket" />}
+            />
+            <Button
+              label="Contact Sales"
+              onClick={handleContactSales}
+              className="btn-outline"
+              icon={<Icon name="bx-phone" />}
+            />
+          </div>
+
+          <p
+            style={{
+              marginTop: "1.5rem",
+              fontSize: "0.9rem",
+            }}
+          >
+            Have questions? Our team is here to help you choose the right plan.
+          </p>
+        </div>
+      </Modal>
     </EntitlementsContext.Provider>
   );
 }

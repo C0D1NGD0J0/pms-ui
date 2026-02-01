@@ -14,7 +14,7 @@ const Custom404 = () => {
           <i className="bx bx-map-alt auth-brand-panel__icon"></i>
           <h1 className="auth-brand-panel__title">Got Lost?</h1>
           <p className="auth-brand-panel__subtitle">
-            We can't seem to find the page you're looking for. Let us help you
+            We can&apos;t seem to find the page you&apos;re looking for. Let us help you
             get back on track.
           </p>
           <ul className="auth-brand-panel__features">
@@ -48,12 +48,11 @@ const Custom404 = () => {
             className="bx bx-error-circle"
             style={{
               fontSize: "6rem",
-              color: "var(--color-primary)",
             }}
           ></i>
-          <p style={{ textAlign: "center", color: "var(--color-text-light)" }}>
-            The page you're looking for may have been moved, deleted, or doesn't
-            exist. Make sure you've entered the correct URL or try navigating
+          <p style={{ textAlign: "center" }}>
+            The page you&apos;re looking for may have been moved, deleted, or doesn&apos;t
+            exist. Make sure you&apos;ve entered the correct URL or try navigating
             back to the home page.
           </p>
           <Link href="/dashboard" className="btn btn-primary btn-full-width">
