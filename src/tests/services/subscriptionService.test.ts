@@ -40,9 +40,9 @@ describe("SubscriptionService", () => {
             maxUnits: 1,
             maxVendors: 5,
           },
-          features: {
+          entitlements: {
             tenantScreening: true,
-            maintenanceTracking: false,
+            RepairRequestService: false,
           },
           pricing: {
             monthly: {
@@ -88,9 +88,9 @@ describe("SubscriptionService", () => {
             maxUnits: 100,
             maxVendors: 50,
           },
-          features: {
+          entitlements: {
             tenantScreening: true,
-            maintenanceTracking: true,
+            RepairRequestService: true,
           },
           pricing: {
             monthly: {
@@ -169,6 +169,128 @@ describe("SubscriptionService", () => {
       expect(console.error).toHaveBeenCalledWith(
         "Error fetching subscription plans:",
         mockError
+      );
+    });
+  });
+
+  describe("manageSeats", () => {
+    it("should successfully purchase additional seats", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          data: {
+            additionalSeats: 5,
+            totalSeats: 15,
+            additionalSeatsCost: 5000,
+            totalMonthlyPrice: 9900,
+          },
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await subscriptionService.manageSeats("test-cuid", 5);
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/subscription/test-cuid/seats",
+        { seatDelta: 5 },
+        {}
+      );
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it("should successfully remove seats", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          data: {
+            additionalSeats: 0,
+            totalSeats: 10,
+            additionalSeatsCost: 0,
+            totalMonthlyPrice: 4900,
+          },
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await subscriptionService.manageSeats("test-cuid", -3);
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/subscription/test-cuid/seats",
+        { seatDelta: -3 },
+        {}
+      );
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it("should handle zero seat delta", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          data: {
+            additionalSeats: 2,
+            totalSeats: 12,
+            additionalSeatsCost: 2000,
+            totalMonthlyPrice: 6900,
+          },
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await subscriptionService.manageSeats("test-cuid", 0);
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/subscription/test-cuid/seats",
+        { seatDelta: 0 },
+        {}
+      );
+      expect(result.data).toEqual(mockResponse.data);
+    });
+
+    it("should handle errors when managing seats fails", async () => {
+      const mockError = new Error("Insufficient seats available");
+      mockedAxios.post.mockRejectedValue(mockError);
+
+      await expect(
+        subscriptionService.manageSeats("test-cuid", 100)
+      ).rejects.toThrow("Insufficient seats available");
+
+      expect(console.error).toHaveBeenCalledWith(
+        "Error managing seats:",
+        mockError
+      );
+    });
+
+    it("should handle network errors", async () => {
+      const networkError = new Error("Network timeout");
+      mockedAxios.post.mockRejectedValue(networkError);
+
+      await expect(
+        subscriptionService.manageSeats("test-cuid", 1)
+      ).rejects.toThrow("Network timeout");
+    });
+
+    it("should call API with correct endpoint for different cuids", async () => {
+      const mockResponse = {
+        data: { success: true, data: {} },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      await subscriptionService.manageSeats("client-123", 2);
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/subscription/client-123/seats",
+        { seatDelta: 2 },
+        {}
+      );
+
+      await subscriptionService.manageSeats("client-456", -1);
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        "/api/v1/subscription/client-456/seats",
+        { seatDelta: -1 },
+        {}
       );
     });
   });

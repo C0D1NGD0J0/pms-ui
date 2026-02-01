@@ -266,6 +266,59 @@ class UsersService {
       throw error;
     }
   }
+
+  /**
+   * Remove/disconnect a user (soft delete)
+   * Sets isConnected: false, preserves data for audit
+   * Handles employees, tenants, vendors
+   */
+  async removeUser(cuid: string, uid: string) {
+    try {
+      const result = await axios.delete(
+        `${this.baseUrl}/${cuid}/${uid}`,
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error removing user:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reconnect a previously disconnected user
+   * Sets isConnected: true
+   */
+  async reconnectUser(cuid: string, uid: string) {
+    try {
+      const result = await axios.post(
+        `/api/v1/clients/${cuid}/users/${uid}/reconnect`,
+        {},
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error reconnecting user:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Alternative disconnect method (simpler, without property reassignment)
+   */
+  async disconnectUser(cuid: string, uid: string) {
+    try {
+      const result = await axios.post(
+        `/api/v1/clients/${cuid}/users/${uid}/disconnect`,
+        {},
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error disconnecting user:", error);
+      throw error;
+    }
+  }
 }
 
 export const userService = new UsersService();

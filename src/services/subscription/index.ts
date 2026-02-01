@@ -133,11 +133,44 @@ class SubscriptionService {
             units: boolean;
             seats: boolean;
           };
+          seatInfo?: {
+            includedSeats: number;
+            additionalSeats: number;
+            totalAllowed: number;
+            maxAdditionalSeats: number;
+            additionalSeatPriceCents: number;
+            availableForPurchase: number;
+          };
         };
       }>(`${this.baseUrl}/${cuid}/plan-usage`, this.axiosConfig);
       return result.data;
     } catch (error) {
       console.error("Error fetching plan usage:", error);
+      throw error;
+    }
+  }
+
+  async manageSeats(cuid: string, seatDelta: number) {
+    try {
+      const result = await axios.post<{
+        success: boolean;
+        message: string;
+        data: {
+          _id: string;
+          planName: string;
+          additionalSeatsCount: number;
+          additionalSeatsCost: number;
+          totalMonthlyPrice: number;
+          currentSeats: number;
+        };
+      }>(
+        `${this.baseUrl}/${cuid}/seats`,
+        { seatDelta },
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error managing seats:", error);
       throw error;
     }
   }
