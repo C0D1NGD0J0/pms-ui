@@ -93,7 +93,7 @@ export class MemoryStorageAdapter implements IStorageAdapter {
   }
 }
 
-export class RedisStorageAdapter implements IStorageAdapter {
+export class RedisStorageAdapter {
   private client: any;
 
   constructor(client: any) {
@@ -135,22 +135,6 @@ export class RedisStorageAdapter implements IStorageAdapter {
     } catch (error) {
       console.error("Error clearing Redis", error);
     }
-  }
-
-  getItem(): string | null {
-    throw new Error("Use async getItem for RedisStorageAdapter");
-  }
-
-  setItem(): void {
-    throw new Error("Use async setItem for RedisStorageAdapter");
-  }
-
-  removeItem(): void {
-    throw new Error("Use async removeItem for RedisStorageAdapter");
-  }
-
-  clear(): void {
-    throw new Error("Use async clear for RedisStorageAdapter");
   }
 }
 

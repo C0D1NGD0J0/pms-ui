@@ -149,13 +149,13 @@ const useSSENotificationStore = create<NotificationState>()(
                 jobType: jobUpdate.jobType,
                 stage: jobUpdate.stage,
                 progress: jobUpdate.progress,
-                isTransient: true, // Mark as transient (not stored in DB)
-                errors: jobUpdate.errors, // Include errors from root level
+                isTransient: true,
+                errors: jobUpdate.errors,
                 errorCount: jobUpdate.errorCount,
                 totalRows: jobUpdate.totalRows,
                 validCount: jobUpdate.validCount,
                 totalItems: jobUpdate.totalItems,
-                validData: jobUpdate.validData, // Include validData from root level
+                validData: jobUpdate.validData,
                 ...jobUpdate.metadata,
               },
             };
@@ -165,7 +165,6 @@ const useSSENotificationStore = create<NotificationState>()(
             }));
           });
 
-          // NEW: Listen for subscription updates (payment notifications)
           newPersonalSource.addEventListener("subscription_update", (event) => {
             const data = JSON.parse(event.data);
 
@@ -325,7 +324,6 @@ const useSSENotificationStore = create<NotificationState>()(
         },
 
         handleSubscriptionUpdate: (data: any) => {
-          // Map event type to user-friendly notification
           const notificationConfig: Record<
             string,
             { title: string; priority: "high" | "medium" | "low" }
@@ -357,8 +355,8 @@ const useSSENotificationStore = create<NotificationState>()(
             priority: "medium" as const,
           };
 
-          // Create notification object
           const notification: INotification = {
+            id: `sub-${Date.now()}-${Math.random()}`,
             nuid: `sub-${Date.now()}-${Math.random()}`,
             title: config.title,
             message: data.message || "Your subscription has been updated",
@@ -366,15 +364,14 @@ const useSSENotificationStore = create<NotificationState>()(
             priority: config.priority,
             isRead: false,
             createdAt: data.timestamp || new Date().toISOString(),
-            recipientType: "personal",
+            recipientType: "individual",
             metadata: {
-              isTransient: true, // Don't persist to DB
+              isTransient: true,
               eventType: data.eventType,
               subscription: data.subscription,
             },
           };
 
-          // Add to notifications (triggers badge + bell shake)
           set((state) => ({
             notifications: [notification, ...state.notifications],
           }));
@@ -397,7 +394,6 @@ const useSSENotificationStore = create<NotificationState>()(
       name: "notification-storage",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => {
-        // Only persist connection status, not the actual connections
         return {
           connectionStatus: state.connectionStatus,
         } as unknown as NotificationState;

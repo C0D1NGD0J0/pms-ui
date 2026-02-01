@@ -57,7 +57,14 @@ class SubscriptionService {
         data,
         this.axiosConfig
       );
-      return result.data;
+      return result.data as unknown as {
+        success: boolean;
+        message: string;
+        data: {
+          checkoutUrl: string;
+          sessionId: string;
+        };
+      };
     } catch (error) {
       console.error("Error initializing subscription payment:", error);
       throw error;
