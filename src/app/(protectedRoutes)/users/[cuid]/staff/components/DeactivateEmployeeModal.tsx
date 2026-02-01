@@ -2,28 +2,24 @@
 import React from "react";
 import { Button, Modal } from "@components/FormElements";
 
-interface DeactivateTenantModalProps {
+interface DeactivateEmployeeModalProps {
   isOpen: boolean;
-  tenantName: string;
+  employeeName: string;
   onClose: () => void;
   onConfirm: () => void;
   isSubmitting?: boolean;
 }
 
-export const DeactivateTenantModal: React.FC<DeactivateTenantModalProps> = ({
-  isOpen,
-  tenantName,
-  onClose,
-  onConfirm,
-  isSubmitting = false,
-}) => {
+export const DeactivateEmployeeModal: React.FC<
+  DeactivateEmployeeModalProps
+> = ({ isOpen, employeeName, onClose, onConfirm, isSubmitting = false }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="small">
-      <Modal.Header title="Deactivate Tenant" onClose={onClose} />
+      <Modal.Header title="Remove Employee" onClose={onClose} />
       <Modal.Content>
         <div className="modal-body">
           <p style={{ marginBottom: "1rem" }}>
-            Are you sure you want to deactivate <strong>{tenantName}</strong>?
+            Are you sure you want to remove <strong>{employeeName}</strong>?
           </p>
           <p
             style={{
@@ -39,10 +35,24 @@ export const DeactivateTenantModal: React.FC<DeactivateTenantModalProps> = ({
               fontSize: "0.9rem",
             }}
           >
-            <li>Soft delete the tenant record</li>
             <li>Disconnect them from this client</li>
-            <li>Mark their account as inactive</li>
+            <li>Mark their account as inactive (isConnected: false)</li>
+            <li>Free up 1 seat in your subscription</li>
+            <li>
+              Preserve all their data for compliance and audit purposes
+            </li>
+            <li>They will NOT be able to login to this account</li>
           </ul>
+          <p
+            style={{
+              marginTop: "1rem",
+              fontSize: "0.85rem",
+              fontStyle: "italic",
+              color: "var(--text-secondary)",
+            }}
+          >
+            Note: You can reconnect this employee later if needed.
+          </p>
         </div>
       </Modal.Content>
       <Modal.Footer>
@@ -53,7 +63,7 @@ export const DeactivateTenantModal: React.FC<DeactivateTenantModalProps> = ({
           disabled={isSubmitting}
         />
         <Button
-          label={isSubmitting ? "Deactivating..." : "Deactivate"}
+          label={isSubmitting ? "Removing..." : "Remove Employee"}
           className="btn-danger"
           onClick={onConfirm}
           disabled={isSubmitting}
