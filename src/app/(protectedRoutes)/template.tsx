@@ -62,12 +62,11 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
     }
   }, [isLoading, user, isAuthLoading, setProcessingInvite]);
 
-  // Redirect to onboarding if payment is required (super-admin only)
   useEffect(() => {
     const dismissed = storage.get<boolean>("onboarding_dismissed");
 
     if (
-      user?.subscription?.paymentFlow.requiresPayment &&
+      user?.subscription?.paymentFlow?.requiresPayment &&
       pathname !== "/subscription/onboarding" &&
       !dismissed &&
       isSuperAdmin

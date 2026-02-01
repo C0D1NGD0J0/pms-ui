@@ -56,38 +56,39 @@ export interface IClientSettings {
 }
 
 export interface IClientSubscription {
-  _id: string;
-  id: string;
-  cuid: string;
+  subscriptionId: string;
   suid: string;
-  client: string;
+  cuid: string;
   planName: string;
   status: string;
-  startDate: string;
-  endDate?: string;
   billingInterval: "monthly" | "annual";
-  additionalSeatsCount: number;
-  additionalSeatsCost: number;
-  totalMonthlyPrice: number;
+  amount: number;
+  nextBillingDate: string;
+  canceledAt: string | null;
+  pendingDowngradeAt: string | null;
   currentSeats: number;
   currentProperties: number;
   currentUnits: number;
-  paymentGateway?: {
-    provider: string;
-    customerId: string;
-    planId: string;
-  };
-  nextBillingDate?: string;
-  amount?: number;
-  pendingDowngradeAt?: string;
+  additionalSeatsCount: number;
+  additionalSeatsCost: number;
+  totalMonthlyPrice: number;
   paymentMethod?: {
-    type: string;
+    brand: string;
     last4: string;
-    expiry: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
+  } | null;
+  billingHistory?: Array<{
+    invoiceId: string;
+    number: string;
+    amountPaid: number;
+    currency: string;
+    paidAt: string;
+    period: {
+      start: string;
+      end: string;
+    };
+    pdfUrl?: string;
+    hostedUrl?: string;
+  }>;
 }
 
 export interface IClient {

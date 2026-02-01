@@ -85,7 +85,7 @@ export interface IServerSubscriptionPlan {
     maxUnits: number;
     maxVendors: number;
   };
-  features: Record<string, boolean>;
+  entitlements: Record<string, boolean>;
   featureList: string[];
   disabledFeatures?: string[];
   pricing: {

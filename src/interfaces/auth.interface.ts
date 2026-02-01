@@ -20,8 +20,14 @@ export interface IUserSubscription {
     status: "active" | "inactive" | "pending" | "expired";
     billingInterval: "monthly" | "annual";
   };
-  features: Record<string, boolean>;
-  paymentFlow: {
+  entitlements: {
+    eSignature: boolean;
+    RepairRequestService: boolean;
+    VisitorPassService: boolean;
+    reportingAnalytics: boolean;
+    prioritySupport?: boolean;
+  };
+  paymentFlow?: {
     requiresPayment: boolean;
     reason: "pending_signup" | "grace_period" | "expired" | null;
     gracePeriodEndsAt: string | null;

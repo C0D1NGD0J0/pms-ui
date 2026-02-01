@@ -1,19 +1,8 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useErrorHandler } from "@hooks/useErrorHandler";
-import { subscriptionService } from "@services/subscription";
-import { useNotification } from "@hooks/useNotification";
 import { logExternalError } from "@utils/errorHandler";
-
-interface CancelSubscriptionResponse {
-  success: boolean;
-  message: string;
-  data: {
-    _id: string;
-    status: string;
-    canceledAt: string;
-    planName: string;
-  };
-}
+import { useErrorHandler } from "@hooks/useErrorHandler";
+import { useNotification } from "@hooks/useNotification";
+import { subscriptionService } from "@services/subscription";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 export function useCancelSubscription() {
   const queryClient = useQueryClient();
@@ -21,14 +10,12 @@ export function useCancelSubscription() {
   const { handleMutationError } = useErrorHandler();
 
   const mutation = useMutation({
-    mutationFn: (cuid: string): Promise<CancelSubscriptionResponse> => {
-      return subscriptionService.cancelSubscription(cuid);
-    },
-    onSuccess: (response) => {
+    mutationFn: (cuid: string) => subscriptionService.cancelSubscription(cuid),
+    onSuccess: (response: any) => {
       openNotification(
         "success",
         "Subscription Canceled",
-        response.message || "Your subscription has been canceled successfully."
+        response?.message || "Your subscription has been canceled successfully."
       );
 
       // Invalidate queries to refresh user data

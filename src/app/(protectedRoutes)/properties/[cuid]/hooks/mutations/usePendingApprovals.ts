@@ -11,11 +11,9 @@ export const useApproveProperty = (cuid: string) => {
       propertyService.approveProperty(cuid, pid, notes),
     onSuccess: (data, variables) => {
       message.success("Property approved successfully");
-      // Invalidate property details
       queryClient.invalidateQueries({
         queryKey: ["property", cuid, variables.pid],
       });
-      // Invalidate properties list
       queryClient.invalidateQueries({
         queryKey: ["/properties", cuid],
       });

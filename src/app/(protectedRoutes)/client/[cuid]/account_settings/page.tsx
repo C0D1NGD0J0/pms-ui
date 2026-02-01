@@ -19,15 +19,16 @@ import { useGetClientDetails, useClientForm } from "./hook/index";
 
 function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
   const queryClient = useQueryClient();
-  const [isEditMode, setIsEditMode] = useState(false);
   const permissions = useUnifiedPermissions();
   const { cuid } = use(params);
   const { subscriptionInfo } = useSSENotifications();
   const { closePaymentModal } = useSSENotificationActions();
 
+  // Lifted state for active tab
+  const [activeTab, setActiveTab] = useState("profile");
+
   const { showPaymentModal, paymentStatus, paymentMessage } = subscriptionInfo;
 
-  // Invalidate React Query cache when payment modal appears
   useEffect(() => {
     if (showPaymentModal && paymentStatus === "success") {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
@@ -47,10 +48,14 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
     form: clientForm,
     hasUnsavedChanges,
     revertChanges,
+    hasTabErrors,
   } = useClientForm({
     clientData: clientInfo ?? ({} as any),
     cuid: cuid || "",
   });
+
+  // Tabs that use the form and need save/cancel buttons
+  const FORM_TABS = ["profile", "identification", "company", "preferences"];
 
   if (isLoading) {
     return <Loading description="Loading client details..." size="regular" />;
@@ -65,7 +70,6 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
   const handleSave = async () => {
     try {
       await triggerManualSave();
-      setIsEditMode(false);
     } catch (error) {
       console.error("Save failed:", error);
     }
@@ -75,80 +79,32 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
     if (hasUnsavedChanges) {
       revertChanges();
     }
-    setIsEditMode(false);
   };
 
   return (
     <div className="page client-account">
-      <PageHeader
-        title="Account Settings"
-        headerBtn={
-          <div className="flex-row">
-            {isEditMode ? (
-              <>
-                <Button
-                  label="Cancel"
-                  onClick={handleCancel}
-                  className="btn-outline"
-                  icon={<i className="bx bx-x"></i>}
-                  disabled={isManuallySaving}
-                />
-                <Button
-                  label={
-                    isManuallySaving
-                      ? "Saving..."
-                      : saveStatus.hasUnsavedChanges
-                        ? "Save Changes"
-                        : "Save"
-                  }
-                  onClick={handleSave}
-                  className="btn-primary"
-                  icon={
-                    isManuallySaving ? (
-                      <i className="bx bx-loader-alt bx-spin"></i>
-                    ) : (
-                      <i className="bx bx-save"></i>
-                    )
-                  }
-                  disabled={isManuallySaving || !saveStatus.hasUnsavedChanges}
-                />
-              </>
-            ) : (
-              permissions.isAdmin && (
-                <Button
-                  label="Edit"
-                  onClick={() => setIsEditMode(true)}
-                  className="btn-grow btn-primary"
-                  icon={<i className="bx bx-pencil"></i>}
-                />
-              )
-            )}
-          </div>
-        }
-      />
+      <PageHeader title="Account Settings" />
 
-      {isEditMode && (
-        <div className="save-status-bar">
-          {saveStatus.isAutoSaving && (
-            <span className="save-status auto-saving">
-              <i className="bx bx-loader-alt bx-spin"></i>
-              Auto-saving...
-            </span>
-          )}
-          {saveStatus.lastAutoSave && !saveStatus.isAutoSaving && (
-            <span className="save-status auto-saved">
-              <i className="bx bx-check"></i>
-              Auto-saved at {saveStatus.lastAutoSave.toLocaleTimeString()}
-            </span>
-          )}
-          {saveStatus.hasUnsavedChanges && (
-            <span className="save-status pending">
-              <i className="bx bx-time"></i>
-              Unsaved changes
-            </span>
-          )}
-        </div>
-      )}
+      <div className="save-status-bar">
+        {saveStatus.isAutoSaving && (
+          <span className="save-status auto-saving">
+            <i className="bx bx-loader-alt bx-spin"></i>
+            Auto-saving...
+          </span>
+        )}
+        {saveStatus.lastAutoSave && !saveStatus.isAutoSaving && (
+          <span className="save-status auto-saved">
+            <i className="bx bx-check"></i>
+            Auto-saved at {saveStatus.lastAutoSave.toLocaleTimeString()}
+          </span>
+        )}
+        {saveStatus.hasUnsavedChanges && (
+          <span className="save-status pending">
+            <i className="bx bx-time"></i>
+            Unsaved changes
+          </span>
+        )}
+      </div>
 
       <AccountOverview
         accountStats={{
@@ -159,10 +115,44 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
         }}
       />
       <AccountTabs
-        inEditMode={!isEditMode}
+        inEditMode={false}
         clientForm={clientForm}
         clientInfo={clientInfo}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        hasTabErrors={hasTabErrors}
       />
+
+      {permissions.isAdmin && FORM_TABS.includes(activeTab) && (
+        <div className="btn-group">
+          <Button
+            label="Cancel"
+            onClick={handleCancel}
+            className="btn-outline"
+            icon={<i className="bx bx-x"></i>}
+            disabled={isManuallySaving || !hasUnsavedChanges}
+          />
+          <Button
+            label={
+              isManuallySaving
+                ? "Saving..."
+                : saveStatus.hasUnsavedChanges
+                  ? "Save Changes"
+                  : "Save"
+            }
+            onClick={handleSave}
+            className="btn-primary"
+            icon={
+              isManuallySaving ? (
+                <i className="bx bx-loader-alt bx-spin"></i>
+              ) : (
+                <i className="bx bx-save"></i>
+              )
+            }
+            disabled={!clientForm.isValid() || isManuallySaving || !saveStatus.hasUnsavedChanges}
+          />
+        </div>
+      )}
 
       {/* Payment Status Modal */}
       {showPaymentModal && (
@@ -180,9 +170,7 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
           <div style={{ textAlign: "center", padding: "2rem" }}>
             <Icon
               name={
-                paymentStatus === "success"
-                  ? "bx-check-circle"
-                  : "bx-x-circle"
+                paymentStatus === "success" ? "bx-check-circle" : "bx-x-circle"
               }
               size="4rem"
               color={
@@ -199,7 +187,7 @@ function AccountPage({ params }: { params: Promise<{ cuid: string }> }) {
                   ? "Payment Failed"
                   : "Payment Was Not Completed"}
             </h3>
-            <p style={{ color: "var(--text-muted)", marginBottom: "2rem" }}>
+            <p style={{ marginBottom: "2rem" }}>
               {paymentMessage ||
                 (paymentStatus === "success"
                   ? "Your payment has been processed. Your subscription has been updated."

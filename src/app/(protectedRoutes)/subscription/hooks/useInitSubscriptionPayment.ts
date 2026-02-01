@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
 import { useErrorHandler } from "@hooks/useErrorHandler";
 import { subscriptionService } from "@services/subscription";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 
 interface InitPaymentParams {
   cuid: string;
@@ -10,22 +10,24 @@ interface InitPaymentParams {
 }
 
 interface UseInitSubscriptionPaymentOptions {
-  onSuccess?: (checkoutUrl: string) => void;
+  onSuccess?: (checkoutUrl?: string) => void;
   autoRedirect?: boolean;
 }
 
 interface InitPaymentResponse {
   success: boolean;
-  message: string;
-  data: {
-    checkoutUrl: string;
-    sessionId: string;
+  message?: string;
+  data?: {
+    checkoutUrl?: string;
+    sessionId?: string;
+    message?: string;
   };
 }
 
 export function useInitSubscriptionPayment(
   options: UseInitSubscriptionPaymentOptions = {}
 ) {
+  const queryClient = useQueryClient();
   const { handleMutationError } = useErrorHandler();
   const { onSuccess: customOnSuccess, autoRedirect = true } = options;
 
@@ -47,7 +49,7 @@ export function useInitSubscriptionPayment(
         cancelUrl: returnUrl,
       });
     },
-    onSuccess: (response) => {
+    onSuccess: (response, variables) => {
       console.log("onSuccess triggered", {
         response,
         hasCheckoutUrl: !!response.data?.checkoutUrl,
@@ -56,24 +58,29 @@ export function useInitSubscriptionPayment(
         customOnSuccess: !!customOnSuccess,
       });
 
-      // Handle both response formats:
-      // 1. { success, message, data: { checkoutUrl, sessionId } }
-      // 2. { checkoutUrl, sessionId } (if axios interceptor unwraps)
       const checkoutUrl =
         response.data?.checkoutUrl || (response as any).checkoutUrl;
 
       if (checkoutUrl) {
-        console.log("About to redirect to:", checkoutUrl);
-
+        // Initial payment - redirect to Stripe
         if (customOnSuccess) {
           customOnSuccess(checkoutUrl);
         } else if (autoRedirect) {
-          // Full page redirect to Stripe (external URL) - window.location is correct here
           console.log("Executing window.location.href redirect...");
           window.location.href = checkoutUrl;
         }
       } else {
-        console.error("No checkout URL found in response:", response);
+        // Subscription update - no redirect needed
+        console.log("Subscription updated successfully");
+
+        // Invalidate queries to refresh subscription data
+        queryClient.invalidateQueries({ queryKey: ["clientDetails", variables.cuid] });
+        queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+
+        // Call custom success handler if provided
+        if (customOnSuccess) {
+          customOnSuccess(undefined);
+        }
       }
     },
     onError: (error) =>
