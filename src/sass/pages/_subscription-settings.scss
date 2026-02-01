@@ -361,7 +361,6 @@
   color: hslaGen($grey-color);
 }
 
-
 // Billing Cycle Checkbox
 .billing-cycle-option {
   padding: 1rem;
@@ -404,4 +403,165 @@
   color: var(--success-color);
   margin: 0.5rem 0 0 2rem;
   font-weight: 500;
+}
+
+.seat-usage {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.seat-usage__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.seat-usage__count {
+  font-size: $fs-xlg;
+  font-weight: $fw-extra-bold;
+  color: hslaGen($primary-color);
+}
+
+.seat-usage__label {
+  font-size: $fs-sm;
+  color: hslaGen($grey-color);
+  text-transform: uppercase;
+  font-weight: $fw-bold;
+  letter-spacing: $base-letter-spacing;
+}
+
+.seat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.seat-breakdown__row {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $fs-base;
+  color: hslaGen($dark-grey-color);
+
+  i {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: hslaGen($primary-color);
+    color: hslaGen($white-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &--highlight {
+    font-weight: $fw-bold;
+    color: hslaGen($primary-color);
+  }
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: $base-border-radius;
+  overflow: hidden;
+  transition: background-color 0.3s ease-in-out;
+
+  &.progress-bar-container--success {
+    background: hslaGen($success-color, 0.2);
+  }
+
+  &.progress-bar-container--warning {
+    background: hslaGen($warning-color, 0.2);
+  }
+
+  &.progress-bar-container--danger {
+    background: hslaGen($danger-color, 0.2);
+  }
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: $base-border-radius;
+  transition:
+    width 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
+}
+
+.seat-modal-content {
+  padding: $space-lg;
+}
+
+.seat-modal-input-group {
+  margin-bottom: $space-lg;
+
+  .form-input {
+    width: 100%;
+  }
+}
+
+.seat-modal-hint {
+  font-size: $fs-sm;
+  color: hslaGen($grey-color);
+  margin-top: $space-xs;
+}
+
+.pricing-breakdown {
+  background: hslaGen($background-color);
+  padding: $space-md;
+  border-radius: $base-border-radius;
+  margin-bottom: $space-lg;
+}
+
+.pricing-breakdown__title {
+  margin-bottom: $space-md;
+  font-size: $fs-md;
+  font-weight: $fw-bold;
+}
+
+.pricing-breakdown__row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $space-xs;
+  font-size: $fs-base;
+
+  &--total {
+    font-weight: $fw-bold;
+    font-size: $fs-md;
+  }
+}
+
+.pricing-breakdown__divider {
+  margin: $space-sm 0;
+  border: none;
+  border-top: 1px solid hslaGen($light-grey-color);
+}
+
+.billing-info-box {
+  display: flex;
+  gap: $space-sm;
+  background: hslaGen($primary-color, 0.1);
+  padding: $space-md;
+  border-radius: $base-border-radius;
+  margin-bottom: $space-lg;
+
+  i {
+    flex-shrink: 0;
+  }
+}
+
+.billing-info-box__content {
+  flex: 1;
+  font-size: $fs-base;
+
+  ul {
+    margin: $space-xs 0 0 $space-md;
+    padding-left: 0;
+
+    li {
+      margin-bottom: $space-xs;
+    }
+  }
 }

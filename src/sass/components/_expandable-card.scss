@@ -1,0 +1,71 @@
+@use "../abstract/index" as *;
+
+.expandable-card {
+  position: relative;
+  padding-bottom: $space-lg;
+}
+
+.expandable-card__content {
+  overflow: hidden;
+  max-height: var(--expandable-card-max-height, 150px);
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.expandable-card--expanded .expandable-card__content {
+  overflow: visible;
+}
+
+.expandable-card__toggle {
+  position: absolute;
+  bottom: -0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: hslaGen($primary-color);
+  border: 1px solid hslaGen($primary-color);
+  border-radius: 50%;
+  width: fit-content;
+  height: fit-content;
+  padding: 0.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: $transition;
+  box-shadow: $box-shadow;
+
+  &:hover {
+    background: hslaGen($primary-color, 0.9);
+    border-color: hslaGen($primary-color, 0.9);
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  &:active {
+    transform: translateX(-50%) scale(0.95);
+  }
+
+  i {
+    font-size: 1.5rem;
+    color: hslaGen($white-color);
+    transition: $transition;
+    line-height: 1;
+    margin-left: 0;
+  }
+}
+
+.expandable-card__fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4rem;
+  background: linear-gradient(
+    to bottom,
+    hslaGen($white-color, 0),
+    hslaGen($white-color, 0.9) 50%,
+    hslaGen($white-color, 1)
+  );
+  pointer-events: none;
+  border-radius: $base-border-radius;
+}

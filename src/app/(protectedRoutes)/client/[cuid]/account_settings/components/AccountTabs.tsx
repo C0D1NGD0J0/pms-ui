@@ -1,7 +1,7 @@
 "use client";
+import React, { useMemo } from "react";
 import { IClient } from "@src/interfaces";
 import { Form } from "@components/FormElements";
-import React, { useState, useMemo } from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { TabContainer, TabListItem, TabList } from "@components/Tab/components";
@@ -23,6 +23,9 @@ import { IdentificationTab } from "./tabs/IdentificationTab";
 interface AccountTabsProps {
   inEditMode: boolean;
   clientInfo: IClient;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  hasTabErrors: (tabId: string) => boolean;
   clientForm?: UseFormReturnType<UpdateClientDetailsFormData>;
 }
 
@@ -30,8 +33,10 @@ export function AccountTabs({
   inEditMode,
   clientForm,
   clientInfo,
+  activeTab,
+  onTabChange,
+  hasTabErrors,
 }: AccountTabsProps) {
-  const [activeTab, setActiveTab] = useState("profile");
   const { isSuperAdmin, isAdmin } = useUnifiedPermissions();
 
   const tabs = useMemo(
@@ -70,8 +75,8 @@ export function AccountTabs({
     [clientInfo.accountType.isEnterpriseAccount, isSuperAdmin, isAdmin]
   );
 
-  const handleTabChange = async (newTab: string) => {
-    setActiveTab(newTab);
+  const handleTabChange = (newTab: string) => {
+    onTabChange(newTab);
   };
 
   const renderActiveTabContent = (tab: string) => {
@@ -124,7 +129,7 @@ export function AccountTabs({
                         id={tab.key}
                         key={tab.key}
                         label={tab.tabLabel}
-                        hasError={undefined}
+                        hasError={hasTabErrors(tab.key)}
                       />
                     );
                   })}

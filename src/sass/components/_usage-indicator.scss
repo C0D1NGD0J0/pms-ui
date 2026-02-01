@@ -1,0 +1,121 @@
+@use "../abstract/index" as *;
+
+.usage-indicator {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  background: hslaGen($blue-ink-color, 1);
+  border: 1px solid hslaGen($light-grey-color, 0.2);
+  transition: $transition;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+
+  &__label {
+    font-size: $fs-sm;
+    font-weight: $fw-normal;
+    color: hslaGen($light-grey-color, 1);
+  }
+
+  &__count {
+    font-size: $fs-md;
+    font-weight: $fw-bold;
+    color: hslaGen($white-color, 1);
+  }
+
+  &__progress {
+    height: 0.6rem;
+    background: hslaGen($light-grey-color, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  &__progress-bar {
+    height: 100%;
+    background: hslaGen($secondary-color, 1);
+    border-radius: 1rem;
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__remaining {
+    font-size: $fs-xsm;
+    color: hslaGen($light-grey-color, 0.8);
+  }
+
+  &__upgrade-btn {
+    padding: 0.4rem 0.8rem;
+    font-size: $fs-xsm;
+    font-weight: $fw-bold;
+    border: none;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    transition: $transition;
+    background: hslaGen($secondary-color, 1);
+    color: hslaGen($white-color, 1);
+
+    &:hover {
+      background: hslaGen($secondary-color, 0.8);
+      transform: translateY(-1px);
+    }
+  }
+
+  // Status variants
+  &--normal {
+    .usage-indicator__progress-bar {
+      background: hslaGen($secondary-color, 1);
+    }
+  }
+
+  &--warning {
+    border-color: hslaGen($warning-color, 0.4);
+
+    .usage-indicator__progress-bar {
+      background: hslaGen($warning-color, 1);
+    }
+
+    .usage-indicator__count {
+      color: hslaGen($warning-color, 1);
+    }
+
+    .usage-indicator__upgrade-btn {
+      background: hslaGen($warning-color, 1);
+      animation: pulse 2s ease-in-out infinite;
+
+      &:hover {
+        background: hslaGen($warning-color, 0.8);
+      }
+    }
+  }
+
+  &--danger {
+    border-color: hslaGen($danger-color, 0.4);
+    background: hslaGen($danger-color, 0.05);
+
+    .usage-indicator__progress-bar {
+      background: hslaGen($danger-color, 1);
+    }
+
+    .usage-indicator__count {
+      color: hslaGen($danger-color, 1);
+    }
+
+    .usage-indicator__upgrade-btn {
+      background: hslaGen($danger-color, 1);
+      animation: pulse 2s ease-in-out infinite;
+
+      &:hover {
+        background: hslaGen($danger-color, 0.8);
+      }
+    }
+  }
+}

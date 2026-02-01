@@ -8,7 +8,6 @@ import { UpdateClientDetailsFormData } from "@src/validations/client.validations
 import {
   FormField,
   FormLabel,
-  Button,
   Select,
   Toggle,
 } from "@components/FormElements";
@@ -182,24 +181,6 @@ export const PreferencesTab: React.FC<PreferencesTabProps> = ({
               ]}
             />
           </FormField>
-        </div>
-      </FormSection>
-
-      <FormSection
-        title="Account Actions"
-        description="Manage your account status and data"
-      >
-        <div className="form-actions">
-          <Button
-            label="Delete Account"
-            className="btn-danger"
-            icon={<i className="bx bx-trash"></i>}
-          />
-          <Button
-            label="Export Data"
-            className="btn-outline"
-            icon={<i className="bx bx-download"></i>}
-          />
         </div>
       </FormSection>
     </div>
