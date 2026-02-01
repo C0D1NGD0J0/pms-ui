@@ -136,7 +136,7 @@ export function useRegisterLogic() {
       form.reset();
       router.replace("/login");
     } catch {
-      // Error handling is now centralized via global error handler
+      // error handling is now centralized via global error handler
     }
   };
 

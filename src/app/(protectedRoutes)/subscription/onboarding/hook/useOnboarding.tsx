@@ -52,7 +52,7 @@ export function useOnboarding() {
   }, [plansData, user]);
 
   useEffect(() => {
-    const gracePeriodEndsAt = user?.subscription?.paymentFlow.gracePeriodEndsAt;
+    const gracePeriodEndsAt = user?.subscription?.paymentFlow?.gracePeriodEndsAt;
 
     let endTime: Date;
     if (gracePeriodEndsAt) {
@@ -76,7 +76,7 @@ export function useOnboarding() {
     updateCountdownDisplay(initialDiff);
 
     return () => clearInterval(interval);
-  }, [user?.subscription?.paymentFlow.gracePeriodEndsAt]);
+  }, [user?.subscription?.paymentFlow?.gracePeriodEndsAt]);
 
   const handleCheckout = () => {
     if (!client?.cuid || !selectedPlan) return;

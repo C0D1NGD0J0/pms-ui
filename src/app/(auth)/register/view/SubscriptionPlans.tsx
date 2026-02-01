@@ -59,7 +59,6 @@ export default function SubscriptionPlans({
             displayOrder: 1,
             isFeatured: false,
             ctaText: "Get Started Free",
-            featureList: [],
             trialDays: 0,
             priceInCents: 0,
             transactionFeePercent: 0,
@@ -74,7 +73,8 @@ export default function SubscriptionPlans({
               maxUnits: 1,
               maxVendors: 5,
             },
-            features: {},
+            entitlements: {},
+            featureList: [],
             pricing: {
               monthly: {
                 priceId: null,
@@ -115,7 +115,7 @@ export default function SubscriptionPlans({
               maxUnits: 100,
               maxVendors: 50,
             },
-            features: {},
+            entitlements: {},
             pricing: {
               monthly: {
                 priceId: null,
@@ -155,7 +155,7 @@ export default function SubscriptionPlans({
               maxUnits: 999999,
               maxVendors: 999999,
             },
-            features: {},
+            entitlements: {},
             pricing: {
               monthly: {
                 priceId: null,

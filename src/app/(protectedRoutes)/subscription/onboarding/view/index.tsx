@@ -2,12 +2,12 @@
 import storage from "@utils/storage";
 import { Icon } from "@components/Icon";
 import React, { useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Banner } from "@components/Banner";
 import { Loading } from "@components/Loading";
 import { EmptyState } from "@components/EmptyState";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, Modal } from "@components/FormElements";
+import { useSearchParams, useRouter } from "next/navigation";
 import { ISubscriptionPlan } from "@interfaces/subscription.interface";
 import {
   useSSENotificationActions,
@@ -52,9 +52,9 @@ export function OnboardingView({
   const { closePaymentModal } = useSSENotificationActions();
 
   const { showPaymentModal, paymentStatus, paymentMessage } = subscriptionInfo;
-  const returningFromPayment = searchParams.get("returning_from_payment") === "true";
+  const returningFromPayment =
+    searchParams.get("returning_from_payment") === "true";
 
-  // Invalidate React Query cache when payment modal appears
   useEffect(() => {
     if (showPaymentModal && paymentStatus === "success") {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
@@ -64,7 +64,11 @@ export function OnboardingView({
 
   // Auto-redirect to dashboard when returning from payment with success
   useEffect(() => {
-    if (returningFromPayment && showPaymentModal && paymentStatus === "success") {
+    if (
+      returningFromPayment &&
+      showPaymentModal &&
+      paymentStatus === "success"
+    ) {
       // Wait a moment to ensure cache is invalidated
       const timer = setTimeout(() => {
         router.push("/dashboard");
@@ -116,9 +120,7 @@ export function OnboardingView({
         <div style={{ textAlign: "center", padding: "2rem" }}>
           <Icon
             name={
-              paymentStatus === "success"
-                ? "bx-check-circle"
-                : "bx-x-circle"
+              paymentStatus === "success" ? "bx-check-circle" : "bx-x-circle"
             }
             size="4rem"
             color={
@@ -135,7 +137,7 @@ export function OnboardingView({
                 ? "Payment Failed"
                 : "Payment Was Not Completed"}
           </h3>
-          <p style={{ color: "var(--text-muted)", marginBottom: "2rem" }}>
+          <p style={{ marginBottom: "2rem" }}>
             {paymentMessage ||
               (paymentStatus === "success"
                 ? "Your payment has been processed successfully. You now have full access to all premium features."
