@@ -134,7 +134,7 @@ export function AccountActivationView({
             <h2>Account Activated!</h2>
             <p>
               Congratulations, your account has been activated. You can now log
-              in to your account. registration to continue.
+              in to your account.
             </p>
             <div className="btn-group">
               <Link href="/login" className="btn btn-primary">
