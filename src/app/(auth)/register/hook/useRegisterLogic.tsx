@@ -11,7 +11,7 @@ import { SignupSchema } from "@validations/auth.validations";
 
 import { useGetSubscriptionPlans } from "./queries/useGetSubscriptionPlans";
 
-const user2 = {
+const defaultTestUser = {
   firstName: "John",
   lastName: "Dangote",
   email: "john.dangote@example.com",
