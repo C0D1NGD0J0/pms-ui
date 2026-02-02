@@ -11,14 +11,14 @@ export interface ISubscriptionPlan {
   };
   pricing: {
     monthly: {
-      priceId: any;
-      lookUpKey: any;
+      priceId: string | null;
+      lookUpKey: string | null;
       priceInCents: number;
       displayPrice: string;
     };
     annual: {
-      priceId: any;
-      lookUpKey: any;
+      priceId: string | null;
+      lookUpKey: string | null;
       priceInCents: number;
       displayPrice: string;
       savings: number;
