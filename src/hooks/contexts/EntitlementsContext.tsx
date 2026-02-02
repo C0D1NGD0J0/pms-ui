@@ -80,7 +80,6 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
   const value: EntitlementsContextValue = useMemo(() => {
     // Extract data from currentUser and usage API
     const entitlements = user?.subscription?.entitlements || {};
-    console.log(user?.subscription, "--------", usageData);
     const limits =
       usageData?.limits || DEFAULT_LIMITS;
     const usage =
