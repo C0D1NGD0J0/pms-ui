@@ -34,6 +34,11 @@
     color: hslaGen($secondary-color, 1);
     animation: bell-ring 2s ease-in-out infinite;
   }
+
+  &.new-notification .bx-bell {
+    transform-origin: center;
+    animation: shake-notification 0.5s ease-in-out;
+  }
 }
 
 .navbar-notification-dropdown-wrapper {

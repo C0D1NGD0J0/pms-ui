@@ -280,45 +280,6 @@
   }
 }
 
-// Dark theme support
-@media (prefers-color-scheme: dark) {
-  .custom-select-wrapper {
-    .select-trigger {
-      background-color: hslaGen($dark-grey-color, 0.1);
-      border-color: hslaGen($grey-color, 0.4);
-      color: hslaGen($white-color);
-    }
-
-    .select-options {
-      background: hslaGen($dark-grey-color);
-      border-color: hslaGen($grey-color, 0.3);
-
-      .select-option {
-        color: hslaGen($white-color, 0.9);
-
-        &:hover:not(.disabled) {
-          background-color: hslaGen($primary-color, 0.2);
-        }
-      }
-    }
-  }
-}
-
-// High contrast mode support
-@media (prefers-contrast: high) {
-  .custom-select-wrapper {
-    .select-trigger {
-      border-color: hslaGen($dark-grey-color);
-      border-width: 0.2rem;
-
-      &:focus {
-        border-color: hslaGen($primary-color);
-        border-width: 0.2rem;
-      }
-    }
-  }
-}
-
 // Reduced motion support
 @media (prefers-reduced-motion: reduce) {
   .custom-select-wrapper {

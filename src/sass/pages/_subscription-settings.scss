@@ -1,0 +1,567 @@
+@use "../abstract/index" as *;
+
+// Subscription & Billing Settings Page Styles
+
+.subscription-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $space-xl;
+  margin-bottom: $space-xl;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.subscription-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.section-label {
+  font-size: $fs-xsm;
+  font-weight: $fw-bold;
+  color: hslaGen($grey-color);
+  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  margin: 0 0 $space-md;
+}
+
+.plan-card {
+  background: hslaGen($white-color);
+  border: 1px solid hslaGen($light-grey-color);
+  border-radius: $base-border-radius;
+  padding: $space-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $space-lg;
+
+  &--current {
+    border: 2px solid hslaGen($primary-color);
+  }
+}
+
+.plan-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.plan-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: $base-border-radius;
+  background: hslaGen($primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: $fs-lg;
+    color: hslaGen($white-color);
+  }
+}
+
+.plan-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+  flex: 1;
+}
+
+.plan-label {
+  font-size: $fs-xsm;
+  text-transform: uppercase;
+  color: hslaGen($grey-color);
+  font-weight: $fw-bold;
+  letter-spacing: $base-letter-spacing;
+}
+
+.plan-name {
+  font-size: $fs-lg;
+  font-weight: $fw-extra-bold;
+  margin: 0;
+  color: hslaGen($primary-color);
+}
+
+.plan-pricing {
+  display: flex;
+  align-items: baseline;
+  gap: $space-sm;
+}
+
+.price {
+  font-size: 2.25rem;
+  font-weight: $fw-extra-bold;
+  color: hslaGen($primary-color);
+  margin: 0;
+  line-height: 1;
+
+  .period {
+    font-size: $fs-base;
+    font-weight: $fw-normal;
+    color: hslaGen($grey-color);
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-sm;
+  padding: $space-sm $space-md;
+  border-radius: $base-border-radius;
+  font-size: $fs-sm;
+  font-weight: $fw-bold;
+  width: fit-content;
+
+  i {
+    font-size: $fs-md;
+  }
+
+  &--success {
+    background: hslaGen($success-color, 0.1);
+    color: hslaGen($success-color);
+    border: 1px solid hslaGen($success-color, 0.2);
+  }
+
+  &--primary {
+    background: hslaGen($primary-color, 0.1);
+    color: hslaGen($primary-color);
+    border: 1px solid hslaGen($primary-color, 0.2);
+  }
+
+  &--current {
+    padding: $space-md $space-lg;
+    justify-content: center;
+    font-weight: $fw-bold;
+    font-size: $fs-base;
+  }
+}
+
+.billing-info {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+  padding: $space-lg;
+  border-radius: $base-border-radius;
+  background: hslaGen($background-color);
+}
+
+.billing-info__label {
+  font-size: $fs-sm;
+  color: hslaGen($grey-color);
+  font-weight: $fw-bold;
+}
+
+.billing-info__value {
+  font-size: $fs-md;
+  font-weight: $fw-extra-bold;
+  color: hslaGen($primary-color);
+}
+
+.features-section {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.features-label {
+  font-size: $fs-xsm;
+  font-weight: $fw-extra-bold;
+  color: hslaGen($grey-color);
+  text-transform: uppercase;
+  letter-spacing: $base-letter-spacing;
+  margin: 0;
+}
+
+.features-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+
+  &--comparison {
+    gap: $space-sm;
+  }
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: $space-md;
+  font-size: $fs-base;
+  transition: $transition;
+
+  .feature-icon {
+    font-size: $fs-lg;
+    color: hslaGen($success-color);
+    flex-shrink: 0;
+  }
+
+  span {
+    color: hslaGen($primary-color);
+    font-weight: $fw-normal;
+  }
+
+  &--excluded {
+    opacity: 0.4;
+
+    .feature-icon {
+      color: hslaGen($grey-color);
+    }
+
+    span {
+      text-decoration: line-through;
+      color: hslaGen($grey-color);
+    }
+  }
+}
+
+.plan-selector {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.form-label {
+  font-size: $fs-xsm;
+  font-weight: $fw-extra-bold;
+  color: hslaGen($grey-color);
+  text-transform: uppercase;
+  letter-spacing: $base-letter-spacing;
+  margin: 0;
+}
+
+.annual-billing-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-md;
+  padding: $space-xl;
+  border-radius: $border-radius-lg;
+  background: hslaGen($background-color);
+  border: 1px solid hslaGen($light-grey-color);
+  text-align: center;
+
+  .cta-text {
+    font-size: $fs-base;
+    color: hslaGen($grey-color);
+    margin: 0;
+    font-weight: $fw-normal;
+  }
+}
+
+// Payment Method Section
+.payment-method-grid {
+  display: flex;
+  gap: $space-xl;
+  align-items: flex-start;
+}
+
+.payment-card-container {
+  flex: 0 0 360px;
+}
+
+.payment-card {
+  background: linear-gradient(
+    135deg,
+    hslaGen($blue-ink-color) 0%,
+    hslaGen($primary-color) 100%
+  );
+  border-radius: $border-radius-lg;
+  padding: $space-lg;
+  color: hslaGen($white-color);
+  position: relative;
+  overflow: hidden;
+  box-shadow: $box-shadow;
+}
+
+.payment-card__decoration {
+  position: absolute;
+  border-radius: 50%;
+  background: hslaGen($white-color, 0.1);
+
+  &--top {
+    top: -$space-lg;
+    right: -$space-lg;
+    width: 6rem;
+    height: 6rem;
+  }
+
+  &--bottom {
+    bottom: -$space-xl;
+    left: -$space-xl;
+    width: 7rem;
+    height: 7rem;
+    background: hslaGen($white-color, 0.05);
+  }
+}
+
+.payment-card__content {
+  position: relative;
+  z-index: 1;
+}
+
+.payment-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: $space-lg;
+}
+
+.payment-card__number {
+  font-size: $fs-lg;
+  letter-spacing: $base-letter-spacing;
+  font-family: monospace;
+  margin-bottom: $space-xs;
+}
+
+.payment-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.payment-card__expiry-label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+  margin-bottom: $space-xs;
+}
+
+.payment-card__expiry-value {
+  font-size: $fs-sm;
+  font-family: monospace;
+}
+
+.payment-card__badge {
+  background: hslaGen($success-color, 0.9);
+  padding: $space-xs $space-sm;
+  border-radius: $border-radius-lg;
+  font-size: 0.7rem;
+  font-weight: $fw-bold;
+}
+
+.payment-card-actions {
+  margin-top: $space-md;
+  display: flex;
+  gap: $space-sm;
+}
+
+.invoices-container {
+  flex: 1;
+}
+
+.invoices-header {
+  margin: 0 0 $space-sm;
+  font-size: $fs-sm;
+  font-weight: $fw-bold;
+  color: hslaGen($grey-color);
+}
+
+// Billing Cycle Checkbox
+.billing-cycle-option {
+  padding: 1rem;
+  border-radius: 0.375rem;
+  background: var(--bg-color);
+  border: 1px solid var(--border-color);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+}
+
+.billing-checkbox {
+  width: 1.25rem;
+  height: 1.25rem;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.checkbox-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-color);
+
+  i {
+    color: var(--primary-color);
+  }
+}
+
+.billing-savings-note {
+  font-size: 0.8rem;
+  color: var(--success-color);
+  margin: 0.5rem 0 0 2rem;
+  font-weight: 500;
+}
+
+.seat-usage {
+  display: flex;
+  flex-direction: column;
+  gap: $space-md;
+}
+
+.seat-usage__header {
+  display: flex;
+  flex-direction: column;
+  gap: $space-xs;
+}
+
+.seat-usage__count {
+  font-size: $fs-xlg;
+  font-weight: $fw-extra-bold;
+  color: hslaGen($primary-color);
+}
+
+.seat-usage__label {
+  font-size: $fs-sm;
+  color: hslaGen($grey-color);
+  text-transform: uppercase;
+  font-weight: $fw-bold;
+  letter-spacing: $base-letter-spacing;
+}
+
+.seat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: $space-sm;
+}
+
+.seat-breakdown__row {
+  display: flex;
+  align-items: center;
+  gap: $space-sm;
+  font-size: $fs-base;
+  color: hslaGen($dark-grey-color);
+
+  i {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: hslaGen($primary-color);
+    color: hslaGen($white-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &--highlight {
+    font-weight: $fw-bold;
+    color: hslaGen($primary-color);
+  }
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 0.5rem;
+  border-radius: $base-border-radius;
+  overflow: hidden;
+  transition: background-color 0.3s ease-in-out;
+
+  &.progress-bar-container--success {
+    background: hslaGen($success-color, 0.2);
+  }
+
+  &.progress-bar-container--warning {
+    background: hslaGen($warning-color, 0.2);
+  }
+
+  &.progress-bar-container--danger {
+    background: hslaGen($danger-color, 0.2);
+  }
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: $base-border-radius;
+  transition:
+    width 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
+}
+
+.seat-modal-content {
+  padding: $space-lg;
+}
+
+.seat-modal-input-group {
+  margin-bottom: $space-lg;
+
+  .form-input {
+    width: 100%;
+  }
+}
+
+.seat-modal-hint {
+  font-size: $fs-sm;
+  color: hslaGen($grey-color);
+  margin-top: $space-xs;
+}
+
+.pricing-breakdown {
+  background: hslaGen($background-color);
+  padding: $space-md;
+  border-radius: $base-border-radius;
+  margin-bottom: $space-lg;
+}
+
+.pricing-breakdown__title {
+  margin-bottom: $space-md;
+  font-size: $fs-md;
+  font-weight: $fw-bold;
+}
+
+.pricing-breakdown__row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: $space-xs;
+  font-size: $fs-base;
+
+  &--total {
+    font-weight: $fw-bold;
+    font-size: $fs-md;
+  }
+}
+
+.pricing-breakdown__divider {
+  margin: $space-sm 0;
+  border: none;
+  border-top: 1px solid hslaGen($light-grey-color);
+}
+
+.billing-info-box {
+  display: flex;
+  gap: $space-sm;
+  background: hslaGen($primary-color, 0.1);
+  padding: $space-md;
+  border-radius: $base-border-radius;
+  margin-bottom: $space-lg;
+
+  i {
+    flex-shrink: 0;
+  }
+}
+
+.billing-info-box__content {
+  flex: 1;
+  font-size: $fs-base;
+
+  ul {
+    margin: $space-xs 0 0 $space-md;
+    padding-left: 0;
+
+    li {
+      margin-bottom: $space-xs;
+    }
+  }
+}

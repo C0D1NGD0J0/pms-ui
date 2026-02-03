@@ -11,10 +11,14 @@ export interface ISubscriptionPlan {
   };
   pricing: {
     monthly: {
+      priceId: string | null;
+      lookUpKey: string | null;
       priceInCents: number;
       displayPrice: string;
     };
     annual: {
+      priceId: string | null;
+      lookUpKey: string | null;
       priceInCents: number;
       displayPrice: string;
       savings: number;
@@ -56,7 +60,7 @@ export interface ISubscription {
   suid: string;
 }
 
-export type PlanName = "personal" | "starter" | "professional";
+export type PlanName = "essential" | "growth" | "portfolio";
 
 // Actual API response structure (what server currently sends)
 export interface IServerSubscriptionPlan {
@@ -81,7 +85,7 @@ export interface IServerSubscriptionPlan {
     maxUnits: number;
     maxVendors: number;
   };
-  features: Record<string, boolean>;
+  entitlements: Record<string, boolean>;
   featureList: string[];
   disabledFeatures?: string[];
   pricing: {

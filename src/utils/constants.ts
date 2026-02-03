@@ -648,6 +648,13 @@ export const VENDOR_QUERY_KEYS = {
 };
 export const CURRENT_USER_QUERY_KEY = ["currentUser"];
 
+export const SUBSCRIPTION_QUERY_KEYS = {
+  getSubscriptionPlans: () => ["/subscription_plans"],
+  getPlanUsage: (cuid: string) => ["/planUsage", cuid],
+  getClientDetails: (cuid: string) => ["/clientDetails", cuid],
+  getSubscriptionUsage: (cuid: string) => ["/subscriptionUsage", cuid],
+};
+
 export const COMMON_SORT_OPTIONS: FilterOption[] = [
   { label: "All", value: "" },
   { label: "Name", value: "fullName" },

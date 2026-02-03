@@ -1,10 +1,6 @@
 import axios from "@configs/axios";
 import { buildNestedQuery } from "@utils/helpers";
-import {
-  IServerResponseWithPagination,
-  ISubscriptionPlan,
-  NestedQueryParams,
-} from "@src/interfaces";
+import { ISubscriptionPlan, NestedQueryParams } from "@src/interfaces";
 
 class SubscriptionService {
   private axiosConfig = {};
@@ -20,12 +16,170 @@ class SubscriptionService {
         url += `?${queryString}`;
       }
 
-      const result = await axios.get<
-        IServerResponseWithPagination<ISubscriptionPlan[]>
-      >(url, this.axiosConfig);
-      return result.data;
+      const result = await axios.get<{ data: ISubscriptionPlan[] }>(
+        url,
+        this.axiosConfig
+      );
+      return (result as any).data;
     } catch (error) {
       console.error("Error fetching subscription plans:", error);
+      throw error;
+    }
+  }
+
+  async initSubscriptionPayment(
+    cuid: string,
+    data: {
+      priceId?: string;
+      lookupKey?: string;
+      billingInterval?: "monthly" | "annual";
+      successUrl: string;
+      cancelUrl: string;
+    }
+  ): Promise<{
+    success: boolean;
+    message: string;
+    data: {
+      checkoutUrl: string;
+      sessionId: string;
+    };
+  }> {
+    try {
+      const result = await axios.post<{
+        success: boolean;
+        message: string;
+        data: {
+          checkoutUrl: string;
+          sessionId: string;
+        };
+      }>(
+        `${this.baseUrl}/${cuid}/init-subscription-payment`,
+        data,
+        this.axiosConfig
+      );
+      return result.data as unknown as {
+        success: boolean;
+        message: string;
+        data: {
+          checkoutUrl: string;
+          sessionId: string;
+        };
+      };
+    } catch (error) {
+      console.error("Error initializing subscription payment:", error);
+      throw error;
+    }
+  }
+
+  async downgradeToEssential(cuid: string) {
+    try {
+      const result = await axios.post<{
+        success: boolean;
+        message: string;
+        data: {
+          subscription: {
+            planName: string;
+            status: string;
+          };
+        };
+      }>(
+        `${this.baseUrl}/${cuid}/downgrade-to-essential`,
+        {},
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error downgrading subscription:", error);
+      throw error;
+    }
+  }
+
+  async cancelSubscription(cuid: string) {
+    try {
+      const result = await axios.delete<{
+        success: boolean;
+        message: string;
+        data: {
+          _id: string;
+          status: string;
+          canceledAt: string;
+          planName: string;
+        };
+      }>(`${this.baseUrl}/${cuid}/cancel-subscription`, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+      throw error;
+    }
+  }
+
+  async getPlanUsage(cuid: string) {
+    try {
+      const result = await axios.get<{
+        success: boolean;
+        data: {
+          plan: {
+            name: string;
+            status: string;
+            billingInterval: string;
+            startDate: string;
+            endDate: string;
+          };
+          usage: {
+            properties: number;
+            units: number;
+            seats: number;
+          };
+          limits: {
+            properties: number;
+            units: number;
+            seats: number;
+          };
+          isLimitReached: {
+            properties: boolean;
+            units: boolean;
+            seats: boolean;
+          };
+          seatInfo?: {
+            includedSeats: number;
+            additionalSeats: number;
+            totalAllowed: number;
+            maxAdditionalSeats: number;
+            additionalSeatPriceCents: number;
+            availableForPurchase: number;
+          };
+        };
+      }>(`${this.baseUrl}/${cuid}/plan-usage`, this.axiosConfig);
+      return result.data;
+    } catch (error) {
+      console.error("Error fetching plan usage:", error);
+      throw error;
+    }
+  }
+
+  async manageSeats(cuid: string, seatDelta: number) {
+    try {
+      const result = await axios.post<{
+        success: boolean;
+        message: string;
+        data: {
+          additionalSeatsCount: number;
+          additionalSeatsCost: number;
+          totalMonthlyPrice: number;
+          currentSeats: number;
+          billingInterval: "monthly" | "annual";
+          paymentGateway: {
+            seatItemId: string;
+          };
+        };
+      }>(
+        `${this.baseUrl}/${cuid}/seats`,
+        { seatDelta },
+        this.axiosConfig
+      );
+      return result.data;
+    } catch (error) {
+      console.error("Error managing seats:", error);
       throw error;
     }
   }

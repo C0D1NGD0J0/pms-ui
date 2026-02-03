@@ -12,6 +12,7 @@ import {
 import UserInfo from "./UserInfo";
 import CompanyInfo from "./CompanyInfo";
 import SubscriptionPlans from "./SubscriptionPlans";
+import AccountTypeSelection from "./AccountTypeSelection";
 
 interface RegisterViewProps {
   form: UseFormReturnType<ISignupForm, (values: ISignupForm) => ISignupForm>;
@@ -19,7 +20,10 @@ interface RegisterViewProps {
   currentStep: number;
   nextStep: () => void;
   prevStep: () => void;
+  accountType: "business" | "individual" | null;
   goToPlanSelection: () => void;
+  goToAccountTypeSelection: () => void;
+  handleSelectAccountType: (type: "business" | "individual") => void;
   handleOnChange: (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
     field?: keyof ISignupForm
@@ -27,7 +31,7 @@ interface RegisterViewProps {
   handleSubmit: (values: ISignupForm) => void;
   selectedPlan: string | null;
   handleSelectPlan: (
-    plan: "personal" | "starter" | "professional",
+    plan: "essential" | "growth" | "portfolio",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"
@@ -44,6 +48,7 @@ export function RegisterView({
   nextStep,
   prevStep,
   goToPlanSelection,
+  handleSelectAccountType,
   handleOnChange,
   handleSubmit,
   selectedPlan,
@@ -53,6 +58,14 @@ export function RegisterView({
   isPlansError,
 }: RegisterViewProps) {
   if (currentStep === 0) {
+    return (
+      <div className="register-plan-wrapper">
+        <AccountTypeSelection onSelectAccountType={handleSelectAccountType} />
+      </div>
+    );
+  }
+
+  if (currentStep === 1) {
     return (
       <div className="register-plan-wrapper">
         <SubscriptionPlans
@@ -67,7 +80,7 @@ export function RegisterView({
 
   const renderButtons = (disable = false) => {
     const isBusinessAccount = form.values.accountType.isEnterpriseAccount;
-    if (currentStep === 1 && isBusinessAccount) {
+    if (currentStep === 2 && isBusinessAccount) {
       return (
         <div className="btn-group">
           <Button
@@ -79,7 +92,7 @@ export function RegisterView({
           />
         </div>
       );
-    } else if (currentStep === 2 && isBusinessAccount) {
+    } else if (currentStep === 3 && isBusinessAccount) {
       return (
         <div className="btn-group">
           <Button
@@ -149,7 +162,7 @@ export function RegisterView({
       >
         <AuthFormPanel
           title={
-            currentStep === 1 ? "Create Your Account" : "Company Information"
+            currentStep === 2 ? "Create Your Account" : "Company Information"
           }
           subtitle={
             selectedPlan
@@ -168,11 +181,12 @@ export function RegisterView({
             disabled={isPending}
             autoComplete="off"
           >
-            {currentStep === 1 ? (
+            {currentStep === 2 ? (
               <UserInfo
                 formContext={form}
                 onChange={handleOnChange}
                 onChangePlan={goToPlanSelection}
+                selectedPlan={selectedPlan}
               />
             ) : (
               <CompanyInfo formContext={form} onChange={handleOnChange} />

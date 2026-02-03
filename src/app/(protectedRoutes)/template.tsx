@@ -1,4 +1,5 @@
 "use client";
+import storage from "@utils/storage";
 import { useEffect, Suspense } from "react";
 import { Loading } from "@components/Loading";
 import { EventTypes } from "@services/events";
@@ -7,11 +8,13 @@ import { useAuthActions } from "@store/auth.store";
 import { useCurrentUser } from "@hooks/useCurrentUser";
 import { useIdleDetector, usePublish } from "@hooks/index";
 import { useLoadingManager } from "@hooks/useLoadingManager";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 function AuthTemplateContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { push } = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const publish = usePublish();
   const { setClient } = useAuthActions();
@@ -24,6 +27,7 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
     user,
     isLoading: isAuthLoading,
   } = useCurrentUser();
+  const { isSuperAdmin } = useUnifiedPermissions();
 
   useEffect(() => {
     const fromInvite = searchParams.get("fromInvite");
@@ -57,6 +61,19 @@ function AuthTemplateContent({ children }: { children: React.ReactNode }) {
       setProcessingInvite(false);
     }
   }, [isLoading, user, isAuthLoading, setProcessingInvite]);
+
+  useEffect(() => {
+    const dismissed = storage.get<boolean>("onboarding_dismissed");
+
+    if (
+      user?.subscription?.paymentFlow?.requiresPayment &&
+      pathname !== "/subscription/onboarding" &&
+      !dismissed &&
+      isSuperAdmin
+    ) {
+      router.push("/subscription/onboarding");
+    }
+  }, [user, pathname, router, isSuperAdmin]);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;

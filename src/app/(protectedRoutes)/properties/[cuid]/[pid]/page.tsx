@@ -6,11 +6,13 @@ import { TabContainer } from "@components/Tab";
 import { IUnit } from "@interfaces/unit.interface";
 import { TabItem } from "@components/Tab/interface";
 import { propertyTypeRules } from "@utils/constants";
-import { PageHeader } from "@components/PageElements";
 import { Button } from "@src/components/FormElements";
+import { PageHeader } from "@components/PageElements";
+import { useEntitlements } from "@src/hooks/contexts";
 import React, { useEffect, useState, use } from "react";
 import { ImageGallery } from "@components/ImageGallery";
 import { useSearchParams, useRouter } from "next/navigation";
+import { UpgradeRequired } from "@components/UpgradeRequired";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
   PanelsWrapper,
@@ -185,6 +187,7 @@ interface PropertyShowProps {
 
 export default function PropertyShow({ params }: PropertyShowProps) {
   const permission = useUnifiedPermissions();
+  const { hasFeature } = useEntitlements();
   const [activeTab, setActiveTab] = useState("tenant");
   const [searchTerm, setSearchTerm] = useState("");
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
@@ -394,26 +397,41 @@ export default function PropertyShow({ params }: PropertyShowProps) {
             </Panel>
           </PanelsWrapper>
 
-          <PanelsWrapper>
-            <Panel>
-              <PanelHeader
-                header={{ title: "Notes/Reports" }}
-                searchOpts={{
-                  isVisible: true,
-                  value: searchTerm,
-                  placeholder: "Search reports...",
-                  onChange: (e) => setSearchTerm(e.target.value),
-                }}
-              />
-              <PanelContent>
-                <Table
-                  dataSource={reportsData}
-                  columns={reportColumns}
-                  key={`${new Date()}`}
+          {hasFeature("reports.advanced") ? (
+            <PanelsWrapper>
+              <Panel>
+                <PanelHeader
+                  header={{ title: "Notes/Reports" }}
+                  searchOpts={{
+                    isVisible: true,
+                    value: searchTerm,
+                    placeholder: "Search reports...",
+                    onChange: (e) => setSearchTerm(e.target.value),
+                  }}
                 />
-              </PanelContent>
-            </Panel>
-          </PanelsWrapper>
+                <PanelContent>
+                  <Table
+                    dataSource={reportsData}
+                    columns={reportColumns}
+                    key={`${new Date()}`}
+                  />
+                </PanelContent>
+              </Panel>
+            </PanelsWrapper>
+          ) : (
+            <PanelsWrapper>
+              <Panel>
+                <PanelHeader header={{ title: "Notes/Reports" }} />
+                <PanelContent>
+                  <UpgradeRequired
+                    feature="Advanced Reports"
+                    title="Advanced Reporting Requires Upgrade"
+                    message="Get detailed insights and analytics for your properties with advanced reporting features."
+                  />
+                </PanelContent>
+              </Panel>
+            </PanelsWrapper>
+          )}
         </div>
 
         <PropertySidebar>

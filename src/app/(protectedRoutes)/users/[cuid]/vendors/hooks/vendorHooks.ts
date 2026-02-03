@@ -78,6 +78,85 @@ export const useUpdateVendor = (cuid: string, vuid: string) => {
   });
 };
 
+export const useRemoveVendor = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: () => userService.removeUser(cuid, uid),
+    onSuccess: (response) => {
+      message.success("Vendor removed successfully!");
+
+      // Invalidate vendor lists
+      queryClient.invalidateQueries({
+        queryKey: [VENDOR_QUERY_KEYS.getClientVendors(cuid, {})],
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
+      });
+
+      // Invalidate vendor stats
+      queryClient.invalidateQueries({
+        queryKey: VENDOR_QUERY_KEYS.getVendorStats(cuid),
+      });
+
+      // Check for linked vendor accounts that were also removed
+      const actions = response?.data?.actions || [];
+      const linkedAccountsAction = actions.find((action: any) =>
+        action.action?.includes("linked_vendor_accounts")
+      );
+
+      if (linkedAccountsAction) {
+        const count = linkedAccountsAction.count || 0;
+        message.info(
+          `Primary vendor removed along with ${count} linked account${count !== 1 ? "s" : ""}`
+        );
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error?.message;
+
+      if (errorMessage?.includes("Cannot archive yourself")) {
+        message.error("You cannot remove yourself");
+      } else {
+        message.error(errorMessage || "Failed to remove vendor");
+      }
+    },
+  });
+};
+
+export const useReconnectVendor = (cuid: string, uid: string) => {
+  const queryClient = useQueryClient();
+  const { message } = useNotification();
+
+  return useMutation({
+    mutationFn: () => userService.reconnectUser(cuid, uid),
+    onSuccess: () => {
+      message.success("Vendor reconnected successfully!");
+
+      // Invalidate vendor lists
+      queryClient.invalidateQueries({
+        queryKey: [VENDOR_QUERY_KEYS.getClientVendors(cuid, {})],
+      });
+      queryClient.invalidateQueries({
+        queryKey: USER_QUERY_KEYS.getUserByUid(cuid, uid),
+      });
+
+      // Invalidate vendor stats
+      queryClient.invalidateQueries({
+        queryKey: VENDOR_QUERY_KEYS.getVendorStats(cuid),
+      });
+    },
+    onError: (error: any) => {
+      message.error(
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to reconnect vendor"
+      );
+    },
+  });
+};
+
 export const useGetVendors = (
   cuid: string,
   initialParams?: VendorQueryParams

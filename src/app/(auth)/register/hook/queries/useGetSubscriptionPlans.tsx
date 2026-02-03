@@ -1,9 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { SUBSCRIPTION_QUERY_KEYS } from "@utils/constants";
 import { subscriptionService } from "@src/services/subscription";
 
 export const useGetSubscriptionPlans = () => {
   const query = useQuery({
-    queryKey: ["/subscription_plans"],
+    queryKey: SUBSCRIPTION_QUERY_KEYS.getSubscriptionPlans(),
     queryFn: async () => {
       const resp = await subscriptionService.getSubscriptionPlans();
       return resp;
@@ -12,7 +13,7 @@ export const useGetSubscriptionPlans = () => {
 
   return {
     data: query.data,
-    totalCount: query.data?.pagination?.total || 0,
+    totalCount: query.data?.length || 0,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,

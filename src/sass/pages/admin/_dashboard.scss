@@ -1,5 +1,69 @@
 @use "../../abstract/index" as *;
 
+// Dashboard Layout
+.admin-dashboard {
+  .dashboard-insights {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+    @include breakpoint("768px", max) {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    @include breakpoint("576px", max) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .dashboard-section {
+    display: grid;
+    gap: 1.5rem;
+
+    &--dual {
+      grid-template-columns: repeat(2, 1fr);
+      align-items: start;
+
+      @include breakpoint("1200px", max) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    &--full {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .dashboard-panel {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.5rem;
+
+    @include breakpoint("768px", max) {
+      padding: 1rem;
+      gap: 1.5rem;
+    }
+  }
+
+  .panel-content {
+    padding: 0 !important;
+  }
+}
+
 /* Placeholder chart styles */
 .placeholder-chart {
   display: flex;

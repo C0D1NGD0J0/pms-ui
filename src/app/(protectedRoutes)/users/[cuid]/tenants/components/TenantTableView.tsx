@@ -21,6 +21,7 @@ interface TenantTableViewProps {
   handleSortDirectionChange: () => void;
   isLoading?: boolean;
   onEdit: (tenant: FilteredUserTableData) => void;
+  onDeactivate: (tenant: FilteredUserTableData) => void;
   onViewDetails: (tenant: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
@@ -36,6 +37,7 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
   handleSortDirectionChange,
   isLoading = false,
   onEdit,
+  onDeactivate,
   onViewDetails,
   pagination,
   totalCount,
@@ -124,12 +126,20 @@ export const TenantTableView: React.FC<TenantTableViewProps> = ({
               title="View tenant details"
             />
 
-            {(isResourceOwner || hasPermission) && (
+            {(isResourceOwner || hasPermission) && record.isConnected && (
               <Button
                 label="Edit"
                 className="btn-sm btn-outline"
                 onClick={() => onEdit(record)}
                 title="Edit tenant information"
+              />
+            )}
+            {permissions.isSuperAdmin && record.isConnected && (
+              <Button
+                label="Remove"
+                className="btn-sm btn-danger"
+                onClick={() => onDeactivate(record)}
+                title="Remove tenant (disconnect)"
               />
             )}
           </div>

@@ -27,6 +27,7 @@ export const useUnifiedPermissions = (): IUnifiedPermissions => {
     if (!currentUser?.client?.role) return null;
     const roleString = currentUser.client.role.toLowerCase();
     const roleMap: Record<string, UserRole> = {
+      "super-admin": UserRole.SUPER_ADMIN,
       admin: UserRole.ADMIN,
       manager: UserRole.MANAGER,
       staff: UserRole.STAFF,
@@ -374,7 +375,8 @@ export const useUnifiedPermissions = (): IUnifiedPermissions => {
   }, [currentUser, currentRole]);
 
   // === CONVENIENCE ROLE CHECKERS ===
-  const isAdmin = useMemo(() => currentRole === UserRole.ADMIN, [currentRole]);
+  const isSuperAdmin = useMemo(() => currentRole === UserRole.SUPER_ADMIN, [currentRole]);
+  const isAdmin = useMemo(() => currentRole === UserRole.ADMIN || currentRole === UserRole.SUPER_ADMIN, [currentRole]);
   const isManager = useMemo(
     () => currentRole === UserRole.MANAGER,
     [currentRole]
@@ -453,6 +455,7 @@ export const useUnifiedPermissions = (): IUnifiedPermissions => {
 
     currentUser,
     currentRole,
+    isSuperAdmin,
     isAdmin,
     isManager,
     isStaff,

@@ -494,4 +494,121 @@ describe("UserService", () => {
       );
     });
   });
+
+  describe("removeUser", () => {
+    it("should remove user successfully", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          message: "User removed successfully",
+          data: {
+            actions: [
+              { action: "user_disconnected", uid: mockUid }
+            ]
+          }
+        },
+      };
+
+      mockedAxios.delete.mockResolvedValue(mockResponse);
+
+      const result = await userService.removeUser(mockCuid, mockUid);
+
+      expect(mockedAxios.delete).toHaveBeenCalledWith(
+        `/api/v1/users/${mockCuid}/${mockUid}`,
+        {}
+      );
+      expect(result).toEqual(mockResponse.data);
+    });
+
+    it("should throw error when removing user fails", async () => {
+      const mockError = new Error("Cannot remove user");
+      mockedAxios.delete.mockRejectedValue(mockError);
+
+      await expect(
+        userService.removeUser(mockCuid, mockUid)
+      ).rejects.toThrow("Cannot remove user");
+      expect(console.error).toHaveBeenCalledWith(
+        "Error removing user:",
+        mockError
+      );
+    });
+  });
+
+  describe("reconnectUser", () => {
+    it("should reconnect user successfully", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          message: "User reconnected successfully",
+          data: {
+            uid: mockUid,
+            isConnected: true
+          }
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await userService.reconnectUser(mockCuid, mockUid);
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        `/api/v1/clients/${mockCuid}/users/${mockUid}/reconnect`,
+        {},
+        {}
+      );
+      expect(result).toEqual(mockResponse.data);
+    });
+
+    it("should throw error when reconnecting user fails", async () => {
+      const mockError = new Error("Cannot reconnect user");
+      mockedAxios.post.mockRejectedValue(mockError);
+
+      await expect(
+        userService.reconnectUser(mockCuid, mockUid)
+      ).rejects.toThrow("Cannot reconnect user");
+      expect(console.error).toHaveBeenCalledWith(
+        "Error reconnecting user:",
+        mockError
+      );
+    });
+  });
+
+  describe("disconnectUser", () => {
+    it("should disconnect user successfully", async () => {
+      const mockResponse = {
+        data: {
+          success: true,
+          message: "User disconnected successfully",
+          data: {
+            uid: mockUid,
+            isConnected: false
+          }
+        },
+      };
+
+      mockedAxios.post.mockResolvedValue(mockResponse);
+
+      const result = await userService.disconnectUser(mockCuid, mockUid);
+
+      expect(mockedAxios.post).toHaveBeenCalledWith(
+        `/api/v1/clients/${mockCuid}/users/${mockUid}/disconnect`,
+        {},
+        {}
+      );
+      expect(result).toEqual(mockResponse.data);
+    });
+
+    it("should throw error when disconnecting user fails", async () => {
+      const mockError = new Error("Cannot disconnect user");
+      mockedAxios.post.mockRejectedValue(mockError);
+
+      await expect(
+        userService.disconnectUser(mockCuid, mockUid)
+      ).rejects.toThrow("Cannot disconnect user");
+      expect(console.error).toHaveBeenCalledWith(
+        "Error disconnecting user:",
+        mockError
+      );
+    });
+  });
 });

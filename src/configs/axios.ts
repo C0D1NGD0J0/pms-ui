@@ -1,4 +1,3 @@
-import APIError from "@utils/errorHandler";
 import { EventTypes, events } from "@services/events";
 import axios, {
   AxiosRequestConfig,
@@ -53,7 +52,7 @@ class AxiosService implements IAxiosService {
 
   constructor() {
     this.axios = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_BASE_URL,
+      baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
       withCredentials: true,
       headers: {
         "Content-Type": "application/json",
@@ -102,7 +101,7 @@ class AxiosService implements IAxiosService {
             message: `Too many requests. Please wait ${waitTime} seconds before trying again.`,
           });
 
-          return Promise.reject(new APIError().init(error));
+          return Promise.reject(error);
         }
 
         // Check for 401 errors that aren't already retried
@@ -121,9 +120,7 @@ class AxiosService implements IAxiosService {
             return this.axios(originalRequest);
           } catch (refreshError) {
             handleAuthFailure();
-            return Promise.reject(
-              new APIError().init(refreshError as AxiosError)
-            );
+            return Promise.reject(refreshError);
           }
         }
 
@@ -136,7 +133,7 @@ class AxiosService implements IAxiosService {
           handleAuthFailure();
         }
 
-        return Promise.reject(new APIError().init(error));
+        return Promise.reject(error);
       }
     );
   }

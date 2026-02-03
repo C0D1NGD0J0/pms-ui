@@ -7,7 +7,7 @@ import { IServerSubscriptionPlan } from "@interfaces/subscription.interface";
 
 interface PlanSelectionProps {
   onSelectPlan: (
-    plan: "personal" | "starter" | "professional",
+    plan: "essential" | "growth" | "portfolio",
     pricingId: string | null,
     lookUpKey: string | null,
     billingInterval: "monthly" | "annual"
@@ -19,7 +19,7 @@ interface PlanSelectionProps {
 
 // Icon mapping based on plan name
 const PLAN_ICONS: Record<string, string> = {
-  personal: "bx-user",
+  basic: "bx-user",
   starter: "bx-briefcase",
   professional: "bx-buildings",
 };
@@ -53,13 +53,12 @@ export default function SubscriptionPlans({
       ? [...plansData].sort((a, b) => a.displayOrder - b.displayOrder)
       : [
           {
-            planName: "personal",
-            name: "Personal",
+            planName: "basic",
+            name: "Basic",
             description: "Perfect for individual landlords",
             displayOrder: 1,
             isFeatured: false,
             ctaText: "Get Started Free",
-            featureList: [],
             trialDays: 0,
             priceInCents: 0,
             transactionFeePercent: 0,
@@ -74,7 +73,8 @@ export default function SubscriptionPlans({
               maxUnits: 1,
               maxVendors: 5,
             },
-            features: {},
+            entitlements: {},
+            featureList: [],
             pricing: {
               monthly: {
                 priceId: null,
@@ -115,7 +115,7 @@ export default function SubscriptionPlans({
               maxUnits: 100,
               maxVendors: 50,
             },
-            features: {},
+            entitlements: {},
             pricing: {
               monthly: {
                 priceId: null,
@@ -155,7 +155,7 @@ export default function SubscriptionPlans({
               maxUnits: 999999,
               maxVendors: 999999,
             },
-            features: {},
+            entitlements: {},
             pricing: {
               monthly: {
                 priceId: null,
@@ -235,7 +235,7 @@ export default function SubscriptionPlans({
               : plan.pricing.monthly;
             const billingInterval = isAnnual ? "annual" : "monthly";
             onSelectPlan(
-              plan.planName as "personal" | "starter" | "professional",
+              plan.planName as "essential" | "growth" | "portfolio",
               selectedPricing.priceId,
               selectedPricing.lookUpKey,
               billingInterval

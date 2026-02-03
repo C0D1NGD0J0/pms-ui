@@ -263,6 +263,11 @@ export function useInvitationFormBase({
 
   const handleRoleSelect = useCallback(
     (role: IUserRole) => {
+      if (role === "super-admin") {
+        console.warn("Super-admin role cannot be set from frontend");
+        return;
+      }
+
       setSelectedRole(role);
       invitationForm.setFieldValue("role", role);
 

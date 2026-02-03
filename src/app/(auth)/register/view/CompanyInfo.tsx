@@ -88,6 +88,17 @@ export default function CompanyInfo({
         onChange={onChange}
         error={formContext.errors["companyProfile.website"] as string}
       />
+
+      <AuthIconInput
+        label="Company Address"
+        type="text"
+        icon="bx-map"
+        placeholder="Enter company address"
+        name="companyProfile.companyAddress"
+        value={formContext.values.companyProfile?.companyAddress || ""}
+        onChange={onChange}
+        error={formContext.errors["companyProfile.companyAddress"] as string}
+      />
     </>
   );
 }

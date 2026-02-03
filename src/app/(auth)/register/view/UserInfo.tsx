@@ -14,6 +14,7 @@ export default function UserInfo({
   formContext,
   onChange,
   onChangePlan,
+  selectedPlan,
 }: {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -24,6 +25,7 @@ export default function UserInfo({
     (values: ISignupForm) => ISignupForm
   >;
   onChangePlan?: () => void;
+  selectedPlan?: string | null;
 }) {
   const { detectLocation, isDetecting } = useGeolocation();
   const { message } = useNotification();
@@ -117,11 +119,8 @@ export default function UserInfo({
           placeholder="Select a plan"
           name="accountType"
           value={
-            formContext.values.accountType.planName
-              ? formContext.values.accountType.planName
-                  .charAt(0)
-                  .toUpperCase() +
-                formContext.values.accountType.planName.slice(1)
+            selectedPlan
+              ? selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)
               : ""
           }
           onChange={() => {}}

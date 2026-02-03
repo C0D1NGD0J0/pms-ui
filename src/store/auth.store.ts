@@ -3,7 +3,6 @@ import { authService } from "@services/auth";
 import { ICurrentUser, UserClient } from "@interfaces/index";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-// Loading reasons for authentication states
 export enum LoadingReason {
   INITIALIZING = "initializing",
   AUTHENTICATING = "authenticating",
@@ -14,7 +13,6 @@ export enum LoadingReason {
   LOGGING_OUT = "logging_out",
 }
 
-// Loading messages
 const LOADING_MESSAGES: Record<LoadingReason, string> = {
   [LoadingReason.INITIALIZING]: "Starting up...",
   [LoadingReason.AUTHENTICATING]: "Authenticating...",

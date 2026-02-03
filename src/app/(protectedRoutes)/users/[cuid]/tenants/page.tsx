@@ -5,6 +5,7 @@ import React, { useState, useMemo } from "react";
 import { Loading } from "@src/components/Loading";
 import { ChartContainer } from "@components/Charts";
 import { PageHeader } from "@components/PageElements/Header";
+import { DeactivateUserModal } from "@components/UserManagement";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 import {
@@ -18,9 +19,11 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useDeactivateTenant, useGetTenants } from "./hooks";
 import { TenantTableView } from "./components/TenantTableView";
-import { DeactivateTenantModal } from "./components/DeactivateTenantModal";
+import {
+  useDeactivateTenant,
+  useGetTenants,
+} from "./hooks";
 
 interface TenantsPageProps {
   params: Promise<{
@@ -32,6 +35,7 @@ export default function TenantsPage({ params }: TenantsPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [modalErrorMessage, setModalErrorMessage] = useState<string>("");
   const [selectedTenant, setSelectedTenant] = useState<{
     uid: string;
     name: string;
@@ -135,6 +139,15 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     router.push(`/users/${cuid}/tenants/${tenant.uid}`);
   };
 
+  const handleDeactivateTenant = (tenant: FilteredUserTableData) => {
+    setSelectedTenant({
+      uid: tenant.uid,
+      name: tenant.fullName || tenant.displayName || tenant.email,
+    });
+    setModalErrorMessage("");
+    setShowDeactivateModal(true);
+  };
+
   const handleConfirmDeactivate = async () => {
     if (!selectedTenant) return;
 
@@ -142,15 +155,34 @@ export default function TenantsPage({ params }: TenantsPageProps) {
       await deactivateTenantMutation.mutateAsync();
       setShowDeactivateModal(false);
       setSelectedTenant(null);
-    } catch (error) {
-      console.error("Failed to deactivate tenant:", error);
-      setShowDeactivateModal(false);
+      setModalErrorMessage("");
+    } catch (error: any) {
+      console.error("Failed to remove tenant:", error);
+      const errorMessage = error?.response?.data?.message || error?.message;
+
+      if (errorMessage?.includes("active lease")) {
+        setModalErrorMessage(errorMessage);
+      } else {
+        setShowDeactivateModal(false);
+        setSelectedTenant(null);
+        setModalErrorMessage("");
+      }
     }
   };
 
   const handleCancelDeactivate = () => {
     setShowDeactivateModal(false);
     setSelectedTenant(null);
+    setModalErrorMessage("");
+  };
+
+  const handleViewLeases = () => {
+    if (selectedTenant) {
+      router.push(`/users/${cuid}/tenants/${selectedTenant.uid}`);
+      setShowDeactivateModal(false);
+      setSelectedTenant(null);
+      setModalErrorMessage("");
+    }
   };
 
   return (
@@ -168,6 +200,7 @@ export default function TenantsPage({ params }: TenantsPageProps) {
                 handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditTenant}
+                onDeactivate={handleDeactivateTenant}
                 onViewDetails={handleViewTenantDetails}
                 pagination={pagination}
                 totalCount={totalCount}
@@ -244,12 +277,22 @@ export default function TenantsPage({ params }: TenantsPageProps) {
         </div>
       </div>
 
-      <DeactivateTenantModal
+      <DeactivateUserModal
         isOpen={showDeactivateModal}
-        tenantName={selectedTenant?.name || ""}
+        userName={selectedTenant?.name || ""}
+        userType="tenant"
         onClose={handleCancelDeactivate}
         onConfirm={handleConfirmDeactivate}
         isSubmitting={deactivateTenantMutation.isPending}
+        errorMessage={modalErrorMessage}
+        errorAction={
+          modalErrorMessage
+            ? {
+                label: "View Leases",
+                onClick: handleViewLeases,
+              }
+            : undefined
+        }
       />
     </div>
   );

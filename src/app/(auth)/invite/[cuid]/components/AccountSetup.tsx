@@ -3,9 +3,7 @@ import { IInvitationData } from "@src/interfaces";
 import { AccountSetupFormValues } from "@src/validations/invitation.validations";
 import {
   CustomDropdown,
-  FormField,
-  FormInput,
-  FormLabel,
+  AuthIconInput,
   Checkbox,
   Button,
   Form,
@@ -57,159 +55,115 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
   isValid,
   values,
   errors,
-  touched,
 }) => {
   return (
     <Form onSubmit={handleSubmit} id="account-setup-form" autoComplete="off">
-      <div className="form-fields mb-2">
-        <FormField>
-          <FormLabel htmlFor="email" label="Email Address" />
-          <FormInput
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your email address"
-            value={invitationData.inviteeEmail}
-            disabled
-            onChange={() => {}}
-          />
-        </FormField>
+      <AuthIconInput
+        label="Email Address"
+        type="email"
+        icon="bx-envelope"
+        placeholder="Your email address"
+        name="email"
+        value={invitationData.inviteeEmail}
+        disabled
+        onChange={() => {}}
+        autoComplete="email"
+      />
+
+      <AuthIconInput
+        label="Password"
+        type="password"
+        icon="bx-lock-alt"
+        placeholder="Create a password"
+        name="password"
+        value={values.password}
+        onChange={handleFieldChange("password")}
+        error={(errors.password as string) || ""}
+        autoComplete="new-password"
+      />
+
+      <AuthIconInput
+        label="Confirm Password"
+        type="password"
+        icon="bx-lock"
+        placeholder="Confirm your password"
+        name="confirmPassword"
+        value={values.confirmPassword}
+        onChange={handleFieldChange("confirmPassword")}
+        error={(errors.confirmPassword as string) || ""}
+        autoComplete="new-password"
+      />
+
+      <AuthIconInput
+        label="Phone Number"
+        type="tel"
+        icon="bx-phone"
+        placeholder="Enter your phone number"
+        name="phoneNumber"
+        value={values.phoneNumber || ""}
+        onChange={handleFieldChange("phoneNumber")}
+        error={(errors.phoneNumber as string) || ""}
+        autoComplete="tel"
+      />
+
+      <AuthIconInput
+        label="Location"
+        type="text"
+        icon="bx-map"
+        placeholder="Enter your location"
+        name="location"
+        value={values.location || ""}
+        onChange={handleFieldChange("location")}
+        error={(errors.location as string) || ""}
+        autoComplete="address-level2"
+      />
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.5rem" }}>
+        <CustomDropdown
+          id="timeZone"
+          placeholder="Time Zone"
+          value={values.timeZone}
+          onChange={(value) => handleDropdownChange(value, "timeZone")}
+          options={TIMEZONE_OPTIONS}
+        />
+
+        <CustomDropdown
+          id="lang"
+          placeholder="Language"
+          value={values.lang}
+          onChange={(value) => handleDropdownChange(value, "lang")}
+          options={LANGUAGE_OPTIONS}
+        />
       </div>
 
-      <div className="form-fields mb-2">
-        <FormField
-          error={{
-            msg: (errors.password as string) || "",
-            touched: touched("password"),
-          }}
-        >
-          <FormLabel htmlFor="password" label="Password" required />
-          <FormInput
-            required
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Enter your password"
-            value={values.password}
-            hasError={!!errors.password}
-            onChange={handleFieldChange("password")}
-          />
-        </FormField>
-
-        <FormField
-          error={{
-            msg: (errors.confirmPassword as string) || "",
-            touched: touched("confirmPassword"),
-          }}
-        >
-          <FormLabel
-            htmlFor="confirmPassword"
-            label="Confirm Password"
-            required
-          />
-          <FormInput
-            required
-            id="confirmPassword"
-            name="confirmPassword"
-            type="password"
-            placeholder="Confirm your password"
-            value={values.confirmPassword}
-            hasError={!!errors.confirmPassword}
-            onChange={handleFieldChange("confirmPassword")}
-          />
-        </FormField>
+      <div style={{ marginBottom: "1.5rem" }}>
+        <Checkbox
+          id="terms-checkbox"
+          name="termsAccepted"
+          checked={values.termsAccepted}
+          onChange={handleFieldChange("termsAccepted")}
+          label={
+            <>
+              I agree to the{" "}
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                Terms of Service
+              </a>{" "}
+              and{" "}
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                Privacy Policy
+              </a>
+            </>
+          }
+        />
       </div>
 
-      <div className="form-fields mb-2">
-        <FormField
-          error={{
-            msg: (errors.phoneNumber as string) || "",
-            touched: touched("phoneNumber"),
-          }}
-        >
-          <FormLabel htmlFor="phoneNumber" label="Phone Number" />
-          <FormInput
-            id="phoneNumber"
-            name="phoneNumber"
-            type="text"
-            placeholder="Enter your phone number"
-            value={values.phoneNumber || ""}
-            hasError={!!errors.phoneNumber}
-            onChange={handleFieldChange("phoneNumber")}
-          />
-        </FormField>
-
-        <FormField
-          error={{
-            msg: (errors.location as string) || "",
-            touched: touched("location"),
-          }}
-        >
-          <FormLabel htmlFor="location" label="Location" />
-          <FormInput
-            id="location"
-            name="location"
-            type="text"
-            placeholder="Enter your location"
-            value={values.location || ""}
-            hasError={!!errors.location}
-            onChange={handleFieldChange("location")}
-          />
-        </FormField>
-      </div>
-
-      <div className="form-fields mb-2">
-        <FormField>
-          <CustomDropdown
-            id="timeZone"
-            placeholder="Time Zone"
-            value={values.timeZone}
-            onChange={(value) => handleDropdownChange(value, "timeZone")}
-            options={TIMEZONE_OPTIONS}
-          />
-        </FormField>
-
-        <FormField>
-          <CustomDropdown
-            id="lang"
-            placeholder="Language"
-            value={values.lang}
-            onChange={(value) => handleDropdownChange(value, "lang")}
-            options={LANGUAGE_OPTIONS}
-          />
-        </FormField>
-      </div>
-
-      <div className="form-fields mb-2">
-        <FormField>
-          <Checkbox
-            id="terms-checkbox"
-            name="termsAccepted"
-            checked={values.termsAccepted}
-            onChange={handleFieldChange("termsAccepted")}
-            label={
-              <>
-                I agree to the{" "}
-                <a href="#" target="_blank" rel="noopener noreferrer">
-                  Terms of Service
-                </a>{" "}
-                and{" "}
-                <a href="#" target="_blank" rel="noopener noreferrer">
-                  Privacy Policy
-                </a>
-              </>
-            }
-          />
-        </FormField>
-      </div>
-
-      <div className="flex-row row-gap flex-between">
+      <div style={{ display: "flex", gap: "1rem", justifyContent: "space-between" }}>
         <Button
           label="Back"
           className="btn btn-outline"
           onClick={onBack}
           icon={<i className="bx bx-arrow-back"></i>}
-          disabled={isValid || isSubmitting}
+          disabled={isSubmitting}
         />
         <Button
           label={isSubmitting ? "Creating Account..." : "Create Account"}
@@ -217,6 +171,7 @@ export const AccountSetup: React.FC<AccountSetupProps> = ({
           type="submit"
           icon={<i className="bx bx-user-plus"></i>}
           disabled={!isValid || isSubmitting}
+          loading={isSubmitting}
         />
       </div>
     </Form>

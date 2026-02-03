@@ -4,12 +4,12 @@ export type UserClient = {
 };
 
 export interface IClientAccountType {
-  planId: string;
-  planName: string;
+  category: "business" | "individual";
+  billingInterval: "monthly" | "annual";
   isEnterpriseAccount: boolean;
 }
 
-export interface Icuidentification {
+export interface IClientIdentification {
   idType:
     | "passport"
     | "driverLicense"
@@ -55,11 +55,49 @@ export interface IClientSettings {
   lang: string;
 }
 
+export interface IClientSubscription {
+  id: string;
+  _id: string;
+  subscriptionId: string;
+  suid: string;
+  cuid: string;
+  planName: string;
+  status: string;
+  billingInterval: "monthly" | "annual";
+  amount: number;
+  nextBillingDate: string;
+  canceledAt: string | null;
+  pendingDowngradeAt: string | null;
+  currentSeats: number;
+  currentProperties: number;
+  currentUnits: number;
+  additionalSeatsCount: number;
+  additionalSeatsCost: number;
+  totalMonthlyPrice: number;
+  paymentMethod?: {
+    brand: string;
+    last4: string;
+  } | null;
+  billingHistory?: Array<{
+    invoiceId: string;
+    number: string;
+    amountPaid: number;
+    currency: string;
+    paidAt: string;
+    period: {
+      start: string;
+      end: string;
+    };
+    pdfUrl?: string;
+    hostedUrl?: string;
+  }>;
+}
+
 export interface IClient {
   cuid: string;
   accountType: IClientAccountType;
-  identification: Icuidentification;
-  subscription?: string;
+  identification: IClientIdentification;
+  subscription?: IClientSubscription;
   isVerified: boolean;
   accountAdmin:
     | string

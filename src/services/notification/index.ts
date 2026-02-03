@@ -2,7 +2,7 @@ import axios from "@configs/axios";
 import { NotificationFilters } from "@interfaces/notification.interface";
 
 export class NotificationService {
-  private readonly backendBaseURL = process.env.NEXT_PUBLIC_BASE_URL;
+  private readonly backendBaseURL = process.env.NEXT_PUBLIC_API_BASE_URL;
   private readonly baseURL = `${this.backendBaseURL}/api/v1/notifications`;
 
   async markAsRead(cuid: string, nuid: string) {
