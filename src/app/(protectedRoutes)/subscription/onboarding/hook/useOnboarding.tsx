@@ -94,8 +94,8 @@ export function useOnboarding() {
 
     initPayment({
       cuid: client.cuid,
-      priceId,
-      lookupKey,
+      priceId: priceId ?? undefined,
+      lookupKey: lookupKey ?? undefined,
       billingInterval,
     });
   };

@@ -1,15 +1,16 @@
-import { HttpResponse, http } from "msw";
+import { rest } from "msw";
 
 export const authHandlers = [
   // Login endpoint - single account
-  http.post("/api/v1/auth/login", async ({ request }) => {
-    const body = await request.json();
-    const { email, password } = body as { email: string; password: string };
+  rest.post("/api/v1/auth/login", (req, res, ctx) => {
+    const { email, password } = req.body as { email: string; password: string };
 
     // Single account user
     if (email === "single@example.com" && password === "password123") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(200),
+        ctx.cookie("auth-token", "mock-jwt-token", { httpOnly: true, path: "/" }),
+        ctx.json({
           success: true,
           msg: "Login successful",
           accounts: [
@@ -22,20 +23,15 @@ export const authHandlers = [
             cuid: "client-123",
             clientDisplayName: "Test Company",
           },
-        },
-        {
-          status: 200,
-          headers: {
-            "Set-Cookie": "auth-token=mock-jwt-token; HttpOnly; Path=/",
-          },
-        }
+        })
       );
     }
 
     // Multiple accounts user
     if (email === "multi@example.com" && password === "password123") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(200),
+        ctx.json({
           success: true,
           msg: "Multiple accounts found",
           accounts: [
@@ -53,31 +49,30 @@ export const authHandlers = [
             },
           ],
           activeAccount: null,
-        },
-        { status: 200 }
+        })
       );
     }
 
-    return HttpResponse.json(
-      {
+    return res(
+      ctx.status(401),
+      ctx.json({
         success: false,
         message: "Invalid credentials",
-      },
-      { status: 401 }
+      })
     );
   }),
 
   // Register endpoint
-  http.post("/api/v1/auth/signup", async ({ request }) => {
-    const body = await request.json();
-    const { email, firstName, lastName } = body as {
+  rest.post("/api/v1/auth/signup", (req, res, ctx) => {
+    const { email, firstName, lastName } = req.body as {
       email: string;
       firstName: string;
       lastName: string;
     };
 
-    return HttpResponse.json(
-      {
+    return res(
+      ctx.status(201),
+      ctx.json({
         success: true,
         message: "Account created successfully",
         data: {
@@ -88,58 +83,52 @@ export const authHandlers = [
             lastName,
           },
         },
-      },
-      { status: 201 }
+      })
     );
   }),
 
   // Forgot password endpoint
-  http.post("/api/v1/auth/forgot_password", async ({ request }) => {
-    await request.json();
-
-    return HttpResponse.json(
-      {
+  rest.post("/api/v1/auth/forgot_password", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
         success: true,
         message: "Password reset email sent successfully",
-      },
-      { status: 200 }
+      })
     );
   }),
 
   // Reset password endpoint
-  http.post(
-    "/api/v1/auth/reset_password/:token",
-    async ({ request, params }) => {
-      await request.json();
-      const { token } = params;
+  rest.post("/api/v1/auth/reset_password/:token", (req, res, ctx) => {
+    const { token } = req.params;
 
-      if (token === "valid-reset-token") {
-        return HttpResponse.json(
-          {
-            success: true,
-            message: "Password reset successfully",
-          },
-          { status: 200 }
-        );
-      }
-
-      return HttpResponse.json(
-        {
-          success: false,
-          message: "Invalid or expired reset token",
-        },
-        { status: 400 }
+    if (token === "valid-reset-token") {
+      return res(
+        ctx.status(200),
+        ctx.json({
+          success: true,
+          message: "Password reset successfully",
+        })
       );
     }
-  ),
+
+    return res(
+      ctx.status(400),
+      ctx.json({
+        success: false,
+        message: "Invalid or expired reset token",
+      })
+    );
+  }),
 
   // Account activation endpoint
-  http.post("/api/v1/auth/account_activation/:cuid", async ({ params }) => {
-    const { cuid } = params;
+  rest.post("/api/v1/auth/account_activation/:cuid", (req, res, ctx) => {
+    const { cuid } = req.params;
 
     if (cuid === "valid-activation-code") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(200),
+        ctx.json({
           success: true,
           message: "Account activated successfully",
           data: {
@@ -149,27 +138,27 @@ export const authHandlers = [
               isActive: true,
             },
           },
-        },
-        { status: 200 }
+        })
       );
     }
 
-    return HttpResponse.json(
-      {
+    return res(
+      ctx.status(400),
+      ctx.json({
         success: false,
         message: "Invalid activation code",
-      },
-      { status: 400 }
+      })
     );
   }),
 
   // Validate invitation token
-  http.get("/api/v1/invite/validate/:cuid", async ({ params }) => {
-    const { cuid } = params;
+  rest.get("/api/v1/invite/validate/:cuid", (req, res, ctx) => {
+    const { cuid } = req.params;
 
     if (cuid === "valid-invite-token") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(200),
+        ctx.json({
           success: true,
           data: {
             invitation: {
@@ -183,33 +172,32 @@ export const authHandlers = [
               ).toISOString(),
             },
           },
-        },
-        { status: 200 }
+        })
       );
     }
 
-    return HttpResponse.json(
-      {
+    return res(
+      ctx.status(400),
+      ctx.json({
         success: false,
         message: "Invalid or expired invitation",
-      },
-      { status: 400 }
+      })
     );
   }),
 
   // Accept invitation endpoint
-  http.post("/api/v1/invite/accept/:cuid", async ({ request, params }) => {
-    const body = await request.json();
-    const { email, firstName, lastName } = body as {
+  rest.post("/api/v1/invite/accept/:cuid", (req, res, ctx) => {
+    const { email, firstName, lastName } = req.body as {
       email: string;
       firstName: string;
       lastName: string;
     };
-    const { cuid } = params;
+    const { cuid } = req.params;
 
     if (cuid === "valid-invite-token") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(201),
+        ctx.json({
           success: true,
           message: "Account created successfully",
           data: {
@@ -225,38 +213,38 @@ export const authHandlers = [
               companyName: "Test Company",
             },
           },
-        },
-        { status: 201 }
+        })
       );
     }
 
-    return HttpResponse.json(
-      {
+    return res(
+      ctx.status(400),
+      ctx.json({
         success: false,
         message: "Invalid invitation token",
-      },
-      { status: 400 }
+      })
     );
   }),
 
   // Decline invitation endpoint
-  http.post("/api/v1/invite/decline/:cuid", async () => {
-    return HttpResponse.json(
-      {
+  rest.post("/api/v1/invite/decline/:cuid", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
         success: true,
         message: "Invitation declined successfully",
-      },
-      { status: 200 }
+      })
     );
   }),
 
   // Current user endpoint
-  http.get("/api/v1/auth/:cuid/me", async ({ params }) => {
-    const { cuid } = params;
+  rest.get("/api/v1/auth/:cuid/me", (req, res, ctx) => {
+    const { cuid } = req.params;
 
     if (cuid === "client-123") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(200),
+        ctx.json({
           success: true,
           data: {
             user: {
@@ -272,14 +260,14 @@ export const authHandlers = [
             },
             permissions: ["read:users", "create:properties"],
           },
-        },
-        { status: 200 }
+        })
       );
     }
 
     if (cuid === "client-456") {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(200),
+        ctx.json({
           success: true,
           data: {
             user: {
@@ -295,28 +283,27 @@ export const authHandlers = [
             },
             permissions: ["read:users"],
           },
-        },
-        { status: 200 }
+        })
       );
     }
 
-    return HttpResponse.json(
-      {
+    return res(
+      ctx.status(404),
+      ctx.json({
         success: false,
         message: "User not found",
-      },
-      { status: 404 }
+      })
     );
   }),
 
   // Logout endpoint
-  http.delete("/api/v1/auth/:cuid/logout", async () => {
-    return HttpResponse.json(
-      {
+  rest.delete("/api/v1/auth/:cuid/logout", (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
         success: true,
         message: "Logged out successfully",
-      },
-      { status: 200 }
+      })
     );
   }),
 ];

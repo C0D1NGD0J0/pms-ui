@@ -130,20 +130,19 @@ export const subscriptionHandlers = [
   }),
 
   // GET /api/v1/subscriptions/:cuid/plan-usage
-  http.get("/api/v1/subscriptions/:cuid/plan-usage", ({ params }) => {
-    const { cuid } = params;
+  rest.get("/api/v1/subscriptions/:cuid/plan-usage", (req, res, ctx) => {
 
     const currentPlan = mockSubscriptionPlans.find(
       (p) => p.planId === subscriptionState.currentPlan
     );
 
     if (!currentPlan) {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(404),
+        ctx.json({
           success: false,
           message: "Plan not found",
-        },
-        { status: 404 }
+        })
       );
     }
 
@@ -152,52 +151,52 @@ export const subscriptionHandlers = [
     const currentSeats = subscriptionState.usage.seats;
     const totalAllowed = includedSeats + additionalSeats;
 
-    return HttpResponse.json({
-      success: true,
-      data: {
-        plan: {
-          name: currentPlan.planName,
-          status: "active",
-          billingInterval: "monthly",
-          startDate: "2025-01-01T00:00:00.000Z",
-          endDate: "2025-02-01T00:00:00.000Z",
+    return res(
+      ctx.json({
+        success: true,
+        data: {
+          plan: {
+            name: currentPlan.planName,
+            status: "active",
+            billingInterval: "monthly",
+            startDate: "2025-01-01T00:00:00.000Z",
+            endDate: "2025-02-01T00:00:00.000Z",
+          },
+          usage: subscriptionState.usage,
+          limits: currentPlan.limits,
+          isLimitReached: {
+            properties: subscriptionState.usage.properties >= currentPlan.limits.properties,
+            units: subscriptionState.usage.units >= currentPlan.limits.units,
+            seats: currentSeats >= totalAllowed,
+          },
+          seatInfo: {
+            includedSeats,
+            additionalSeats,
+            totalAllowed,
+            maxAdditionalSeats: 50,
+            additionalSeatPriceCents: currentPlan.seatPricing?.monthly.priceInCents || 0,
+            availableForPurchase: 50 - additionalSeats,
+          },
         },
-        usage: subscriptionState.usage,
-        limits: currentPlan.limits,
-        isLimitReached: {
-          properties: subscriptionState.usage.properties >= currentPlan.limits.properties,
-          units: subscriptionState.usage.units >= currentPlan.limits.units,
-          seats: currentSeats >= totalAllowed,
-        },
-        seatInfo: {
-          includedSeats,
-          additionalSeats,
-          totalAllowed,
-          maxAdditionalSeats: 50,
-          additionalSeatPriceCents: currentPlan.seatPricing?.monthly.priceInCents || 0,
-          availableForPurchase: 50 - additionalSeats,
-        },
-      },
-    });
+      })
+    );
   }),
 
   // POST /api/v1/subscriptions/:cuid/seats
-  http.post("/api/v1/subscriptions/:cuid/seats", async ({ request, params }) => {
-    const { cuid } = params;
-    const body = await request.json();
-    const { seatDelta } = body as { seatDelta: number };
+  rest.post("/api/v1/subscriptions/:cuid/seats", async (req, res, ctx) => {
+    const { seatDelta } = req.body as { seatDelta: number };
 
     const currentPlan = mockSubscriptionPlans.find(
       (p) => p.planId === subscriptionState.currentPlan
     );
 
     if (!currentPlan?.seatPricing) {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(400),
+        ctx.json({
           success: false,
           message: "Seat pricing not available for this plan",
-        },
-        { status: 400 }
+        })
       );
     }
 
@@ -209,24 +208,24 @@ export const subscriptionHandlers = [
     if (seatDelta < 0) {
       const maxCanRemove = Math.max(0, includedSeats + subscriptionState.additionalSeats - currentSeats);
       if (Math.abs(seatDelta) > maxCanRemove) {
-        return HttpResponse.json(
-          {
+        return res(
+          ctx.status(400),
+          ctx.json({
             success: false,
             message: `Cannot remove ${Math.abs(seatDelta)} seats. You can only remove ${maxCanRemove} seats (currently using ${currentSeats} of ${includedSeats + subscriptionState.additionalSeats} seats).`,
-          },
-          { status: 400 }
+          })
         );
       }
     }
 
     // Validation: cannot exceed max additional seats
     if (newAdditionalSeats > 50) {
-      return HttpResponse.json(
-        {
+      return res(
+        ctx.status(400),
+        ctx.json({
           success: false,
           message: "Cannot exceed maximum of 50 additional seats",
-        },
-        { status: 400 }
+        })
       );
     }
 
@@ -236,77 +235,76 @@ export const subscriptionHandlers = [
     const seatPriceCents = currentPlan.seatPricing.monthly.priceInCents;
     const additionalSeatsCost = newAdditionalSeats * seatPriceCents;
 
-    return HttpResponse.json({
-      success: true,
-      message: seatDelta > 0 ? "Seats added successfully" : "Seats removed successfully",
-      data: {
-        additionalSeatsCount: newAdditionalSeats,
-        additionalSeatsCost: additionalSeatsCost,
-        totalMonthlyPrice: currentPlan.pricing.monthly.priceInCents + additionalSeatsCost,
-        currentSeats,
-        billingInterval: "monthly" as const,
-        paymentGateway: {
-          seatItemId: "si_mock_seat_item",
+    return res(
+      ctx.json({
+        success: true,
+        message: seatDelta > 0 ? "Seats added successfully" : "Seats removed successfully",
+        data: {
+          additionalSeatsCount: newAdditionalSeats,
+          additionalSeatsCost: additionalSeatsCost,
+          totalMonthlyPrice: currentPlan.pricing.monthly.priceInCents + additionalSeatsCost,
+          currentSeats,
+          billingInterval: "monthly" as const,
+          paymentGateway: {
+            seatItemId: "si_mock_seat_item",
+          },
         },
-      },
-    });
+      })
+    );
   }),
 
   // POST /api/v1/subscriptions/:cuid/init-subscription-payment
-  http.post("/api/v1/subscriptions/:cuid/init-subscription-payment", async ({ request, params }) => {
-    const { cuid } = params;
-    const body = await request.json();
-    const { priceId, lookupKey, billingInterval } = body as {
-      priceId?: string;
-      lookupKey?: string;
-      billingInterval?: "monthly" | "annual";
-      successUrl: string;
-      cancelUrl: string;
-    };
+  rest.post("/api/v1/subscriptions/:cuid/init-subscription-payment", (req, res, ctx) => {
+    const { cuid } = req.params;
 
-    return HttpResponse.json({
-      success: true,
-      message: "Checkout session created",
-      data: {
-        checkoutUrl: `https://checkout.stripe.com/c/pay/mock-session-${cuid}`,
-        sessionId: `cs_test_mock_session_${cuid}_${Date.now()}`,
-      },
-    });
+    return res(
+      ctx.json({
+        success: true,
+        message: "Checkout session created",
+        data: {
+          checkoutUrl: `https://checkout.stripe.com/c/pay/mock-session-${cuid}`,
+          sessionId: `cs_test_mock_session_${cuid}_${Date.now()}`,
+        },
+      })
+    );
   }),
 
   // DELETE /api/v1/subscriptions/:cuid/cancel-subscription
-  http.delete("/api/v1/subscriptions/:cuid/cancel-subscription", ({ params }) => {
-    const { cuid } = params;
+  rest.delete("/api/v1/subscriptions/:cuid/cancel-subscription", (req, res, ctx) => {
+    const { cuid } = req.params;
 
-    return HttpResponse.json({
-      success: true,
-      message: "Subscription canceled successfully",
-      data: {
-        _id: `sub_${cuid}`,
-        status: "canceled",
-        canceledAt: new Date().toISOString(),
-        planName: subscriptionState.currentPlan,
-      },
-    });
+    return res(
+      ctx.json({
+        success: true,
+        message: "Subscription canceled successfully",
+        data: {
+          _id: `sub_${cuid}`,
+          status: "canceled",
+          canceledAt: new Date().toISOString(),
+          planName: subscriptionState.currentPlan,
+        },
+      })
+    );
   }),
 
   // POST /api/v1/subscriptions/:cuid/downgrade-to-essential
-  http.post("/api/v1/subscriptions/:cuid/downgrade-to-essential", ({ params }) => {
-    const { cuid } = params;
+  rest.post("/api/v1/subscriptions/:cuid/downgrade-to-essential", (req, res, ctx) => {
 
     subscriptionState.currentPlan = "essential";
     subscriptionState.additionalSeats = 0;
 
-    return HttpResponse.json({
-      success: true,
-      message: "Successfully downgraded to Essential plan",
-      data: {
-        subscription: {
-          planName: "Essential",
-          status: "active",
+    return res(
+      ctx.json({
+        success: true,
+        message: "Successfully downgraded to Essential plan",
+        data: {
+          subscription: {
+            planName: "Essential",
+            status: "active",
+          },
         },
-      },
-    });
+      })
+    );
   }),
 ];
 

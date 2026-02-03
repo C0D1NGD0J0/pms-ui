@@ -1,7 +1,7 @@
+import axiosService from "@configs/axios";
+import MockAdapter from "axios-mock-adapter";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import MockAdapter from "axios-mock-adapter";
-import axiosService from "@configs/axios";
 import {
   SUBSCRIPTION_QUERY_KEYS,
   CURRENT_USER_QUERY_KEY,

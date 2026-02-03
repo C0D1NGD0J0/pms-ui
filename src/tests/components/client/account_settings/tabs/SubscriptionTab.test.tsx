@@ -1,12 +1,11 @@
-import React from "react";
 import "@testing-library/jest-dom";
 import { IClient } from "@interfaces/client.interface";
 import { waitFor, render, screen } from "@testing-library/react";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { useGetSubscriptionPlans } from "@app/(auth)/register/hook/queries/useGetSubscriptionPlans";
 import { SubscriptionTab } from "@app/(protectedRoutes)/client/[cuid]/account_settings/components/tabs/SubscriptionTab";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Mock hooks
 jest.mock("@hooks/useUnifiedPermissions");
