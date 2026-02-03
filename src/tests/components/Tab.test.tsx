@@ -121,7 +121,10 @@ describe("Tab Components", () => {
       const tab2 = screen.getByRole("tab", { name: /tab 2/i });
       fireEvent.click(tab2);
 
-      expect(localStorage.getItem("activeTab")).toBe("tab2");
+      const storedValue = localStorage.getItem("pms:activeTab");
+      expect(storedValue).toBeTruthy();
+      const parsed = JSON.parse(storedValue!);
+      expect(parsed.value).toBe("tab2");
     });
 
     it("should scroll to top when tab changes by default", () => {
