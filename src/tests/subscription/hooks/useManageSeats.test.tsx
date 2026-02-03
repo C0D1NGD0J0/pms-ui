@@ -1,6 +1,10 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { subscriptionService } from "@services/subscription";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import {
+  SUBSCRIPTION_QUERY_KEYS,
+  CURRENT_USER_QUERY_KEY,
+} from "@utils/constants";
 import { useManageSeats } from "@app/(protectedRoutes)/subscription/hooks/useManageSeats";
 
 // Mock the subscription service
@@ -10,11 +14,15 @@ jest.mock("@services/subscription", () => ({
   },
 }));
 
-// Mock useErrorHandler
-const mockHandleMutationError = jest.fn();
-jest.mock("@hooks/useErrorHandler", () => ({
-  useErrorHandler: jest.fn(() => ({
-    handleMutationError: mockHandleMutationError,
+// Mock useNotification
+const mockMessageSuccess = jest.fn();
+const mockMessageError = jest.fn();
+jest.mock("@hooks/useNotification", () => ({
+  useNotification: jest.fn(() => ({
+    message: {
+      success: mockMessageSuccess,
+      error: mockMessageError,
+    },
   })),
 }));
 
@@ -29,6 +37,8 @@ describe("useManageSeats", () => {
       },
     });
     jest.clearAllMocks();
+    mockMessageSuccess.mockClear();
+    mockMessageError.mockClear();
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -107,15 +117,18 @@ describe("useManageSeats", () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    // Should invalidate planUsage, clientDetails, and currentUser queries
+    // Should invalidate planUsage, clientDetails, currentUser, and subscriptionUsage queries
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: ["planUsage", "test-cuid"],
+      queryKey: SUBSCRIPTION_QUERY_KEYS.getPlanUsage("test-cuid"),
     });
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: ["clientDetails", "test-cuid"],
+      queryKey: SUBSCRIPTION_QUERY_KEYS.getClientDetails("test-cuid"),
     });
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: ["currentUser"],
+      queryKey: CURRENT_USER_QUERY_KEY,
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: SUBSCRIPTION_QUERY_KEYS.getSubscriptionUsage("test-cuid"),
     });
   });
 
@@ -133,10 +146,7 @@ describe("useManageSeats", () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(mockHandleMutationError).toHaveBeenCalledWith(
-      mockError,
-      "Failed to manage seats"
-    );
+    expect(mockMessageError).toHaveBeenCalledWith("Failed to manage seats");
   });
 
   it("should track loading state", async () => {
@@ -183,5 +193,107 @@ describe("useManageSeats", () => {
       "test-cuid",
       0
     );
+  });
+
+  it("should show success notification when seats are added", async () => {
+    const mockResponse = { success: true, data: { additionalSeats: 5 } };
+    (subscriptionService.manageSeats as jest.Mock).mockResolvedValue(
+      mockResponse
+    );
+
+    const { result } = renderHook(() => useManageSeats(), { wrapper });
+
+    result.current.mutate({ cuid: "test-cuid", seatDelta: 3 });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(mockMessageSuccess).toHaveBeenCalledWith("Successfully added 3 seats");
+  });
+
+  it("should show success notification when seats are removed", async () => {
+    const mockResponse = { success: true, data: { additionalSeats: 0 } };
+    (subscriptionService.manageSeats as jest.Mock).mockResolvedValue(
+      mockResponse
+    );
+
+    const { result } = renderHook(() => useManageSeats(), { wrapper });
+
+    result.current.mutate({ cuid: "test-cuid", seatDelta: -2 });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(mockMessageSuccess).toHaveBeenCalledWith("Successfully removed 2 seats");
+  });
+
+  it("should handle seat removal validation error with 'Cannot remove' message", async () => {
+    const mockError = {
+      response: {
+        data: {
+          message:
+            "Cannot remove 1 seat. You currently have 21 active users but would only have 11 seats allowed. Please archive 10 user(s) first.",
+        },
+      },
+    };
+    (subscriptionService.manageSeats as jest.Mock).mockRejectedValue(
+      mockError
+    );
+
+    const { result } = renderHook(() => useManageSeats(), { wrapper });
+
+    result.current.mutate({ cuid: "test-cuid", seatDelta: -1 });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(mockMessageError).toHaveBeenCalledWith(
+      "Cannot remove 1 seat. You currently have 21 active users but would only have 11 seats allowed. Please archive 10 user(s) first."
+    );
+  });
+
+  it("should handle API error with custom message", async () => {
+    const mockError = {
+      response: {
+        data: {
+          message: "Insufficient permissions to manage seats",
+        },
+      },
+    };
+    (subscriptionService.manageSeats as jest.Mock).mockRejectedValue(
+      mockError
+    );
+
+    const { result } = renderHook(() => useManageSeats(), { wrapper });
+
+    result.current.mutate({ cuid: "test-cuid", seatDelta: 1 });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(mockMessageError).toHaveBeenCalledWith(
+      "Insufficient permissions to manage seats"
+    );
+  });
+
+  it("should show success with singular 'seat' for single seat change", async () => {
+    const mockResponse = { success: true, data: {} };
+    (subscriptionService.manageSeats as jest.Mock).mockResolvedValue(
+      mockResponse
+    );
+
+    const { result } = renderHook(() => useManageSeats(), { wrapper });
+
+    result.current.mutate({ cuid: "test-cuid", seatDelta: 1 });
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true);
+    });
+
+    expect(mockMessageSuccess).toHaveBeenCalledWith("Successfully added 1 seat");
   });
 });

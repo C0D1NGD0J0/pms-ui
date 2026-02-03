@@ -62,26 +62,71 @@ describe("SubscriptionService", () => {
           },
         },
         {
-          planName: "starter",
-          name: "Starter",
-          description: "For growing property managers",
+          planName: "growth",
+          name: "Growth",
+          description: "For growing landlords",
           displayOrder: 2,
-          isFeatured: true,
-          featuredBadge: "Most Popular",
-          ctaText: "Start Free Trial",
-          featureList: [
-            "Up to 25 properties",
-            "Advanced tenant screening",
-            "Maintenance tracking",
-          ],
-          trialDays: 14,
-          priceInCents: 4900,
+          isFeatured: false,
+          ctaText: "Get Started",
+          featureList: ["Up to 5 properties", "2 team members", "Basic reporting"],
+          trialDays: 0,
+          priceInCents: 799,
           transactionFeePercent: 0,
           isCustomPricing: false,
           seatPricing: {
-            includedSeats: 3,
-            additionalSeatPriceCents: 1000,
-            maxAdditionalSeats: 10,
+            includedSeats: 2,
+            additionalSeatPriceCents: 500,
+            maxAdditionalSeats: 5,
+          },
+          limits: {
+            maxProperties: 5,
+            maxUnits: 20,
+            maxVendors: 10,
+          },
+          entitlements: {
+            tenantScreening: true,
+            RepairRequestService: false,
+          },
+          pricing: {
+            monthly: {
+              priceId: "price_growth_monthly",
+              priceInCents: 799,
+              displayPrice: "$7.99",
+              lookUpKey: "growth_monthly",
+            },
+            annual: {
+              priceId: "price_growth_annual",
+              priceInCents: 7680,
+              displayPrice: "$7.68",
+              savingsPercent: 20,
+              savingsDisplay: "Save 20%",
+              lookUpKey: "growth_annual",
+            },
+          },
+        },
+        {
+          planName: "portfolio",
+          name: "Portfolio",
+          description: "Most popular choice",
+          displayOrder: 3,
+          isFeatured: true,
+          featuredBadge: "Most Popular",
+          ctaText: "Start Trial",
+          featureList: [
+            "Up to 25 properties",
+            "10 team members",
+            "Advanced reporting",
+            "Priority support",
+          ],
+          disabledFeatures: ["White-label branding"],
+          trialDays: 14,
+          priceInCents: 599,
+          transactionFeePercent: 0,
+          isCustomPricing: false,
+          seatPricing: {
+            includedSeats: 10,
+            additionalSeatPriceCents: 800,
+            maxAdditionalSeats: 50,
           },
           limits: {
             maxProperties: 25,
@@ -94,18 +139,18 @@ describe("SubscriptionService", () => {
           },
           pricing: {
             monthly: {
-              priceId: "price_starter_monthly",
-              priceInCents: 4900,
-              displayPrice: "$49",
-              lookUpKey: "starter_monthly",
+              priceId: "price_portfolio_monthly",
+              priceInCents: 599,
+              displayPrice: "$5.99",
+              lookUpKey: "portfolio_monthly",
             },
             annual: {
-              priceId: "price_starter_annual",
-              priceInCents: 46800,
-              displayPrice: "$468",
+              priceId: "price_portfolio_annual",
+              priceInCents: 14400,
+              displayPrice: "$14.40",
               savingsPercent: 20,
               savingsDisplay: "Save 20%",
-              lookUpKey: "starter_annual",
+              lookUpKey: "portfolio_annual",
             },
           },
         },
@@ -179,10 +224,14 @@ describe("SubscriptionService", () => {
         data: {
           success: true,
           data: {
-            additionalSeats: 5,
-            totalSeats: 15,
+            additionalSeatsCount: 5,
+            currentSeats: 15,
             additionalSeatsCost: 5000,
             totalMonthlyPrice: 9900,
+            billingInterval: "monthly" as const,
+            paymentGateway: {
+              seatItemId: "item_123",
+            },
           },
         },
       };
@@ -192,11 +241,11 @@ describe("SubscriptionService", () => {
       const result = await subscriptionService.manageSeats("test-cuid", 5);
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        "/api/v1/subscription/test-cuid/seats",
+        "/api/v1/subscriptions/test-cuid/seats",
         { seatDelta: 5 },
         {}
       );
-      expect(result.data).toEqual(mockResponse.data);
+      expect(result).toEqual(mockResponse.data);
     });
 
     it("should successfully remove seats", async () => {
@@ -204,10 +253,14 @@ describe("SubscriptionService", () => {
         data: {
           success: true,
           data: {
-            additionalSeats: 0,
-            totalSeats: 10,
+            additionalSeatsCount: 0,
+            currentSeats: 10,
             additionalSeatsCost: 0,
             totalMonthlyPrice: 4900,
+            billingInterval: "monthly" as const,
+            paymentGateway: {
+              seatItemId: "item_123",
+            },
           },
         },
       };
@@ -217,11 +270,11 @@ describe("SubscriptionService", () => {
       const result = await subscriptionService.manageSeats("test-cuid", -3);
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        "/api/v1/subscription/test-cuid/seats",
+        "/api/v1/subscriptions/test-cuid/seats",
         { seatDelta: -3 },
         {}
       );
-      expect(result.data).toEqual(mockResponse.data);
+      expect(result).toEqual(mockResponse.data);
     });
 
     it("should handle zero seat delta", async () => {
@@ -229,10 +282,14 @@ describe("SubscriptionService", () => {
         data: {
           success: true,
           data: {
-            additionalSeats: 2,
-            totalSeats: 12,
+            additionalSeatsCount: 2,
+            currentSeats: 12,
             additionalSeatsCost: 2000,
             totalMonthlyPrice: 6900,
+            billingInterval: "monthly" as const,
+            paymentGateway: {
+              seatItemId: "item_123",
+            },
           },
         },
       };
@@ -242,11 +299,11 @@ describe("SubscriptionService", () => {
       const result = await subscriptionService.manageSeats("test-cuid", 0);
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        "/api/v1/subscription/test-cuid/seats",
+        "/api/v1/subscriptions/test-cuid/seats",
         { seatDelta: 0 },
         {}
       );
-      expect(result.data).toEqual(mockResponse.data);
+      expect(result).toEqual(mockResponse.data);
     });
 
     it("should handle errors when managing seats fails", async () => {
@@ -281,14 +338,14 @@ describe("SubscriptionService", () => {
 
       await subscriptionService.manageSeats("client-123", 2);
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        "/api/v1/subscription/client-123/seats",
+        "/api/v1/subscriptions/client-123/seats",
         { seatDelta: 2 },
         {}
       );
 
       await subscriptionService.manageSeats("client-456", -1);
       expect(mockedAxios.post).toHaveBeenCalledWith(
-        "/api/v1/subscription/client-456/seats",
+        "/api/v1/subscriptions/client-456/seats",
         { seatDelta: -1 },
         {}
       );
