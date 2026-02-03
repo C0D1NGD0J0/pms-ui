@@ -42,11 +42,11 @@ export function useOnboarding() {
   useEffect(() => {
     if (plansData && plansData.length > 0 && user?.subscription) {
       const userPlanName = user.subscription.plan.name;
-      const plan = plansData.find((p) => p.planName === userPlanName);
+      const plan = plansData.find((p: any) => p.planName === userPlanName);
       setSelectedPlan(plan || plansData[0]);
     } else if (plansData && plansData.length > 0) {
       const defaultPlan =
-        plansData.find((p) => p.planName === "growth") || plansData[0];
+        plansData.find((p: any) => p.planName === "growth") || plansData[0];
       setSelectedPlan(defaultPlan);
     }
   }, [plansData, user]);
@@ -101,7 +101,7 @@ export function useOnboarding() {
   };
 
   const handlePlanChange = (planName: string) => {
-    const plan = plansData.find((p) => p.planName === planName);
+    const plan = plansData.find((p: any) => p.planName === planName);
     if (plan) {
       setSelectedPlan(plan);
     }

@@ -39,7 +39,7 @@
       font-size: $fs-xsm;
     }
     .title {
-      color: var(--text-muted-color);
+      color: hslaGen($grey-color);
       font-size: 1.5rem;
       font-weight: 500;
       margin-bottom: 0.5rem;
@@ -88,7 +88,7 @@
       &-down {
         display: flex;
         align-items: center;
-        color: var(--danger-color);
+        color: hslaGen($danger-color);
         font-weight: 600;
         margin-right: 0.5rem;
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@components/Icon";
+import { Banner } from "@components/Banner";
 import { Loading } from "@components/Loading";
 import React, { useState, useMemo } from "react";
 import { TableColumn, Table } from "@components/Table";
@@ -72,13 +73,13 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
   };
 
   const currentPlan = plansData?.find(
-    (p) => p.planName === subscription?.planName
+    (p: any) => p.planName === subscription?.planName
   );
-  const selectedPlanData = plansData?.find((p) => p.planName === selectedPlan);
+  const selectedPlanData = plansData?.find((p: any) => p.planName === selectedPlan);
 
   const planOptions = useMemo(
     () =>
-      plansData?.map((plan) => ({
+      plansData?.map((plan: any) => ({
         value: plan.planName,
         label: `${plan.name} - ${plan.pricing.monthly.displayPrice}/month`,
       })) || [],
@@ -100,8 +101,20 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
     const availableForPurchase = seatInfo.availableForPurchase;
     const canPurchaseMore =
       availableForPurchase > 0 && subscription.planName !== "essential";
-    const canRemoveSeats = additionalSeats > 0;
-    const maxCanRemove = Math.min(additionalSeats, totalAllowed - currentSeats);
+
+    // Check if over limit
+    const isOverLimit = currentSeats > totalAllowed;
+    const seatsOverLimit = isOverLimit ? currentSeats - totalAllowed : 0;
+
+    // Can only remove seats if:
+    // 1. Not over limit, AND
+    // 2. Have additional seats purchased, AND
+    // 3. Removing seats won't put current users over the new limit
+    const maxCanRemove = isOverLimit
+      ? 0
+      : Math.min(additionalSeats, totalAllowed - currentSeats);
+
+    const canRemoveSeats = maxCanRemove > 0;
 
     return {
       includedSeats,
@@ -116,6 +129,8 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
       availableForPurchase,
       canRemoveSeats,
       maxCanRemove,
+      isOverLimit,
+      seatsOverLimit,
       usagePercentage: (currentSeats / totalAllowed) * 100,
       currentMonthlyCost: (subscription.additionalSeatsCost || 0) / 100,
     };
@@ -132,12 +147,12 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
         monthlyLookupKey: selectedPlanData.pricing.monthly.lookUpKey,
         annualLookupKey: selectedPlanData.pricing.annual.lookUpKey,
         features: [
-          ...selectedPlanData.featureList.map((feature) => ({
+          ...selectedPlanData.featureList.map((feature: any) => ({
             icon: "bx-check",
             text: feature,
             included: true,
           })),
-          ...(selectedPlanData.disabledFeatures || []).map((feature) => ({
+          ...(selectedPlanData.disabledFeatures || []).map((feature: any) => ({
             icon: "bx-x",
             text: feature,
             included: false,
@@ -192,7 +207,8 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
   };
 
   const calculateNewCost = () => {
-    if (!seatDetails) return { costChange: 0, newMonthly: 0, currentMonthly: 0 };
+    if (!seatDetails)
+      return { costChange: 0, newMonthly: 0, currentMonthly: 0 };
 
     const currentMonthly = (subscription?.totalMonthlyPrice || 0) / 100;
     const costChange = seatsToAdd * seatDetails.pricePerSeat;
@@ -417,26 +433,26 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
 
                 <div className="features-section">
                   <ul className="features-list">
-                  {currentPlanDetails.features.map(
-                    (
-                      feature: { included: boolean; text: string },
-                      index: number
-                    ) => (
-                      <li
-                        key={index}
-                        className={`feature-item ${!feature.included ? "feature-item--excluded" : ""}`}
-                      >
-                        <Icon
-                          name={feature.included ? "bx-check" : "bx-x"}
-                          className="feature-icon"
-                        />
-                        <span>{feature.text}</span>
-                      </li>
-                    )
-                  )}
-                </ul>
+                    {currentPlanDetails.features.map(
+                      (
+                        feature: { included: boolean; text: string },
+                        index: number
+                      ) => (
+                        <li
+                          key={index}
+                          className={`feature-item ${!feature.included ? "feature-item--excluded" : ""}`}
+                        >
+                          <Icon
+                            name={feature.included ? "bx-check" : "bx-x"}
+                            className="feature-icon"
+                          />
+                          <span>{feature.text}</span>
+                        </li>
+                      )
+                    )}
+                  </ul>
+                </div>
               </div>
-            </div>
             </ExpandableCard>
           </div>
 
@@ -444,82 +460,84 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
             <h5 className="section-label">CHANGE PLAN</h5>
             <ExpandableCard collapsedHeight={100}>
               <div className="plan-card">
-              <div className="plan-selector">
-                <label className="form-label">SELECT PLAN</label>
-                <Select
-                  id="plan-select"
-                  name="plan"
-                  options={planOptions}
-                  value={selectedPlan}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                    setSelectedPlan(e.target.value)
-                  }
-                />
-              </div>
-
-              <div className="billing-info">
-                <span className="billing-info__label">Plan Cost</span>
-                <span className="billing-info__value">
-                  {isAnnualBilling
-                    ? currentPlanDetails.annualPrice
-                    : currentPlanDetails.monthlyPrice}
-                  /{isAnnualBilling ? "year" : "month"}
-                </span>
-              </div>
-
-              <div className="billing-cycle-option">
-                <Checkbox
-                  id="annual-billing"
-                  name="annualBilling"
-                  checked={isAnnualBilling}
-                  onChange={(e) => setIsAnnualBilling(e.target.checked)}
-                  label={
-                    <span className="checkbox-text">
-                      <Icon name="bx-calendar-check" size="1rem" />
-                      Annual Billing (Save 20%)
-                    </span>
-                  }
-                />
-                {isAnnualBilling && (
-                  <p className="billing-savings-note">
-                    Billed annually at a discounted rate
-                  </p>
-                )}
-              </div>
-
-              {selectedPlan === currentPlanName && (
-                <div className="billing-info">
-                  <span className="billing-info__label">Next Billing Date</span>
-                  <span className="billing-info__value">
-                    {subscriptionData.renewalDate}
-                  </span>
-                </div>
-              )}
-
-              <Button
-                label={
-                  subscription?.status === "pending_payment"
-                    ? "Initialize Payment"
-                    : selectedPlan === currentPlanName
-                      ? "Update Billing"
-                      : `Switch to ${currentPlanDetails.name}`
-                }
-                className="btn-primary btn-full"
-                loading={isInitializingPayment}
-                icon={
-                  <Icon
-                    name={
-                      subscription?.status === "pending_payment"
-                        ? "bx-wallet"
-                        : selectedPlan === currentPlanName
-                          ? "bx-credit-card"
-                          : "bx-transfer-alt"
+                <div className="plan-selector">
+                  <label className="form-label">SELECT PLAN</label>
+                  <Select
+                    id="plan-select"
+                    name="plan"
+                    options={planOptions}
+                    value={selectedPlan}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                      setSelectedPlan(e.target.value)
                     }
                   />
-                }
-                onClick={handlePaymentInit}
-              />
-            </div>
+                </div>
+
+                <div className="billing-info">
+                  <span className="billing-info__label">Plan Cost</span>
+                  <span className="billing-info__value">
+                    {isAnnualBilling
+                      ? currentPlanDetails.annualPrice
+                      : currentPlanDetails.monthlyPrice}
+                    /{isAnnualBilling ? "year" : "month"}
+                  </span>
+                </div>
+
+                <div className="billing-cycle-option">
+                  <Checkbox
+                    id="annual-billing"
+                    name="annualBilling"
+                    checked={isAnnualBilling}
+                    onChange={(e) => setIsAnnualBilling(e.target.checked)}
+                    label={
+                      <span className="checkbox-text">
+                        <Icon name="bx-calendar-check" size="1rem" />
+                        Annual Billing (Save 20%)
+                      </span>
+                    }
+                  />
+                  {isAnnualBilling && (
+                    <p className="billing-savings-note">
+                      Billed annually at a discounted rate
+                    </p>
+                  )}
+                </div>
+
+                {selectedPlan === currentPlanName && (
+                  <div className="billing-info">
+                    <span className="billing-info__label">
+                      Next Billing Date
+                    </span>
+                    <span className="billing-info__value">
+                      {subscriptionData.renewalDate}
+                    </span>
+                  </div>
+                )}
+
+                <Button
+                  label={
+                    subscription?.status === "pending_payment"
+                      ? "Initialize Payment"
+                      : selectedPlan === currentPlanName
+                        ? "Update Billing"
+                        : `Switch to ${currentPlanDetails.name}`
+                  }
+                  className="btn-primary btn-full"
+                  loading={isInitializingPayment}
+                  icon={
+                    <Icon
+                      name={
+                        subscription?.status === "pending_payment"
+                          ? "bx-wallet"
+                          : selectedPlan === currentPlanName
+                            ? "bx-credit-card"
+                            : "bx-transfer-alt"
+                      }
+                    />
+                  }
+                  onClick={handlePaymentInit}
+                />
+              </div>
             </ExpandableCard>
           </div>
         </div>
@@ -595,33 +613,46 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
                     <div className="seat-breakdown">
                       <div className="seat-breakdown__row">
                         <Icon name="bx-check-circle" />
-                        <span>{seatDetails.includedSeats} included in plan</span>
+                        <span>
+                          {seatDetails.includedSeats} included in plan
+                        </span>
                       </div>
                       {seatDetails.additionalSeats > 0 && (
                         <div className="seat-breakdown__row">
                           <Icon name="bx-plus-circle" />
                           <span>
-                            {seatDetails.additionalSeats} additional purchased ($
+                            {seatDetails.additionalSeats} additional purchased
+                            ($
                             {seatDetails.currentMonthlyCost.toFixed(2)}/mo)
                           </span>
                         </div>
                       )}
-                      <div className="seat-breakdown__row seat-breakdown__row--highlight">
+                      <div className={`seat-breakdown__row seat-breakdown__row--highlight ${seatDetails.isOverLimit ? "seat-breakdown__row--error" : ""}`}>
                         <Icon
                           name={
-                            seatDetails.available > 0
-                              ? "bx-user-check"
-                              : "bx-error-circle"
+                            seatDetails.isOverLimit
+                              ? "bx-error-circle"
+                              : seatDetails.available > 0
+                                ? "bx-user-check"
+                                : "bx-error-circle"
                           }
                         />
                         <span>
-                          {seatDetails.available} seat
-                          {seatDetails.available !== 1 ? "s" : ""} available
+                          {seatDetails.isOverLimit ? (
+                            <>
+                              ⚠️ {seatDetails.seatsOverLimit} seat{seatDetails.seatsOverLimit !== 1 ? "s" : ""} over limit
+                            </>
+                          ) : (
+                            <>
+                              {seatDetails.available} seat
+                              {seatDetails.available !== 1 ? "s" : ""} available
+                            </>
+                          )}
                         </span>
                       </div>
                     </div>
                   </div>
-              </div>
+                </div>
               </ExpandableCard>
             </div>
 
@@ -629,94 +660,121 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
               <h5 className="section-label">MANAGE SEATS</h5>
               <ExpandableCard collapsedHeight={100}>
                 <div className="plan-card">
-                {!seatDetails.canPurchaseMore &&
-                seatDetails.availableForPurchase === 0 ? (
-                  <div style={{ padding: "1.5rem", textAlign: "center" }}>
-                    <Icon
-                      name="bx-info-circle"
-                      size="2rem"
-                      color="var(--warning-color)"
-                      style={{ marginBottom: "1rem" }}
-                    />
-                    <p>
-                      Maximum additional seats reached for your plan.
-                      <br />
-                      Contact sales for enterprise options.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    <div className="billing-info">
-                      <span className="billing-info__label">
-                        Price per seat
-                      </span>
-                      <span className="billing-info__value">
-                        ${seatDetails.pricePerSeat.toFixed(2)}/month
-                      </span>
+                  {seatDetails.isOverLimit && (
+                    <div style={{ marginBottom: "1rem" }}>
+                      <Banner
+                        type="error"
+                        title="⚠️ Over Seat Limit"
+                        description={
+                          <div>
+                            <p>
+                              You&apos;re using {seatDetails.seatsOverLimit} more seat{seatDetails.seatsOverLimit !== 1 ? "s" : ""} than available.
+                              You must either:
+                            </p>
+                            <ul style={{ marginLeft: "1.5rem", marginTop: "0.5rem" }}>
+                              <li>Archive {seatDetails.seatsOverLimit} employee user{seatDetails.seatsOverLimit !== 1 ? "s" : ""}, OR</li>
+                              <li>Purchase {seatDetails.seatsOverLimit} more seat{seatDetails.seatsOverLimit !== 1 ? "s" : ""}</li>
+                            </ul>
+                            <p style={{ marginTop: "0.5rem" }}>
+                              You cannot remove seats until you&apos;re under the limit.
+                            </p>
+                          </div>
+                        }
+                        icon="bx-error-circle"
+                        className="subscription-banner"
+                      />
                     </div>
-
-                    <div className="billing-info">
-                      <span className="billing-info__label">
-                        Available to purchase
-                      </span>
-                      <span className="billing-info__value">
-                        {seatDetails.availableForPurchase} more seat
-                        {seatDetails.availableForPurchase !== 1 ? "s" : ""}
-                      </span>
+                  )}
+                  {!seatDetails.canPurchaseMore &&
+                  seatDetails.availableForPurchase === 0 ? (
+                    <div style={{ padding: "1.5rem", textAlign: "center" }}>
+                      <Icon
+                        name="bx-info-circle"
+                        size="2rem"
+                        color="var(--warning-color)"
+                        style={{ marginBottom: "1rem" }}
+                      />
+                      <p>
+                        Maximum additional seats reached for your plan.
+                        <br />
+                        Contact sales for enterprise options.
+                      </p>
                     </div>
-
-                    {seatDetails.additionalSeats > 0 && (
+                  ) : (
+                    <>
                       <div className="billing-info">
-                        <span className="billing-info__label">Can remove</span>
+                        <span className="billing-info__label">
+                          Price per seat
+                        </span>
                         <span className="billing-info__value">
-                          Up to {seatDetails.maxCanRemove} seat
-                          {seatDetails.maxCanRemove !== 1 ? "s" : ""}
+                          ${seatDetails.pricePerSeat.toFixed(2)}/month
                         </span>
                       </div>
-                    )}
 
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "0.5rem",
-                        marginTop: "1rem",
-                      }}
-                    >
-                      <Button
-                        label="Purchase Seats"
-                        className="btn-primary"
-                        icon={<Icon name="bx-user-plus" />}
-                        onClick={handlePurchaseSeatsClick}
-                        disabled={!seatDetails.canPurchaseMore}
-                        style={{ flex: 1 }}
-                      />
+                      <div className="billing-info">
+                        <span className="billing-info__label">
+                          Available to purchase
+                        </span>
+                        <span className="billing-info__value">
+                          {seatDetails.availableForPurchase} more seat
+                          {seatDetails.availableForPurchase !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+
                       {seatDetails.additionalSeats > 0 && (
+                        <div className="billing-info">
+                          <span className="billing-info__label">
+                            Can remove
+                          </span>
+                          <span className="billing-info__value">
+                            Up to {seatDetails.maxCanRemove} seat
+                            {seatDetails.maxCanRemove !== 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      )}
+
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "0.5rem",
+                          marginTop: "1rem",
+                        }}
+                      >
                         <Button
-                          label="Remove Seats"
-                          className="btn-outline"
-                          icon={<Icon name="bx-user-minus" />}
-                          onClick={handleRemoveSeatsClick}
-                          disabled={
-                            !seatDetails.canRemoveSeats ||
-                            seatDetails.maxCanRemove === 0
-                          }
+                          label="Purchase Seats"
+                          className="btn-primary"
+                          icon={<Icon name="bx-user-plus" />}
+                          onClick={handlePurchaseSeatsClick}
+                          disabled={!seatDetails.canPurchaseMore}
                           style={{ flex: 1 }}
                         />
-                      )}
-                    </div>
+                        {seatDetails.additionalSeats > 0 && (
+                          <Button
+                            label="Remove Seats"
+                            className="btn-outline"
+                            icon={<Icon name="bx-user-minus" />}
+                            onClick={handleRemoveSeatsClick}
+                            disabled={
+                              !seatDetails.canRemoveSeats ||
+                              seatDetails.maxCanRemove === 0
+                            }
+                            style={{ flex: 1 }}
+                          />
+                        )}
+                      </div>
 
-                    <p
-                      style={{
-                        fontSize: "0.85rem",
-                        marginTop: "1rem",
-                        textAlign: "center",
-                      }}
-                    >
-                      ✓ Changes apply immediately with proration
-                    </p>
-                  </>
-                )}
-              </div>
+                      <p
+                        style={{
+                          fontSize: "0.85rem",
+                          marginTop: "1rem",
+                          textAlign: "center",
+                        }}
+                      >
+                        ✓ Changes apply immediately with proration
+                      </p>
+                    </>
+                  )}
+                </div>
               </ExpandableCard>
             </div>
           </div>
@@ -878,7 +936,9 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
               marginBottom: "2rem",
             }}
           >
-            <div style={{ display: "flex", gap: "0.5rem", alignItems: "start" }}>
+            <div
+              style={{ display: "flex", gap: "0.5rem", alignItems: "start" }}
+            >
               <Icon
                 name="bx-info-circle"
                 color="var(--color-warning)"
@@ -888,8 +948,13 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({
                 <strong>What happens next:</strong>
                 <ul style={{ margin: "0.5rem 0 0 0", paddingLeft: "1.25rem" }}>
                   <li>Your subscription will be canceled immediately</li>
-                  <li>You can continue using premium features until {subscriptionData.renewalDate}</li>
-                  <li>No refunds will be issued for the current billing period</li>
+                  <li>
+                    You can continue using premium features until{" "}
+                    {subscriptionData.renewalDate}
+                  </li>
+                  <li>
+                    No refunds will be issued for the current billing period
+                  </li>
                   <li>You can reactivate your subscription anytime</li>
                 </ul>
               </div>

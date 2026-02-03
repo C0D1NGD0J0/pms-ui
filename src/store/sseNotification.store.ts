@@ -72,8 +72,6 @@ const useSSENotificationStore = create<NotificationState>()(
       actions: {
         initializeConnection: (cuid: string, filters?: NotificationFilters) => {
           const { personalSourceRef, announcementsSourceRef } = get();
-
-          // Don't create new connections if already connected
           if (personalSourceRef || announcementsSourceRef) return;
 
           get().actions.setupPersonalStream(cuid, filters);

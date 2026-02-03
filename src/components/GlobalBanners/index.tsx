@@ -23,7 +23,7 @@ export function GlobalBanners() {
 
     // Get the current plan details
     const currentPlan = plansData?.find(
-      (p) => p.planName === subscription.plan.name
+      (p: any) => p.planName === subscription.plan.name
     );
     if (!currentPlan) return;
 

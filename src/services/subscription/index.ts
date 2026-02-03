@@ -20,7 +20,7 @@ class SubscriptionService {
         url,
         this.axiosConfig
       );
-      return result.data;
+      return (result as any).data;
     } catch (error) {
       console.error("Error fetching subscription plans:", error);
       throw error;
@@ -163,12 +163,14 @@ class SubscriptionService {
         success: boolean;
         message: string;
         data: {
-          _id: string;
-          planName: string;
           additionalSeatsCount: number;
           additionalSeatsCost: number;
           totalMonthlyPrice: number;
           currentSeats: number;
+          billingInterval: "monthly" | "annual";
+          paymentGateway: {
+            seatItemId: string;
+          };
         };
       }>(
         `${this.baseUrl}/${cuid}/seats`,
