@@ -11,32 +11,33 @@ import { SignupSchema } from "@validations/auth.validations";
 
 import { useGetSubscriptionPlans } from "./queries/useGetSubscriptionPlans";
 
-const defaultTestUser = {
-  firstName: "John",
-  lastName: "Dangote",
-  email: "john.dangote@example.com",
-  password: "Password",
-  cpassword: "Password",
-  location: "Lagos, Nigeria",
-  accountType: {
-    planId: "",
-    lookUpKey: undefined,
-    planName: "" as "essential" | "growth" | "portfolio",
-    isEnterpriseAccount: false,
-    category: "individual" as const,
-    billingInterval: "monthly" as const,
-  },
-  phoneNumber: "2348105301122",
-  displayName: "John Dangote",
-  companyProfile: {
-    tradingName: "Dangote Realty Group",
-    legalEntityName: "Dangote Realty Group LLC",
-    website: "https://www.dangoterealty.com",
-    companyEmail: "contact@dangoterealty.com",
-    companyPhone: "2348105301122",
-    companyAddress: "123 Business Street, Lagos, Nigeria",
-  },
-};
+// Commented out for production - only for testing
+// const defaultTestUser = {
+//   firstName: "John",
+//   lastName: "Dangote",
+//   email: "john.dangote@example.com",
+//   password: "Password",
+//   cpassword: "Password",
+//   location: "Lagos, Nigeria",
+//   accountType: {
+//     planId: "",
+//     lookUpKey: undefined,
+//     planName: "" as "essential" | "growth" | "portfolio",
+//     isEnterpriseAccount: false,
+//     category: "individual" as const,
+//     billingInterval: "monthly" as const,
+//   },
+//   phoneNumber: "2348105301122",
+//   displayName: "John Dangote",
+//   companyProfile: {
+//     tradingName: "Dangote Realty Group",
+//     legalEntityName: "Dangote Realty Group LLC",
+//     website: "https://www.dangoterealty.com",
+//     companyEmail: "contact@dangoterealty.com",
+//     companyPhone: "2348105301122",
+//     companyAddress: "123 Business Street, Lagos, Nigeria",
+//   },
+// };
 
 export function useRegisterLogic() {
   const { handleMutationError } = useErrorHandler();
@@ -63,7 +64,25 @@ export function useRegisterLogic() {
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
     validateInputOnChange: true,
-    initialValues: defaultTestUser,
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      cpassword: "",
+      location: "",
+      accountType: {
+        planId: "",
+        lookUpKey: undefined,
+        planName: "" as "essential" | "growth" | "portfolio",
+        isEnterpriseAccount: false,
+        category: "individual" as const,
+        billingInterval: "monthly" as const,
+      },
+      phoneNumber: "",
+      displayName: "",
+      companyProfile: undefined,
+    },
     validate: zodResolver(SignupSchema) as any,
   });
 

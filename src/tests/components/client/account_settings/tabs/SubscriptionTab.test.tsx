@@ -1,15 +1,14 @@
-import React from "react";
 import "@testing-library/jest-dom";
 import { IClient } from "@interfaces/client.interface";
 import { waitFor, render, screen } from "@testing-library/react";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { SubscriptionTab } from "@clients/account_settings/components/tabs/SubscriptionTab";
-import { useGetSubscriptionPlans } from "@auth/register/hook/queries/useGetSubscriptionPlans";
+import { useGetSubscriptionPlans } from "@app/(auth)/register/hook/queries/useGetSubscriptionPlans";
+import { SubscriptionTab } from "@app/(protectedRoutes)/client/[cuid]/account_settings/components/tabs/SubscriptionTab";
 
 jest.mock("@hooks/useUnifiedPermissions");
-jest.mock("@auth/register/hook/queries/useGetSubscriptionPlans");
+jest.mock("@app/(auth)/register/hook/queries/useGetSubscriptionPlans");
 jest.mock("@hooks/useEntitlementsUsage", () => ({
   useEntitlementsUsage: jest.fn(() => ({
     data: {
