@@ -56,6 +56,8 @@ export interface IClientSettings {
 }
 
 export interface IClientSubscription {
+  id: string;
+  _id: string;
   subscriptionId: string;
   suid: string;
   cuid: string;

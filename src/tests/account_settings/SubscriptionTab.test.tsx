@@ -4,15 +4,12 @@ import { IClient } from "@interfaces/client.interface";
 import { waitFor, render, screen } from "@testing-library/react";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import { IUnifiedPermissions } from "@interfaces/permission.interface";
-import { useGetSubscriptionPlans } from "@app/(auth)/register/hook/queries/useGetSubscriptionPlans";
-import { SubscriptionTab } from "@app/(protectedRoutes)/client/[cuid]/account_settings/components/tabs/SubscriptionTab";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import { SubscriptionTab } from "@clients/account_settings/components/tabs/SubscriptionTab";
+import { useGetSubscriptionPlans } from "@auth/register/hook/queries/useGetSubscriptionPlans";
 
-// Mock hooks
 jest.mock("@hooks/useUnifiedPermissions");
-jest.mock("@app/(auth)/register/hook/queries/useGetSubscriptionPlans");
-
-// Mock the additional hooks with implementations
+jest.mock("@auth/register/hook/queries/useGetSubscriptionPlans");
 jest.mock("@hooks/useEntitlementsUsage", () => ({
   useEntitlementsUsage: jest.fn(() => ({
     data: {
@@ -35,28 +32,34 @@ jest.mock("@app/(protectedRoutes)/subscription/hooks/useManageSeats", () => ({
   })),
 }));
 
-jest.mock("@app/(protectedRoutes)/subscription/hooks/useCancelSubscription", () => ({
-  useCancelSubscription: jest.fn(() => ({
-    cancelSubscription: jest.fn(),
-    isLoading: false,
-  })),
-}));
+jest.mock(
+  "@app/(protectedRoutes)/subscription/hooks/useCancelSubscription",
+  () => ({
+    useCancelSubscription: jest.fn(() => ({
+      cancelSubscription: jest.fn(),
+      isLoading: false,
+    })),
+  })
+);
 
-jest.mock("@app/(protectedRoutes)/subscription/hooks/useInitSubscriptionPayment", () => ({
-  useInitSubscriptionPayment: jest.fn(() => ({
-    initPayment: jest.fn(),
-    isLoading: false,
-  })),
-}));
+jest.mock(
+  "@app/(protectedRoutes)/subscription/hooks/useInitSubscriptionPayment",
+  () => ({
+    useInitSubscriptionPayment: jest.fn(() => ({
+      initPayment: jest.fn(),
+      isLoading: false,
+    })),
+  })
+);
 
 const mockUseUnifiedPermissions = useUnifiedPermissions as jest.MockedFunction<
   typeof useUnifiedPermissions
 >;
-const mockUseGetSubscriptionPlans = useGetSubscriptionPlans as jest.MockedFunction<
-  typeof useGetSubscriptionPlans
->;
+const mockUseGetSubscriptionPlans =
+  useGetSubscriptionPlans as jest.MockedFunction<
+    typeof useGetSubscriptionPlans
+  >;
 
-// Helper function to render with QueryClient
 const renderWithQueryClient = (component: React.ReactElement) => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -66,13 +69,13 @@ const renderWithQueryClient = (component: React.ReactElement) => {
   });
 
   return render(
-    <QueryClientProvider client={queryClient}>
-      {component}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{component}</QueryClientProvider>
   );
 };
 
-const createMockPermissions = (overrides: Partial<IUnifiedPermissions> = {}): IUnifiedPermissions => ({
+const createMockPermissions = (
+  overrides: Partial<IUnifiedPermissions> = {}
+): IUnifiedPermissions => ({
   hasRoleLevel: jest.fn(),
   canPerformAction: jest.fn(),
   can: jest.fn(),
@@ -145,10 +148,8 @@ describe("SubscriptionTab", () => {
       id: "sub123",
       cuid: "TEST123",
       suid: "suid123",
-      client: "client123",
       planName: "portfolio",
       status: "active",
-      startDate: "2024-01-15",
       billingInterval: "monthly",
       additionalSeatsCount: 0,
       additionalSeatsCost: 0,
@@ -159,13 +160,12 @@ describe("SubscriptionTab", () => {
       nextBillingDate: "2025-02-15",
       amount: 79,
       paymentMethod: {
-        type: "Visa",
+        brand: "Visa",
         last4: "4242",
-        expiry: "12/2026",
       },
-      createdAt: "2024-01-15T00:00:00Z",
-      updatedAt: "2025-01-15T00:00:00Z",
-      __v: 0,
+      subscriptionId: "",
+      canceledAt: null,
+      pendingDowngradeAt: null,
     },
     isVerified: true,
     accountAdmin: {
@@ -288,12 +288,14 @@ describe("SubscriptionTab", () => {
 
   describe("Access Control", () => {
     it("should show access restricted message for non-super-admins", () => {
-      mockUseUnifiedPermissions.mockReturnValue(createMockPermissions({
-        isSuperAdmin: false,
-        isAdmin: false,
-        isManager: false,
-        currentRole: null,
-      }));
+      mockUseUnifiedPermissions.mockReturnValue(
+        createMockPermissions({
+          isSuperAdmin: false,
+          isAdmin: false,
+          isManager: false,
+          currentRole: null,
+        })
+      );
 
       mockUseGetSubscriptionPlans.mockReturnValue({
         data: mockPlansData,
@@ -304,21 +306,27 @@ describe("SubscriptionTab", () => {
         refetch: jest.fn(),
       });
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       expect(screen.getByText("Access Restricted")).toBeInTheDocument();
       expect(
-        screen.getByText(/Only account owners can manage subscription and billing details/)
+        screen.getByText(
+          /Only account owners can manage subscription and billing details/
+        )
       ).toBeInTheDocument();
     });
 
     it("should show access restricted message when subscription data is missing", () => {
-      mockUseUnifiedPermissions.mockReturnValue(createMockPermissions({
-        isSuperAdmin: true,
-        isAdmin: true,
-        isManager: false,
-        currentRole: 6,
-      }));
+      mockUseUnifiedPermissions.mockReturnValue(
+        createMockPermissions({
+          isSuperAdmin: true,
+          isAdmin: true,
+          isManager: false,
+          currentRole: 6,
+        })
+      );
 
       mockUseGetSubscriptionPlans.mockReturnValue({
         data: mockPlansData,
@@ -329,10 +337,16 @@ describe("SubscriptionTab", () => {
         refetch: jest.fn(),
       });
 
-      const clientWithoutSubscription = { ...mockClientInfo, subscription: undefined };
+      const clientWithoutSubscription = {
+        ...mockClientInfo,
+        subscription: undefined,
+      };
 
       renderWithQueryClient(
-        <SubscriptionTab clientInfo={clientWithoutSubscription} inEditMode={false} />
+        <SubscriptionTab
+          clientInfo={clientWithoutSubscription}
+          inEditMode={false}
+        />
       );
 
       expect(screen.getByText("Access Restricted")).toBeInTheDocument();
@@ -341,12 +355,14 @@ describe("SubscriptionTab", () => {
 
   describe("Loading State", () => {
     it("should show loading state while fetching plans", () => {
-      mockUseUnifiedPermissions.mockReturnValue(createMockPermissions({
-        isSuperAdmin: true,
-        isAdmin: true,
-        isManager: false,
-        currentRole: 6,
-      }));
+      mockUseUnifiedPermissions.mockReturnValue(
+        createMockPermissions({
+          isSuperAdmin: true,
+          isAdmin: true,
+          isManager: false,
+          currentRole: 6,
+        })
+      );
 
       mockUseGetSubscriptionPlans.mockReturnValue({
         data: undefined,
@@ -357,20 +373,26 @@ describe("SubscriptionTab", () => {
         refetch: jest.fn(),
       });
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
-      expect(screen.getAllByText(/Loading subscription plans/)[0]).toBeInTheDocument();
+      expect(
+        screen.getAllByText(/Loading subscription plans/)[0]
+      ).toBeInTheDocument();
     });
   });
 
   describe("Subscription Display", () => {
     beforeEach(() => {
-      mockUseUnifiedPermissions.mockReturnValue(createMockPermissions({
-        isSuperAdmin: true,
-        isAdmin: true,
-        isManager: false,
-        currentRole: 6,
-      }));
+      mockUseUnifiedPermissions.mockReturnValue(
+        createMockPermissions({
+          isSuperAdmin: true,
+          isAdmin: true,
+          isManager: false,
+          currentRole: 6,
+        })
+      );
 
       mockUseGetSubscriptionPlans.mockReturnValue({
         data: mockPlansData,
@@ -383,7 +405,9 @@ describe("SubscriptionTab", () => {
     });
 
     it("should render subscription details for super-admin", async () => {
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         expect(screen.getByText("Subscription & Billing")).toBeInTheDocument();
@@ -392,7 +416,9 @@ describe("SubscriptionTab", () => {
     });
 
     it("should display current plan information", async () => {
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         expect(screen.getByText("PLAN FEATURES")).toBeInTheDocument();
@@ -407,7 +433,9 @@ describe("SubscriptionTab", () => {
     });
 
     it("should display plan features from server data", async () => {
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         expect(screen.getByText("Up to 25 properties")).toBeInTheDocument();
@@ -417,7 +445,9 @@ describe("SubscriptionTab", () => {
     });
 
     it("should display payment method information", async () => {
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Check for last 4 digits of card in the payment method display
@@ -426,7 +456,9 @@ describe("SubscriptionTab", () => {
     });
 
     it("should display change plan section", async () => {
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         expect(screen.getByText("CHANGE PLAN")).toBeInTheDocument();
@@ -437,12 +469,14 @@ describe("SubscriptionTab", () => {
 
   describe("Plan Data Integration", () => {
     beforeEach(() => {
-      mockUseUnifiedPermissions.mockReturnValue(createMockPermissions({
-        isSuperAdmin: true,
-        isAdmin: true,
-        isManager: false,
-        currentRole: 6,
-      }));
+      mockUseUnifiedPermissions.mockReturnValue(
+        createMockPermissions({
+          isSuperAdmin: true,
+          isAdmin: true,
+          isManager: false,
+          currentRole: 6,
+        })
+      );
     });
 
     it("should use data from useGetSubscriptionPlans hook", async () => {
@@ -455,7 +489,9 @@ describe("SubscriptionTab", () => {
         refetch: jest.fn(),
       });
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Should display plans from server data - look for plan selector
@@ -473,7 +509,9 @@ describe("SubscriptionTab", () => {
         refetch: jest.fn(),
       });
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={mockClientInfo} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Should still render with fallback data
@@ -484,12 +522,14 @@ describe("SubscriptionTab", () => {
 
   describe("Seat Management Over-Limit Scenarios", () => {
     beforeEach(() => {
-      mockUseUnifiedPermissions.mockReturnValue(createMockPermissions({
-        isSuperAdmin: true,
-        isAdmin: true,
-        isManager: false,
-        currentRole: 6,
-      }));
+      mockUseUnifiedPermissions.mockReturnValue(
+        createMockPermissions({
+          isSuperAdmin: true,
+          isAdmin: true,
+          isManager: false,
+          currentRole: 6,
+        })
+      );
 
       mockUseGetSubscriptionPlans.mockReturnValue({
         data: mockPlansData,
@@ -510,7 +550,9 @@ describe("SubscriptionTab", () => {
         },
       };
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />
+      );
 
       // The component should render without errors
       await waitFor(() => {
@@ -527,7 +569,9 @@ describe("SubscriptionTab", () => {
         },
       };
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Should show warning about 5 seats over limit
@@ -545,7 +589,9 @@ describe("SubscriptionTab", () => {
         },
       };
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Should show over limit warning
@@ -562,7 +608,9 @@ describe("SubscriptionTab", () => {
         },
       };
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Should display error banner
@@ -581,7 +629,9 @@ describe("SubscriptionTab", () => {
         },
       };
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Check that Team Seat Management section exists
@@ -605,7 +655,9 @@ describe("SubscriptionTab", () => {
         },
       };
 
-      renderWithQueryClient(<SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />);
+      renderWithQueryClient(
+        <SubscriptionTab clientInfo={clientOverLimit} inEditMode={false} />
+      );
 
       await waitFor(() => {
         // Should show the warning emoji and over-limit count
