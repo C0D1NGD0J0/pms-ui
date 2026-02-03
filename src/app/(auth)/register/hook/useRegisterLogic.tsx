@@ -63,7 +63,7 @@ export function useRegisterLogic() {
 
   const form = useForm<ISignupForm, (values: ISignupForm) => ISignupForm>({
     validateInputOnChange: true,
-    initialValues: user2,
+    initialValues: defaultTestUser,
     validate: zodResolver(SignupSchema) as any,
   });
 
