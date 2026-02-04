@@ -23,8 +23,7 @@ describe("LeaseService", () => {
       fees: { monthlyRent: 1500 },
     };
 
-    const mockResponse = {
-      status: 201,
+    const mockData = {
       data: {
         success: true,
         message: "Lease created",
@@ -32,7 +31,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.post.mockResolvedValue(mockResponse);
+    mockedAxios.post.mockResolvedValue(mockData);
 
     const response = await leaseService.createLease("client-123", leaseData);
 
@@ -43,8 +42,8 @@ describe("LeaseService", () => {
         headers: expect.any(Object),
       })
     );
-    expect(response.status).toBe(201);
-    expect(response.data.success).toBe(true);
+    // Status check removed - axios wrapper returns data only
+    expect(response.success).toBe(true);
   });
 
   it("should update an existing lease", async () => {
@@ -52,8 +51,7 @@ describe("LeaseService", () => {
       fees: { monthlyRent: 2000, acceptedPaymentMethod: "credit_card" },
     };
 
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         message: "Lease updated",
@@ -61,7 +59,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.patch.mockResolvedValue(mockResponse);
+    mockedAxios.patch.mockResolvedValue(mockData);
 
     const response = await leaseService.updateLease(
       "client-123",
@@ -76,8 +74,8 @@ describe("LeaseService", () => {
         headers: expect.any(Object),
       })
     );
-    expect(response.status).toBe(200);
-    expect(response.data.success).toBe(true);
+    // Status check removed - axios wrapper returns data only
+    expect(response.success).toBe(true);
   });
 
   it("should handle errors when updating a lease", async () => {
@@ -92,12 +90,11 @@ describe("LeaseService", () => {
   });
 
   it("should fetch leases with filters", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: { success: true, data: [] },
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     await leaseService.getFilteredLeases("client-123", {
       filter: { status: "active" },
@@ -109,12 +106,11 @@ describe("LeaseService", () => {
   });
 
   it("should fetch leases without filters", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: { success: true, data: [] },
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     await leaseService.getFilteredLeases("client-123");
 
@@ -123,8 +119,7 @@ describe("LeaseService", () => {
   });
 
   it("should fetch lease statistics", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         data: {
@@ -136,7 +131,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     const response = await leaseService.getLeaseStats("client-123");
 
@@ -148,15 +143,14 @@ describe("LeaseService", () => {
   });
 
   it("should fetch expiring leases with default days", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: [
         { luid: "lease-1", endDate: "2025-12-01" },
         { luid: "lease-2", endDate: "2025-12-15" },
       ],
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     const response = await leaseService.getExpiringLeases("client-123");
 
@@ -168,12 +162,11 @@ describe("LeaseService", () => {
   });
 
   it("should fetch expiring leases with custom days", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: { success: true, data: [] },
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     await leaseService.getExpiringLeases("client-123", 60);
 
@@ -184,8 +177,7 @@ describe("LeaseService", () => {
   });
 
   it("should fetch leaseable properties without units", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         data: {
@@ -198,7 +190,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     const response = await leaseService.getLeaseableProperties(
       "client-123",
@@ -209,12 +201,11 @@ describe("LeaseService", () => {
       "/api/v1/properties/client-123/leaseable",
       expect.any(Object)
     );
-    expect(response.data.data.items).toHaveLength(2);
+    expect(response.data.items).toHaveLength(2);
   });
 
   it("should fetch leaseable properties with units", async () => {
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         data: {
@@ -230,7 +221,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.get.mockResolvedValue(mockResponse);
+    mockedAxios.get.mockResolvedValue(mockData);
 
     const response = await leaseService.getLeaseableProperties(
       "client-123",
@@ -241,7 +232,7 @@ describe("LeaseService", () => {
       "/api/v1/properties/client-123/leaseable?fetchUnits=true",
       expect.any(Object)
     );
-    expect(response.data.data.items[0].units).toBeDefined();
+    expect(response.data.items[0].units).toBeDefined();
   });
 
   it("should manually activate a lease", async () => {
@@ -249,8 +240,7 @@ describe("LeaseService", () => {
       notes: "Signed in person on 2025-12-10",
     };
 
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         message: "Lease activated successfully",
@@ -261,7 +251,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.post.mockResolvedValue(mockResponse);
+    mockedAxios.post.mockResolvedValue(mockData);
 
     const response = await leaseService.manuallyActivateLease(
       "client-123",
@@ -274,9 +264,9 @@ describe("LeaseService", () => {
       activationData,
       expect.any(Object)
     );
-    expect(response.status).toBe(200);
-    expect(response.data.success).toBe(true);
-    expect(response.data.data.status).toBe("active");
+    // Status check removed - axios wrapper returns data only
+    expect(response.success).toBe(true);
+    expect(response.data.status).toBe("active");
   });
 
   it("should handle errors when manually activating a lease", async () => {
@@ -297,8 +287,7 @@ describe("LeaseService", () => {
       notes: "Full security deposit refund",
     };
 
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         message: "Lease terminated successfully",
@@ -310,7 +299,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.post.mockResolvedValue(mockResponse);
+    mockedAxios.post.mockResolvedValue(mockData);
 
     const response = await leaseService.terminateLease(
       "client-123",
@@ -323,9 +312,9 @@ describe("LeaseService", () => {
       terminationData,
       expect.any(Object)
     );
-    expect(response.status).toBe(200);
-    expect(response.data.success).toBe(true);
-    expect(response.data.data.status).toBe("terminated");
+    // Status check removed - axios wrapper returns data only
+    expect(response.success).toBe(true);
+    expect(response.data.status).toBe("terminated");
   });
 
   it("should terminate a lease without refund amount", async () => {
@@ -335,8 +324,7 @@ describe("LeaseService", () => {
       notes: "No refund due to damages",
     };
 
-    const mockResponse = {
-      status: 200,
+    const mockData = {
       data: {
         success: true,
         message: "Lease terminated successfully",
@@ -347,7 +335,7 @@ describe("LeaseService", () => {
       },
     };
 
-    mockedAxios.post.mockResolvedValue(mockResponse);
+    mockedAxios.post.mockResolvedValue(mockData);
 
     const response = await leaseService.terminateLease(
       "client-123",
@@ -360,7 +348,7 @@ describe("LeaseService", () => {
       terminationData,
       expect.any(Object)
     );
-    expect(response.data.success).toBe(true);
+    expect(response.success).toBe(true);
   });
 
   it("should handle errors when terminating a lease", async () => {

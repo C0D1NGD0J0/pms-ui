@@ -17,25 +17,22 @@ describe("AuthService", () => {
         rememberMe: false,
       };
 
-      const mockResponse = {
-        status: 200,
-        data: {
-          success: true,
-          msg: "Login successful",
-          accounts: [
-            {
-              cuid: "client-123",
-              clientDisplayName: "Test Company",
-            },
-          ],
-          activeAccount: {
+      const mockData = {
+        success: true,
+        msg: "Login successful",
+        accounts: [
+          {
             cuid: "client-123",
             clientDisplayName: "Test Company",
           },
+        ],
+        activeAccount: {
+          cuid: "client-123",
+          clientDisplayName: "Test Company",
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await authService.login(loginData);
 
@@ -43,10 +40,9 @@ describe("AuthService", () => {
         "/api/v1/auth/login",
         loginData
       );
-      expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
-      expect(response.data.accounts).toHaveLength(1);
-      expect(response.data.activeAccount).toEqual({
+      expect(response.msg).toBe("Login successful");
+      expect(response.accounts).toHaveLength(1);
+      expect(response.activeAccount).toEqual({
         cuid: "client-123",
         clientDisplayName: "Test Company",
       });
@@ -59,26 +55,23 @@ describe("AuthService", () => {
         rememberMe: false,
       };
 
-      const mockResponse = {
-        status: 200,
-        data: {
-          success: true,
-          msg: "Multiple accounts found",
-          accounts: [
-            { cuid: "client-123", clientDisplayName: "Company A" },
-            { cuid: "client-456", clientDisplayName: "Company B" },
-            { cuid: "client-789", clientDisplayName: "Company C" },
-          ],
-          activeAccount: null,
-        },
+      const mockData = {
+        success: true,
+        msg: "Multiple accounts found",
+        accounts: [
+          { cuid: "client-123", clientDisplayName: "Company A" },
+          { cuid: "client-456", clientDisplayName: "Company B" },
+          { cuid: "client-789", clientDisplayName: "Company C" },
+        ],
+        activeAccount: null,
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await authService.login(loginData);
 
-      expect(response.data.accounts).toHaveLength(3);
-      expect(response.data.activeAccount).toBeNull();
+      expect(response.accounts).toHaveLength(3);
+      expect(response.activeAccount).toBeNull();
     });
 
     it("should throw error for invalid credentials", async () => {
@@ -96,36 +89,33 @@ describe("AuthService", () => {
 
   describe("currentuser", () => {
     it("should fetch current user data for valid cuid", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
+        success: true,
         data: {
-          success: true,
-          data: {
-            user: {
-              uid: "user-123",
-              email: "single@example.com",
-              firstName: "Test",
-              lastName: "User",
-              role: "admin",
-            },
-            client: {
-              cuid: "client-123",
-              companyName: "Test Company",
-            },
-            permissions: ["read:users", "create:properties"],
+          user: {
+            uid: "user-123",
+            email: "single@example.com",
+            firstName: "Test",
+            lastName: "User",
+            role: "admin",
           },
+          client: {
+            cuid: "client-123",
+            companyName: "Test Company",
+          },
+          permissions: ["read:users", "create:properties"],
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response = await authService.currentuser("client-123");
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         "/api/v1/auth/client-123/me"
       );
-      expect(response?.status).toBe(200);
-      expect(response?.data.data.user).toMatchObject({
+      expect(response?.success).toBe(true);
+      expect(response?.data.user).toMatchObject({
         uid: "user-123",
         email: "single@example.com",
         role: "admin",
@@ -133,36 +123,33 @@ describe("AuthService", () => {
     });
 
     it("should fetch different user data when switching accounts", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
+        success: true,
         data: {
-          success: true,
-          data: {
-            user: {
-              uid: "user-456",
-              email: "multi@example.com",
-              firstName: "Multi",
-              lastName: "Account",
-              role: "manager",
-            },
-            client: {
-              cuid: "client-456",
-              companyName: "Company B",
-            },
-            permissions: ["read:users"],
+          user: {
+            uid: "user-456",
+            email: "multi@example.com",
+            firstName: "Multi",
+            lastName: "Account",
+            role: "manager",
           },
+          client: {
+            cuid: "client-456",
+            companyName: "Company B",
+          },
+          permissions: ["read:users"],
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response = await authService.currentuser("client-456");
 
       expect(mockedAxios.get).toHaveBeenCalledWith(
         "/api/v1/auth/client-456/me"
       );
-      expect(response?.data.data.user.role).toBe("manager");
-      expect(response?.data.data.client.companyName).toBe("Company B");
+      expect(response?.data.user.role).toBe("manager");
+      expect(response?.data.client.companyName).toBe("Company B");
     });
 
     it("should return undefined for missing cuid", async () => {
@@ -175,23 +162,20 @@ describe("AuthService", () => {
 
   describe("logout", () => {
     it("should successfully logout with valid cuid", async () => {
-      const mockResponse = {
-        status: 200,
-        data: {
-          success: true,
-          message: "Logged out successfully",
-        },
+      const mockData = {
+        success: true,
+        message: "Logged out successfully",
       };
 
-      mockedAxios.delete.mockResolvedValue(mockResponse);
+      mockedAxios.delete.mockResolvedValue(mockData);
 
       const response = await authService.logout("client-123");
 
       expect(mockedAxios.delete).toHaveBeenCalledWith(
         "/api/v1/auth/client-123/logout"
       );
-      expect(response?.status).toBe(200);
-      expect(response?.data.message).toBe("Logged out successfully");
+      expect(response?.success).toBe(true);
+      expect(response?.message).toBe("Logged out successfully");
     });
 
     it("should return undefined for missing cuid", async () => {
@@ -204,23 +188,19 @@ describe("AuthService", () => {
 
   describe("refreshToken", () => {
     it("should successfully refresh token", async () => {
-      const mockResponse = {
-        status: 200,
-        data: {
-          success: true,
-          message: "Token refreshed",
-        },
+      const mockData = {
+        success: true,
+        message: "Token refreshed",
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await authService.refreshToken();
 
       expect(mockedAxios.post).toHaveBeenCalledWith(
         "/api/v1/auth/refresh_token"
       );
-      expect(response.status).toBe(200);
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
   });
 });

@@ -24,8 +24,7 @@ describe("PropertyService", () => {
         city: "New York",
       };
 
-      const mockResponse = {
-        status: 201,
+      const mockData = {
         data: {
           success: true,
           message: "Property created",
@@ -33,7 +32,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.createProperty(
         "client-123",
@@ -47,8 +46,8 @@ describe("PropertyService", () => {
           headers: expect.any(Object),
         })
       );
-      expect(response.status).toBe(201);
-      expect(response.data.success).toBe(true);
+      // Status check removed - axios wrapper returns data only
+      expect(response.success).toBe(true);
     });
 
     it("should throw error on failure", async () => {
@@ -62,8 +61,7 @@ describe("PropertyService", () => {
 
   describe("getClientProperties", () => {
     it("should fetch properties with pagination", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           data: [
@@ -74,7 +72,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response = await propertyService.getClientProperties("client-123", {
         page: 1,
@@ -92,12 +90,11 @@ describe("PropertyService", () => {
     });
 
     it("should include filter params in query string", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: { success: true, data: [], pagination: {} },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       await propertyService.getClientProperties("client-123", {
         pagination: { page: 1, limit: 10 },
@@ -116,8 +113,7 @@ describe("PropertyService", () => {
 
   describe("getClientProperty", () => {
     it("should fetch a single property", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           data: {
@@ -128,7 +124,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response = await propertyService.getClientProperty(
         "client-123",
@@ -140,7 +136,7 @@ describe("PropertyService", () => {
         expect.any(Object)
       );
       expect(response.success).toBe(true);
-      expect(response.data.pid).toBe("prop-123");
+      expect(response.pid).toBe("prop-123");
     });
   });
 
@@ -148,8 +144,7 @@ describe("PropertyService", () => {
     it("should update a property", async () => {
       const updateData = { street: "456 Oak Ave" };
 
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Property updated",
@@ -157,7 +152,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.patch.mockResolvedValue(mockResponse);
+      mockedAxios.patch.mockResolvedValue(mockData);
 
       const response = await propertyService.updateClientProperty(
         "client-123",
@@ -170,21 +165,20 @@ describe("PropertyService", () => {
         updateData,
         expect.any(Object)
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
   });
 
   describe("deleteClientProperty", () => {
     it("should delete properties", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Properties deleted",
         },
       };
 
-      mockedAxios.patch.mockResolvedValue(mockResponse);
+      mockedAxios.patch.mockResolvedValue(mockData);
 
       const response = await propertyService.deleteClientProperty(
         "client-123",
@@ -196,7 +190,7 @@ describe("PropertyService", () => {
         { pids: ["prop-123", "prop-456"] },
         expect.any(Object)
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
   });
 
@@ -206,12 +200,11 @@ describe("PropertyService", () => {
         type: "text/csv",
       });
 
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: { success: true, message: "CSV is valid" },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.validatePropertiesCSV(
         "client-123",
@@ -225,7 +218,7 @@ describe("PropertyService", () => {
           headers: { "Content-Type": "multipart/form-data" },
         })
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
 
     it("should import properties from CSV", async () => {
@@ -233,8 +226,7 @@ describe("PropertyService", () => {
         type: "text/csv",
       });
 
-      const mockResponse = {
-        status: 201,
+      const mockData = {
         data: {
           success: true,
           message: "Properties imported",
@@ -242,7 +234,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.addMultipleProperties(
         "client-123",
@@ -256,14 +248,13 @@ describe("PropertyService", () => {
           headers: { "Content-Type": "multipart/form-data" },
         })
       );
-      expect(response.data.data.imported).toBe(5);
+      expect(response.data.imported).toBe(5);
     });
   });
 
   describe("getPendingApprovals", () => {
     it("should fetch pending approval properties with pagination", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           data: [
@@ -274,7 +265,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response = await propertyService.getPendingApprovals("client-123", {
         page: 1,
@@ -292,12 +283,11 @@ describe("PropertyService", () => {
     });
 
     it("should include sort parameters in query string", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: { success: true, data: [], pagination: {} },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       await propertyService.getPendingApprovals("client-123", {
         pagination: {
@@ -320,15 +310,14 @@ describe("PropertyService", () => {
 
   describe("approveProperty", () => {
     it("should approve a property without notes", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Property approved",
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.approveProperty(
         "client-123",
@@ -340,19 +329,18 @@ describe("PropertyService", () => {
         { notes: undefined },
         expect.any(Object)
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
 
     it("should approve a property with notes", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Property approved",
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       await propertyService.approveProperty(
         "client-123",
@@ -370,15 +358,14 @@ describe("PropertyService", () => {
 
   describe("rejectProperty", () => {
     it("should reject a property with reason", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Property rejected",
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.rejectProperty(
         "client-123",
@@ -391,7 +378,7 @@ describe("PropertyService", () => {
         { reason: "Missing required documents" },
         expect.any(Object)
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
 
     it("should throw error when rejection fails", async () => {
@@ -405,8 +392,7 @@ describe("PropertyService", () => {
 
   describe("bulkApproveProperties", () => {
     it("should approve multiple properties", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Properties approved",
@@ -414,7 +400,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.bulkApproveProperties(
         "client-123",
@@ -426,14 +412,13 @@ describe("PropertyService", () => {
         { propertyIds: ["prop-1", "prop-2", "prop-3"] },
         expect.any(Object)
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
   });
 
   describe("bulkRejectProperties", () => {
     it("should reject multiple properties with reason", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           message: "Properties rejected",
@@ -441,7 +426,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.post.mockResolvedValue(mockResponse);
+      mockedAxios.post.mockResolvedValue(mockData);
 
       const response = await propertyService.bulkRejectProperties(
         "client-123",
@@ -454,14 +439,13 @@ describe("PropertyService", () => {
         { propertyIds: ["prop-1", "prop-2"], reason: "Incomplete information" },
         expect.any(Object)
       );
-      expect(response.data.success).toBe(true);
+      expect(response.success).toBe(true);
     });
   });
 
   describe("getPropertyFormMetaData", () => {
     it("should fetch form metadata for specific form type", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           data: {
@@ -471,7 +455,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response =
         await propertyService.getPropertyFormMetaData("residential");
@@ -486,8 +470,7 @@ describe("PropertyService", () => {
 
   describe("getAllStaticData", () => {
     it("should fetch all static property data", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: {
           success: true,
           data: {
@@ -497,7 +480,7 @@ describe("PropertyService", () => {
         },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       const response = await propertyService.getAllStaticData();
 
@@ -511,12 +494,11 @@ describe("PropertyService", () => {
 
   describe("buildQueryString", () => {
     it("should build query string with all filter parameters", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: { success: true, data: [], pagination: {} },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       await propertyService.getClientProperties("client-123", {
         pagination: { page: 1, limit: 10 },
@@ -545,12 +527,11 @@ describe("PropertyService", () => {
     });
 
     it("should omit undefined and null filter values", async () => {
-      const mockResponse = {
-        status: 200,
+      const mockData = {
         data: { success: true, data: [], pagination: {} },
       };
 
-      mockedAxios.get.mockResolvedValue(mockResponse);
+      mockedAxios.get.mockResolvedValue(mockData);
 
       await propertyService.getClientProperties("client-123", {
         pagination: { page: 1, limit: 10 },
