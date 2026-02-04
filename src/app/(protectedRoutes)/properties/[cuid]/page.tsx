@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { Link } from "@components/Link";
 import { Table } from "@components/Table";
 import { useAuth } from "@store/auth.store";
 import { Button } from "@components/FormElements";
@@ -9,9 +9,11 @@ import { CsvUploadModal } from "@properties/components";
 import { useGetAllProperties } from "@properties/hooks";
 import { PanelsWrapper, Panel } from "@components/Panel";
 import { PropertyChangesModal } from "@components/Property";
+import { UsageIndicator } from "@components/UsageIndicator";
+import { withClientAccess } from "@src/hooks/permissionHOCs";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 
-export default function Properties() {
+function Properties() {
   const { client } = useAuth();
   const permissions = useUnifiedPermissions();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
@@ -150,20 +152,33 @@ export default function Properties() {
           <>
             {permissions.isManagerOrAbove && (
               <Button
-                label="Import CSV"
+                label="Import Properties via CSV"
                 onClick={openCsvModal}
                 icon={<i className="bx bx-upload"></i>}
                 className="btn btn-secondary mr-2"
               />
             )}
 
-            <Link href="/properties/new" className="btn btn-primary">
+            <Link
+              href={`/properties/${client.cuid}/new`}
+              className="btn btn-primary"
+              requiresCapacity="property"
+              trackingData={{
+                event: "add_property_click",
+                category: "property",
+                label: "properties_list_page",
+              }}
+            >
               <i className="bx bx-plus-circle"></i>
               Add New Property
             </Link>
           </>
         }
       />
+
+      <div style={{ marginBottom: "1.5rem" }}>
+        <UsageIndicator resource="property" />
+      </div>
 
       <div className="flex-row">
         <PanelsWrapper>
@@ -221,3 +236,5 @@ export default function Properties() {
     </div>
   );
 }
+
+export default withClientAccess(Properties);

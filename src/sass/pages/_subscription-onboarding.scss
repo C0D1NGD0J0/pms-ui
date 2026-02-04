@@ -1,0 +1,352 @@
+@use "../abstract/index" as *;
+
+// Full-Screen Onboarding Overlay
+.onboarding-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: hslaGen($off-white-color);
+  overflow-y: auto;
+  padding: 2rem 1.5rem;
+}
+
+.onboarding-container {
+  max-width: 120rem;
+  margin: 0 auto;
+  position: relative;
+}
+
+// Close Button
+.onboarding-close-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: hslaGen($white-color);
+  border: none;
+  width: 4rem;
+  height: 4rem;
+  @include border-radius(50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  @include box-shadow(0 0.4rem 1rem hslaGen($black-color, 0.15));
+  @include transition(all);
+  z-index: 10;
+
+  &:hover {
+    background: hslaGen($danger-color);
+    transform: scale(1.1);
+
+    i {
+      color: hslaGen($white-color);
+    }
+  }
+
+  i {
+    font-size: 2.4rem;
+    color: hslaGen($grey-color);
+    @include transition(color);
+  }
+}
+
+// Alert Banner
+.onboarding-banner {
+  margin-bottom: 2rem;
+}
+
+.onboarding-countdown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.4rem;
+
+  i {
+    font-size: 1.8rem;
+  }
+}
+
+// Content Layout
+.onboarding-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  max-width: 75rem;
+  min-height: 65rem;
+  margin: 0 auto;
+  background: hslaGen($white-color);
+  @include border-radius(1.2rem);
+  @include box-shadow(0 0.5rem 3rem hslaGen($black-color, 0.08));
+  overflow: hidden;
+
+  @media (max-width: 992px) {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+}
+
+// Left Side: Visual/Illustration
+.onboarding-content__visual {
+  background: linear-gradient(135deg, hslaGen($primary-color, 0.05), hslaGen($secondary-color, 0.05));
+  padding: 3.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 992px) {
+    padding: 3rem 2rem;
+  }
+}
+
+.onboarding-visual-card {
+  max-width: 100%;
+  text-align: center;
+
+  &__icon {
+    width: 7rem;
+    height: 7rem;
+    margin: 0 auto 1.8rem;
+    @include border-radius(50%);
+    background: linear-gradient(135deg, hslaGen($primary-color), hslaGen($secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include box-shadow(0 1rem 3rem hslaGen($primary-color, 0.3));
+
+    i {
+      font-size: 3.5rem;
+      color: hslaGen($white-color);
+    }
+  }
+
+  &__title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: hslaGen($dark-grey-color);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  &__description {
+    font-size: 1.4rem;
+    color: hslaGen($grey-color);
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+  }
+}
+
+.onboarding-features-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.2rem;
+    background: hslaGen($white-color);
+    @include border-radius(0.8rem);
+    @include box-shadow(0 0.2rem 0.8rem hslaGen($black-color, 0.05));
+
+    i {
+      font-size: 2.2rem;
+      color: hslaGen($success-color);
+      flex-shrink: 0;
+    }
+
+    span {
+      font-size: 1.4rem;
+      color: hslaGen($dark-grey-color);
+      font-weight: 500;
+    }
+  }
+}
+
+// Right Side: Payment Box
+.onboarding-content__payment {
+  padding: 3.5rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @media (max-width: 992px) {
+    padding: 3rem 2rem;
+  }
+}
+
+.onboarding-payment-box {
+  width: 100%;
+}
+
+// Plan Selector
+.onboarding-plan-selector {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+
+  &__option {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 1rem 0.8rem;
+    background: hslaGen($off-white-color);
+    border: 0.2rem solid hslaGen($grey-color, 0.2);
+    @include border-radius(0.8rem);
+    cursor: pointer;
+    @include transition(all);
+
+    &:hover {
+      border-color: hslaGen($primary-color, 0.4);
+      background: hslaGen($primary-color, 0.03);
+    }
+
+    &--active {
+      background: hslaGen($primary-color, 0.1);
+      border-color: hslaGen($primary-color);
+
+      .onboarding-plan-selector__name {
+        color: hslaGen($primary-color);
+        font-weight: 700;
+      }
+    }
+  }
+
+  &__name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: hslaGen($dark-grey-color);
+    @include transition(all);
+  }
+
+  &__price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: hslaGen($grey-color);
+  }
+}
+
+.onboarding-payment-box {
+  &__header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  &__badge {
+    display: inline-block;
+    background: hslaGen($primary-color, 0.1);
+    color: hslaGen($primary-color);
+    padding: 0.5rem 1.3rem;
+    @include border-radius(2rem);
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+  }
+
+  &__price {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+
+  &__amount {
+    font-size: 4.5rem;
+    font-weight: 700;
+    color: hslaGen($dark-grey-color);
+    line-height: 1;
+  }
+
+  &__period {
+    font-size: 1.6rem;
+    color: hslaGen($grey-color);
+    font-weight: 500;
+  }
+
+  &__summary {
+    background: hslaGen($off-white-color);
+    @include border-radius(0.8rem);
+    padding: 1.8rem;
+    margin-bottom: 2rem;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem 0;
+    font-size: 1.4rem;
+    color: hslaGen($grey-color);
+
+    &:not(:last-child) {
+      border-bottom: 0.1rem solid hslaGen($grey-color, 0.15);
+    }
+
+    &--total {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: hslaGen($dark-grey-color);
+      padding-top: 1.2rem;
+    }
+  }
+
+  &__cta {
+    margin-bottom: 1.2rem;
+
+    i {
+      margin-right: 0.8rem;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    font-size: 1.25rem;
+    color: hslaGen($grey-color);
+
+    i {
+      font-size: 1.5rem;
+      color: hslaGen($success-color);
+    }
+  }
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+  .onboarding-overlay {
+    padding: 1.5rem 1rem;
+  }
+
+  .onboarding-features-card,
+  .onboarding-payment-card__body {
+    padding: 1.5rem;
+  }
+
+  .onboarding-payment-card__header {
+    padding: 1.5rem;
+  }
+
+  .onboarding-card__title {
+    font-size: 1.6rem;
+  }
+
+  .onboarding-payment-card__plan {
+    font-size: 2rem;
+  }
+
+  .onboarding-payment-card__price strong {
+    font-size: 2.5rem;
+  }
+
+  .onboarding-help__links {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+}

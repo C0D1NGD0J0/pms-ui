@@ -11,8 +11,17 @@ export default function Register() {
     currentStep,
     nextStep,
     prevStep,
+    accountType,
+    goToPlanSelection,
+    goToAccountTypeSelection,
+    handleSelectAccountType,
     handleOnChange,
     handleSubmit,
+    selectedPlan,
+    handleSelectPlan,
+    plansData,
+    isLoadingPlans,
+    isPlansError,
   } = useRegisterLogic();
 
   return (
@@ -22,8 +31,17 @@ export default function Register() {
       currentStep={currentStep}
       nextStep={nextStep}
       prevStep={prevStep}
+      accountType={accountType}
+      goToPlanSelection={goToPlanSelection}
+      goToAccountTypeSelection={goToAccountTypeSelection}
+      handleSelectAccountType={handleSelectAccountType}
       handleOnChange={handleOnChange}
       handleSubmit={handleSubmit}
+      selectedPlan={selectedPlan}
+      handleSelectPlan={handleSelectPlan}
+      plansData={plansData}
+      isLoadingPlans={isLoadingPlans}
+      isPlansError={isPlansError}
     />
   );
 }

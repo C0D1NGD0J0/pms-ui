@@ -5,6 +5,7 @@
 
 // Unified Role Type (consolidating IUserRoleType and IUserRole)
 export type UserRole =
+  | "super-admin"
   | "admin"
   | "tenant"
   | "manager"

@@ -1,13 +1,20 @@
 "use client";
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
+import { useGeolocation } from "@hooks/useGeolocation";
+import { useNotification } from "@hooks/useNotification";
 import { ISignupForm } from "@interfaces/auth.interface";
-import { SIGNUP_ACCOUNT_TYPE_OPTIONS, ACCOUNT_TYPES } from "@utils/constants";
-import { FloatingLabelInput, CustomDropdown } from "@components/FormElements";
+import {
+  PasswordStrengthIndicator,
+  FieldActionButton,
+  AuthIconInput,
+} from "@components/FormElements";
 
 export default function UserInfo({
   formContext,
   onChange,
+  onChangePlan,
+  selectedPlan,
 }: {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement> | string,
@@ -17,120 +24,142 @@ export default function UserInfo({
     ISignupForm,
     (values: ISignupForm) => ISignupForm
   >;
+  onChangePlan?: () => void;
+  selectedPlan?: string | null;
 }) {
+  const { detectLocation, isDetecting } = useGeolocation();
+  const { message } = useNotification();
+
+  const handleDetectLocation = async () => {
+    try {
+      const location = await detectLocation();
+      onChange(location, "location");
+    } catch (error) {
+      message.error(
+        error instanceof Error
+          ? error.message
+          : "Could not detect location. Please enter manually."
+      );
+    }
+  };
+
   return (
     <>
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="firstName"
+      <div className="auth-form-grid">
+        <AuthIconInput
+          label="First Name"
+          type="text"
+          icon="bx-user"
+          placeholder="Enter first name"
           name="firstName"
-          label="First name"
-          onChange={onChange}
           value={formContext.values.firstName}
-          errorMsg={formContext.errors.firstName}
+          onChange={onChange}
+          error={formContext.errors.firstName as string}
         />
-        <FloatingLabelInput
-          required
-          id="lastName"
+        <AuthIconInput
+          label="Last Name"
+          type="text"
+          icon="bx-user"
+          placeholder="Enter last name"
           name="lastName"
-          label="Last name"
-          onChange={onChange}
           value={formContext.values.lastName}
-          errorMsg={formContext.errors.lastName}
+          onChange={onChange}
+          error={formContext.errors.lastName as string}
         />
       </div>
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="email"
-          type="email"
-          name="email"
-          label="Email"
-          onChange={onChange}
-          value={formContext.values.email}
-          errorMsg={formContext.errors.email}
-        />
-      </div>
+      <AuthIconInput
+        label="Email Address"
+        type="email"
+        icon="bx-envelope"
+        placeholder="Enter your email"
+        name="email"
+        value={formContext.values.email}
+        onChange={onChange}
+        error={formContext.errors.email as string}
+        autoComplete="email"
+      />
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="displayName"
-          name="displayName"
-          onChange={onChange}
-          label="Display name"
-          value={formContext.values.displayName}
-          errorMsg={formContext.errors.displayName}
-        />
-        <FloatingLabelInput
-          required
-          id="location"
-          name="location"
-          onChange={onChange}
+      <AuthIconInput
+        label="Phone Number"
+        type="tel"
+        icon="bx-phone"
+        placeholder="Enter phone number"
+        name="phoneNumber"
+        value={formContext.values.phoneNumber}
+        onChange={onChange}
+        error={formContext.errors.phoneNumber as string}
+        autoComplete="tel"
+      />
+
+      <div className="auth-field-with-action">
+        <AuthIconInput
           label="Location"
+          type="text"
+          icon="bx-map"
+          placeholder="City, State"
+          name="location"
           value={formContext.values.location}
-          errorMsg={formContext.errors.location}
-        />
-      </div>
-
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="phoneNumber"
-          name="phoneNumber"
           onChange={onChange}
-          label="Phone number"
-          value={formContext.values.phoneNumber}
-          errorMsg={formContext.errors.phoneNumber}
+          error={formContext.errors.location as string}
+        />
+        <FieldActionButton
+          onClick={handleDetectLocation}
+          disabled={isDetecting}
+          icon={isDetecting ? "bx-loader bx-spin" : "bx-current-location"}
+          label={isDetecting ? "Detecting..." : "Detect"}
         />
       </div>
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          required
-          id="password"
-          name="password"
-          type="password"
-          label="Password"
-          onChange={onChange}
-          value={formContext.values.password}
-          errorMsg={formContext.errors.password}
+      <div className="auth-field-with-action">
+        <AuthIconInput
+          label="Account Type"
+          type="text"
+          icon="bx-briefcase"
+          placeholder="Select a plan"
+          name="accountType"
+          value={
+            selectedPlan
+              ? selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)
+              : ""
+          }
+          onChange={() => {}}
+          disabled={true}
+          error={
+            formContext.errors.accountType
+              ? String(formContext.errors.accountType)
+              : undefined
+          }
         />
-
-        <FloatingLabelInput
-          required
-          id="cpassword"
-          type="password"
-          name="cpassword"
-          onChange={onChange}
-          label="Confirm password"
-          value={formContext.values.cpassword}
-          errorMsg={formContext.errors.cpassword}
-        />
+        {onChangePlan && (
+          <FieldActionButton onClick={onChangePlan} label="Change Plan" />
+        )}
       </div>
 
-      <div className="form-fields">
-        <CustomDropdown
-          id="accountType"
-          placeholder="Acount type"
-          errorMsg={formContext.errors.accountType}
-          value={formContext.values.accountType.planName}
-          onChange={(v) => {
-            const acctType =
-              v === ACCOUNT_TYPES.CORPORATE
-                ? ACCOUNT_TYPES.CORPORATE
-                : ACCOUNT_TYPES.PERSONAL;
-            formContext.setFieldValue("accountType", {
-              planId: acctType,
-              planName: acctType,
-              isCorporate: acctType === ACCOUNT_TYPES.CORPORATE,
-            });
-          }}
-          options={SIGNUP_ACCOUNT_TYPE_OPTIONS}
-        />
-      </div>
+      <AuthIconInput
+        label="Password"
+        type="password"
+        icon="bx-lock-alt"
+        placeholder="Create a password"
+        name="password"
+        value={formContext.values.password}
+        onChange={onChange}
+        error={formContext.errors.password as string}
+        autoComplete="new-password"
+      />
+      <PasswordStrengthIndicator password={formContext.values.password} />
+
+      <AuthIconInput
+        label="Confirm Password"
+        type="password"
+        icon="bx-lock-alt"
+        placeholder="Confirm your password"
+        name="cpassword"
+        value={formContext.values.cpassword}
+        onChange={onChange}
+        error={formContext.errors.cpassword as string}
+        autoComplete="new-password"
+      />
     </>
   );
 }

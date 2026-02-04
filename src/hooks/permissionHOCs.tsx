@@ -9,6 +9,7 @@ import { useAuth } from "@store/auth.store";
 import { UserRole } from "@utils/permissions";
 import React, { ComponentType, use } from "react";
 
+import { useNotification } from "./useNotification";
 import { useUnifiedPermissions } from "./useUnifiedPermissions";
 
 // ============================================================================
@@ -111,7 +112,6 @@ export const withPermissionCheck = <P extends object>(
       }
     }
 
-    // Check multiple permissions
     if (options.permissions) {
       const { can, canAll, canAny } = options.permissions;
 
@@ -152,7 +152,6 @@ export const withPermissionCheck = <P extends object>(
       }
     }
 
-    // Check field-level permissions
     if (options.field) {
       const isDisabled = permissions.isFieldDisabled(
         options.field,
@@ -164,7 +163,6 @@ export const withPermissionCheck = <P extends object>(
       }
     }
 
-    // Check action-level permissions
     if (options.action) {
       const canPerformAction = permissions.canPerformAction(
         options.action,
@@ -183,7 +181,6 @@ export const withPermissionCheck = <P extends object>(
       }
     }
 
-    // All checks passed
     return <Component {...props} />;
   };
 
@@ -242,31 +239,20 @@ export const withClientAccess = <
     const { params } = props;
     const { cuid: urlCuid } = use(params);
     const { client } = useAuth();
+    const { openNotification } = useNotification();
 
-    const paramKey = options?.paramKey || "cuid";
-    const redirectPath = options?.redirectTo || "/dashboard";
+    const redirectPath = options?.redirectTo || "/not-found";
     const showError = options?.showError || false;
     const errorMessage =
-      options?.errorMessage ||
-      "You do not have access to this client's resources.";
+      options?.errorMessage || "You do not have access to this resources.";
 
-    // Verify user belongs to the client they're trying to access
     if (!client?.cuid || client.cuid !== urlCuid) {
-      // Log unauthorized access attempt
-      console.warn(
-        `Unauthorized access attempt: User client=${client?.cuid}, URL ${paramKey}=${urlCuid}`
-      );
-
       if (showError) {
-        // TODO: Show toast/notification with errorMessage
-        console.error(errorMessage);
+        openNotification("error", "Access Denied", errorMessage);
       }
-
-      // Redirect to safe location
       redirect(redirectPath);
     }
 
-    // Access granted - user belongs to this client
     return <Component {...props} />;
   };
 

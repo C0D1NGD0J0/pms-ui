@@ -7,8 +7,8 @@ import { clientService } from "@services/client";
 import { IClient } from "@interfaces/client.interface";
 import { zodResolver } from "mantine-form-zod-resolver";
 import { useNotification } from "@hooks/useNotification";
-import { useCallback, useEffect, useState, useRef } from "react";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import {
   UpdateClientDetailsFormData,
   updateClientDetailsSchema,
@@ -154,6 +154,66 @@ export const useClientForm = ({ clientData, cuid }: UseClientFormProps) => {
     [form]
   );
 
+  // Define which fields belong to which tab
+  const tabFields = useMemo(
+    () => ({
+      profile: ["displayName"],
+      identification: [
+        "identification.taxId",
+        "identification.ssn",
+        "identification.businessLicenseNumber",
+        "identification.vatNumber",
+      ],
+      company: [
+        "companyProfile.name",
+        "companyProfile.industry",
+        "companyProfile.size",
+        "companyProfile.website",
+        "companyProfile.registrationNumber",
+        "companyProfile.description",
+      ],
+      preferences: [
+        "settings.language",
+        "settings.timezone",
+        "settings.currency",
+        "settings.dateFormat",
+        "settings.notifications.email",
+        "settings.notifications.sms",
+        "settings.notifications.push",
+      ],
+    }),
+    []
+  );
+
+  // Check if a specific tab has validation errors
+  const hasTabErrors = useCallback(
+    (tabId: string): boolean => {
+      const relevantFields = tabFields[tabId as keyof typeof tabFields] || [];
+
+      return relevantFields.some((field) => {
+        // Check if field has errors in form.errors
+        if (form.errors[field as keyof typeof form.errors]) {
+          return true;
+        }
+
+        // Handle nested field paths (e.g., "identification.taxId")
+        if (field.includes(".")) {
+          const parts = field.split(".");
+          let errorObj: any = form.errors;
+
+          for (const part of parts) {
+            if (!errorObj || typeof errorObj !== "object") return false;
+            errorObj = errorObj[part];
+            if (errorObj && typeof errorObj === "string") return true;
+          }
+        }
+
+        return false;
+      });
+    },
+    [form.errors, tabFields]
+  );
+
   const saveStatus = {
     hasUnsavedChanges,
     isAutoSaving: autoSaveMutation.isPending,
@@ -165,6 +225,7 @@ export const useClientForm = ({ clientData, cuid }: UseClientFormProps) => {
   return {
     form,
     saveStatus,
+    hasTabErrors,
     revertChanges,
     getFieldStatus,
     triggerAutoSave,

@@ -78,7 +78,7 @@ describe("errorHandler", () => {
 
       expect(result).toEqual({
         success: false,
-        message: "An unexpected error occurred",
+        message: "An unexpected error occurred. Please try again.",
         type: "unknown",
       });
     });

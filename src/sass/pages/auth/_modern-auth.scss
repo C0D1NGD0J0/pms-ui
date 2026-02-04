@@ -1,0 +1,776 @@
+@use "../../abstract/index" as *;
+
+// Modern Auth Layout Styles
+.auth-wrapper {
+  display: flex;
+  flex-direction: row;
+  min-height: 100vh;
+  width: 100%;
+}
+
+// Brand Panel (Left Side)
+.auth-brand-panel {
+  position: relative;
+  display: flex;
+  flex: 1;
+  @include auth-brand-gradient;
+  color: hslaGen($white-color);
+  padding: 4rem 3rem;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  // Decorative overlays
+  &::before {
+    content: "";
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 40%;
+    height: 40%;
+    @include auth-overlay($secondary-color, 0.1);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -20%;
+    left: -10%;
+    width: 50%;
+    height: 50%;
+    @include auth-overlay($white-color, 0.05);
+    pointer-events: none;
+  }
+
+  &__content {
+    z-index: 1;
+    width: 70%;
+    text-align: center;
+    position: relative;
+  }
+
+  &__icon {
+    font-size: 6rem;
+    margin-bottom: 2rem;
+    color: hslaGen($secondary-color);
+  }
+
+  &__title {
+    font-size: 3.2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+  }
+
+  &__subtitle {
+    font-size: 1.8rem;
+    opacity: 0.9;
+    margin-bottom: 3rem;
+    line-height: 1.5;
+  }
+
+  &__features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+  }
+
+  &__feature {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    font-size: 1.6rem;
+
+    i {
+      font-size: 2.4rem;
+      margin-right: 1.5rem;
+      color: hslaGen($secondary-color);
+      flex-shrink: 0;
+    }
+  }
+
+  &__stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+    gap: 2rem;
+    margin-top: 4rem;
+  }
+
+  &__stat {
+    text-align: center;
+
+    &-value {
+      display: block;
+      font-size: 3rem;
+      font-weight: 700;
+      color: hslaGen($secondary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    &-label {
+      display: block;
+      font-size: 1.4rem;
+      opacity: 0.8;
+    }
+  }
+}
+
+// Form Panel (Right Side)
+.auth-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  background: hslaGen($white-color);
+
+  @include breakpoint(99.2rem) {
+    max-width: 55rem;
+  }
+
+  &__container {
+    width: 100%;
+    max-width: 45rem;
+  }
+
+  &__header {
+    margin-bottom: 3rem;
+    text-align: center;
+
+    @include breakpoint(99.2rem) {
+      text-align: left;
+    }
+  }
+
+  &__title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: hslaGen($primary-color);
+    margin-bottom: 1rem;
+  }
+
+  &__subtitle {
+    font-size: 1.6rem;
+    color: hslaGen($grey-color);
+  }
+
+  &__form {
+    margin-bottom: 2rem;
+  }
+
+  &__footer {
+    text-align: center;
+    font-size: 1.4rem;
+    color: hslaGen($grey-color);
+
+    a {
+      color: hslaGen($primary-color);
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Field with Action (wrapper for inputs with action buttons like Detect, Change)
+.auth-field-with-action {
+  position: relative;
+}
+
+// Auth Form Grid (for two-column layouts like first/last name)
+.auth-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+// Auth Icon Input
+.auth-icon-input {
+  position: relative;
+  margin-bottom: 2rem;
+
+  &__label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: hslaGen($black-color);
+  }
+
+  &__wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__action-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: transparent;
+    border: none;
+    color: hslaGen($primary-color);
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 500;
+    padding: 0.25rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    @include transition(color);
+
+    &:hover:not(:disabled) {
+      color: hslaGen($primary-color, 0.8);
+    }
+
+    &:disabled {
+      cursor: wait;
+      opacity: 0.7;
+    }
+
+    i {
+      font-size: 1.6rem;
+    }
+  }
+
+  &__icon {
+    position: absolute;
+    left: 1.2rem;
+    font-size: 1.8rem;
+    color: hslaGen($grey-color);
+    pointer-events: none;
+    @include transition(color);
+  }
+
+  &__field {
+    width: 100%;
+    padding: 1.1rem 1.2rem 1.1rem 4rem;
+    font-size: 1.4rem;
+    border: 0.15rem solid hslaGen($grey-color, 0.3);
+    @include border-radius(0.6rem);
+    background: hslaGen($off-white-color);
+    @include transition(all);
+
+    &:focus {
+      outline: none;
+      border-color: hslaGen($primary-color);
+      background: hslaGen($white-color);
+
+      & ~ .auth-icon-input__icon {
+        color: hslaGen($primary-color);
+      }
+    }
+
+    &::placeholder {
+      color: hslaGen($grey-color, 0.6);
+    }
+
+    &--with-right-icon {
+      padding-right: 4rem;
+    }
+  }
+
+  &__right-icon {
+    position: absolute;
+    right: 1.2rem;
+    font-size: 1.8rem;
+    color: hslaGen($grey-color);
+    cursor: pointer;
+    @include transition(color);
+
+    &:hover {
+      color: hslaGen($primary-color);
+    }
+  }
+
+  &__error {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1.3rem;
+    color: hslaGen($danger-color);
+  }
+}
+
+// Password Strength Indicator
+.password-strength {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+
+  &__bars {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  &__bar {
+    flex: 1;
+    height: 0.4rem;
+    background: hslaGen($grey-color, 0.2);
+    @include border-radius(0.2rem);
+    @include transition(background-color);
+
+    &--active {
+      &-weak {
+        background-color: hslaGen($danger-color);
+      }
+
+      &-fair {
+        background-color: hslaGen($warning-color);
+      }
+
+      &-good {
+        background-color: hslaGen($success-color);
+      }
+
+      &-strong {
+        background-color: hslaGen($success-color);
+      }
+    }
+  }
+
+  &__label {
+    font-size: 1.3rem;
+    font-weight: 600;
+
+    &--weak {
+      color: hslaGen($danger-color);
+    }
+
+    &--fair {
+      color: hslaGen($warning-color);
+    }
+
+    &--good {
+      color: hslaGen($success-color);
+    }
+
+    &--strong {
+      color: hslaGen($success-color);
+    }
+  }
+}
+
+// Password Requirements Checklist
+.password-requirements {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  background: hslaGen($off-white-color);
+  @include border-radius(0.8rem);
+
+  &__title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: hslaGen($primary-color);
+    margin-bottom: 1rem;
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    font-size: 1.3rem;
+    color: hslaGen($grey-color);
+    margin-bottom: 0.8rem;
+
+    i {
+      margin-right: 0.8rem;
+      font-size: 1.6rem;
+    }
+
+    &--valid {
+      color: hslaGen($success-color);
+    }
+
+    &--invalid {
+      color: hslaGen($grey-color, 0.5);
+    }
+  }
+}
+
+// Social Login Buttons
+.social-login {
+  margin: 2rem 0;
+
+  &__divider {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 2rem 0;
+    color: hslaGen($grey-color);
+    font-size: 1.4rem;
+
+    &::before,
+    &::after {
+      content: "";
+      flex: 1;
+      border-bottom: 0.1rem solid hslaGen($grey-color, 0.3);
+    }
+
+    &::before {
+      margin-right: 1rem;
+    }
+
+    &::after {
+      margin-left: 1rem;
+    }
+  }
+
+  &__buttons {
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.2rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    border: 0.2rem solid hslaGen($grey-color, 0.3);
+    @include border-radius(0.8rem);
+    background: hslaGen($white-color);
+    cursor: pointer;
+    @include transition(all);
+
+    &:hover {
+      border-color: hslaGen($primary-color);
+      background: hslaGen($off-white-color);
+    }
+
+    i {
+      margin-right: 0.8rem;
+      font-size: 2rem;
+    }
+
+    &--google {
+      color: #ea4335;
+
+      i {
+        color: #ea4335;
+      }
+    }
+
+    &--microsoft {
+      color: #00a4ef;
+
+      i {
+        color: #00a4ef;
+      }
+    }
+  }
+}
+
+// Auth Button
+.auth-button {
+  width: 100%;
+  padding: 1.4rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: hslaGen($white-color);
+  border: none;
+  @include border-radius(0.8rem);
+  @include auth-button-gradient;
+  cursor: pointer;
+  @include transition(transform, 0.2s);
+  @include box-shadow(0 0.5rem 1.5rem hslaGen($primary-color, 0));
+
+  &:hover:not(:disabled) {
+    transform: translateY(-0.2rem);
+    @include box-shadow(0 0.5rem 1.5rem hslaGen($primary-color, 0.3));
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &--loading {
+    position: relative;
+    color: transparent;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2rem;
+      height: 2rem;
+      margin-top: -1rem;
+      margin-left: -1rem;
+      border: 0.2rem solid hslaGen($white-color, 0.3);
+      border-top-color: hslaGen($white-color);
+      @include border-radius(50%);
+      animation: auth-button-spin 0.6s linear infinite;
+    }
+  }
+}
+
+@keyframes auth-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// Success State
+.auth-success {
+  text-align: center;
+  padding: 3rem 0;
+
+  &__icon {
+    font-size: 8rem;
+    color: hslaGen($success-color);
+    margin-bottom: 2rem;
+    animation: auth-success-scale 0.5s ease-out;
+  }
+
+  &__title {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: hslaGen($primary-color);
+    margin-bottom: 1rem;
+  }
+
+  &__message {
+    font-size: 1.6rem;
+    color: hslaGen($grey-color);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+  }
+}
+
+@keyframes auth-success-scale {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+// Mobile adjustments
+// Account Type Selection
+.account-type-selection {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+
+  &__login {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 4rem;
+    font-size: 1.4rem;
+    color: hslaGen($grey-color);
+  }
+
+  &__hero {
+    text-align: center;
+    margin-bottom: 5rem;
+  }
+
+  &__title {
+    font-size: 3.6rem;
+    font-weight: 700;
+    color: hslaGen($primary-color);
+    margin-bottom: 1.5rem;
+  }
+
+  &__subtitle {
+    font-size: 1.8rem;
+    color: hslaGen($grey-color);
+    max-width: 60rem;
+    margin: 0 auto;
+  }
+}
+
+.account-type-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3rem;
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+.account-type-card {
+  position: relative;
+  background: hslaGen($white-color);
+  border: 0.2rem solid hslaGen($grey-color, 0.2);
+  @include border-radius(1.2rem);
+  padding: 4rem 3rem;
+  text-align: center;
+  cursor: pointer;
+  @include transition(all, 0.3s, ease);
+  @include box-shadow(0 0.4rem 1.2rem hslaGen($dark-grey-color, 0.05));
+
+  &:hover {
+    border-color: hslaGen($primary-color, 0.5);
+    transform: translateY(-0.5rem);
+    @include box-shadow(0 0.8rem 2.4rem hslaGen($primary-color, 0.15));
+  }
+
+  &__badge {
+    position: absolute;
+    top: -1.2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    @include auth-button-gradient;
+    color: hslaGen($white-color);
+    padding: 0.6rem 1.6rem;
+    @include border-radius(2rem);
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+    white-space: nowrap;
+  }
+
+  &__icon {
+    font-size: 6rem;
+    margin-bottom: 2rem;
+    color: hslaGen($primary-color);
+
+    i {
+      display: inline-block;
+    }
+  }
+
+  &__name {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: hslaGen($primary-color);
+    margin-bottom: 1.5rem;
+  }
+
+  &__description {
+    font-size: 1.6rem;
+    color: hslaGen($grey-color);
+    margin-bottom: 3rem;
+    line-height: 1.6;
+  }
+
+  &__features {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 3rem 0;
+    text-align: left;
+
+    li {
+      display: flex;
+      align-items: center;
+      font-size: 1.4rem;
+      color: hslaGen($dark-grey-color);
+      margin-bottom: 1.2rem;
+
+      i {
+        font-size: 2rem;
+        margin-right: 1rem;
+        color: hslaGen($success-color);
+      }
+    }
+  }
+
+  &__cta {
+    width: 100%;
+    padding: 1.4rem 2rem;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: hslaGen($primary-color);
+    background: hslaGen($white-color);
+    border: 0.2rem solid hslaGen($primary-color);
+    @include border-radius(0.8rem);
+    cursor: pointer;
+    @include transition(all, 0.2s, ease);
+
+    &:hover {
+      background: hslaGen($primary-color, 0.1);
+    }
+
+    &--primary {
+      color: hslaGen($white-color);
+      @include auth-button-gradient;
+      border: none;
+
+      &:hover {
+        transform: translateY(-0.2rem);
+        @include box-shadow(0 0.4rem 1.2rem hslaGen($primary-color, 0.3));
+      }
+    }
+  }
+
+  &--featured {
+    border-color: hslaGen($primary-color, 0.3);
+    @include box-shadow(0 0.8rem 2.4rem hslaGen($primary-color, 0.1));
+
+    .account-type-card__icon {
+      color: hslaGen($secondary-color);
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .auth-form-panel {
+    padding: 2rem 1.5rem;
+
+    &__title {
+      font-size: 2.4rem;
+    }
+  }
+
+  .auth-icon-input__field {
+    padding: 1.2rem 1.2rem 1.2rem 4rem;
+  }
+
+  .social-login__buttons {
+    flex-direction: column;
+  }
+
+  .account-type-cards {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .account-type-selection {
+    padding: 2rem 1.5rem;
+
+    &__title {
+      font-size: 2.8rem;
+    }
+
+    &__subtitle {
+      font-size: 1.6rem;
+    }
+  }
+
+  .account-type-card {
+    padding: 3rem 2rem;
+
+    &__icon {
+      font-size: 5rem;
+    }
+
+    &__name {
+      font-size: 2rem;
+    }
+  }
+}

@@ -1,0 +1,110 @@
+@use "../abstract/index" as *;
+
+.upgrade-required {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+  background: hslaGen($blue-ink-color, 1);
+
+  &__container {
+    max-width: 50rem;
+    text-align: center;
+    padding: 3rem;
+    border-radius: 1rem;
+    background: hslaGen($dark-grey-color, 0.3);
+    border: 1px solid hslaGen($light-grey-color, 0.1);
+  }
+
+  &__icon {
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+
+    i {
+      font-size: 6rem;
+      color: hslaGen($secondary-color, 1);
+    }
+  }
+
+  &__title {
+    font-size: $fs-xlg;
+    font-weight: $fw-bold;
+    color: hslaGen($white-color, 1);
+    margin-bottom: 1rem;
+  }
+
+  &__message {
+    font-size: $fs-md;
+    color: hslaGen($light-grey-color, 1);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+  }
+
+  &__features {
+    text-align: left;
+    margin: 2rem auto;
+    max-width: 35rem;
+    padding: 1.5rem;
+    background: hslaGen($blue-ink-color, 0.5);
+    border-radius: 0.5rem;
+    border: 1px solid hslaGen($light-grey-color, 0.1);
+
+    h3 {
+      font-size: $fs-lg;
+      font-weight: $fw-bold;
+      color: hslaGen($white-color, 1);
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 0.5rem 0;
+        font-size: $fs-md;
+        color: hslaGen($light-grey-color, 1);
+
+        i {
+          font-size: 1.5rem;
+          color: hslaGen($secondary-color, 1);
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+
+    button {
+      min-width: 15rem;
+    }
+  }
+
+  &__note {
+    font-size: $fs-sm;
+    color: hslaGen($light-grey-color, 0.7);
+    margin-top: 1rem;
+  }
+}
+
+// Float animation for icon
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}

@@ -40,6 +40,8 @@
 
       "@properties/*": ["src/app/(protectedRoutes)/properties/[cuid]/*"],
       "@dashboard/*": ["src/app/(protectedRoutes)/dashboard/[cuid]/*"],
+      "@subscription/*": ["src/app/(protectedRoutes)/subscription/*"],
+      "@clients/*": ["src/app/(protectedRoutes)/client/[cuid]/*"],
       "@leases/*": ["src/app/(protectedRoutes)/leases/[cuid]/*"],
       "@users/*": ["src/app/(protectedRoutes)/users/[cuid]/*"],
       "@auth/*": ["src/app/(auth)/*"],

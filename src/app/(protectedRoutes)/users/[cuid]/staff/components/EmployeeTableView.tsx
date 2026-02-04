@@ -15,7 +15,8 @@ interface EmployeeTableViewProps {
   handleSortDirectionChange: () => void;
   isLoading?: boolean;
   onEdit: (employee: FilteredUserTableData) => void;
-  onToggleStatus: (employeeId: string, isActive: boolean) => void;
+  onDeactivate: (employee: FilteredUserTableData) => void;
+  onReconnect: (employee: FilteredUserTableData) => void;
   onViewDetails: (employee: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
@@ -31,7 +32,8 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   handleSortDirectionChange,
   isLoading = false,
   onEdit,
-  onToggleStatus,
+  onDeactivate,
+  onReconnect,
   onViewDetails,
   pagination,
   totalCount,
@@ -76,8 +78,8 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
   };
 
   const getStatusText = (isActive: boolean, isConnected: boolean) => {
+    if (!isConnected) return "Disconnected";
     if (isActive && isConnected) return "Active";
-    if (isActive && !isConnected) return "Pending";
     return "Inactive";
   };
 
@@ -144,7 +146,7 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
               title="View employee details"
             />
 
-            {(isResourceOwner || hasPermission) && (
+            {(isResourceOwner || hasPermission) && record.isConnected && (
               <Button
                 label="Edit"
                 className="btn-sm btn-outline"
@@ -152,17 +154,24 @@ export const EmployeeTableView: React.FC<EmployeeTableViewProps> = ({
                 title="Edit employee information"
               />
             )}
-            {permissions.isAdmin && (
-              <Button
-                label={record.isActive ? "Deactivate" : "Activate"}
-                className={`btn-sm ${
-                  record.isActive ? "btn-danger" : "btn-success"
-                }`}
-                onClick={() => onToggleStatus(record.uid, !record.isActive)}
-                title={
-                  record.isActive ? "Deactivate employee" : "Activate employee"
-                }
-              />
+            {permissions.isSuperAdmin && (
+              <>
+                {record.isConnected ? (
+                  <Button
+                    label="Remove"
+                    className="btn-sm btn-danger"
+                    onClick={() => onDeactivate(record)}
+                    title="Remove employee (disconnect)"
+                  />
+                ) : (
+                  <Button
+                    label="Reconnect"
+                    className="btn-sm btn-success"
+                    onClick={() => onReconnect(record)}
+                    title="Reconnect employee"
+                  />
+                )}
+              </>
             )}
           </div>
         );

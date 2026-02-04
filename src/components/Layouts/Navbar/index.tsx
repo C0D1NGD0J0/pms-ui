@@ -27,6 +27,7 @@ export const Navbar: React.FC = () => {
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const [isNotificationDropdownOpen, setIsNotificationDropdownOpen] =
     useState(false);
+  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   const { notifications, announcements, isConnected, isConnecting, hasError } =
     useSSENotifications();
@@ -36,6 +37,7 @@ export const Navbar: React.FC = () => {
 
   const notificationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const userDropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const prevNotificationCountRef = useRef(0);
   const cuid = user?.client?.cuid;
 
   useEffect(() => {
@@ -97,6 +99,22 @@ export const Navbar: React.FC = () => {
 
   const allNotifications = [...notifications, ...announcements];
   const unreadCount = allNotifications.filter((n) => !n.isRead).length;
+
+  // Detect new notifications and trigger shake animation
+  useEffect(() => {
+    if (allNotifications.length > prevNotificationCountRef.current && prevNotificationCountRef.current > 0) {
+      setHasNewNotification(true);
+
+      // Remove shake class after 2 seconds
+      const timer = setTimeout(() => {
+        setHasNewNotification(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+
+    prevNotificationCountRef.current = allNotifications.length;
+  }, [allNotifications.length]);
 
   const handleUserDropdownMouseEnter = useCallback(() => {
     if (userDropdownTimeoutRef.current) {
@@ -163,7 +181,7 @@ export const Navbar: React.FC = () => {
           <li
             className={`navbar-menu__item navbar-notification-item ${
               unreadCount > 0 ? "has-unread" : ""
-            }`}
+            } ${hasNewNotification ? "new-notification" : ""}`}
             onMouseEnter={handleNotificationMouseEnter}
             onMouseLeave={handleNotificationMouseLeave}
           >

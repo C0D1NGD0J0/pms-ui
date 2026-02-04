@@ -7,34 +7,35 @@
 
   .select-trigger {
     width: 100%;
-    padding: $base-padding;
-    padding-right: 2.5rem;
-    @include border-radius($base-border-radius);
+    padding: 1.1rem 1.2rem;
+    padding-right: 3.5rem;
     background-color: hslaGen($white-color);
-    color: hslaGen($primary-color);
-    font-size: $fs-base;
+    color: hslaGen($dark-grey-color);
+    font-size: 1.4rem;
     font-family: inherit;
     font-weight: $fw-normal;
-    line-height: $base-line-height;
+    line-height: 1.5;
     cursor: pointer;
     @include transition(all, 0.2s, ease-in-out);
     @include flex(row, space-between, center);
     text-align: left;
+    border: 0.15rem solid hslaGen($grey-color, 0.3);
+    border-radius: 0.6rem;
 
     &:focus {
       outline: none;
       border-color: hslaGen($primary-color);
-      @include box-shadow(0 0 0 3px hslaGen($primary-color, 0.1));
+      @include box-shadow(0 0 0 0.3rem hslaGen($primary-color, 0.1));
     }
 
     &:hover:not(:disabled) {
-      border-color: hslaGen($primary-color);
+      border-color: hslaGen($primary-color, 0.5);
     }
 
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
-      background-color: hslaGen($light-grey-color, 0.1);
+      background-color: hslaGen($off-white-color);
     }
 
     .select-value {
@@ -45,85 +46,109 @@
     }
 
     .select-arrow {
-      margin-left: $space-sm;
-      @include transition(all, 0.2s, ease-in-out);
+      margin-left: 0.8rem;
+      @include transition(transform, 0.2s, ease-in-out);
       color: hslaGen($grey-color);
+      display: flex;
+      align-items: center;
 
       i {
-        font-size: $fs-lg;
+        font-size: 2rem;
       }
     }
   }
 
   &.no-value .select-trigger .select-value {
-    color: hslaGen($grey-color, 0.7);
+    color: hslaGen($grey-color, 0.6);
   }
 
   &.has-value .select-trigger .select-value {
-    color: hslaGen($primary-color);
+    color: hslaGen($dark-grey-color);
     font-style: normal;
   }
 
   &.open .select-trigger {
     border-color: hslaGen($primary-color);
-    @include box-shadow(0 0 0 3px hslaGen($primary-color, 0.1));
+    @include box-shadow(0 0 0 0.3rem hslaGen($primary-color, 0.1));
 
     .select-arrow {
       color: hslaGen($primary-color);
+      transform: rotate(180deg);
     }
   }
 
   &.invalid .select-trigger {
     border-color: hslaGen($danger-color);
-    @include box-shadow(0 0 0 3px hslaGen($danger-color, 0.1));
+    @include box-shadow(0 0 0 0.3rem hslaGen($danger-color, 0.1));
   }
 
   .select-options {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.4rem);
     left: 0;
     right: 0;
     z-index: 1000;
     background: hslaGen($white-color);
-    border: $base-border-thickness solid hslaGen($grey-color, 0.4);
-    // @include border-radius($base-border-radius);
-    @include box-shadow($box-shadow);
-    margin-top: $space-xs;
-    max-height: 200px;
+    border: 0.1rem solid hslaGen($grey-color, 0.2);
+    border-radius: 0.6rem;
+    @include box-shadow(0 0.4rem 1.2rem hslaGen($dark-grey-color, 0.15));
+    max-height: 24rem;
     overflow-y: auto;
     list-style: none;
-    padding: $space-xs 0;
-    margin: $space-xs 0 0;
+    padding: 0.4rem 0;
+    margin: 0;
+
+    &::-webkit-scrollbar {
+      width: 0.6rem;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: hslaGen($off-white-color);
+      border-radius: 0.6rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: hslaGen($grey-color, 0.5);
+      border-radius: 0.6rem;
+
+      &:hover {
+        background: hslaGen($grey-color, 0.7);
+      }
+    }
 
     .select-option {
-      padding: $space-sm;
+      padding: 0.9rem 1.2rem;
       cursor: pointer;
-      @include transition(all, 0.2s, ease-in-out);
-      font-size: $fs-base;
+      @include transition(all, 0.15s, ease-in-out);
+      font-size: 1.4rem;
       font-weight: $fw-normal;
-      color: hslaGen($primary-color);
+      color: hslaGen($dark-grey-color);
       border: none;
       background: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
 
       &:hover:not(.disabled) {
-        background-color: hslaGen($primary-color, 0.1);
+        background-color: hslaGen($primary-color, 0.08);
+        color: hslaGen($primary-color);
       }
 
       &.focused:not(.disabled) {
-        background-color: hslaGen($primary-color, 0.1);
-        outline: 2px solid hslaGen($primary-color);
-        outline-offset: -2px;
+        background-color: hslaGen($primary-color, 0.08);
+        color: hslaGen($primary-color);
       }
 
       &.selected {
-        background-color: hslaGen($primary-color, 0.15);
+        background-color: hslaGen($primary-color, 0.12);
         color: hslaGen($primary-color);
-        font-weight: $fw-bold;
+        font-weight: 500;
 
         &::after {
-          content: " ✓";
-          float: right;
+          content: "✓";
           font-weight: $fw-bold;
+          font-size: 1.6rem;
+          margin-left: 0.8rem;
         }
       }
 
@@ -139,16 +164,21 @@
 .panel {
   .custom-select-wrapper {
     .select-trigger {
-      font-size: $fs-sm;
-      min-width: 120px;
-      padding: $space-sm;
-      @include border-radius($border-radius-sm);
+      font-size: 1.3rem;
+      min-width: 12rem;
+      padding: 0.8rem 1rem;
+      padding-right: 3rem;
+      border-radius: 0.5rem;
+    }
+
+    .select-arrow i {
+      font-size: 1.8rem;
     }
 
     .select-options {
       .select-option {
-        padding: $space-sm;
-        font-size: $fs-sm;
+        padding: 0.7rem 1rem;
+        font-size: 1.3rem;
       }
     }
   }
@@ -158,18 +188,19 @@
     .custom-select-wrapper {
       .select-trigger {
         background-color: hslaGen($white-color);
-        border-color: hslaGen($grey-color, 0.5);
+        border-color: hslaGen($grey-color, 0.3);
         color: hslaGen($dark-grey-color);
-        padding: $space-xs $space-sm;
-        @include border-radius($border-radius-md);
+        padding: 0.7rem 0.9rem;
+        padding-right: 2.8rem;
+        border-radius: 0.6rem;
 
         &:hover:not(:disabled) {
-          border-color: hslaGen($grey-color);
+          border-color: hslaGen($primary-color, 0.4);
         }
 
         &:focus {
           border-color: hslaGen($primary-color);
-          @include box-shadow(0 0 0 3px hslaGen($primary-color, 0.1));
+          @include box-shadow(0 0 0 0.3rem hslaGen($primary-color, 0.1));
         }
 
         .select-value {
@@ -182,8 +213,8 @@
       }
 
       &.no-value .select-trigger .select-value {
-        color: hslaGen($grey-color);
-        font-style: italic;
+        color: hslaGen($grey-color, 0.6);
+        font-style: normal;
       }
 
       &.has-value .select-trigger .select-value {
@@ -201,19 +232,20 @@
 
       .select-options {
         background: hslaGen($white-color);
-        border: $base-border-thickness solid hslaGen($grey-color, 0.3);
-        @include box-shadow($box-shadow-alt);
+        border: 0.1rem solid hslaGen($grey-color, 0.2);
+        @include box-shadow(0 0.4rem 1.2rem hslaGen($dark-grey-color, 0.12));
 
         .select-option {
           color: hslaGen($dark-grey-color);
 
           &:hover:not(.disabled) {
             background-color: hslaGen($off-white-color);
+            color: hslaGen($primary-color);
           }
 
           &.focused:not(.disabled) {
             background-color: hslaGen($off-white-color);
-            outline-color: hslaGen($primary-color);
+            color: hslaGen($primary-color);
           }
 
           &.selected {
@@ -231,48 +263,19 @@
     .select-trigger {
       background-color: $form-input-bg;
       border-color: hslaGen($grey-color, 0.3);
-      padding: $space-md;
-      height: 3.5rem;
+      padding: 1rem 1.2rem;
+      padding-right: 3.5rem;
+      height: 4rem;
     }
   }
 }
 
-@include breakpoint(768px, max) {
+@include breakpoint(76.8rem, max) {
   .custom-select-wrapper {
     .select-trigger {
-      font-size: 16px; // Prevent zoom on iOS
-      padding: $space-sm;
-    }
-  }
-}
-
-// Dark theme support
-@media (prefers-color-scheme: dark) {
-  .custom-select-wrapper {
-    .select-trigger {
-      background-color: hslaGen($white-color);
-      border-color: hslaGen($grey-color, 0.4);
-      color: hslaGen($white-color);
-    }
-
-    .select-options {
-      .select-option {
-        color: hslaGen($primary-color);
-      }
-    }
-  }
-}
-
-// High contrast mode support
-@media (prefers-contrast: high) {
-  .custom-select-wrapper {
-    .select-trigger {
-      border-color: hslaGen($black-color);
-      border-width: 2px;
-
-      &:focus {
-        border-color: hslaGen($primary-color);
-      }
+      font-size: 1.6rem; // Prevent automatic zoom on iOS Safari (inputs < 16px font-size trigger zoom)
+      padding: 1rem 1.2rem;
+      padding-right: 3.5rem;
     }
   }
 }
@@ -293,10 +296,9 @@ form[inert] .custom-select-wrapper {
   .select-trigger {
     opacity: 0.6;
     cursor: not-allowed;
-    background-color: hslaGen($light-grey-color, 0.1);
+    background-color: hslaGen($off-white-color);
   }
 
-  // Hide dropdown arrow and show lock icon when form is inert
   .select-arrow i:not(.bx-lock-alt) {
     display: none;
   }
@@ -304,7 +306,7 @@ form[inert] .custom-select-wrapper {
   .select-arrow::after {
     content: "\ea12"; // Boxicons lock icon unicode
     font-family: "boxicons" !important;
-    font-size: $fs-lg;
+    font-size: 2rem;
     color: hslaGen($grey-color, 0.6);
   }
 }

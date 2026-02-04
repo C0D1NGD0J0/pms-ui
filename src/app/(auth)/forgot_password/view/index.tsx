@@ -1,8 +1,11 @@
+import Link from "next/link";
 import { UseFormReturnType } from "@mantine/form";
-import { AuthContentBody } from "@components/AuthLayout";
-import { AuthContentHeader } from "@components/AuthLayout";
-import { AuthContentFooter } from "@components/AuthLayout";
-import { FormInput, FormField, Button, Form } from "@components/FormElements/";
+import { AuthIconInput, Form } from "@components/FormElements/";
+import {
+  ModernAuthLayout,
+  AuthBrandPanel,
+  AuthFormPanel,
+} from "@components/AuthLayout";
 
 import { ForgotPasswordForm } from "../hook/useForgotPasswordLogic";
 
@@ -19,51 +22,68 @@ export function ForgotPasswordView({
 }: ForgotPasswordViewProps) {
   return (
     <>
-      <AuthContentHeader
-        title="Forgot password?"
-        subtitle="It happens to the best of us. Just enter your email address."
-      />
-      <AuthContentBody>
-        <Form
-          onSubmit={form.onSubmit(handleSubmit)}
-          id="forgotPwd-form"
-          className="auth-form"
-          disabled={isPending}
-          autoComplete="off"
-        >
-          <div className="form-fields">
-            <FormField
-              error={{
-                msg: (form.errors["email"] as string) || "",
-                touched: form.isTouched("email"),
+      <ModernAuthLayout
+        brandContent={
+          <AuthBrandPanel>
+            <i className="bx bx-lock-open auth-brand-panel__icon"></i>
+            <h1 className="auth-brand-panel__title">Reset Your Password</h1>
+            <p className="auth-brand-panel__subtitle">
+              Don&apos;t worry, it happens to everyone
+            </p>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                lineHeight: "1.6",
+                opacity: "0.9",
+                marginTop: "2rem",
               }}
             >
-              <FormInput
-                required
-                name="email"
-                type="email"
-                id="email"
-                value={form.values.email || ""}
-                hasError={!!form.errors["email"]}
-                placeholder="Enter your email address..."
-                onChange={(e) => form.setFieldValue("email", e.target.value)}
-              />
-            </FormField>
-          </div>
-          <div className="action-fields">
-            <Button
-              type="submit"
-              disabled={!form.isValid()}
-              className="btn btn-primary"
-              label={`${isPending ? "Processing..." : "Send reset link"}`}
+              Enter your email address and we&apos;ll send you instructions to
+              reset your password.
+            </p>
+          </AuthBrandPanel>
+        }
+      >
+        <AuthFormPanel
+          title="Forgot Password?"
+          footer={
+            <>
+              Remember your password? <Link href="/login">Sign in</Link>
+            </>
+          }
+        >
+          <Form
+            onSubmit={form.onSubmit(handleSubmit)}
+            id="forgotPwd-form"
+            disabled={isPending}
+            autoComplete="off"
+          >
+            <AuthIconInput
+              label="Email Address"
+              type="email"
+              icon="bx-envelope"
+              placeholder="Enter your email"
+              name="email"
+              value={form.values.email || ""}
+              onChange={(e) => form.setFieldValue("email", e.target.value)}
+              error={
+                form.isTouched("email")
+                  ? (form.errors["email"] as string)
+                  : undefined
+              }
+              autoComplete="email"
             />
-          </div>
-        </Form>
-      </AuthContentBody>
-      <AuthContentFooter
-        footerLink="/login"
-        footerLinkText="Already have an account? Log in"
-      />
+
+            <button
+              type="submit"
+              disabled={!form.isValid() || isPending}
+              className="auth-button"
+            >
+              {isPending ? "Sending..." : "Send Reset Link"}
+            </button>
+          </Form>
+        </AuthFormPanel>
+      </ModernAuthLayout>
     </>
   );
 }

@@ -1,3 +1,4 @@
+import storage from "@utils/storage";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useScrollToTop } from "@hooks/useScrollToTop";
@@ -45,8 +46,9 @@ export const TabContainer: React.FC<TabsProps> = ({
 
   const [activeTabId, setActiveTabId] = useState<string>(() => {
     const currentValidTabs = getValidTabs();
-    if (mode === "edit" && typeof window !== "undefined") {
-      const saved = activeTabFromParams || localStorage.getItem("activeTab");
+    if (mode === "edit") {
+      const saved =
+        activeTabFromParams || storage.get<string>("activeTab", "local");
       if (saved && currentValidTabs.includes(saved)) {
         return saved;
       }
@@ -70,7 +72,7 @@ export const TabContainer: React.FC<TabsProps> = ({
     if (activeTabId) {
       if (onChange) {
         onChange(activeTabId);
-        localStorage.setItem("activeTab", activeTabId);
+        storage.set("activeTab", activeTabId, "local");
       }
 
       if (scrollOnChange) {

@@ -9,11 +9,12 @@ import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
 import { withClientAccess } from "@hooks/permissionHOCs";
-import { AddUserModal } from "@components/UserManagement";
 import { PageHeader } from "@components/PageElements/Header";
 import { generateLegendColors } from "@src/utils/employeeUtils";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
+import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { DeactivateUserModal, AddUserModal } from "@components/UserManagement";
 import {
   PanelsWrapper,
   PanelContent,
@@ -21,8 +22,8 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useGetVendorStats, useGetVendors } from "./hooks";
 import { VendorTableView } from "./components/VendorTableView";
+import { useReconnectVendor, useGetVendorStats, useRemoveVendor, useGetVendors } from "./hooks";
 
 interface VendorsPageProps {
   params: Promise<{
@@ -38,6 +39,15 @@ function VendorsPage({ params }: VendorsPageProps) {
 
   const [isAddVendorModalOpen, setIsAddVendorModalOpen] = useState(false);
   const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [vendorWarnings, setVendorWarnings] = useState<string[]>([]);
+  const [selectedVendor, setSelectedVendor] = useState<{
+    uid: string;
+    name: string;
+    isPrimaryVendor: boolean;
+  } | null>(null);
+
+  const permission = useUnifiedPermissions();
 
   const {
     vendors,
@@ -79,9 +89,69 @@ function VendorsPage({ params }: VendorsPageProps) {
     router.push(`/users/${cuid}/vendors/${vendor.vendorInfo?.vuid}`);
   };
 
+  const removeVendorMutation = useRemoveVendor(
+    cuid,
+    selectedVendor?.uid || ""
+  );
+  const reconnectVendorMutation = useReconnectVendor(
+    cuid,
+    selectedVendor?.uid || ""
+  );
+
   const handleMessageVendor = (vendor: FilteredUserTableData) => {
     console.log("Message vendor:", vendor);
     // TODO: Implement message vendor functionality
+  };
+
+  const handleDeactivateVendor = (vendor: FilteredUserTableData) => {
+    const isPrimaryVendor = vendor.vendorInfo?.isPrimaryVendor || false;
+    const warnings: string[] = [];
+
+    if (isPrimaryVendor) {
+      warnings.push("This is a primary vendor account. Removing this vendor will also disconnect all linked vendor accounts.");
+    }
+
+    setSelectedVendor({
+      uid: vendor.uid,
+      name: vendor.vendorInfo?.companyName || vendor.fullName || vendor.displayName || vendor.email,
+      isPrimaryVendor,
+    });
+    setVendorWarnings(warnings);
+    setShowDeactivateModal(true);
+  };
+
+  const handleReconnectVendor = async (vendor: FilteredUserTableData) => {
+    setSelectedVendor({
+      uid: vendor.uid,
+      name: vendor.vendorInfo?.companyName || vendor.fullName || vendor.displayName || vendor.email,
+      isPrimaryVendor: false,
+    });
+    try {
+      await reconnectVendorMutation.mutateAsync();
+      setSelectedVendor(null);
+    } catch (error) {
+      console.error("Failed to reconnect vendor:", error);
+    }
+  };
+
+  const handleConfirmDeactivate = async () => {
+    if (!selectedVendor) return;
+
+    try {
+      await removeVendorMutation.mutateAsync();
+      setShowDeactivateModal(false);
+      setSelectedVendor(null);
+      setVendorWarnings([]);
+    } catch (error) {
+      console.error("Failed to remove vendor:", error);
+      setShowDeactivateModal(false);
+    }
+  };
+
+  const handleCancelDeactivate = () => {
+    setShowDeactivateModal(false);
+    setSelectedVendor(null);
+    setVendorWarnings([]);
   };
 
   const handleAddNewVendor = () => {
@@ -189,9 +259,12 @@ function VendorsPage({ params }: VendorsPageProps) {
                 isLoading={isLoading}
                 onEdit={handleEditVendor}
                 onMessage={handleMessageVendor}
+                onDeactivate={handleDeactivateVendor}
+                onReconnect={handleReconnectVendor}
                 onViewDetails={handleViewVendorDetails}
                 pagination={pagination}
                 totalCount={totalCount}
+                permissions={permission}
               />
             </Panel>
           </PanelsWrapper>
@@ -262,6 +335,16 @@ function VendorsPage({ params }: VendorsPageProps) {
         onClose={handleCloseModal}
         onSubmit={handleSubmitVendorInvite}
         isSubmitting={isSubmittingInvite}
+      />
+
+      <DeactivateUserModal
+        isOpen={showDeactivateModal}
+        userName={selectedVendor?.name || ""}
+        userType="vendor"
+        onClose={handleCancelDeactivate}
+        onConfirm={handleConfirmDeactivate}
+        isSubmitting={removeVendorMutation.isPending}
+        warnings={vendorWarnings.length > 0 ? vendorWarnings : undefined}
       />
     </div>
   );

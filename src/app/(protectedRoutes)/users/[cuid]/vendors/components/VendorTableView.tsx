@@ -14,10 +14,13 @@ interface VendorTableViewProps {
   handleSortDirectionChange: () => void;
   isLoading?: boolean;
   onEdit: (vendor: FilteredUserTableData) => void;
+  onDeactivate: (vendor: FilteredUserTableData) => void;
+  onReconnect: (vendor: FilteredUserTableData) => void;
   onMessage: (vendor: FilteredUserTableData) => void;
   onViewDetails: (vendor: FilteredUserTableData) => void;
   pagination: IPaginationQuery;
   totalCount: number;
+  permissions: any;
 }
 
 export const VendorTableView: React.FC<VendorTableViewProps> = ({
@@ -28,10 +31,13 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
   handleSortDirectionChange,
   isLoading = false,
   onEdit,
+  onDeactivate,
+  onReconnect,
   onMessage,
   onViewDetails,
   pagination,
   totalCount,
+  permissions,
 }) => {
   const [searchValue, setSearchValue] = useState("");
 
@@ -115,18 +121,41 @@ export const VendorTableView: React.FC<VendorTableViewProps> = ({
             title="View vendor details"
             label="View"
           />
-          <Button
-            className="btn-sm btn-primary"
-            onClick={() => onEdit(record)}
-            title="Edit vendor information"
-            label="Edit"
-          />
-          <Button
-            className="btn-sm btn-secondary"
-            onClick={() => onMessage(record)}
-            title="Send message to vendor"
-            label="Message"
-          />
+          {record.isConnected && (
+            <>
+              <Button
+                className="btn-sm btn-primary"
+                onClick={() => onEdit(record)}
+                title="Edit vendor information"
+                label="Edit"
+              />
+              <Button
+                className="btn-sm btn-secondary"
+                onClick={() => onMessage(record)}
+                title="Send message to vendor"
+                label="Message"
+              />
+            </>
+          )}
+          {permissions?.isSuperAdmin && (
+            <>
+              {record.isConnected ? (
+                <Button
+                  label="Remove"
+                  className="btn-sm btn-danger"
+                  onClick={() => onDeactivate(record)}
+                  title="Remove vendor (disconnect)"
+                />
+              ) : (
+                <Button
+                  label="Reconnect"
+                  className="btn-sm btn-success"
+                  onClick={() => onReconnect(record)}
+                  title="Reconnect vendor"
+                />
+              )}
+            </>
+          )}
         </div>
       ),
     },

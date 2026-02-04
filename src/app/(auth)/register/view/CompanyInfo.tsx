@@ -2,7 +2,7 @@
 import React from "react";
 import { UseFormReturnType } from "@mantine/form";
 import { ISignupForm } from "@interfaces/auth.interface";
-import { FloatingLabelInput } from "@components/FormElements";
+import { AuthIconInput } from "@components/FormElements";
 
 export default function CompanyInfo({
   formContext,
@@ -18,70 +18,87 @@ export default function CompanyInfo({
 }) {
   return (
     <>
-      <div className="form-fields">
-        <FloatingLabelInput
-          id="legalEntityName"
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "1.5rem",
+        }}
+      >
+        <AuthIconInput
+          label="Registered Name"
+          type="text"
+          icon="bx-buildings"
+          placeholder="Enter registered name"
           name="companyProfile.legalEntityName"
-          onChange={onChange}
           value={formContext.values.companyProfile?.legalEntityName || ""}
-          errorMsg={formContext.errors["companyProfile.legalEntityName"]}
-          label="Registered name"
-          required
+          onChange={onChange}
+          error={formContext.errors["companyProfile.legalEntityName"] as string}
         />
-        <FloatingLabelInput
-          required
-          id="tradingName"
+        <AuthIconInput
+          label="Trading Name"
+          type="text"
+          icon="bx-store"
+          placeholder="Enter trading name"
           name="companyProfile.tradingName"
-          onChange={onChange}
-          label="Trading name"
           value={formContext.values.companyProfile?.tradingName || ""}
-          errorMsg={formContext.errors["companyProfile.tradingName"]}
-        />
-      </div>
-
-      <div className="form-fields">
-        <FloatingLabelInput
-          id="companyEmail"
-          name="companyProfile.companyEmail"
           onChange={onChange}
-          value={formContext.values.companyProfile?.companyEmail || ""}
-          errorMsg={formContext.errors["companyProfile.companyEmail"]}
-          label="Business Email"
-          type="email"
-          required
+          error={formContext.errors["companyProfile.tradingName"] as string}
         />
       </div>
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          id="companyPhone"
-          name="companyProfile.companyPhone"
-          onChange={(e) =>
-            onChange({
-              target: {
-                name: e.target.name,
-                value: `+${e.target.value.replace(/\D/g, "")}`,
-              },
-            } as React.ChangeEvent<HTMLInputElement>)
-          }
-          value={formContext.values.companyProfile?.companyPhone || ""}
-          errorMsg={formContext.errors["companyProfile.companyPhone"]}
-          label="Business phone number"
-          required
-        />
-      </div>
+      <AuthIconInput
+        label="Business Email"
+        type="email"
+        icon="bx-envelope"
+        placeholder="Enter business email"
+        name="companyProfile.companyEmail"
+        value={formContext.values.companyProfile?.companyEmail || ""}
+        onChange={onChange}
+        error={formContext.errors["companyProfile.companyEmail"] as string}
+        autoComplete="email"
+      />
 
-      <div className="form-fields">
-        <FloatingLabelInput
-          id="website"
-          name="companyProfile.website"
-          onChange={onChange}
-          value={formContext.values.companyProfile?.website || ""}
-          errorMsg={formContext.errors["companyProfile.website"]}
-          required={false}
-          label="Business website"
-        />
-      </div>
+      <AuthIconInput
+        label="Business Phone Number"
+        type="tel"
+        icon="bx-phone"
+        placeholder="Enter business phone"
+        name="companyProfile.companyPhone"
+        value={formContext.values.companyProfile?.companyPhone || ""}
+        onChange={(e) =>
+          onChange({
+            target: {
+              name: e.target.name,
+              value: `+${e.target.value.replace(/\D/g, "")}`,
+            },
+          } as React.ChangeEvent<HTMLInputElement>)
+        }
+        error={formContext.errors["companyProfile.companyPhone"] as string}
+        autoComplete="tel"
+      />
+
+      <AuthIconInput
+        label="Business Website (Optional)"
+        type="url"
+        icon="bx-globe"
+        placeholder="Enter business website"
+        name="companyProfile.website"
+        value={formContext.values.companyProfile?.website || ""}
+        onChange={onChange}
+        error={formContext.errors["companyProfile.website"] as string}
+      />
+
+      <AuthIconInput
+        label="Company Address"
+        type="text"
+        icon="bx-map"
+        placeholder="Enter company address"
+        name="companyProfile.companyAddress"
+        value={formContext.values.companyProfile?.companyAddress || ""}
+        onChange={onChange}
+        error={formContext.errors["companyProfile.companyAddress"] as string}
+      />
     </>
   );
 }

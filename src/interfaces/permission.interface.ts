@@ -268,7 +268,12 @@ export interface IUnifiedPermissions {
   currentRole: UserRole | null;
 
   /**
-   * True if user is an Admin
+   * True if user is a Super Admin (account owner with billing access)
+   */
+  isSuperAdmin: boolean;
+
+  /**
+   * True if user is an Admin or Super Admin
    */
   isAdmin: boolean;
 

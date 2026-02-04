@@ -23,14 +23,7 @@ export function useErrorHandler() {
 
       const errorResponse: APIErrorResponse = APIErrorHandler.parseError(error);
 
-      if (APIErrorHandler.shouldLog(errorResponse)) {
-        console.error("API Error:", {
-          error: errorResponse,
-          originalError: error,
-          timestamp: new Date().toISOString(),
-        });
-      }
-
+      // Check if session expired and redirect
       if (APIErrorHandler.shouldReload(errorResponse)) {
         message.error("Session expired. Please log in again.");
         router.push("/login");
@@ -51,10 +44,12 @@ export function useErrorHandler() {
           );
 
           if (errorResponse.errors.length === 1) {
-            message.error(validationMessage);
+            openNotification("error", "Validation Error", validationMessage, {
+              duration: 12,
+            });
           } else {
             openNotification("error", "Validation Error", validationMessage, {
-              duration: 6,
+              duration: 12,
             });
           }
         }
@@ -67,18 +62,24 @@ export function useErrorHandler() {
 
         switch (errorResponse.type) {
           case "network":
-            message.error(displayMessage);
+            openNotification("error", "Network Error", displayMessage, {
+              duration: 12,
+            });
             break;
           case "server":
             openNotification("error", "Server Error", displayMessage, {
-              duration: 8,
+              duration: 12,
             });
             break;
           case "authorization":
-            message.error(displayMessage);
+            openNotification("error", "Authorization Error", displayMessage, {
+              duration: 12,
+            });
             break;
           default:
-            message.error(displayMessage);
+            openNotification("error", "Request Error", displayMessage, {
+              duration: 12,
+            });
         }
       }
 
@@ -107,10 +108,33 @@ export function useErrorHandler() {
     [handleError]
   );
 
+  const handleMutationError = useCallback(
+    (error: any, customMessage?: string) => {
+      return handleError(error, {
+        showNotification: true,
+        showFieldErrors: false,
+        fallbackMessage: customMessage,
+      });
+    },
+    [handleError]
+  );
+
+  const handleQueryError = useCallback(
+    (error: any) => {
+      return handleError(error, {
+        showNotification: true,
+        showFieldErrors: false,
+      });
+    },
+    [handleError]
+  );
+
   return {
     handleError,
     handleValidationError,
     handleSilentError,
+    handleMutationError,
+    handleQueryError,
     parseError: APIErrorHandler.parseError,
   };
 }

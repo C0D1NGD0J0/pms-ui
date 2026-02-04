@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import { globalQueryErrorHandler } from "@utils/errorHandler";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
@@ -14,7 +15,9 @@ const RectQueryProvider = ({ children }: { children: React.ReactNode }) => {
             refetchOnMount: false,
             retry: false,
             staleTime: 2 * 60 * 1000, // 2 minutes
-            // gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
+          },
+          mutations: {
+            onError: globalQueryErrorHandler,
           },
         },
       })

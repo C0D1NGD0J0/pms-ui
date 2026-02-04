@@ -36,9 +36,11 @@ export function AccountOverview(props: ComponentProps) {
     },
     {
       label: "Subscription",
-      value: `${
-        accountStats.planName === "personal" ? "Basic" : accountStats.planName
-      } Plan`,
+      value: accountStats.planName
+        ? accountStats.planName.charAt(0).toUpperCase() +
+          accountStats.planName.slice(1) +
+          " Plan"
+        : "N/A Plan",
       description: "Subscription type",
       variant: "icon",
       icon: <i className="bx bx-calendar-check"></i>,

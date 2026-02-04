@@ -128,7 +128,6 @@ export function canRenewLease(
     lease,
     userRole,
   });
-  // Must be logged in
   if (!userRole) {
     return {
       canProceed: false,
@@ -137,10 +136,10 @@ export function canRenewLease(
     };
   }
 
-  // Only managers and admins can create renewals
   if (
     userRole !== UserRole.MANAGER &&
     userRole !== UserRole.ADMIN &&
+    userRole !== UserRole.SUPER_ADMIN &&
     lease.status !== LeaseStatusEnum.DRAFT
   ) {
     return {

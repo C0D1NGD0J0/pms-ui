@@ -1,19 +1,13 @@
 import Link from "next/link";
-import { Popover, Result } from "antd";
+import { Popover } from "antd";
 import { Loading } from "@components/Loading";
 import { UseFormReturnType } from "@mantine/form";
 import { IAccountActivationForm } from "@interfaces/auth.interface";
+import { AuthIconInput, Button, Form } from "@components/FormElements/";
 import {
-  FormLabel,
-  FormInput,
-  FormField,
-  Button,
-  Form,
-} from "@components/FormElements/";
-import {
-  AuthContentHeader,
-  AuthContentFooter,
-  AuthContentBody,
+  ModernAuthLayout,
+  AuthBrandPanel,
+  AuthFormPanel,
 } from "@components/AuthLayout";
 
 interface AccountActivationViewProps {
@@ -53,21 +47,20 @@ export function AccountActivationView({
         <Popover
           content={
             <div style={{ width: "300px", padding: "2rem" }}>
-              <p>Enter the email address you used for registration:</p>
+              <p style={{ marginBottom: "1rem" }}>
+                Enter the email address you used for registration:
+              </p>
               <div style={{ margin: "10px 0" }}>
-                <FormInput
+                <AuthIconInput
                   name="resendEmail"
-                  id="resendEmail"
+                  type="email"
+                  icon="bx-envelope"
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  hasError={!!emailError}
+                  error={emailError}
+                  autoComplete="email"
                 />
-                {emailError && (
-                  <small className="form-field-error">
-                    <i>{emailError}</i>
-                  </small>
-                )}
               </div>
               <div
                 style={{
@@ -123,69 +116,83 @@ export function AccountActivationView({
   }
 
   return (
-    <>
-      {isSuccess ? (
-        <Result
-          status="success"
-          title="Congratulations, account has now been activated. Please login to proceed."
-          extra={[
-            <Link key="login" href="/login" className="btn btn-primary">
-              Login
-            </Link>,
-          ]}
-        />
-      ) : (
-        <>
-          <AuthContentHeader
-            title="Account verification"
-            subtitle="Complete registration by verifying your account"
-          />
-          <AuthContentBody>
+    <ModernAuthLayout
+      brandContent={
+        <AuthBrandPanel>
+          <i className="bx bx-shield-check auth-brand-panel__icon"></i>
+          <h1 className="auth-brand-panel__title">Verify Your Account</h1>
+          <p className="auth-brand-panel__subtitle">
+            Complete your registration to access all features
+          </p>
+        </AuthBrandPanel>
+      }
+    >
+      <AuthFormPanel>
+        {isSuccess ? (
+          <div className="auth-success-panel">
+            <i className="bx bx-check-circle success-icon"></i>
+            <h2>Account Activated!</h2>
+            <p>
+              Congratulations, your account has been activated. You can now log
+              in to your account.
+            </p>
+            <div className="btn-group">
+              <Link href="/login" className="btn btn-primary">
+                Login to your account
+              </Link>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="auth-form-panel__header">
+              <h2 className="auth-form-panel__title">Account Verification</h2>
+              <p className="auth-form-panel__subtitle">
+                Enter the verification code sent to your email
+              </p>
+            </div>
+
             <Form
               onSubmit={form.onSubmit(handleSubmit)}
               id="verification-form"
-              className="auth-form"
               disabled={isPending}
               autoComplete="off"
             >
-              <div className="form-fields">
-                <FormField
-                  error={{
-                    msg: form.errors.token ? String(form.errors.token) : "",
-                    touched: form.isTouched("token"),
-                  }}
-                >
-                  <FormLabel htmlFor="token" label="Verification code" />
-                  <FormInput
-                    required
-                    name="token"
-                    id="token"
-                    onChange={(e) =>
-                      form.setFieldValue("token", e.target.value)
-                    }
-                    hasError={!!form.errors["token"]}
-                    value={form.values.token || ""}
-                  />
-                </FormField>
-              </div>
-              <div className="action-fields">
+              <AuthIconInput
+                label="Verification Code"
+                type="text"
+                icon="bx-key"
+                placeholder="Enter verification code"
+                name="token"
+                value={form.values.token || ""}
+                onChange={(e) => form.setFieldValue("token", e.target.value)}
+                error={form.errors.token ? String(form.errors.token) : ""}
+              />
+              <div className="btn-group">
                 <Button
-                  label={`${isPending ? "Processing..." : "Confirm"}`}
-                  className="btn btn-primary"
+                  label={isPending ? "Verifying..." : "Confirm code"}
+                  className="btn btn-primary btn-full"
                   type="submit"
-                  disabled={!form.isValid()}
+                  disabled={!form.isValid() || isPending}
+                  loading={isPending}
                 />
               </div>
-              {showResendActivation && renderResendActivationPopover()}
+
+              {showResendActivation && (
+                <div style={{ marginTop: "1rem" }}>
+                  {renderResendActivationPopover()}
+                </div>
+              )}
             </Form>
-          </AuthContentBody>
-          <AuthContentFooter
-            footerLink="/"
-            footerLinkText="Privacy & Terms of Service"
-            footerText="By continuing, you agree to accept our"
-          />
-        </>
-      )}
-    </>
+
+            <div className="auth-form-panel__footer">
+              <p>
+                By continuing, you agree to our{" "}
+                <Link href="/">Privacy & Terms of Service</Link>
+              </p>
+            </div>
+          </>
+        )}
+      </AuthFormPanel>
+    </ModernAuthLayout>
   );
 }

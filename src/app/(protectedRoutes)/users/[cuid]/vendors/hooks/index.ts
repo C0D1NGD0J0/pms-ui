@@ -5,4 +5,6 @@ export {
   useGetVendorStats,
   useGetUserOrVendor,
   useGetVendorTeamMembers,
+  useRemoveVendor,
+  useReconnectVendor,
 } from "./vendorHooks";

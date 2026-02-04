@@ -166,7 +166,9 @@
     border-radius: 8px;
     background: hslaGen($white-color, 1);
     border: 1px solid hslaGen($light-grey-color, 0.3);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+    box-shadow:
+      0 4px 20px rgba(0, 0, 0, 0.08),
+      0 1px 4px rgba(0, 0, 0, 0.04);
     transform: translateY(-4px);
     opacity: 0;
     visibility: hidden;
@@ -245,7 +247,6 @@
       }
     }
 
-    // Simple divider between profile and logout
     li:first-child::after {
       content: "";
       display: block;
@@ -255,7 +256,6 @@
       background: hslaGen($light-grey-color, 0.4);
     }
 
-    // Mobile responsive adjustments
     @include breakpoint("560px", max) {
       right: -1rem;
       min-width: 16rem;
@@ -282,7 +282,6 @@
   }
 }
 
-/* Avatar Styles */
 .user-avatar {
   position: relative;
   align-items: center;
@@ -315,9 +314,9 @@
   }
 }
 
-// DASHBOARD SIDEBAR-NAV
 .sidebar {
-  top: 25rem;
+  position: sticky;
+  top: 0;
   width: 100%;
   display: flex;
   align-self: start;
@@ -326,9 +325,11 @@
   padding: 1rem 1.4rem;
   flex-direction: column;
   background: hslaGen($blue-ink-color, 1);
-  transition: width 0.3s ease, transform 0.3s ease;
+  transition:
+    width 0.3s ease,
+    transform 0.3s ease;
+  // overflow-y: auto;
 
-  // Sidebar toggle button
   .sidebar-toggle {
     left: 20rem;
     top: -1.5rem;
@@ -711,7 +712,9 @@
     display: block;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease;
 
     &.show {
       opacity: 1;

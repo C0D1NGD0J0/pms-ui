@@ -1,18 +1,19 @@
+import Link from "next/link";
 import { UseFormReturnType } from "@mantine/form";
 import { ILoginForm } from "@interfaces/auth.interface";
 import { SelectClientAccountModal } from "@components/SelectClientAccountModal";
 import {
-  FormInput,
-  FormField,
+  ModernAuthLayout,
+  AuthBrandPanel,
+  AuthFormPanel,
+} from "@components/AuthLayout";
+import {
+  SocialLoginButtons,
+  AuthIconInput,
   Checkbox,
   Button,
   Form,
 } from "@components/FormElements/";
-import {
-  AuthContentHeader,
-  AuthContentFooter,
-  AuthContentBody,
-} from "@components/AuthLayout";
 
 interface LoginViewProps {
   form: UseFormReturnType<ILoginForm>;
@@ -39,60 +40,95 @@ export function LoginView({
 }: LoginViewProps) {
   return (
     <>
-      <AuthContentHeader
-        title="Login"
-        headerLink="/register"
-        headerLinkText="Register."
-        subtitle="Don't have an account?"
-      />
-      <AuthContentBody>
-        <Form
-          onSubmit={form.onSubmit(handleSubmit)}
-          id="login-form"
-          className="auth-form"
-          disabled={isSubmitting}
-          autoComplete="off"
+      <ModernAuthLayout
+        brandContent={
+          <AuthBrandPanel>
+            <i className="bx bx-buildings auth-brand-panel__icon"></i>
+            <h1 className="auth-brand-panel__title">PropertyFlow</h1>
+            <p className="auth-brand-panel__subtitle">
+              Manage Your Properties With Confidence
+            </p>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                lineHeight: "1.6",
+                opacity: "0.9",
+                marginBottom: "3rem",
+              }}
+            >
+              The all-in-one platform for landlords and property managers.
+              Streamline rent collection, maintenance requests, and tenant
+              communication.
+            </p>
+            <ul className="auth-brand-panel__features">
+              <li className="auth-brand-panel__feature">
+                <i className="bx bx-shield-alt-2"></i>
+                <span>Secure online payments with instant notifications</span>
+              </li>
+              <li className="auth-brand-panel__feature">
+                <i className="bx bx-wrench"></i>
+                <span>Track maintenance requests in real-time</span>
+              </li>
+              <li className="auth-brand-panel__feature">
+                <i className="bx bx-bar-chart-alt-2"></i>
+                <span>Comprehensive reporting and analytics</span>
+              </li>
+              <li className="auth-brand-panel__feature">
+                <i className="bx bx-user-check"></i>
+                <span>Tenant screening and lease management</span>
+              </li>
+            </ul>
+          </AuthBrandPanel>
+        }
+      >
+        <AuthFormPanel
+          title="Welcome Back"
+          footer={
+            <>
+              Don&apos;t have an account?{" "}
+              <Link href="/register">Sign up for free</Link>
+            </>
+          }
         >
-          <div className="form-fields">
-            <FormField
-              error={{
-                msg: (form.errors["email"] as string) || "",
-                touched: form.isTouched("email"),
-              }}
-            >
-              <FormInput
-                required
-                name="email"
-                type="email"
-                id="email"
-                placeholder="Enter email..."
-                value={form.values.email || ""}
-                hasError={!!form.errors["email"]}
-                onChange={(e) => form.setFieldValue("email", e.target.value)}
-              />
-            </FormField>
-          </div>
-          <div className="form-fields">
-            <FormField
-              error={{
-                msg: (form.errors["password"] as string) || "",
-                touched: form.isTouched("password"),
-              }}
-            >
-              <FormInput
-                required
-                name="password"
-                type="password"
-                id="password"
-                value={form.values.password || ""}
-                hasError={!!form.errors["password"]}
-                placeholder="Enter password..."
-                onChange={(e) => form.setFieldValue("password", e.target.value)}
-              />
-            </FormField>
-          </div>
-          <div className="form-fields m-2">
-            <FormField>
+          <Form
+            onSubmit={form.onSubmit(handleSubmit)}
+            id="login-form"
+            disabled={isSubmitting}
+            autoComplete="off"
+          >
+            <AuthIconInput
+              label="Email Address"
+              type="email"
+              icon="bx-envelope"
+              placeholder="Enter your email"
+              name="email"
+              value={form.values.email || ""}
+              onChange={(e) => form.setFieldValue("email", e.target.value)}
+              error={
+                form.isTouched("email")
+                  ? (form.errors["email"] as string)
+                  : undefined
+              }
+              autoComplete="email"
+            />
+
+            <AuthIconInput
+              label="Password"
+              type="password"
+              icon="bx-lock-alt"
+              placeholder="Enter your password"
+              name="password"
+              value={form.values.password || ""}
+              onChange={(e) => form.setFieldValue("password", e.target.value)}
+              error={
+                form.isTouched("password")
+                  ? (form.errors["password"] as string)
+                  : undefined
+              }
+              autoComplete="current-password"
+            />
+
+            <div className="flex-row flex-between">
               <Checkbox
                 id="rememberMe"
                 name="rememberMe"
@@ -102,22 +138,26 @@ export function LoginView({
                   form.setFieldValue("rememberMe", e.target.checked)
                 }
               />
-            </FormField>
-          </div>
-          <div className="action-fields">
-            <Button
-              type="submit"
-              disabled={!form.isValid()}
-              className="btn btn-primary btn-grow"
-              label={`${isSubmitting ? "Processing..." : "Login"}`}
-            />
-          </div>
-        </Form>
-      </AuthContentBody>
-      <AuthContentFooter
-        footerLink="/forgot_password"
-        footerLinkText="Forgot your password?"
-      />
+              <Link href="/forgot_password" className="btn-text">
+                Forgot password?
+              </Link>
+            </div>
+            <div className="btn-group">
+              <Button
+                type="submit"
+                disabled={!form.isValid()}
+                loading={isSubmitting}
+                label="Sign In"
+                loadingText="Signing in..."
+                className="btn-primary btn-full"
+              />
+            </div>
+          </Form>
+
+          <SocialLoginButtons />
+        </AuthFormPanel>
+      </ModernAuthLayout>
+
       {isModalOpen && userAccounts.length > 0 && (
         <SelectClientAccountModal
           isOpen={isModalOpen}

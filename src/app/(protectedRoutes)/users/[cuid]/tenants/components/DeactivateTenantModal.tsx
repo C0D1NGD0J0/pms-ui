@@ -27,7 +27,6 @@ export const DeactivateTenantModal: React.FC<DeactivateTenantModalProps> = ({
           </p>
           <p
             style={{
-              color: "var(--color-text-secondary)",
               fontSize: "0.9rem",
             }}
           >
@@ -37,7 +36,6 @@ export const DeactivateTenantModal: React.FC<DeactivateTenantModalProps> = ({
             style={{
               marginTop: "0.5rem",
               paddingLeft: "1.5rem",
-              color: "var(--color-text-secondary)",
               fontSize: "0.9rem",
             }}
           >

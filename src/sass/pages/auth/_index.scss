@@ -1,5 +1,3 @@
-@forward "../auth/base-auth";
-@forward "../auth/login";
-@forward "../auth/forgot-pwd";
-@forward "../auth/reset-pwd";
-@forward "../auth/account-activation";
+@forward "../auth/modern-auth";
+@forward "../auth/subscription";
+@forward "../auth/register-plan";

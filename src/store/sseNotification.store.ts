@@ -8,6 +8,18 @@ import {
 
 type ConnectionStatus = "disconnected" | "connecting" | "connected" | "error";
 
+interface SubscriptionInfo {
+  showPaymentModal: boolean;
+  paymentStatus: "success" | "canceled" | "failed" | null;
+  paymentMessage: string;
+  eventType: string | null;
+  subscription?: {
+    plan: string;
+    status: string;
+    endDate?: string;
+  };
+}
+
 interface NotificationState {
   notifications: INotification[];
   announcements: INotification[];
@@ -17,6 +29,7 @@ interface NotificationState {
   announcementsSourceRef: EventSource | null;
   reconnectAttempts: number;
   maxReconnectAttempts: number;
+  subscriptionInfo: SubscriptionInfo;
   actions: {
     initializeConnection: (cuid: string, filters?: NotificationFilters) => void;
     disconnectStreams: () => void;
@@ -33,6 +46,8 @@ interface NotificationState {
       filters?: NotificationFilters
     ) => void;
     clearState: () => void;
+    handleSubscriptionUpdate: (data: any) => void;
+    closePaymentModal: () => void;
   };
 }
 
@@ -47,11 +62,16 @@ const useSSENotificationStore = create<NotificationState>()(
       announcementsSourceRef: null,
       reconnectAttempts: 0,
       maxReconnectAttempts: 5,
+      subscriptionInfo: {
+        showPaymentModal: false,
+        paymentStatus: null,
+        paymentMessage: "",
+        eventType: null,
+        subscription: undefined,
+      },
       actions: {
         initializeConnection: (cuid: string, filters?: NotificationFilters) => {
           const { personalSourceRef, announcementsSourceRef } = get();
-
-          // Don't create new connections if already connected
           if (personalSourceRef || announcementsSourceRef) return;
 
           get().actions.setupPersonalStream(cuid, filters);
@@ -127,13 +147,13 @@ const useSSENotificationStore = create<NotificationState>()(
                 jobType: jobUpdate.jobType,
                 stage: jobUpdate.stage,
                 progress: jobUpdate.progress,
-                isTransient: true, // Mark as transient (not stored in DB)
-                errors: jobUpdate.errors, // Include errors from root level
+                isTransient: true,
+                errors: jobUpdate.errors,
                 errorCount: jobUpdate.errorCount,
                 totalRows: jobUpdate.totalRows,
                 validCount: jobUpdate.validCount,
                 totalItems: jobUpdate.totalItems,
-                validData: jobUpdate.validData, // Include validData from root level
+                validData: jobUpdate.validData,
                 ...jobUpdate.metadata,
               },
             };
@@ -141,6 +161,22 @@ const useSSENotificationStore = create<NotificationState>()(
             set((state) => ({
               notifications: [notification, ...state.notifications],
             }));
+          });
+
+          newPersonalSource.addEventListener("subscription_update", (event) => {
+            const data = JSON.parse(event.data);
+
+            console.log("🔔 [SSE] subscription_update received:", {
+              eventType: data.eventType,
+              message: data.message,
+              subscription: data.subscription,
+              timestamp: data.timestamp,
+              action: data.action,
+            });
+
+            if (data.action === "REFETCH_CURRENT_USER") {
+              get().actions.handleSubscriptionUpdate(data);
+            }
           });
 
           newPersonalSource.onerror = () => {
@@ -284,13 +320,78 @@ const useSSENotificationStore = create<NotificationState>()(
         clearState: () => {
           get().actions.disconnectStreams();
         },
+
+        handleSubscriptionUpdate: (data: any) => {
+          const notificationConfig: Record<
+            string,
+            { title: string; priority: "high" | "medium" | "low" }
+          > = {
+            subscription_activated: {
+              title: "🎉 Subscription Activated",
+              priority: "high",
+            },
+            subscription_renewed: {
+              title: "✓ Subscription Renewed",
+              priority: "medium",
+            },
+            payment_failed: {
+              title: "⚠️ Payment Failed",
+              priority: "high",
+            },
+            subscription_canceled: {
+              title: "Subscription Canceled",
+              priority: "medium",
+            },
+            subscription_updated: {
+              title: "Subscription Updated",
+              priority: "medium",
+            },
+          };
+
+          const config = notificationConfig[data.eventType] || {
+            title: "Subscription Update",
+            priority: "medium" as const,
+          };
+
+          const notification: INotification = {
+            id: `sub-${Date.now()}-${Math.random()}`,
+            nuid: `sub-${Date.now()}-${Math.random()}`,
+            title: config.title,
+            message: data.message || "Your subscription has been updated",
+            type: "system",
+            priority: config.priority,
+            isRead: false,
+            createdAt: data.timestamp || new Date().toISOString(),
+            recipientType: "individual",
+            metadata: {
+              isTransient: true,
+              eventType: data.eventType,
+              subscription: data.subscription,
+            },
+          };
+
+          set((state) => ({
+            notifications: [notification, ...state.notifications],
+          }));
+        },
+
+        closePaymentModal: () => {
+          set({
+            subscriptionInfo: {
+              showPaymentModal: false,
+              paymentStatus: null,
+              paymentMessage: "",
+              eventType: null,
+              subscription: undefined,
+            },
+          });
+        },
       },
     }),
     {
       name: "notification-storage",
       storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => {
-        // Only persist connection status, not the actual connections
         return {
           connectionStatus: state.connectionStatus,
         } as unknown as NotificationState;
@@ -307,6 +408,7 @@ export const useSSENotifications = () => {
     error,
     reconnectAttempts,
     maxReconnectAttempts,
+    subscriptionInfo,
   } = useSSENotificationStore();
 
   return {
@@ -316,6 +418,7 @@ export const useSSENotifications = () => {
     error,
     reconnectAttempts,
     maxReconnectAttempts,
+    subscriptionInfo,
     isConnected: connectionStatus === "connected",
     isConnecting: connectionStatus === "connecting",
     hasError: connectionStatus === "error",
@@ -330,5 +433,6 @@ export const useSSENotificationActions = () => {
     markAsRead: actions.markAsRead,
     reconnect: actions.reconnect,
     clearState: actions.clearState,
+    closePaymentModal: actions.closePaymentModal,
   };
 };

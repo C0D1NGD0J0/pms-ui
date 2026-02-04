@@ -29,8 +29,11 @@ export const SignupSchema = z
     location: z.string().min(3, { message: "Location is required" }),
     accountType: z.object({
       planId: z.string().min(1, { message: "Plan is required" }).optional(),
-      planName: z.string().min(1, { message: "Plan name is required" }),
-      isCorporate: z.boolean(),
+      isEnterpriseAccount: z.boolean(),
+      lookUpKey: z.string().optional(),
+      category: z.enum(["individual", "business"]),
+      planName: z.enum(["essential", "growth", "portfolio"]),
+      billingInterval: z.enum(["monthly", "annual"]),
     }),
     displayName: z
       .string()
@@ -40,7 +43,7 @@ export const SignupSchema = z
       .object({
         tradingName: z.string(),
         legalEntityName: z.string(),
-        website: z.string().url().optional().or(z.literal("")),
+        website: z.string(),
         companyEmail: z.string(),
         companyPhone: z.string(),
         companyAddress: z.string(),
@@ -62,7 +65,7 @@ export const SignupSchema = z
   })
   .superRefine((data, ctx) => {
     // Only validate companyProfile if accountType is corporate/enterprise
-    if (data.accountType.isCorporate) {
+    if (data.accountType.isEnterpriseAccount) {
       // Validate tradingName
       if (
         !data.companyProfile?.tradingName ||
@@ -125,6 +128,18 @@ export const SignupSchema = z
           message:
             "Please specify a valid phone number (include the international prefix).",
           path: ["companyProfile", "companyPhone"],
+        });
+      }
+
+      // Validate companyAddress
+      if (
+        !data.companyProfile?.companyAddress ||
+        data.companyProfile.companyAddress.length < 5
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Company address is required",
+          path: ["companyProfile", "companyAddress"],
         });
       }
     }

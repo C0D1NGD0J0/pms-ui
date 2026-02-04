@@ -9,12 +9,12 @@ import { invitationService } from "@services/invite";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNotification } from "@hooks/useNotification";
 import { withClientAccess } from "@hooks/permissionHOCs";
-import { AddUserModal } from "@components/UserManagement";
 import { generateLegendColors } from "@utils/employeeUtils";
 import { PageHeader } from "@components/PageElements/Header";
 import { FilteredUserTableData } from "@interfaces/user.interface";
 import { IInvitationFormData } from "@interfaces/invitation.interface";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
+import { DeactivateUserModal, AddUserModal } from "@components/UserManagement";
 import {
   PanelsWrapper,
   PanelContent,
@@ -22,9 +22,9 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { useGetEmployees } from "./hooks";
 import { useGetUserStats } from "../../shared-hooks";
 import { EmployeeTableView } from "./components/EmployeeTableView";
+import { useReconnectEmployee, useRemoveEmployee, useGetEmployees } from "./hooks";
 
 interface StaffPageProps {
   params: Promise<{
@@ -40,6 +40,11 @@ function StaffPage({ params }: StaffPageProps) {
 
   const [isAddEmployeeModalOpen, setIsAddEmployeeModalOpen] = useState(false);
   const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<{
+    uid: string;
+    name: string;
+  } | null>(null);
 
   const {
     employees,
@@ -77,12 +82,52 @@ function StaffPage({ params }: StaffPageProps) {
     router.push(`/users/${cuid}/staff/${employee.uid}`);
   };
 
-  const handleToggleEmployeeStatus = (
-    employeeId: string,
-    isActive: boolean
-  ) => {
-    console.log("Toggle employee status:", employeeId, isActive);
-    // TODO: Implement employee status toggle
+  const removeEmployeeMutation = useRemoveEmployee(
+    cuid,
+    selectedEmployee?.uid || ""
+  );
+  const reconnectEmployeeMutation = useReconnectEmployee(
+    cuid,
+    selectedEmployee?.uid || ""
+  );
+
+  const handleDeactivateEmployee = (employee: FilteredUserTableData) => {
+    setSelectedEmployee({
+      uid: employee.uid,
+      name: employee.fullName || employee.displayName || employee.email,
+    });
+    setShowDeactivateModal(true);
+  };
+
+  const handleReconnectEmployee = async (employee: FilteredUserTableData) => {
+    setSelectedEmployee({
+      uid: employee.uid,
+      name: employee.fullName || employee.displayName || employee.email,
+    });
+    try {
+      await reconnectEmployeeMutation.mutateAsync();
+      setSelectedEmployee(null);
+    } catch (error) {
+      console.error("Failed to reconnect employee:", error);
+    }
+  };
+
+  const handleConfirmDeactivate = async () => {
+    if (!selectedEmployee) return;
+
+    try {
+      await removeEmployeeMutation.mutateAsync();
+      setShowDeactivateModal(false);
+      setSelectedEmployee(null);
+    } catch (error) {
+      console.error("Failed to remove employee:", error);
+      setShowDeactivateModal(false);
+    }
+  };
+
+  const handleCancelDeactivate = () => {
+    setShowDeactivateModal(false);
+    setSelectedEmployee(null);
   };
 
   const handleAddNewEmployee = () => {
@@ -142,7 +187,8 @@ function StaffPage({ params }: StaffPageProps) {
                 handleSortDirectionChange={handleSortDirectionChange}
                 isLoading={isLoading}
                 onEdit={handleEditEmployee}
-                onToggleStatus={handleToggleEmployeeStatus}
+                onDeactivate={handleDeactivateEmployee}
+                onReconnect={handleReconnectEmployee}
                 onViewDetails={handleViewEmployeeDetails}
                 pagination={pagination}
                 totalCount={totalCount}
@@ -225,6 +271,15 @@ function StaffPage({ params }: StaffPageProps) {
         onClose={handleCloseModal}
         onSubmit={handleSubmitEmployeeInvite}
         isSubmitting={isSubmittingInvite}
+      />
+
+      <DeactivateUserModal
+        isOpen={showDeactivateModal}
+        userName={selectedEmployee?.name || ""}
+        userType="employee"
+        onClose={handleCancelDeactivate}
+        onConfirm={handleConfirmDeactivate}
+        isSubmitting={removeEmployeeMutation.isPending}
       />
     </div>
   );
