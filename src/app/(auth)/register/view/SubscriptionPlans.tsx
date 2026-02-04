@@ -17,7 +17,6 @@ interface PlanSelectionProps {
   isPlansError?: boolean;
 }
 
-// Icon mapping based on plan name
 const PLAN_ICONS: Record<string, string> = {
   basic: "bx-user",
   starter: "bx-briefcase",
@@ -125,8 +124,8 @@ export default function SubscriptionPlans({
               },
               annual: {
                 priceId: null,
-                priceInCents: 47040, // $49 * 12 * 0.8 = $470.40/year
-                displayPrice: "$39", // Monthly equivalent when billed annually
+                priceInCents: 47040,
+                displayPrice: "$39",
                 savingsPercent: 20,
                 savingsDisplay: "Save 20%",
                 lookUpKey: null,
@@ -165,8 +164,8 @@ export default function SubscriptionPlans({
               },
               annual: {
                 priceId: null,
-                priceInCents: 75840, // $79 * 12 * 0.8 = $758.40/year
-                displayPrice: "$63.20", // Monthly equivalent when billed annually ($758.40 / 12)
+                priceInCents: 75840,
+                displayPrice: "$63.20",
                 savingsPercent: 20,
                 savingsDisplay: "Save 20%",
                 lookUpKey: null,
@@ -177,18 +176,14 @@ export default function SubscriptionPlans({
 
   const renderPlanCard = (plan: IServerSubscriptionPlan) => {
     const icon = PLAN_ICONS[plan.planName] || "bx-briefcase";
-
-    // Calculate price based on billing period
     let priceValue: string;
 
     if (isAnnual) {
-      // Use server-provided annual display price to avoid recalculation/rounding issues
       const price = plan.pricing.annual.displayPrice;
-      priceValue = price.replace(/[^0-9]/g, "");
+      priceValue = price.replace(/[^0-9.]/g, "");
     } else {
-      // Use regular monthly price
       const price = plan.pricing.monthly.displayPrice;
-      priceValue = price.replace(/[^0-9]/g, "");
+      priceValue = price.replace(/[^0-9.]/g, "");
     }
 
     return (
@@ -210,7 +205,9 @@ export default function SubscriptionPlans({
             <span className="currency">$</span>
             <span className="price-value">{priceValue}</span>
           </span>
-          <span className="pricing-card__period">/ month</span>
+          <span className="pricing-card__period">
+            / {isAnnual ? "year" : "month"}
+          </span>
         </div>
         <ul className="pricing-card__features">
           {plan.featureList.map((feature, idx) => (
@@ -258,7 +255,6 @@ export default function SubscriptionPlans({
         </Link>
       </div>
 
-      {/* Hero Section */}
       <div className="plan-selection__hero">
         <h1 className="plan-selection__title">Choose Your Perfect Plan</h1>
         <p className="plan-selection__subtitle">
@@ -266,7 +262,6 @@ export default function SubscriptionPlans({
           we have the right solution for you. Start free and upgrade anytime.
         </p>
 
-        {/* Billing Toggle */}
         <div className="billing-toggle">
           <span
             className={`billing-toggle__label ${!isAnnual ? "active" : ""}`}
@@ -284,12 +279,10 @@ export default function SubscriptionPlans({
         </div>
       </div>
 
-      {/* Pricing Cards */}
       <div className="pricing-cards">
         {sortedPlans.map((plan) => renderPlanCard(plan))}
       </div>
 
-      {/* Enterprise CTA */}
       <div className="enterprise-cta">
         <div className="enterprise-cta__content">
           <h2 className="enterprise-cta__title">
