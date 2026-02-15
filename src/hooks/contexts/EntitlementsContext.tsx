@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Modal } from "@components/FormElements";
 import { Button } from "@components/FormElements";
 import { useEntitlementsUsage } from "@hooks/useEntitlementsUsage";
+import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
 import React, {
   createContext,
   useContext,
@@ -69,6 +70,7 @@ interface EntitlementsProviderProps {
 export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
   const { user, client } = useAuth();
   const router = useRouter();
+  const permissions = useUnifiedPermissions();
   const [showModal, setShowModal] = useState(false);
   const [modalReason, setModalReason] = useState("");
   const {
@@ -80,10 +82,8 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
   const value: EntitlementsContextValue = useMemo(() => {
     // Extract data from currentUser and usage API
     const entitlements = user?.subscription?.entitlements || {};
-    const limits =
-      usageData?.limits || DEFAULT_LIMITS;
-    const usage =
-      usageData?.usage || DEFAULT_USAGE;
+    const limits = usageData?.limits || DEFAULT_LIMITS;
+    const usage = usageData?.usage || DEFAULT_USAGE;
     const status = user?.subscription?.plan?.status || "inactive";
 
     // Helper: Check if user has a specific feature
@@ -180,15 +180,25 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
     };
   }, [user, usageData, isLoading, error]);
 
-  const handleViewPlans = () => {
+  const handleCloseModal = () => {
     setShowModal(false);
-    router.push("/subscription");
+    // Clean up modal reason to prevent memory accumulation
+    setModalReason("");
+  };
+
+  const handleViewPlans = () => {
+    handleCloseModal();
+    router.push(
+      `/client/${client?.cuid}/account_settings?activeTab=subscriptionTab`
+    );
   };
 
   const handleContactSales = () => {
-    setShowModal(false);
+    handleCloseModal();
     router.push("/contact-sales");
   };
+
+  const isSuperAdminOrAdmin = permissions.isSuperAdmin || permissions.isAdmin;
 
   return (
     <EntitlementsContext.Provider value={value}>
@@ -196,8 +206,9 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
 
       <Modal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Upgrade Required"
+        onClose={handleCloseModal}
+        destroyOnHidden={true}
+        title={isSuperAdminOrAdmin ? "Upgrade Required" : "Limit Reached"}
       >
         <div style={{ padding: "1.5rem", textAlign: "center" }}>
           <Icon
@@ -209,41 +220,76 @@ export function EntitlementsProvider({ children }: EntitlementsProviderProps) {
 
           <h3 style={{ marginBottom: "1rem" }}>{modalReason}</h3>
 
-          <p style={{ marginBottom: "2rem", lineHeight: "1.6" }}>
-            Upgrade your plan to unlock this feature and get access to more
-            resources, advanced features, and priority support.
-          </p>
+          {isSuperAdminOrAdmin ? (
+            <>
+              <p style={{ marginBottom: "2rem", lineHeight: "1.6" }}>
+                Upgrade your plan to unlock this feature and get access to more
+                resources, advanced features, and priority support.
+              </p>
 
-          <div
-            style={{
-              display: "flex",
-              gap: "1rem",
-              justifyContent: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            <Button
-              label="View Plans & Upgrade"
-              onClick={handleViewPlans}
-              className="btn-primary"
-              icon={<Icon name="bx-rocket" />}
-            />
-            <Button
-              label="Contact Sales"
-              onClick={handleContactSales}
-              className="btn-outline"
-              icon={<Icon name="bx-phone" />}
-            />
-          </div>
+              <div
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  justifyContent: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <Button
+                  label="View Plans & Upgrade"
+                  onClick={handleViewPlans}
+                  className="btn-primary"
+                  icon={<Icon name="bx-rocket" />}
+                />
+                <Button
+                  label="Contact Sales"
+                  onClick={handleContactSales}
+                  className="btn-outline"
+                  icon={<Icon name="bx-phone" />}
+                />
+              </div>
 
-          <p
-            style={{
-              marginTop: "1.5rem",
-              fontSize: "0.9rem",
-            }}
-          >
-            Have questions? Our team is here to help you choose the right plan.
-          </p>
+              <p
+                style={{
+                  marginTop: "1.5rem",
+                  fontSize: "0.9rem",
+                }}
+              >
+                Have questions? Our team is here to help you choose the right plan.
+              </p>
+            </>
+          ) : (
+            <>
+              <p style={{ marginBottom: "2rem", lineHeight: "1.6" }}>
+                Your organization has reached the limit for this resource. Please contact your account administrator to upgrade the plan.
+              </p>
+
+              <div
+                style={{
+                  display: "flex",
+                  gap: "1rem",
+                  justifyContent: "center",
+                  flexWrap: "wrap",
+                }}
+              >
+                <Button
+                  label="Close"
+                  onClick={handleCloseModal}
+                  className="btn-default"
+                />
+              </div>
+
+              <p
+                style={{
+                  marginTop: "1.5rem",
+                  fontSize: "0.9rem",
+                  color: "var(--text-muted)",
+                }}
+              >
+                Contact your super admin or account owner to discuss upgrading your plan.
+              </p>
+            </>
+          )}
         </div>
       </Modal>
     </EntitlementsContext.Provider>

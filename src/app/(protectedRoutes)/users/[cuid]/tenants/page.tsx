@@ -20,8 +20,8 @@ import {
   Panel,
 } from "@components/Panel";
 
-import { TenantTableView } from "./components/TenantTableView";
 import { useDeactivateTenant, useGetTenants } from "./hooks";
+import { TenantTableView } from "./components/TenantTableView";
 
 interface TenantsPageProps {
   params: Promise<{

@@ -5,6 +5,7 @@ import { useAuth } from "@store/auth.store";
 import { Button } from "@components/FormElements";
 import React, { ChangeEvent, useState } from "react";
 import { PageHeader } from "@components/PageElements";
+import { useEntitlements } from "@src/hooks/contexts";
 import { CsvUploadModal } from "@properties/components";
 import { useGetAllProperties } from "@properties/hooks";
 import { PanelsWrapper, Panel } from "@components/Panel";
@@ -16,6 +17,7 @@ import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
 function Properties() {
   const { client } = useAuth();
   const permissions = useUnifiedPermissions();
+  const { canCreate, showUpgradeModal } = useEntitlements();
   const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState<any>(null);
   const [isChangesModalOpen, setIsChangesModalOpen] = useState(false);
@@ -30,7 +32,14 @@ function Properties() {
     handleSortByChange,
     refetch,
   } = useGetAllProperties(client?.cuid || "");
+
   const openCsvModal = () => {
+    if (!canCreate("property")) {
+      showUpgradeModal(
+        "You've reached your property limit. Please upgrade your plan to import more properties."
+      );
+      return;
+    }
     setIsCsvModalOpen(true);
   };
 
