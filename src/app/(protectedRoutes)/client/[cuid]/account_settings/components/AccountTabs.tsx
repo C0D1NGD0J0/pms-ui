@@ -15,6 +15,7 @@ import {
 
 import { CompanyTab } from "./tabs/CompanyTab";
 import { ProfileTab } from "./tabs/ProfileTab";
+import { PaymentTab } from "./tabs/PaymentTab";
 import { AdminUsersTab } from "./tabs/AdminUsersTab";
 import { PreferencesTab } from "./tabs/PreferencesTab";
 import { SubscriptionTab } from "./tabs/SubscriptionTab";
@@ -67,6 +68,11 @@ export function AccountTabs({
         isVisible: isSuperAdmin,
       },
       {
+        key: "payment",
+        tabLabel: "Payment",
+        isVisible: isSuperAdmin,
+      },
+      {
         key: "admin-users",
         tabLabel: "Admin Users",
         isVisible: isAdmin,
@@ -101,6 +107,8 @@ export function AccountTabs({
             currentSeats={clientInfo.clientStats.totalUsers}
           />
         );
+      case "payment":
+        return <PaymentTab cuid={clientInfo.cuid} />;
       case "identification":
         return <IdentificationTab {...tabProps} />;
       case "admin-users":

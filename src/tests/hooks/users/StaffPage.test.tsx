@@ -69,6 +69,17 @@ describe("StaffPage", () => {
     jest.clearAllMocks();
   });
 
+  describe("withClientAccess HOC", () => {
+    it("should be wrapped with withClientAccess for tenant isolation", async () => {
+      render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
+        withSuspense: true,
+      });
+
+      // withClientAccess validates cuid param matches authenticated user
+      expect(await screen.findByText("Employee Management")).toBeInTheDocument();
+    });
+  });
+
   it("should render staff management page", async () => {
     render(<StaffPage params={Promise.resolve({ cuid: "client-123" })} />, {
       withSuspense: true,

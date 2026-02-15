@@ -2,6 +2,7 @@
 
 import { Loading } from "@components/Loading";
 import { Button } from "@components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 
 import { LeaseRenewalView } from "./view";
 import { useLeaseRenewalLogic } from "./hook";
@@ -13,7 +14,7 @@ interface LeaseRenewalPageProps {
   }>;
 }
 
-export default function LeaseRenewalPage({ params }: LeaseRenewalPageProps) {
+function LeaseRenewalPage({ params }: LeaseRenewalPageProps) {
   const {
     cuid,
     luid,
@@ -115,3 +116,5 @@ export default function LeaseRenewalPage({ params }: LeaseRenewalPageProps) {
     />
   );
 }
+
+export default withClientAccess(LeaseRenewalPage);

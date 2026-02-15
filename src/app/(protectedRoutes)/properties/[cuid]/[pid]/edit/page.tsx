@@ -3,6 +3,7 @@ import React, { useState, use } from "react";
 import { Loading } from "@components/Loading";
 import { PageHeader } from "@components/PageElements";
 import { Button, Form } from "@components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { PropertyChangesModal } from "@components/Property";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useUnifiedPermissions } from "@hooks/useUnifiedPermissions";
@@ -29,10 +30,10 @@ import {
 } from "@properties/components";
 
 interface EditPropertyProps {
-  params: Promise<{ pid: string }>;
+  params: Promise<{ cuid: string; pid: string }>;
 }
 
-export default function EditProperty({ params }: EditPropertyProps) {
+function EditProperty({ params }: EditPropertyProps) {
   const router = useRouter();
   const { pid } = use(params);
   const searchParams = useSearchParams();
@@ -61,7 +62,6 @@ export default function EditProperty({ params }: EditPropertyProps) {
   const permission = useUnifiedPermissions();
   const { data, refetch } = usePropertyData(pid);
 
-  // Auto-open changes modal if URL parameter is present
   React.useEffect(() => {
     const showChanges = searchParams.get("showChanges");
     if (
@@ -71,7 +71,6 @@ export default function EditProperty({ params }: EditPropertyProps) {
     ) {
       setIsChangesModalOpen(true);
 
-      // Clean up URL by removing the parameter
       const newUrl = new URL(window.location.href);
       newUrl.searchParams.delete("showChanges");
       router.replace(newUrl.pathname, { scroll: false });
@@ -94,7 +93,7 @@ export default function EditProperty({ params }: EditPropertyProps) {
   const handleModalSuccess = () => {
     closeChangesModal();
     router.refresh();
-    refetch(); // Refresh property data
+    refetch();
   };
 
   const canEdit = data?.property
@@ -393,3 +392,5 @@ export default function EditProperty({ params }: EditPropertyProps) {
     </div>
   );
 }
+
+export default withClientAccess(EditProperty);

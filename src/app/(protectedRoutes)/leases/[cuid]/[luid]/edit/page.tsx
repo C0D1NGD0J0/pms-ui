@@ -4,6 +4,7 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
 import { Button } from "@components/FormElements";
+import { withClientAccess } from "@hooks/permissionHOCs";
 
 import { LeaseEditView } from "./view/LeaseEditView";
 import { useLeaseEditLogic } from "./hook/useLeaseEditLogic";
@@ -15,7 +16,7 @@ interface LeaseEditPageProps {
   }>;
 }
 
-export default function LeaseEditPage({ params }: LeaseEditPageProps) {
+function LeaseEditPage({ params }: LeaseEditPageProps) {
   const router = useRouter();
   const logic = useLeaseEditLogic({ params });
 
@@ -79,3 +80,5 @@ export default function LeaseEditPage({ params }: LeaseEditPageProps) {
 
   return <LeaseEditView {...logic} />;
 }
+
+export default withClientAccess(LeaseEditPage);

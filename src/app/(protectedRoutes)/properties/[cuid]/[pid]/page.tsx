@@ -11,6 +11,7 @@ import { PageHeader } from "@components/PageElements";
 import { useEntitlements } from "@src/hooks/contexts";
 import React, { useEffect, useState, use } from "react";
 import { ImageGallery } from "@components/ImageGallery";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { useSearchParams, useRouter } from "next/navigation";
 import { UpgradeRequired } from "@components/UpgradeRequired";
 import { useUnifiedPermissions } from "@src/hooks/useUnifiedPermissions";
@@ -182,10 +183,10 @@ const reportColumns = [
 ];
 
 interface PropertyShowProps {
-  params: Promise<{ pid: string }>;
+  params: Promise<{ cuid: string; pid: string }>;
 }
 
-export default function PropertyShow({ params }: PropertyShowProps) {
+function PropertyShow({ params }: PropertyShowProps) {
   const permission = useUnifiedPermissions();
   const { hasFeature } = useEntitlements();
   const [activeTab, setActiveTab] = useState("tenant");
@@ -335,7 +336,7 @@ export default function PropertyShow({ params }: PropertyShowProps) {
             permission.isStaffOrAbove ? (
               <Link
                 href={{
-                  pathname: `/properties/${data?.property?.pid}/edit`,
+                  pathname: `/properties/${data?.property?.cuid}/${data?.property?.pid}/edit`,
                   query: { activeTab: "basic" },
                 }}
                 className="btn btn-outline"
@@ -354,7 +355,7 @@ export default function PropertyShow({ params }: PropertyShowProps) {
             {data?.unitInfo?.canAddUnit && permission.isStaffOrAbove && (
               <Link
                 href={{
-                  pathname: `/properties/${data?.property?.pid}/edit`,
+                  pathname: `/properties/${data?.property?.cuid}/${data?.property?.pid}/edit`,
                   query: { activeTab: "units" },
                 }}
                 className="btn btn-primary"
@@ -468,3 +469,5 @@ export default function PropertyShow({ params }: PropertyShowProps) {
     </div>
   );
 }
+
+export default withClientAccess(PropertyShow);
