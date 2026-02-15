@@ -53,4 +53,9 @@ export interface ICurrentUser {
   uid: string;
   sub: string;
   subscription?: IUserSubscription;
+  paymentProcessor?: {
+    isSetup: boolean; // Does PaymentProcessor record exist?
+    chargesEnabled: boolean; // Has PM completed KYC verification?
+    needsOnboarding: boolean; // Needs to complete Stripe KYC?
+  };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@components/Link";
 import { InsightCard } from "@components/Cards";
 import { PageHeader } from "@components/PageElements";
 import { TableColumn, Table } from "@components/Table";
@@ -54,7 +54,15 @@ export function LeasesListView({
       <PageHeader
         title="Leases"
         headerBtn={
-          <Link href={`/leases/${cuid}/new`} className="btn btn-primary">
+          <Link
+            href={`/leases/${cuid}/new`}
+            className="btn btn-primary"
+            trackingData={{
+              event: "add_lease_click",
+              category: "lease",
+              label: "leases_list_page",
+            }}
+          >
             <i className="bx bx-plus"></i>
             New Lease
           </Link>

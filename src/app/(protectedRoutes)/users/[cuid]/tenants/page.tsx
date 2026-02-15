@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useState, useMemo } from "react";
 import { Loading } from "@src/components/Loading";
 import { ChartContainer } from "@components/Charts";
+import { withClientAccess } from "@hooks/permissionHOCs";
 import { PageHeader } from "@components/PageElements/Header";
 import { DeactivateUserModal } from "@components/UserManagement";
 import { FilteredUserTableData } from "@interfaces/user.interface";
@@ -20,10 +21,7 @@ import {
 } from "@components/Panel";
 
 import { TenantTableView } from "./components/TenantTableView";
-import {
-  useDeactivateTenant,
-  useGetTenants,
-} from "./hooks";
+import { useDeactivateTenant, useGetTenants } from "./hooks";
 
 interface TenantsPageProps {
   params: Promise<{
@@ -31,7 +29,7 @@ interface TenantsPageProps {
   }>;
 }
 
-export default function TenantsPage({ params }: TenantsPageProps) {
+function TenantsPage({ params }: TenantsPageProps) {
   const { cuid } = React.use(params);
   const router = useRouter();
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
@@ -297,3 +295,5 @@ export default function TenantsPage({ params }: TenantsPageProps) {
     </div>
   );
 }
+
+export default withClientAccess(TenantsPage);

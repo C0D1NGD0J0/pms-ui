@@ -3,6 +3,7 @@
 import { useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import { Loading } from "@components/Loading";
+import { withClientAccess } from "@hooks/permissionHOCs";
 
 import { LeaseDetailView } from "./view";
 import { useLeaseDetailLogic } from "./hook";
@@ -14,7 +15,7 @@ interface LeaseDetailPageProps {
   }>;
 }
 
-export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
+function LeaseDetailPage({ params }: LeaseDetailPageProps) {
   const router = useRouter();
   const { cuid } = use(params);
   const logicProps = useLeaseDetailLogic({ params });
@@ -33,3 +34,5 @@ export default function LeaseDetailPage({ params }: LeaseDetailPageProps) {
 
   return <LeaseDetailView {...logicProps} />;
 }
+
+export default withClientAccess(LeaseDetailPage);
